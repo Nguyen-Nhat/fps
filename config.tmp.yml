@@ -2,22 +2,11 @@ server:
   http:
     host: localhost
     port: 10080
-  grpc:
+
+database:
+  mysql:
+    db_name: loyalty_file_process_service
     host: localhost
-    port: 10443
-
-log:
-  level: debug # debug, info, warn, error, dpanic, panic, fatal
-  mode: production # development
-  encoding: json # console
-
-loyalty:
-  endpoint: https://loyalty.develop.tekoapis.net
-  x_api_key: nguyenducquocdai
-
-jaeger:
-  host: localhost
-  port: 6831
-
-iam:
-  endpoint: https://oauth.develop.tekoapis.net
+    port: 3306
+    username: loyalty_file_process_service
+    password: 1
