@@ -8,3 +8,11 @@ shared/
 rpcimpl/server/*
 *.out
 tmp/
+
+# Environments
+.env
+/config.yml
+/testrun.json
+/testrun.tmp.json
+/push-testcase.sh
+/loyalty-file-processing-coverage.cov

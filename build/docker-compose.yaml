@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+  db:
+    image: mysql:8.0
+    container_name: market-mysql
+    volumes:
+      - docker-mysql:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci --sql-mode=""
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: Teko12345
+      MYSQL_DATABASE: idp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+
+
+volumes:
+  docker-mysql:
+    driver: local
+
+networks:
+  listing:
+    driver: bridge

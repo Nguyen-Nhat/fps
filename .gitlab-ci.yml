@@ -4,4 +4,4 @@ include:
     file: '/gitlab-ci.v2.2.yaml'
 
 variables:
-  IMAGE_REPOSITORY: asia.gcr.io/teko-registry/loyalty-system/loyalty-worker
+  IMAGE_REPOSITORY: asia.gcr.io/teko-registry/loyalty-system/loyalty-file-processing
