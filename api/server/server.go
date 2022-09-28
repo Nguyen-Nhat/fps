@@ -54,7 +54,7 @@ func (s *Server) initRoutes() {
 	userRouter := chi.NewRouter()
 	userRouter.Use(middleware.Logger, apiKeyMiddleware)
 	userRouter.Post("/", userServer.CreateUserAPI())
-	s.Router.Mount("/users", userRouter)
+	s.Router.Mount("/lfp/users", userRouter)
 
 	// 3. Other APIs
 	// ...
