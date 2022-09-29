@@ -1,3 +1,0 @@
-export LOG__LEVEL=DEBUG
-export LOG__MODE=development
-export GOSUMDB=off

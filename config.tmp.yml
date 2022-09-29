@@ -10,3 +10,8 @@ database:
     port: 3306
     username: loyalty_file_process_service
     password: 1
+
+logger:
+  console: true
+  format_json: false
+  level: debug

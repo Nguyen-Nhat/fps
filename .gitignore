@@ -3,6 +3,7 @@ generated_sources/
 shared/
 .DS_Store
 .idea
+.vscode
 .envrc
 *.org
 rpcimpl/server/*
