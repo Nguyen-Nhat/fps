@@ -71,6 +71,7 @@ func (l *zapLogger) Panicf(format string, args ...interface{}) {
 
 func (l *zapLogger) Panic(msg string) {
 	l.sugaredLogger.Panic(msg)
+	
 }
 
 func (l *zapLogger) WithFields(fields Fields) Logger {

@@ -3,12 +3,13 @@ package server
 import (
 	"database/sql"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
+	"net/http"
+	"time"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"github.com/go-chi/chi/v5/middleware"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
@@ -57,7 +58,7 @@ func (s *Server) initRoutes() {
 	// 2. User API
 	userServer := user.InitUserServer(s.db)
 	userRouter := chi.NewRouter()
-	userRouter.Use(middleware.Logger, apiKeyMiddleware)
+	userRouter.Use(loggerMiddleware, apiKeyMiddleware)
 	userRouter.Post("/", userServer.CreateUserAPI())
 	s.Router.Mount("/lfp/users", userRouter)
 
@@ -90,6 +91,26 @@ func apiKeyMiddleware(next http.Handler) http.Handler {
 		apiKey := r.Header.Get("X-API-KEY")
 		fmt.Printf("API KEY = %v\n", apiKey)
 		next.ServeHTTP(w, r)
+	})
+}
+
+func loggerMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+		startReqTime := time.Now()
+		defer func() {
+			logger.Infof("%s %s%s%s %s %d %dB in %s",
+				r.Method,
+				r.URL.Scheme,
+				r.Host,
+				r.URL.Path,
+				r.Proto,
+				ww.Status(),
+				ww.BytesWritten(),
+				time.Since(startReqTime),
+			)
+		}()
+		next.ServeHTTP(ww, r)
 	})
 }
 
