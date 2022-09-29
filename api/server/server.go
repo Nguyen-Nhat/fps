@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
 
@@ -34,8 +35,10 @@ func NewServer(cfg config.Config, opts ...Option) (*Server, error) {
 	if srv.db == nil {
 		db, err := dburl.Open(dbConf.DatabaseURI())
 		if err != nil {
+			logger.Errorf("Fail to open db, got: %v", err)
 			return nil, fmt.Errorf("failed open DB: %w", err)
 		}
+		logger.Info("Connected to db")
 		srv.db = db
 	}
 
@@ -62,7 +65,7 @@ func (s *Server) initRoutes() {
 }
 
 func (s *Server) Serve(cfg config.ServerListen) error {
-	fmt.Printf("Server is starting in port %v\n", cfg.Port)
+	logger.Infof("Server is starting in port %v", cfg.Port)
 	address := fmt.Sprintf(":%v", cfg.Port)
 	return http.ListenAndServe(address, s.Router)
 }
