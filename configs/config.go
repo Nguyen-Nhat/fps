@@ -41,7 +41,7 @@ func Load(path ...string) Config {
 
 	vip.SetConfigName("config")
 	vip.SetConfigType("yml")
-	vip.AddConfigPath("../..")
+	vip.AddConfigPath(".")
 
 	vip.SetEnvPrefix("docker")
 	vip.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
