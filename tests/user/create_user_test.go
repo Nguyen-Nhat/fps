@@ -1,7 +1,10 @@
 package user
 
 import (
+	"context"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
+	_ "github.com/go-sql-driver/mysql"
 	"testing"
 )
 
@@ -17,9 +20,31 @@ var jiraTestDetailsForCreateUser = jiratest.Detail{
 }
 
 func TestReturnGrantPoint_All_Success(t *testing.T) {
+	// Jira Testcase
 	detail := jiraTestDetailsForCreateUser
 	detail.Name = "[createUser] return success when input valid"
 	defer detail.Setup(t)()
 
-	t.Log("OK")
+	// Testcase Implementation
+	// 1. Init
+	ctx := context.Background()
+	userServer := initUserServerForTesting()
+
+	// 2. Mock request
+	req := user.CreateUserRequest{
+		Name: "Quy",
+	}
+
+	// 3. Request server
+	userRes, err := userServer.CreateUser(ctx, &req)
+
+	// 4. Assert
+	if err != nil {
+		t.Errorf("Error create user: %v", err)
+	}
+	if req.Name == userRes.Name {
+		t.Logf("Create success with name = %v", userRes.Name)
+	} else {
+		t.Errorf("Create failed with name = %v <> %v", req.Name, userRes.Name)
+	}
 }

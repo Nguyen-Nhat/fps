@@ -35,12 +35,12 @@ type Config struct {
 }
 
 // Load config from config.yml
-func Load() Config {
+func Load(path ...string) Config {
 	vip := viper.New()
 
 	vip.SetConfigName("config")
 	vip.SetConfigType("yml")
-	vip.AddConfigPath(".")
+	vip.AddConfigPath("../..")
 
 	vip.SetEnvPrefix("docker")
 	vip.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))

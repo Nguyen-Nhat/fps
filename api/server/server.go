@@ -3,6 +3,7 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
@@ -50,7 +51,7 @@ func (s *Server) initRoutes() {
 	s.Router.Mount("/healthz", healthzRouter)
 
 	// 2. User API
-	userServer := InitUserServer(s.db)
+	userServer := user.InitUserServer(s.db)
 	userRouter := chi.NewRouter()
 	userRouter.Use(middleware.Logger, apiKeyMiddleware)
 	userRouter.Post("/", userServer.CreateUserAPI())
