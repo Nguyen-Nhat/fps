@@ -128,9 +128,25 @@ func (fapu *FileAwardPointUpdate) SetCreatedAt(t time.Time) *FileAwardPointUpdat
 	return fapu
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (fapu *FileAwardPointUpdate) SetNillableCreatedAt(t *time.Time) *FileAwardPointUpdate {
+	if t != nil {
+		fapu.SetCreatedAt(*t)
+	}
+	return fapu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (fapu *FileAwardPointUpdate) SetUpdatedAt(t time.Time) *FileAwardPointUpdate {
 	fapu.mutation.SetUpdatedAt(t)
+	return fapu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (fapu *FileAwardPointUpdate) SetNillableUpdatedAt(t *time.Time) *FileAwardPointUpdate {
+	if t != nil {
+		fapu.SetUpdatedAt(*t)
+	}
 	return fapu
 }
 
@@ -473,9 +489,25 @@ func (fapuo *FileAwardPointUpdateOne) SetCreatedAt(t time.Time) *FileAwardPointU
 	return fapuo
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (fapuo *FileAwardPointUpdateOne) SetNillableCreatedAt(t *time.Time) *FileAwardPointUpdateOne {
+	if t != nil {
+		fapuo.SetCreatedAt(*t)
+	}
+	return fapuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (fapuo *FileAwardPointUpdateOne) SetUpdatedAt(t time.Time) *FileAwardPointUpdateOne {
 	fapuo.mutation.SetUpdatedAt(t)
+	return fapuo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (fapuo *FileAwardPointUpdateOne) SetNillableUpdatedAt(t *time.Time) *FileAwardPointUpdateOne {
+	if t != nil {
+		fapuo.SetUpdatedAt(*t)
+	}
 	return fapuo
 }
 

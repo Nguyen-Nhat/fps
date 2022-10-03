@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/membertransaction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 )
 
@@ -32,8 +33,9 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		fileawardpoint.Table: fileawardpoint.ValidColumn,
-		user.Table:           user.ValidColumn,
+		fileawardpoint.Table:    fileawardpoint.ValidColumn,
+		membertransaction.Table: membertransaction.ValidColumn,
+		user.Table:              user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

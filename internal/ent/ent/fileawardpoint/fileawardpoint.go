@@ -2,6 +2,10 @@
 
 package fileawardpoint
 
+import (
+	"time"
+)
+
 const (
 	// Label holds the string label denoting the fileawardpoint type in the database.
 	Label = "file_award_point"
@@ -72,4 +76,8 @@ var (
 	DefaultStatsTotalRow int16
 	// DefaultStatsTotalSuccess holds the default value on creation for the "stats_total_success" field.
 	DefaultStatsTotalSuccess int16
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt time.Time
 )

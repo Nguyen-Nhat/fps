@@ -30,7 +30,7 @@ func (FileAwardPoint) Fields() []ent.Field {
 		field.Int16("stats_total_row").Default(0),
 		field.Int16("stats_total_success").Default(0),
 		field.Time("created_at").Default(time.Now()),
-		field.Time("updated_at").Default(time.Now()).UpdateDefault(time.Now()),
+		field.Time("updated_at").Default(time.Now()),
 		field.String("created_by"),
 		field.String("updated_by"),
 	}

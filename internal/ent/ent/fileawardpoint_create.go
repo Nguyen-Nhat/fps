@@ -92,9 +92,25 @@ func (fapc *FileAwardPointCreate) SetCreatedAt(t time.Time) *FileAwardPointCreat
 	return fapc
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (fapc *FileAwardPointCreate) SetNillableCreatedAt(t *time.Time) *FileAwardPointCreate {
+	if t != nil {
+		fapc.SetCreatedAt(*t)
+	}
+	return fapc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (fapc *FileAwardPointCreate) SetUpdatedAt(t time.Time) *FileAwardPointCreate {
 	fapc.mutation.SetUpdatedAt(t)
+	return fapc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (fapc *FileAwardPointCreate) SetNillableUpdatedAt(t *time.Time) *FileAwardPointCreate {
+	if t != nil {
+		fapc.SetUpdatedAt(*t)
+	}
 	return fapc
 }
 
@@ -198,6 +214,14 @@ func (fapc *FileAwardPointCreate) defaults() {
 	if _, ok := fapc.mutation.StatsTotalSuccess(); !ok {
 		v := fileawardpoint.DefaultStatsTotalSuccess
 		fapc.mutation.SetStatsTotalSuccess(v)
+	}
+	if _, ok := fapc.mutation.CreatedAt(); !ok {
+		v := fileawardpoint.DefaultCreatedAt
+		fapc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := fapc.mutation.UpdatedAt(); !ok {
+		v := fileawardpoint.DefaultUpdatedAt
+		fapc.mutation.SetUpdatedAt(v)
 	}
 }
 

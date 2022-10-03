@@ -11,6 +11,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/migrate"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/membertransaction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -24,6 +25,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// FileAwardPoint is the client for interacting with the FileAwardPoint builders.
 	FileAwardPoint *FileAwardPointClient
+	// MemberTransaction is the client for interacting with the MemberTransaction builders.
+	MemberTransaction *MemberTransactionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -40,6 +43,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.FileAwardPoint = NewFileAwardPointClient(c.config)
+	c.MemberTransaction = NewMemberTransactionClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -72,10 +76,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		FileAwardPoint: NewFileAwardPointClient(cfg),
-		User:           NewUserClient(cfg),
+		ctx:               ctx,
+		config:            cfg,
+		FileAwardPoint:    NewFileAwardPointClient(cfg),
+		MemberTransaction: NewMemberTransactionClient(cfg),
+		User:              NewUserClient(cfg),
 	}, nil
 }
 
@@ -93,10 +98,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		FileAwardPoint: NewFileAwardPointClient(cfg),
-		User:           NewUserClient(cfg),
+		ctx:               ctx,
+		config:            cfg,
+		FileAwardPoint:    NewFileAwardPointClient(cfg),
+		MemberTransaction: NewMemberTransactionClient(cfg),
+		User:              NewUserClient(cfg),
 	}, nil
 }
 
@@ -126,6 +132,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.FileAwardPoint.Use(hooks...)
+	c.MemberTransaction.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -217,6 +224,96 @@ func (c *FileAwardPointClient) GetX(ctx context.Context, id int) *FileAwardPoint
 // Hooks returns the client hooks.
 func (c *FileAwardPointClient) Hooks() []Hook {
 	return c.hooks.FileAwardPoint
+}
+
+// MemberTransactionClient is a client for the MemberTransaction schema.
+type MemberTransactionClient struct {
+	config
+}
+
+// NewMemberTransactionClient returns a client for the MemberTransaction from the given config.
+func NewMemberTransactionClient(c config) *MemberTransactionClient {
+	return &MemberTransactionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `membertransaction.Hooks(f(g(h())))`.
+func (c *MemberTransactionClient) Use(hooks ...Hook) {
+	c.hooks.MemberTransaction = append(c.hooks.MemberTransaction, hooks...)
+}
+
+// Create returns a builder for creating a MemberTransaction entity.
+func (c *MemberTransactionClient) Create() *MemberTransactionCreate {
+	mutation := newMemberTransactionMutation(c.config, OpCreate)
+	return &MemberTransactionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MemberTransaction entities.
+func (c *MemberTransactionClient) CreateBulk(builders ...*MemberTransactionCreate) *MemberTransactionCreateBulk {
+	return &MemberTransactionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MemberTransaction.
+func (c *MemberTransactionClient) Update() *MemberTransactionUpdate {
+	mutation := newMemberTransactionMutation(c.config, OpUpdate)
+	return &MemberTransactionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MemberTransactionClient) UpdateOne(mt *MemberTransaction) *MemberTransactionUpdateOne {
+	mutation := newMemberTransactionMutation(c.config, OpUpdateOne, withMemberTransaction(mt))
+	return &MemberTransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MemberTransactionClient) UpdateOneID(id int) *MemberTransactionUpdateOne {
+	mutation := newMemberTransactionMutation(c.config, OpUpdateOne, withMemberTransactionID(id))
+	return &MemberTransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MemberTransaction.
+func (c *MemberTransactionClient) Delete() *MemberTransactionDelete {
+	mutation := newMemberTransactionMutation(c.config, OpDelete)
+	return &MemberTransactionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MemberTransactionClient) DeleteOne(mt *MemberTransaction) *MemberTransactionDeleteOne {
+	return c.DeleteOneID(mt.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *MemberTransactionClient) DeleteOneID(id int) *MemberTransactionDeleteOne {
+	builder := c.Delete().Where(membertransaction.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MemberTransactionDeleteOne{builder}
+}
+
+// Query returns a query builder for MemberTransaction.
+func (c *MemberTransactionClient) Query() *MemberTransactionQuery {
+	return &MemberTransactionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a MemberTransaction entity by its id.
+func (c *MemberTransactionClient) Get(ctx context.Context, id int) (*MemberTransaction, error) {
+	return c.Query().Where(membertransaction.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MemberTransactionClient) GetX(ctx context.Context, id int) *MemberTransaction {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *MemberTransactionClient) Hooks() []Hook {
+	return c.hooks.MemberTransaction
 }
 
 // UserClient is a client for the User schema.

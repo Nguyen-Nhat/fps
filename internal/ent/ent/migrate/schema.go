@@ -30,6 +30,26 @@ var (
 		Columns:    FileAwardPointColumns,
 		PrimaryKey: []*schema.Column{FileAwardPointColumns[0]},
 	}
+	// MemberTransactionColumns holds the columns for the "member_transaction" table.
+	MemberTransactionColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "file_award_point_id", Type: field.TypeInt32},
+		{Name: "point", Type: field.TypeInt64},
+		{Name: "phone", Type: field.TypeString, Size: 15},
+		{Name: "order_code", Type: field.TypeString, Size: 50},
+		{Name: "ref_id", Type: field.TypeString, Size: 50},
+		{Name: "sent_time", Type: field.TypeTime},
+		{Name: "txn_desc", Type: field.TypeString, Size: 255},
+		{Name: "status", Type: field.TypeInt16, Default: 0},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// MemberTransactionTable holds the schema information for the "member_transaction" table.
+	MemberTransactionTable = &schema.Table{
+		Name:       "member_transaction",
+		Columns:    MemberTransactionColumns,
+		PrimaryKey: []*schema.Column{MemberTransactionColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -48,6 +68,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		FileAwardPointTable,
+		MemberTransactionTable,
 		UsersTable,
 	}
 )
@@ -55,5 +76,8 @@ var (
 func init() {
 	FileAwardPointTable.Annotation = &entsql.Annotation{
 		Table: "file_award_point",
+	}
+	MemberTransactionTable.Annotation = &entsql.Annotation{
+		Table: "member_transaction",
 	}
 }

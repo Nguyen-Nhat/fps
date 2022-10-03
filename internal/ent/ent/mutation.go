@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/membertransaction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/predicate"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 
@@ -25,8 +26,9 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeFileAwardPoint = "FileAwardPoint"
-	TypeUser           = "User"
+	TypeFileAwardPoint    = "FileAwardPoint"
+	TypeMemberTransaction = "MemberTransaction"
+	TypeUser              = "User"
 )
 
 // FileAwardPointMutation represents an operation that mutates the FileAwardPoint nodes in the graph.
@@ -1013,6 +1015,905 @@ func (m *FileAwardPointMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *FileAwardPointMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown FileAwardPoint edge %s", name)
+}
+
+// MemberTransactionMutation represents an operation that mutates the MemberTransaction nodes in the graph.
+type MemberTransactionMutation struct {
+	config
+	op                     Op
+	typ                    string
+	id                     *int
+	file_award_point_id    *int32
+	addfile_award_point_id *int32
+	point                  *int64
+	addpoint               *int64
+	phone                  *string
+	order_code             *string
+	ref_id                 *string
+	sent_time              *time.Time
+	txn_desc               *string
+	status                 *int16
+	addstatus              *int16
+	created_at             *time.Time
+	updated_at             *time.Time
+	clearedFields          map[string]struct{}
+	done                   bool
+	oldValue               func(context.Context) (*MemberTransaction, error)
+	predicates             []predicate.MemberTransaction
+}
+
+var _ ent.Mutation = (*MemberTransactionMutation)(nil)
+
+// membertransactionOption allows management of the mutation configuration using functional options.
+type membertransactionOption func(*MemberTransactionMutation)
+
+// newMemberTransactionMutation creates new mutation for the MemberTransaction entity.
+func newMemberTransactionMutation(c config, op Op, opts ...membertransactionOption) *MemberTransactionMutation {
+	m := &MemberTransactionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeMemberTransaction,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withMemberTransactionID sets the ID field of the mutation.
+func withMemberTransactionID(id int) membertransactionOption {
+	return func(m *MemberTransactionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *MemberTransaction
+		)
+		m.oldValue = func(ctx context.Context) (*MemberTransaction, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().MemberTransaction.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withMemberTransaction sets the old MemberTransaction of the mutation.
+func withMemberTransaction(node *MemberTransaction) membertransactionOption {
+	return func(m *MemberTransactionMutation) {
+		m.oldValue = func(context.Context) (*MemberTransaction, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m MemberTransactionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m MemberTransactionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *MemberTransactionMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *MemberTransactionMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().MemberTransaction.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetFileAwardPointID sets the "file_award_point_id" field.
+func (m *MemberTransactionMutation) SetFileAwardPointID(i int32) {
+	m.file_award_point_id = &i
+	m.addfile_award_point_id = nil
+}
+
+// FileAwardPointID returns the value of the "file_award_point_id" field in the mutation.
+func (m *MemberTransactionMutation) FileAwardPointID() (r int32, exists bool) {
+	v := m.file_award_point_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileAwardPointID returns the old "file_award_point_id" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldFileAwardPointID(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileAwardPointID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileAwardPointID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileAwardPointID: %w", err)
+	}
+	return oldValue.FileAwardPointID, nil
+}
+
+// AddFileAwardPointID adds i to the "file_award_point_id" field.
+func (m *MemberTransactionMutation) AddFileAwardPointID(i int32) {
+	if m.addfile_award_point_id != nil {
+		*m.addfile_award_point_id += i
+	} else {
+		m.addfile_award_point_id = &i
+	}
+}
+
+// AddedFileAwardPointID returns the value that was added to the "file_award_point_id" field in this mutation.
+func (m *MemberTransactionMutation) AddedFileAwardPointID() (r int32, exists bool) {
+	v := m.addfile_award_point_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFileAwardPointID resets all changes to the "file_award_point_id" field.
+func (m *MemberTransactionMutation) ResetFileAwardPointID() {
+	m.file_award_point_id = nil
+	m.addfile_award_point_id = nil
+}
+
+// SetPoint sets the "point" field.
+func (m *MemberTransactionMutation) SetPoint(i int64) {
+	m.point = &i
+	m.addpoint = nil
+}
+
+// Point returns the value of the "point" field in the mutation.
+func (m *MemberTransactionMutation) Point() (r int64, exists bool) {
+	v := m.point
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPoint returns the old "point" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldPoint(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPoint is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPoint requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPoint: %w", err)
+	}
+	return oldValue.Point, nil
+}
+
+// AddPoint adds i to the "point" field.
+func (m *MemberTransactionMutation) AddPoint(i int64) {
+	if m.addpoint != nil {
+		*m.addpoint += i
+	} else {
+		m.addpoint = &i
+	}
+}
+
+// AddedPoint returns the value that was added to the "point" field in this mutation.
+func (m *MemberTransactionMutation) AddedPoint() (r int64, exists bool) {
+	v := m.addpoint
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPoint resets all changes to the "point" field.
+func (m *MemberTransactionMutation) ResetPoint() {
+	m.point = nil
+	m.addpoint = nil
+}
+
+// SetPhone sets the "phone" field.
+func (m *MemberTransactionMutation) SetPhone(s string) {
+	m.phone = &s
+}
+
+// Phone returns the value of the "phone" field in the mutation.
+func (m *MemberTransactionMutation) Phone() (r string, exists bool) {
+	v := m.phone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhone returns the old "phone" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldPhone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhone: %w", err)
+	}
+	return oldValue.Phone, nil
+}
+
+// ResetPhone resets all changes to the "phone" field.
+func (m *MemberTransactionMutation) ResetPhone() {
+	m.phone = nil
+}
+
+// SetOrderCode sets the "order_code" field.
+func (m *MemberTransactionMutation) SetOrderCode(s string) {
+	m.order_code = &s
+}
+
+// OrderCode returns the value of the "order_code" field in the mutation.
+func (m *MemberTransactionMutation) OrderCode() (r string, exists bool) {
+	v := m.order_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrderCode returns the old "order_code" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldOrderCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrderCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrderCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrderCode: %w", err)
+	}
+	return oldValue.OrderCode, nil
+}
+
+// ResetOrderCode resets all changes to the "order_code" field.
+func (m *MemberTransactionMutation) ResetOrderCode() {
+	m.order_code = nil
+}
+
+// SetRefID sets the "ref_id" field.
+func (m *MemberTransactionMutation) SetRefID(s string) {
+	m.ref_id = &s
+}
+
+// RefID returns the value of the "ref_id" field in the mutation.
+func (m *MemberTransactionMutation) RefID() (r string, exists bool) {
+	v := m.ref_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRefID returns the old "ref_id" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldRefID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRefID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRefID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRefID: %w", err)
+	}
+	return oldValue.RefID, nil
+}
+
+// ResetRefID resets all changes to the "ref_id" field.
+func (m *MemberTransactionMutation) ResetRefID() {
+	m.ref_id = nil
+}
+
+// SetSentTime sets the "sent_time" field.
+func (m *MemberTransactionMutation) SetSentTime(t time.Time) {
+	m.sent_time = &t
+}
+
+// SentTime returns the value of the "sent_time" field in the mutation.
+func (m *MemberTransactionMutation) SentTime() (r time.Time, exists bool) {
+	v := m.sent_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSentTime returns the old "sent_time" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldSentTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSentTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSentTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSentTime: %w", err)
+	}
+	return oldValue.SentTime, nil
+}
+
+// ResetSentTime resets all changes to the "sent_time" field.
+func (m *MemberTransactionMutation) ResetSentTime() {
+	m.sent_time = nil
+}
+
+// SetTxnDesc sets the "txn_desc" field.
+func (m *MemberTransactionMutation) SetTxnDesc(s string) {
+	m.txn_desc = &s
+}
+
+// TxnDesc returns the value of the "txn_desc" field in the mutation.
+func (m *MemberTransactionMutation) TxnDesc() (r string, exists bool) {
+	v := m.txn_desc
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTxnDesc returns the old "txn_desc" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldTxnDesc(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTxnDesc is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTxnDesc requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTxnDesc: %w", err)
+	}
+	return oldValue.TxnDesc, nil
+}
+
+// ResetTxnDesc resets all changes to the "txn_desc" field.
+func (m *MemberTransactionMutation) ResetTxnDesc() {
+	m.txn_desc = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *MemberTransactionMutation) SetStatus(i int16) {
+	m.status = &i
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *MemberTransactionMutation) Status() (r int16, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldStatus(ctx context.Context) (v int16, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds i to the "status" field.
+func (m *MemberTransactionMutation) AddStatus(i int16) {
+	if m.addstatus != nil {
+		*m.addstatus += i
+	} else {
+		m.addstatus = &i
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *MemberTransactionMutation) AddedStatus() (r int16, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *MemberTransactionMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *MemberTransactionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *MemberTransactionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *MemberTransactionMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *MemberTransactionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *MemberTransactionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *MemberTransactionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the MemberTransactionMutation builder.
+func (m *MemberTransactionMutation) Where(ps ...predicate.MemberTransaction) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *MemberTransactionMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (MemberTransaction).
+func (m *MemberTransactionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *MemberTransactionMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.file_award_point_id != nil {
+		fields = append(fields, membertransaction.FieldFileAwardPointID)
+	}
+	if m.point != nil {
+		fields = append(fields, membertransaction.FieldPoint)
+	}
+	if m.phone != nil {
+		fields = append(fields, membertransaction.FieldPhone)
+	}
+	if m.order_code != nil {
+		fields = append(fields, membertransaction.FieldOrderCode)
+	}
+	if m.ref_id != nil {
+		fields = append(fields, membertransaction.FieldRefID)
+	}
+	if m.sent_time != nil {
+		fields = append(fields, membertransaction.FieldSentTime)
+	}
+	if m.txn_desc != nil {
+		fields = append(fields, membertransaction.FieldTxnDesc)
+	}
+	if m.status != nil {
+		fields = append(fields, membertransaction.FieldStatus)
+	}
+	if m.created_at != nil {
+		fields = append(fields, membertransaction.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, membertransaction.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *MemberTransactionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case membertransaction.FieldFileAwardPointID:
+		return m.FileAwardPointID()
+	case membertransaction.FieldPoint:
+		return m.Point()
+	case membertransaction.FieldPhone:
+		return m.Phone()
+	case membertransaction.FieldOrderCode:
+		return m.OrderCode()
+	case membertransaction.FieldRefID:
+		return m.RefID()
+	case membertransaction.FieldSentTime:
+		return m.SentTime()
+	case membertransaction.FieldTxnDesc:
+		return m.TxnDesc()
+	case membertransaction.FieldStatus:
+		return m.Status()
+	case membertransaction.FieldCreatedAt:
+		return m.CreatedAt()
+	case membertransaction.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *MemberTransactionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case membertransaction.FieldFileAwardPointID:
+		return m.OldFileAwardPointID(ctx)
+	case membertransaction.FieldPoint:
+		return m.OldPoint(ctx)
+	case membertransaction.FieldPhone:
+		return m.OldPhone(ctx)
+	case membertransaction.FieldOrderCode:
+		return m.OldOrderCode(ctx)
+	case membertransaction.FieldRefID:
+		return m.OldRefID(ctx)
+	case membertransaction.FieldSentTime:
+		return m.OldSentTime(ctx)
+	case membertransaction.FieldTxnDesc:
+		return m.OldTxnDesc(ctx)
+	case membertransaction.FieldStatus:
+		return m.OldStatus(ctx)
+	case membertransaction.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case membertransaction.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown MemberTransaction field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MemberTransactionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case membertransaction.FieldFileAwardPointID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileAwardPointID(v)
+		return nil
+	case membertransaction.FieldPoint:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPoint(v)
+		return nil
+	case membertransaction.FieldPhone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhone(v)
+		return nil
+	case membertransaction.FieldOrderCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrderCode(v)
+		return nil
+	case membertransaction.FieldRefID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRefID(v)
+		return nil
+	case membertransaction.FieldSentTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSentTime(v)
+		return nil
+	case membertransaction.FieldTxnDesc:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTxnDesc(v)
+		return nil
+	case membertransaction.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case membertransaction.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case membertransaction.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown MemberTransaction field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *MemberTransactionMutation) AddedFields() []string {
+	var fields []string
+	if m.addfile_award_point_id != nil {
+		fields = append(fields, membertransaction.FieldFileAwardPointID)
+	}
+	if m.addpoint != nil {
+		fields = append(fields, membertransaction.FieldPoint)
+	}
+	if m.addstatus != nil {
+		fields = append(fields, membertransaction.FieldStatus)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *MemberTransactionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case membertransaction.FieldFileAwardPointID:
+		return m.AddedFileAwardPointID()
+	case membertransaction.FieldPoint:
+		return m.AddedPoint()
+	case membertransaction.FieldStatus:
+		return m.AddedStatus()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MemberTransactionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case membertransaction.FieldFileAwardPointID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFileAwardPointID(v)
+		return nil
+	case membertransaction.FieldPoint:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPoint(v)
+		return nil
+	case membertransaction.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown MemberTransaction numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *MemberTransactionMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *MemberTransactionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *MemberTransactionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown MemberTransaction nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *MemberTransactionMutation) ResetField(name string) error {
+	switch name {
+	case membertransaction.FieldFileAwardPointID:
+		m.ResetFileAwardPointID()
+		return nil
+	case membertransaction.FieldPoint:
+		m.ResetPoint()
+		return nil
+	case membertransaction.FieldPhone:
+		m.ResetPhone()
+		return nil
+	case membertransaction.FieldOrderCode:
+		m.ResetOrderCode()
+		return nil
+	case membertransaction.FieldRefID:
+		m.ResetRefID()
+		return nil
+	case membertransaction.FieldSentTime:
+		m.ResetSentTime()
+		return nil
+	case membertransaction.FieldTxnDesc:
+		m.ResetTxnDesc()
+		return nil
+	case membertransaction.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case membertransaction.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case membertransaction.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown MemberTransaction field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *MemberTransactionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *MemberTransactionMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *MemberTransactionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *MemberTransactionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *MemberTransactionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *MemberTransactionMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *MemberTransactionMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown MemberTransaction unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *MemberTransactionMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown MemberTransaction edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

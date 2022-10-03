@@ -12,7 +12,7 @@ import (
 
 type (
 	Repo interface {
-		FindById(ctx context.Context, id int) (*FileAwardPoint, error)
+		FindById(context.Context, int) (*FileAwardPoint, error)
 	}
 
 	RepoImpl struct {
@@ -30,6 +30,8 @@ func NewRepo(db *sql.DB) *RepoImpl {
 	client := ent.NewClient(ent.Driver(drv))
 	return &RepoImpl{client: client}
 }
+
+// Implementation function ---------------------------------------------------------------------------------------------
 
 func (r *RepoImpl) FindById(ctx context.Context, id int) (*FileAwardPoint, error) {
 	fap, err := r.client.FileAwardPoint.Query().Where(fileawardpoint.ID(id)).Only(ctx)

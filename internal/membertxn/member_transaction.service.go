@@ -1,12 +1,10 @@
-package fileawardpoint
+package membertxn
 
-import (
-	"context"
-)
+import "context"
 
 type (
 	Service interface {
-		GetFileAwardPoint(context.Context, *GetFileAwardPointDetailDTO) (*FileAwardPoint, error)
+		GetByFileAwardPointId(context.Context, int32) ([]MemberTransaction, error)
 	}
 
 	ServiceImpl struct {
@@ -24,6 +22,6 @@ func NewService(repo Repo) *ServiceImpl {
 
 // Implementation function ---------------------------------------------------------------------------------------------
 
-func (s *ServiceImpl) GetFileAwardPoint(ctx context.Context, req *GetFileAwardPointDetailDTO) (*FileAwardPoint, error) {
-	return s.repo.FindById(ctx, req.Id)
+func (s ServiceImpl) GetByFileAwardPointId(ctx context.Context, fileAwardPointId int32) ([]MemberTransaction, error) {
+	return s.repo.FindByFileAwardPointId(ctx, fileAwardPointId)
 }

@@ -1,49 +1,18 @@
 package job
 
 import (
-	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
+	"context"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"github.com/robfig/cron/v3"
-	"github.com/xo/dburl"
-	"sync"
 )
 
-var once sync.Once
-
-type AwardPointJob struct {
-	fapService fileawardpoint.Service
-	cfg        config.AwardPointJobConfig
-}
-
-var awardPointJob *AwardPointJob
-
-func InitJob(cfg config.Config) {
-	db, err := dburl.Open(cfg.Database.MySQL.DatabaseURI())
-	if err != nil {
-		logger.Errorf("Fail to open db, got: %v", err)
-		return
-	}
-	logger.Info("Connected to db")
-	fapRepo := fileawardpoint.NewRepo(db)
-	fapService := fileawardpoint.NewService(fapRepo)
-
-	if awardPointJob == nil {
-		once.Do(func() {
-			awardPointJob = &AwardPointJob{
-				fapService: fapService,
-				cfg:        cfg.JobConfig.AwardPointJobConfig,
-			}
-		})
-	}
-	awardPointJob.grantPointForEachMemberInFileAwardPoint()
-}
-
-func (a AwardPointJob) grantPointForEachMemberInFileAwardPoint() bool {
+func (a FileProcessingJob) grantPointForEachMemberInFileAwardPoint() bool {
 	c := cron.New()
 
-	id, err := c.AddFunc(a.cfg.Schedule, func() {
-		logger.Infof("Running job ...")
+	id, err := c.AddFunc(a.cfg.AwardPointJobConfig.Schedule, func() {
+		logger.Infof("Running job ... Start  ...")
+		a.doSth()
+		logger.Infof("Running job ... Finish ...")
 	})
 	if err != nil {
 		logger.Errorf("Init Job failed: %v", err)
@@ -54,4 +23,22 @@ func (a AwardPointJob) grantPointForEachMemberInFileAwardPoint() bool {
 	c.Start()
 
 	return false
+}
+
+func (a FileProcessingJob) doSth() {
+	// Get Transaction
+	txns, err := a.memTxnService.GetByFileAwardPointId(context.Background(), 1)
+	if err != nil {
+		return
+	}
+
+	// Check empty
+	if len(txns) == 0 {
+		logger.Infof("No Transaction for executing!")
+	}
+
+	// Execute each transaction
+	for _, txn := range txns {
+		logger.Infof("Processing Transaction ID = %v, data = %v", txn.Id, txn)
+	}
 }
