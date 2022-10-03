@@ -7,7 +7,7 @@ import (
 )
 
 func initUserServerForTesting() *user.UserServer {
-	dbConf := config.Load().Database.MySQL
+	dbConf := config.Load("../..").Database.MySQL
 	db, _ := dburl.Open(dbConf.DatabaseURI()) // no handle error, if error test will be terminated
 	userServer := user.InitUserServer(db)
 	return userServer
