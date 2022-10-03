@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -65,7 +66,7 @@ func (s *Server) initRoutes() {
 	// 3. File Award Point API
 	fapServer := fileawardpoint.InitFileAwardPointServer(s.db)
 	fapRouter := chi.NewRouter()
-	fapRouter.Use(middleware.Logger, apiKeyMiddleware)
+	fapRouter.Use(loggerMiddleware, apiKeyMiddleware)
 	fapRouter.Post("/getListOrDetail", fapServer.GetDetailAPI())
 	s.Router.Mount("/lfp/fileAwardPoint", fapRouter)
 
