@@ -3,6 +3,7 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -60,7 +61,14 @@ func (s *Server) initRoutes() {
 	userRouter.Post("/", userServer.CreateUserAPI())
 	s.Router.Mount("/lfp/users", userRouter)
 
-	// 3. Other APIs
+	// 3. File Award Point API
+	fapServer := fileawardpoint.InitFileAwardPointServer(s.db)
+	fapRouter := chi.NewRouter()
+	fapRouter.Use(middleware.Logger, apiKeyMiddleware)
+	fapRouter.Post("/getListOrDetail", fapServer.GetDetailAPI())
+	s.Router.Mount("/lfp/fileAwardPoint", fapRouter)
+
+	// 4. Other APIs
 	// ...
 }
 

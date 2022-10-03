@@ -10,6 +10,7 @@ import (
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/migrate"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -21,6 +22,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// FileAwardPoint is the client for interacting with the FileAwardPoint builders.
+	FileAwardPoint *FileAwardPointClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -36,6 +39,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.FileAwardPoint = NewFileAwardPointClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -68,9 +72,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		User:   NewUserClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		FileAwardPoint: NewFileAwardPointClient(cfg),
+		User:           NewUserClient(cfg),
 	}, nil
 }
 
@@ -88,16 +93,17 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		User:   NewUserClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		FileAwardPoint: NewFileAwardPointClient(cfg),
+		User:           NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		User.
+//		FileAwardPoint.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -119,7 +125,98 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.FileAwardPoint.Use(hooks...)
 	c.User.Use(hooks...)
+}
+
+// FileAwardPointClient is a client for the FileAwardPoint schema.
+type FileAwardPointClient struct {
+	config
+}
+
+// NewFileAwardPointClient returns a client for the FileAwardPoint from the given config.
+func NewFileAwardPointClient(c config) *FileAwardPointClient {
+	return &FileAwardPointClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `fileawardpoint.Hooks(f(g(h())))`.
+func (c *FileAwardPointClient) Use(hooks ...Hook) {
+	c.hooks.FileAwardPoint = append(c.hooks.FileAwardPoint, hooks...)
+}
+
+// Create returns a builder for creating a FileAwardPoint entity.
+func (c *FileAwardPointClient) Create() *FileAwardPointCreate {
+	mutation := newFileAwardPointMutation(c.config, OpCreate)
+	return &FileAwardPointCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FileAwardPoint entities.
+func (c *FileAwardPointClient) CreateBulk(builders ...*FileAwardPointCreate) *FileAwardPointCreateBulk {
+	return &FileAwardPointCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FileAwardPoint.
+func (c *FileAwardPointClient) Update() *FileAwardPointUpdate {
+	mutation := newFileAwardPointMutation(c.config, OpUpdate)
+	return &FileAwardPointUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FileAwardPointClient) UpdateOne(fap *FileAwardPoint) *FileAwardPointUpdateOne {
+	mutation := newFileAwardPointMutation(c.config, OpUpdateOne, withFileAwardPoint(fap))
+	return &FileAwardPointUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FileAwardPointClient) UpdateOneID(id int) *FileAwardPointUpdateOne {
+	mutation := newFileAwardPointMutation(c.config, OpUpdateOne, withFileAwardPointID(id))
+	return &FileAwardPointUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FileAwardPoint.
+func (c *FileAwardPointClient) Delete() *FileAwardPointDelete {
+	mutation := newFileAwardPointMutation(c.config, OpDelete)
+	return &FileAwardPointDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FileAwardPointClient) DeleteOne(fap *FileAwardPoint) *FileAwardPointDeleteOne {
+	return c.DeleteOneID(fap.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *FileAwardPointClient) DeleteOneID(id int) *FileAwardPointDeleteOne {
+	builder := c.Delete().Where(fileawardpoint.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FileAwardPointDeleteOne{builder}
+}
+
+// Query returns a query builder for FileAwardPoint.
+func (c *FileAwardPointClient) Query() *FileAwardPointQuery {
+	return &FileAwardPointQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a FileAwardPoint entity by its id.
+func (c *FileAwardPointClient) Get(ctx context.Context, id int) (*FileAwardPoint, error) {
+	return c.Query().Where(fileawardpoint.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FileAwardPointClient) GetX(ctx context.Context, id int) *FileAwardPoint {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *FileAwardPointClient) Hooks() []Hook {
+	return c.hooks.FileAwardPoint
 }
 
 // UserClient is a client for the User schema.

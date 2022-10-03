@@ -6,5 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// FileAwardPoint is the predicate function for fileawardpoint builders.
+type FileAwardPoint func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

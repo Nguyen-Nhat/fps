@@ -3,11 +3,33 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
 
 var (
+	// FileAwardPointColumns holds the columns for the "file_award_point" table.
+	FileAwardPointColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "merchant_id", Type: field.TypeInt64},
+		{Name: "display_name", Type: field.TypeString},
+		{Name: "file_url", Type: field.TypeString},
+		{Name: "result_file_url", Type: field.TypeString},
+		{Name: "status", Type: field.TypeInt16, Default: 0},
+		{Name: "stats_total_row", Type: field.TypeInt16, Default: 0},
+		{Name: "stats_total_success", Type: field.TypeInt16, Default: 0},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeString},
+		{Name: "updated_by", Type: field.TypeString},
+	}
+	// FileAwardPointTable holds the schema information for the "file_award_point" table.
+	FileAwardPointTable = &schema.Table{
+		Name:       "file_award_point",
+		Columns:    FileAwardPointColumns,
+		PrimaryKey: []*schema.Column{FileAwardPointColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -25,9 +47,13 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		FileAwardPointTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	FileAwardPointTable.Annotation = &entsql.Annotation{
+		Table: "file_award_point",
+	}
 }

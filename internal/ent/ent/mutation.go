@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/predicate"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 
@@ -23,8 +25,995 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeUser = "User"
+	TypeFileAwardPoint = "FileAwardPoint"
+	TypeUser           = "User"
 )
+
+// FileAwardPointMutation represents an operation that mutates the FileAwardPoint nodes in the graph.
+type FileAwardPointMutation struct {
+	config
+	op                     Op
+	typ                    string
+	id                     *int
+	merchant_id            *int64
+	addmerchant_id         *int64
+	display_name           *string
+	file_url               *string
+	result_file_url        *string
+	status                 *int16
+	addstatus              *int16
+	stats_total_row        *int16
+	addstats_total_row     *int16
+	stats_total_success    *int16
+	addstats_total_success *int16
+	created_at             *time.Time
+	updated_at             *time.Time
+	created_by             *string
+	updated_by             *string
+	clearedFields          map[string]struct{}
+	done                   bool
+	oldValue               func(context.Context) (*FileAwardPoint, error)
+	predicates             []predicate.FileAwardPoint
+}
+
+var _ ent.Mutation = (*FileAwardPointMutation)(nil)
+
+// fileawardpointOption allows management of the mutation configuration using functional options.
+type fileawardpointOption func(*FileAwardPointMutation)
+
+// newFileAwardPointMutation creates new mutation for the FileAwardPoint entity.
+func newFileAwardPointMutation(c config, op Op, opts ...fileawardpointOption) *FileAwardPointMutation {
+	m := &FileAwardPointMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeFileAwardPoint,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withFileAwardPointID sets the ID field of the mutation.
+func withFileAwardPointID(id int) fileawardpointOption {
+	return func(m *FileAwardPointMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *FileAwardPoint
+		)
+		m.oldValue = func(ctx context.Context) (*FileAwardPoint, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().FileAwardPoint.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withFileAwardPoint sets the old FileAwardPoint of the mutation.
+func withFileAwardPoint(node *FileAwardPoint) fileawardpointOption {
+	return func(m *FileAwardPointMutation) {
+		m.oldValue = func(context.Context) (*FileAwardPoint, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m FileAwardPointMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m FileAwardPointMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *FileAwardPointMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *FileAwardPointMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().FileAwardPoint.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (m *FileAwardPointMutation) SetMerchantID(i int64) {
+	m.merchant_id = &i
+	m.addmerchant_id = nil
+}
+
+// MerchantID returns the value of the "merchant_id" field in the mutation.
+func (m *FileAwardPointMutation) MerchantID() (r int64, exists bool) {
+	v := m.merchant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMerchantID returns the old "merchant_id" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldMerchantID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMerchantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMerchantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMerchantID: %w", err)
+	}
+	return oldValue.MerchantID, nil
+}
+
+// AddMerchantID adds i to the "merchant_id" field.
+func (m *FileAwardPointMutation) AddMerchantID(i int64) {
+	if m.addmerchant_id != nil {
+		*m.addmerchant_id += i
+	} else {
+		m.addmerchant_id = &i
+	}
+}
+
+// AddedMerchantID returns the value that was added to the "merchant_id" field in this mutation.
+func (m *FileAwardPointMutation) AddedMerchantID() (r int64, exists bool) {
+	v := m.addmerchant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMerchantID resets all changes to the "merchant_id" field.
+func (m *FileAwardPointMutation) ResetMerchantID() {
+	m.merchant_id = nil
+	m.addmerchant_id = nil
+}
+
+// SetDisplayName sets the "display_name" field.
+func (m *FileAwardPointMutation) SetDisplayName(s string) {
+	m.display_name = &s
+}
+
+// DisplayName returns the value of the "display_name" field in the mutation.
+func (m *FileAwardPointMutation) DisplayName() (r string, exists bool) {
+	v := m.display_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDisplayName returns the old "display_name" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldDisplayName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDisplayName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDisplayName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDisplayName: %w", err)
+	}
+	return oldValue.DisplayName, nil
+}
+
+// ResetDisplayName resets all changes to the "display_name" field.
+func (m *FileAwardPointMutation) ResetDisplayName() {
+	m.display_name = nil
+}
+
+// SetFileURL sets the "file_url" field.
+func (m *FileAwardPointMutation) SetFileURL(s string) {
+	m.file_url = &s
+}
+
+// FileURL returns the value of the "file_url" field in the mutation.
+func (m *FileAwardPointMutation) FileURL() (r string, exists bool) {
+	v := m.file_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileURL returns the old "file_url" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldFileURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileURL: %w", err)
+	}
+	return oldValue.FileURL, nil
+}
+
+// ResetFileURL resets all changes to the "file_url" field.
+func (m *FileAwardPointMutation) ResetFileURL() {
+	m.file_url = nil
+}
+
+// SetResultFileURL sets the "result_file_url" field.
+func (m *FileAwardPointMutation) SetResultFileURL(s string) {
+	m.result_file_url = &s
+}
+
+// ResultFileURL returns the value of the "result_file_url" field in the mutation.
+func (m *FileAwardPointMutation) ResultFileURL() (r string, exists bool) {
+	v := m.result_file_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResultFileURL returns the old "result_file_url" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldResultFileURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResultFileURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResultFileURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResultFileURL: %w", err)
+	}
+	return oldValue.ResultFileURL, nil
+}
+
+// ResetResultFileURL resets all changes to the "result_file_url" field.
+func (m *FileAwardPointMutation) ResetResultFileURL() {
+	m.result_file_url = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *FileAwardPointMutation) SetStatus(i int16) {
+	m.status = &i
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *FileAwardPointMutation) Status() (r int16, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldStatus(ctx context.Context) (v int16, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds i to the "status" field.
+func (m *FileAwardPointMutation) AddStatus(i int16) {
+	if m.addstatus != nil {
+		*m.addstatus += i
+	} else {
+		m.addstatus = &i
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *FileAwardPointMutation) AddedStatus() (r int16, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *FileAwardPointMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
+// SetStatsTotalRow sets the "stats_total_row" field.
+func (m *FileAwardPointMutation) SetStatsTotalRow(i int16) {
+	m.stats_total_row = &i
+	m.addstats_total_row = nil
+}
+
+// StatsTotalRow returns the value of the "stats_total_row" field in the mutation.
+func (m *FileAwardPointMutation) StatsTotalRow() (r int16, exists bool) {
+	v := m.stats_total_row
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatsTotalRow returns the old "stats_total_row" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldStatsTotalRow(ctx context.Context) (v int16, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatsTotalRow is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatsTotalRow requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatsTotalRow: %w", err)
+	}
+	return oldValue.StatsTotalRow, nil
+}
+
+// AddStatsTotalRow adds i to the "stats_total_row" field.
+func (m *FileAwardPointMutation) AddStatsTotalRow(i int16) {
+	if m.addstats_total_row != nil {
+		*m.addstats_total_row += i
+	} else {
+		m.addstats_total_row = &i
+	}
+}
+
+// AddedStatsTotalRow returns the value that was added to the "stats_total_row" field in this mutation.
+func (m *FileAwardPointMutation) AddedStatsTotalRow() (r int16, exists bool) {
+	v := m.addstats_total_row
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatsTotalRow resets all changes to the "stats_total_row" field.
+func (m *FileAwardPointMutation) ResetStatsTotalRow() {
+	m.stats_total_row = nil
+	m.addstats_total_row = nil
+}
+
+// SetStatsTotalSuccess sets the "stats_total_success" field.
+func (m *FileAwardPointMutation) SetStatsTotalSuccess(i int16) {
+	m.stats_total_success = &i
+	m.addstats_total_success = nil
+}
+
+// StatsTotalSuccess returns the value of the "stats_total_success" field in the mutation.
+func (m *FileAwardPointMutation) StatsTotalSuccess() (r int16, exists bool) {
+	v := m.stats_total_success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatsTotalSuccess returns the old "stats_total_success" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldStatsTotalSuccess(ctx context.Context) (v int16, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatsTotalSuccess is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatsTotalSuccess requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatsTotalSuccess: %w", err)
+	}
+	return oldValue.StatsTotalSuccess, nil
+}
+
+// AddStatsTotalSuccess adds i to the "stats_total_success" field.
+func (m *FileAwardPointMutation) AddStatsTotalSuccess(i int16) {
+	if m.addstats_total_success != nil {
+		*m.addstats_total_success += i
+	} else {
+		m.addstats_total_success = &i
+	}
+}
+
+// AddedStatsTotalSuccess returns the value that was added to the "stats_total_success" field in this mutation.
+func (m *FileAwardPointMutation) AddedStatsTotalSuccess() (r int16, exists bool) {
+	v := m.addstats_total_success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatsTotalSuccess resets all changes to the "stats_total_success" field.
+func (m *FileAwardPointMutation) ResetStatsTotalSuccess() {
+	m.stats_total_success = nil
+	m.addstats_total_success = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *FileAwardPointMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *FileAwardPointMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *FileAwardPointMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *FileAwardPointMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *FileAwardPointMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *FileAwardPointMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *FileAwardPointMutation) SetCreatedBy(s string) {
+	m.created_by = &s
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *FileAwardPointMutation) CreatedBy() (r string, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldCreatedBy(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *FileAwardPointMutation) ResetCreatedBy() {
+	m.created_by = nil
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *FileAwardPointMutation) SetUpdatedBy(s string) {
+	m.updated_by = &s
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *FileAwardPointMutation) UpdatedBy() (r string, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldUpdatedBy(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *FileAwardPointMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+}
+
+// Where appends a list predicates to the FileAwardPointMutation builder.
+func (m *FileAwardPointMutation) Where(ps ...predicate.FileAwardPoint) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *FileAwardPointMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (FileAwardPoint).
+func (m *FileAwardPointMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *FileAwardPointMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.merchant_id != nil {
+		fields = append(fields, fileawardpoint.FieldMerchantID)
+	}
+	if m.display_name != nil {
+		fields = append(fields, fileawardpoint.FieldDisplayName)
+	}
+	if m.file_url != nil {
+		fields = append(fields, fileawardpoint.FieldFileURL)
+	}
+	if m.result_file_url != nil {
+		fields = append(fields, fileawardpoint.FieldResultFileURL)
+	}
+	if m.status != nil {
+		fields = append(fields, fileawardpoint.FieldStatus)
+	}
+	if m.stats_total_row != nil {
+		fields = append(fields, fileawardpoint.FieldStatsTotalRow)
+	}
+	if m.stats_total_success != nil {
+		fields = append(fields, fileawardpoint.FieldStatsTotalSuccess)
+	}
+	if m.created_at != nil {
+		fields = append(fields, fileawardpoint.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, fileawardpoint.FieldUpdatedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, fileawardpoint.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, fileawardpoint.FieldUpdatedBy)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *FileAwardPointMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case fileawardpoint.FieldMerchantID:
+		return m.MerchantID()
+	case fileawardpoint.FieldDisplayName:
+		return m.DisplayName()
+	case fileawardpoint.FieldFileURL:
+		return m.FileURL()
+	case fileawardpoint.FieldResultFileURL:
+		return m.ResultFileURL()
+	case fileawardpoint.FieldStatus:
+		return m.Status()
+	case fileawardpoint.FieldStatsTotalRow:
+		return m.StatsTotalRow()
+	case fileawardpoint.FieldStatsTotalSuccess:
+		return m.StatsTotalSuccess()
+	case fileawardpoint.FieldCreatedAt:
+		return m.CreatedAt()
+	case fileawardpoint.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case fileawardpoint.FieldCreatedBy:
+		return m.CreatedBy()
+	case fileawardpoint.FieldUpdatedBy:
+		return m.UpdatedBy()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *FileAwardPointMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case fileawardpoint.FieldMerchantID:
+		return m.OldMerchantID(ctx)
+	case fileawardpoint.FieldDisplayName:
+		return m.OldDisplayName(ctx)
+	case fileawardpoint.FieldFileURL:
+		return m.OldFileURL(ctx)
+	case fileawardpoint.FieldResultFileURL:
+		return m.OldResultFileURL(ctx)
+	case fileawardpoint.FieldStatus:
+		return m.OldStatus(ctx)
+	case fileawardpoint.FieldStatsTotalRow:
+		return m.OldStatsTotalRow(ctx)
+	case fileawardpoint.FieldStatsTotalSuccess:
+		return m.OldStatsTotalSuccess(ctx)
+	case fileawardpoint.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case fileawardpoint.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case fileawardpoint.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case fileawardpoint.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	}
+	return nil, fmt.Errorf("unknown FileAwardPoint field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FileAwardPointMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case fileawardpoint.FieldMerchantID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMerchantID(v)
+		return nil
+	case fileawardpoint.FieldDisplayName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDisplayName(v)
+		return nil
+	case fileawardpoint.FieldFileURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileURL(v)
+		return nil
+	case fileawardpoint.FieldResultFileURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResultFileURL(v)
+		return nil
+	case fileawardpoint.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case fileawardpoint.FieldStatsTotalRow:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatsTotalRow(v)
+		return nil
+	case fileawardpoint.FieldStatsTotalSuccess:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatsTotalSuccess(v)
+		return nil
+	case fileawardpoint.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case fileawardpoint.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case fileawardpoint.FieldCreatedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case fileawardpoint.FieldUpdatedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	}
+	return fmt.Errorf("unknown FileAwardPoint field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *FileAwardPointMutation) AddedFields() []string {
+	var fields []string
+	if m.addmerchant_id != nil {
+		fields = append(fields, fileawardpoint.FieldMerchantID)
+	}
+	if m.addstatus != nil {
+		fields = append(fields, fileawardpoint.FieldStatus)
+	}
+	if m.addstats_total_row != nil {
+		fields = append(fields, fileawardpoint.FieldStatsTotalRow)
+	}
+	if m.addstats_total_success != nil {
+		fields = append(fields, fileawardpoint.FieldStatsTotalSuccess)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *FileAwardPointMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case fileawardpoint.FieldMerchantID:
+		return m.AddedMerchantID()
+	case fileawardpoint.FieldStatus:
+		return m.AddedStatus()
+	case fileawardpoint.FieldStatsTotalRow:
+		return m.AddedStatsTotalRow()
+	case fileawardpoint.FieldStatsTotalSuccess:
+		return m.AddedStatsTotalSuccess()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FileAwardPointMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case fileawardpoint.FieldMerchantID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMerchantID(v)
+		return nil
+	case fileawardpoint.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
+	case fileawardpoint.FieldStatsTotalRow:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatsTotalRow(v)
+		return nil
+	case fileawardpoint.FieldStatsTotalSuccess:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatsTotalSuccess(v)
+		return nil
+	}
+	return fmt.Errorf("unknown FileAwardPoint numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *FileAwardPointMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *FileAwardPointMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *FileAwardPointMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown FileAwardPoint nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *FileAwardPointMutation) ResetField(name string) error {
+	switch name {
+	case fileawardpoint.FieldMerchantID:
+		m.ResetMerchantID()
+		return nil
+	case fileawardpoint.FieldDisplayName:
+		m.ResetDisplayName()
+		return nil
+	case fileawardpoint.FieldFileURL:
+		m.ResetFileURL()
+		return nil
+	case fileawardpoint.FieldResultFileURL:
+		m.ResetResultFileURL()
+		return nil
+	case fileawardpoint.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case fileawardpoint.FieldStatsTotalRow:
+		m.ResetStatsTotalRow()
+		return nil
+	case fileawardpoint.FieldStatsTotalSuccess:
+		m.ResetStatsTotalSuccess()
+		return nil
+	case fileawardpoint.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case fileawardpoint.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case fileawardpoint.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case fileawardpoint.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	}
+	return fmt.Errorf("unknown FileAwardPoint field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *FileAwardPointMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *FileAwardPointMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *FileAwardPointMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *FileAwardPointMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *FileAwardPointMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *FileAwardPointMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *FileAwardPointMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown FileAwardPoint unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *FileAwardPointMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown FileAwardPoint edge %s", name)
+}
 
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {

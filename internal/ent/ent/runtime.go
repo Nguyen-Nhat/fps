@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/schema"
 )
@@ -11,6 +12,32 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	fileawardpointFields := schema.FileAwardPoint{}.Fields()
+	_ = fileawardpointFields
+	// fileawardpointDescDisplayName is the schema descriptor for display_name field.
+	fileawardpointDescDisplayName := fileawardpointFields[1].Descriptor()
+	// fileawardpoint.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
+	fileawardpoint.DisplayNameValidator = fileawardpointDescDisplayName.Validators[0].(func(string) error)
+	// fileawardpointDescFileURL is the schema descriptor for file_url field.
+	fileawardpointDescFileURL := fileawardpointFields[2].Descriptor()
+	// fileawardpoint.FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
+	fileawardpoint.FileURLValidator = fileawardpointDescFileURL.Validators[0].(func(string) error)
+	// fileawardpointDescResultFileURL is the schema descriptor for result_file_url field.
+	fileawardpointDescResultFileURL := fileawardpointFields[3].Descriptor()
+	// fileawardpoint.ResultFileURLValidator is a validator for the "result_file_url" field. It is called by the builders before save.
+	fileawardpoint.ResultFileURLValidator = fileawardpointDescResultFileURL.Validators[0].(func(string) error)
+	// fileawardpointDescStatus is the schema descriptor for status field.
+	fileawardpointDescStatus := fileawardpointFields[4].Descriptor()
+	// fileawardpoint.DefaultStatus holds the default value on creation for the status field.
+	fileawardpoint.DefaultStatus = fileawardpointDescStatus.Default.(int16)
+	// fileawardpointDescStatsTotalRow is the schema descriptor for stats_total_row field.
+	fileawardpointDescStatsTotalRow := fileawardpointFields[5].Descriptor()
+	// fileawardpoint.DefaultStatsTotalRow holds the default value on creation for the stats_total_row field.
+	fileawardpoint.DefaultStatsTotalRow = fileawardpointDescStatsTotalRow.Default.(int16)
+	// fileawardpointDescStatsTotalSuccess is the schema descriptor for stats_total_success field.
+	fileawardpointDescStatsTotalSuccess := fileawardpointFields[6].Descriptor()
+	// fileawardpoint.DefaultStatsTotalSuccess holds the default value on creation for the stats_total_success field.
+	fileawardpoint.DefaultStatsTotalSuccess = fileawardpointDescStatsTotalSuccess.Default.(int16)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.
