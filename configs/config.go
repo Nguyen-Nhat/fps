@@ -30,9 +30,10 @@ type ServerConfig struct {
 
 // Config for app configuration
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Logger   LoggerConfig   `mapstructure:"logger"`
+	Server    ServerConfig   `mapstructure:"server"`
+	Database  DatabaseConfig `mapstructure:"database"`
+	Logger    LoggerConfig   `mapstructure:"logger"`
+	JobConfig JobConfig      `mapstructure:"job"`
 }
 
 // Load config from config.yml
