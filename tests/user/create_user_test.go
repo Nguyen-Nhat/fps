@@ -4,6 +4,7 @@ import (
 	"context"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tests/common"
 	_ "github.com/go-sql-driver/mysql"
 	"testing"
 )
@@ -26,9 +27,10 @@ func TestReturnGrantPoint_All_Success(t *testing.T) {
 	defer detail.Setup(t)()
 
 	// Testcase Implementation
-	// 1. Init
+	// 1. Init DB & Init Server
 	ctx := context.Background()
-	userServer := initUserServerForTesting()
+	db := common.PrepareDatabase(ctx)
+	userServer := user.InitUserServer(db)
 
 	// 2. Mock request
 	req := user.CreateUserRequest{

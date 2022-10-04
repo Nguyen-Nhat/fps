@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -37,6 +38,14 @@ type Config struct {
 	JobConfig JobConfig      `mapstructure:"job"`
 }
 
+const (
+	EnvKeyRunProfile = "RUN_PROFILE"
+)
+
+const (
+	ProfileTest = "TEST"
+)
+
 // Load config from config.yml
 func Load(paths ...string) Config {
 	vip := viper.New()
@@ -65,12 +74,21 @@ func Load(paths ...string) Config {
 		vip.Set(key, val)
 	}
 
-	fmt.Println("Config file used:", vip.ConfigFileUsed())
+	fmt.Println("===== Config file used:", vip.ConfigFileUsed())
 
 	cfg := Config{}
 	err = vip.Unmarshal(&cfg)
 	if err != nil {
 		panic(err)
 	}
+
+	runProfile := os.Getenv(EnvKeyRunProfile)
+	fmt.Println("\n===== Running in Profile =", runProfile)
+	if strings.ToUpper(runProfile) == ProfileTest {
+		testingDBName := cfg.Database.MySQL.DBName + "_test" // add suffix `_test`
+		cfg.Database.MySQL.DBName = testingDBName
+		fmt.Printf("===== ---> When running in TEST profile, DB Name is changed to %v\n\n", testingDBName)
+	}
+
 	return cfg
 }
