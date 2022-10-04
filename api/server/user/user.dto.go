@@ -15,7 +15,7 @@ type CreateUserRequest struct {
 	ProtectedID string `json:"id"` // override 'id' json to have more control
 }
 
-func (a *CreateUserRequest) Bind(r *http.Request) error {
+func (a *CreateUserRequest) Bind(_ *http.Request) error {
 	// a.User is nil if no User fields are sent in the request. Return an
 	// error to avoid a nil pointer dereference.
 	if len(a.Name) == 0 {
@@ -36,7 +36,7 @@ type CreateUserResponse struct {
 	Email string
 }
 
-func (ur *CreateUserResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (ur *CreateUserResponse) Render(_ http.ResponseWriter, _ *http.Request) error {
 	// Pre-processing before a response is marshalled and sent across the wire
 	return nil
 }

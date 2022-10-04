@@ -46,3 +46,12 @@ func ErrRender(err error) render.Renderer {
 		ErrorText:      err.Error(),
 	}
 }
+
+func ErrNoPermissionRequest(msg string) render.Renderer {
+	return &ErrResponse{
+		Err:            nil,
+		HTTPStatusCode: 403,
+		StatusText:     "No Permission To Access",
+		ErrorText:      msg,
+	}
+}

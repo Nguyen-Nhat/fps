@@ -24,8 +24,9 @@ func (s ServerListen) ListenString() string {
 
 // ServerConfig for configure HTTP & gRPC host & port
 type ServerConfig struct {
-	HTTP ServerListen `mapstructure:"http"`
-	GRPC ServerListen `mapstructure:"grpc"`
+	HTTP   ServerListen `mapstructure:"http"`
+	GRPC   ServerListen `mapstructure:"grpc"`
+	ApiKey string       `mapstructure:"api_key"`
 }
 
 // Config for app configuration

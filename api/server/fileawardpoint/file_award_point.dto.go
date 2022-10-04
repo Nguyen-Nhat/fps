@@ -13,7 +13,7 @@ type GetFileAwardPointDetailRequest struct {
 	Id int `json:"id"`
 }
 
-func (a *GetFileAwardPointDetailRequest) Bind(r *http.Request) error {
+func (a *GetFileAwardPointDetailRequest) Bind(_ *http.Request) error {
 	// validate Id missing
 	if a.Id == 0 {
 		return errors.New("required id")
@@ -42,7 +42,7 @@ type GetFileAwardPointDetailResponse struct {
 	CreatedBy         string    `json:"created_by"`
 }
 
-func (ur *GetFileAwardPointDetailResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (ur *GetFileAwardPointDetailResponse) Render(_ http.ResponseWriter, _ *http.Request) error {
 	// Pre-processing before a response is marshalled and sent across the wire
 	return nil
 }
