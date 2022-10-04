@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
-	"github.com/mitchellh/mapstructure"
 )
 
 type (
@@ -16,67 +15,67 @@ type (
 		Save(context.Context, FileAwardPoint) (*FileAwardPoint, error)
 	}
 
-	RepoImpl struct {
+	repoImpl struct {
 		client *ent.Client
 	}
 )
 
 const dbEngine = "mysql"
 
-var _ Repo = &RepoImpl{} // only for mention that RepoImpl implement Repo
+var _ Repo = &repoImpl{} // only for mention that repoImpl implement Repo
 
 // NewRepo ...
-func NewRepo(db *sql.DB) *RepoImpl {
+func NewRepo(db *sql.DB) *repoImpl {
 	drv := entsql.OpenDB(dbEngine, db)
 	client := ent.NewClient(ent.Driver(drv))
-	return &RepoImpl{client: client}
+	return &repoImpl{client: client}
 }
 
 // Implementation function ---------------------------------------------------------------------------------------------
 
-func (r *RepoImpl) FindById(ctx context.Context, id int) (*FileAwardPoint, error) {
+func (r *repoImpl) FindById(ctx context.Context, id int) (*FileAwardPoint, error) {
 	fap, err := r.client.FileAwardPoint.Query().Where(fileawardpoint.ID(id)).Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying singular file award point: %w", err)
 	}
-	model := &FileAwardPoint{}
-	if err := mapstructure.Decode(fap, model); err != nil {
-		return nil, fmt.Errorf("failed decode file award point info from DB")
-	}
-	return model, nil
+
+	return &FileAwardPoint{*fap}, nil
 }
 
-func (r *RepoImpl) Save(ctx context.Context, fap FileAwardPoint) (*FileAwardPoint, error) {
+func (r *repoImpl) Save(ctx context.Context, fap FileAwardPoint) (*FileAwardPoint, error) {
 	return save(ctx, r.client, fap)
 }
 
 // Other Public functions ----------------------------------------------------------------------------------------------
 
 // SaveAll ... public function for using in Test
-func SaveAll(ctx context.Context, client *ent.Client, faps []FileAwardPoint) ([]FileAwardPoint, error) {
+// - needResult:
+//   - TRUE 	=> return list of FileAwardPoint
+//   - FALSE => return empty list
+func SaveAll(ctx context.Context, client *ent.Client, fapArr []FileAwardPoint, needResult bool) ([]FileAwardPoint, error) {
 	// 1. Build bulk
-	bulk := make([]*ent.FileAwardPointCreate, len(faps))
-	for i, fap := range faps {
+	bulk := make([]*ent.FileAwardPointCreate, len(fapArr))
+	for i, fap := range fapArr {
 		bulk[i] = mapFileAwardPoint(client, fap)
 	}
 
 	// 2. Create by bulk
-	fapsSaved, err := client.FileAwardPoint.CreateBulk(bulk...).Save(ctx)
+	fapSavedArr, err := client.FileAwardPoint.CreateBulk(bulk...).Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save file award point to DB")
 	}
 
-	// 3. Map
-	var res []FileAwardPoint
-	for _, fapSaved := range fapsSaved {
-		model := &FileAwardPoint{}
-		if err := mapstructure.Decode(fapSaved, model); err != nil {
-			return nil, fmt.Errorf("failed decode file award point info from DB")
-		}
-		res = append(res, *model)
+	// 3. Check if you NOT need result => return empty
+	if !needResult {
+		return []FileAwardPoint{}, nil
 	}
 
-	// 4. Return
+	// 4. Map Result & return
+	var res []FileAwardPoint
+	for _, fapSaved := range fapSavedArr {
+		model := &FileAwardPoint{*fapSaved}
+		res = append(res, *model)
+	}
 	return res, nil
 }
 
@@ -89,23 +88,17 @@ func save(ctx context.Context, client *ent.Client, fap FileAwardPoint) (*FileAwa
 		return nil, fmt.Errorf("failed to save file award point to DB")
 	}
 
-	// 2. Map
-	model := &FileAwardPoint{}
-	if err := mapstructure.Decode(fapSaved, model); err != nil {
-		return nil, fmt.Errorf("failed decode file award point info from DB")
-	}
-
-	// 3. Return
-	return model, nil
+	// 2. Return
+	return &FileAwardPoint{*fapSaved}, nil
 }
 
 // mapFileAwardPoint ... must update this function when schema is modified
 func mapFileAwardPoint(client *ent.Client, fap FileAwardPoint) *ent.FileAwardPointCreate {
 	return client.FileAwardPoint.Create().
-		SetMerchantID(fap.MerchantId).
+		SetMerchantID(fap.MerchantID).
 		SetDisplayName(fap.DisplayName).
-		SetFileURL(fap.FileUrl).
-		SetResultFileURL(fap.ResultFileUrl).
+		SetFileURL(fap.FileURL).
+		SetResultFileURL(fap.ResultFileURL).
 		SetStatus(fap.Status).
 		SetStatsTotalRow(fap.StatsTotalRow).
 		SetStatsTotalSuccess(fap.StatsTotalSuccess).

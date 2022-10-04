@@ -61,13 +61,13 @@ func (s Server) GetDetail(ctx context.Context, request *GetFileAwardPointDetailR
 	}
 
 	// 2. Call function of Service
-	u, err := s.service.GetFileAwardPoint(ctx, req)
+	fap, err := s.service.GetFileAwardPoint(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
 	// 4. Map result to response
-	res := toFapDetailResponseByEntity(u)
+	res := toFapDetailResponseByEntity(fap)
 	return res, nil
 }
 

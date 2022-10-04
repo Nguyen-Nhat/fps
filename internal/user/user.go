@@ -1,16 +1,18 @@
 package user
 
-type User struct {
-	// ID of the migrations.
-	ID int `json:"id,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
-	// Active holds the value of the "active" field.
-	Active bool `json:"active,omitempty"`
-	// Email holds the value of the "email" field.
-	Email string `json:"email,omitempty"`
-	// PhoneNumber holds the value of the "phone_number" field.
-	PhoneNumber string `json:"phone_number,omitempty"`
+import "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 
-	PasswordHash string `json:"-"`
+type User struct {
+	ent.User
+}
+
+// mapper ...
+
+func toUserFromCreateDTO(user *CreateUserRequestDTO) *User {
+	u := ent.User{
+		Name:  user.Name,
+		Email: user.Email,
+	}
+
+	return &User{u}
 }

@@ -4,11 +4,11 @@ import "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoi
 
 func toFapDetailResponseByEntity(fap *fileawardpoint.FileAwardPoint) *GetFileAwardPointDetailResponse {
 	return &GetFileAwardPointDetailResponse{
-		Id:                fap.Id,
-		MerchantId:        fap.MerchantId,
+		Id:                fap.ID,
+		MerchantId:        fap.MerchantID,
 		DisplayName:       fap.DisplayName,
-		FileUrl:           fap.ResultFileUrl,
-		ResultFileUrl:     fap.ResultFileUrl,
+		FileUrl:           fap.FileURL,
+		ResultFileUrl:     fap.ResultFileURL,
 		Status:            fap.Status,
 		StatsTotalRow:     fap.StatsTotalRow,
 		StatsTotalSuccess: fap.StatsTotalSuccess,

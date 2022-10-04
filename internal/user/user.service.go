@@ -19,9 +19,6 @@ func NewService(repo Repo) *ServiceImpl {
 }
 
 func (s *ServiceImpl) CreateUser(ctx context.Context, user *CreateUserRequestDTO) (*User, error) {
-	u := &User{
-		Name:  user.Name,
-		Email: user.Email,
-	}
+	u := toUserFromCreateDTO(user)
 	return s.repo.CreateUser(ctx, u)
 }

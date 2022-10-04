@@ -116,14 +116,14 @@ func Status(v int16) predicate.FileAwardPoint {
 }
 
 // StatsTotalRow applies equality check predicate on the "stats_total_row" field. It's identical to StatsTotalRowEQ.
-func StatsTotalRow(v int16) predicate.FileAwardPoint {
+func StatsTotalRow(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStatsTotalRow), v))
 	})
 }
 
 // StatsTotalSuccess applies equality check predicate on the "stats_total_success" field. It's identical to StatsTotalSuccessEQ.
-func StatsTotalSuccess(v int16) predicate.FileAwardPoint {
+func StatsTotalSuccess(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStatsTotalSuccess), v))
 	})
@@ -583,21 +583,21 @@ func StatusLTE(v int16) predicate.FileAwardPoint {
 }
 
 // StatsTotalRowEQ applies the EQ predicate on the "stats_total_row" field.
-func StatsTotalRowEQ(v int16) predicate.FileAwardPoint {
+func StatsTotalRowEQ(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStatsTotalRow), v))
 	})
 }
 
 // StatsTotalRowNEQ applies the NEQ predicate on the "stats_total_row" field.
-func StatsTotalRowNEQ(v int16) predicate.FileAwardPoint {
+func StatsTotalRowNEQ(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldStatsTotalRow), v))
 	})
 }
 
 // StatsTotalRowIn applies the In predicate on the "stats_total_row" field.
-func StatsTotalRowIn(vs ...int16) predicate.FileAwardPoint {
+func StatsTotalRowIn(vs ...int32) predicate.FileAwardPoint {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -608,7 +608,7 @@ func StatsTotalRowIn(vs ...int16) predicate.FileAwardPoint {
 }
 
 // StatsTotalRowNotIn applies the NotIn predicate on the "stats_total_row" field.
-func StatsTotalRowNotIn(vs ...int16) predicate.FileAwardPoint {
+func StatsTotalRowNotIn(vs ...int32) predicate.FileAwardPoint {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -619,49 +619,49 @@ func StatsTotalRowNotIn(vs ...int16) predicate.FileAwardPoint {
 }
 
 // StatsTotalRowGT applies the GT predicate on the "stats_total_row" field.
-func StatsTotalRowGT(v int16) predicate.FileAwardPoint {
+func StatsTotalRowGT(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldStatsTotalRow), v))
 	})
 }
 
 // StatsTotalRowGTE applies the GTE predicate on the "stats_total_row" field.
-func StatsTotalRowGTE(v int16) predicate.FileAwardPoint {
+func StatsTotalRowGTE(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldStatsTotalRow), v))
 	})
 }
 
 // StatsTotalRowLT applies the LT predicate on the "stats_total_row" field.
-func StatsTotalRowLT(v int16) predicate.FileAwardPoint {
+func StatsTotalRowLT(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldStatsTotalRow), v))
 	})
 }
 
 // StatsTotalRowLTE applies the LTE predicate on the "stats_total_row" field.
-func StatsTotalRowLTE(v int16) predicate.FileAwardPoint {
+func StatsTotalRowLTE(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatsTotalRow), v))
 	})
 }
 
 // StatsTotalSuccessEQ applies the EQ predicate on the "stats_total_success" field.
-func StatsTotalSuccessEQ(v int16) predicate.FileAwardPoint {
+func StatsTotalSuccessEQ(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStatsTotalSuccess), v))
 	})
 }
 
 // StatsTotalSuccessNEQ applies the NEQ predicate on the "stats_total_success" field.
-func StatsTotalSuccessNEQ(v int16) predicate.FileAwardPoint {
+func StatsTotalSuccessNEQ(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldStatsTotalSuccess), v))
 	})
 }
 
 // StatsTotalSuccessIn applies the In predicate on the "stats_total_success" field.
-func StatsTotalSuccessIn(vs ...int16) predicate.FileAwardPoint {
+func StatsTotalSuccessIn(vs ...int32) predicate.FileAwardPoint {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -672,7 +672,7 @@ func StatsTotalSuccessIn(vs ...int16) predicate.FileAwardPoint {
 }
 
 // StatsTotalSuccessNotIn applies the NotIn predicate on the "stats_total_success" field.
-func StatsTotalSuccessNotIn(vs ...int16) predicate.FileAwardPoint {
+func StatsTotalSuccessNotIn(vs ...int32) predicate.FileAwardPoint {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -683,28 +683,28 @@ func StatsTotalSuccessNotIn(vs ...int16) predicate.FileAwardPoint {
 }
 
 // StatsTotalSuccessGT applies the GT predicate on the "stats_total_success" field.
-func StatsTotalSuccessGT(v int16) predicate.FileAwardPoint {
+func StatsTotalSuccessGT(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldStatsTotalSuccess), v))
 	})
 }
 
 // StatsTotalSuccessGTE applies the GTE predicate on the "stats_total_success" field.
-func StatsTotalSuccessGTE(v int16) predicate.FileAwardPoint {
+func StatsTotalSuccessGTE(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldStatsTotalSuccess), v))
 	})
 }
 
 // StatsTotalSuccessLT applies the LT predicate on the "stats_total_success" field.
-func StatsTotalSuccessLT(v int16) predicate.FileAwardPoint {
+func StatsTotalSuccessLT(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldStatsTotalSuccess), v))
 	})
 }
 
 // StatsTotalSuccessLTE applies the LTE predicate on the "stats_total_success" field.
-func StatsTotalSuccessLTE(v int16) predicate.FileAwardPoint {
+func StatsTotalSuccessLTE(v int32) predicate.FileAwardPoint {
 	return predicate.FileAwardPoint(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatsTotalSuccess), v))
 	})

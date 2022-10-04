@@ -59,13 +59,13 @@ func (fapc *FileAwardPointCreate) SetNillableStatus(i *int16) *FileAwardPointCre
 }
 
 // SetStatsTotalRow sets the "stats_total_row" field.
-func (fapc *FileAwardPointCreate) SetStatsTotalRow(i int16) *FileAwardPointCreate {
+func (fapc *FileAwardPointCreate) SetStatsTotalRow(i int32) *FileAwardPointCreate {
 	fapc.mutation.SetStatsTotalRow(i)
 	return fapc
 }
 
 // SetNillableStatsTotalRow sets the "stats_total_row" field if the given value is not nil.
-func (fapc *FileAwardPointCreate) SetNillableStatsTotalRow(i *int16) *FileAwardPointCreate {
+func (fapc *FileAwardPointCreate) SetNillableStatsTotalRow(i *int32) *FileAwardPointCreate {
 	if i != nil {
 		fapc.SetStatsTotalRow(*i)
 	}
@@ -73,13 +73,13 @@ func (fapc *FileAwardPointCreate) SetNillableStatsTotalRow(i *int16) *FileAwardP
 }
 
 // SetStatsTotalSuccess sets the "stats_total_success" field.
-func (fapc *FileAwardPointCreate) SetStatsTotalSuccess(i int16) *FileAwardPointCreate {
+func (fapc *FileAwardPointCreate) SetStatsTotalSuccess(i int32) *FileAwardPointCreate {
 	fapc.mutation.SetStatsTotalSuccess(i)
 	return fapc
 }
 
 // SetNillableStatsTotalSuccess sets the "stats_total_success" field if the given value is not nil.
-func (fapc *FileAwardPointCreate) SetNillableStatsTotalSuccess(i *int16) *FileAwardPointCreate {
+func (fapc *FileAwardPointCreate) SetNillableStatsTotalSuccess(i *int32) *FileAwardPointCreate {
 	if i != nil {
 		fapc.SetStatsTotalSuccess(*i)
 	}
@@ -344,7 +344,7 @@ func (fapc *FileAwardPointCreate) createSpec() (*FileAwardPoint, *sqlgraph.Creat
 	}
 	if value, ok := fapc.mutation.StatsTotalRow(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalRow,
 		})
@@ -352,7 +352,7 @@ func (fapc *FileAwardPointCreate) createSpec() (*FileAwardPoint, *sqlgraph.Creat
 	}
 	if value, ok := fapc.mutation.StatsTotalSuccess(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalSuccess,
 		})

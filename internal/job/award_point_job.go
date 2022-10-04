@@ -27,18 +27,18 @@ func (a FileProcessingJob) grantPointForEachMemberInFileAwardPoint() bool {
 
 func (a FileProcessingJob) doSth() {
 	// Get Transaction
-	txns, err := a.memTxnService.GetByFileAwardPointId(context.Background(), 1)
+	txnArr, err := a.memTxnService.GetByFileAwardPointId(context.Background(), 1)
 	if err != nil {
 		return
 	}
 
 	// Check empty
-	if len(txns) == 0 {
+	if len(txnArr) == 0 {
 		logger.Infof("No Transaction for executing!")
 	}
 
 	// Execute each transaction
-	for _, txn := range txns {
-		logger.Infof("Processing Transaction ID = %v, data = %v", txn.Id, txn)
+	for _, txn := range txnArr {
+		logger.Infof("Processing Transaction ID = %v, data = %v", txn.ID, txn)
 	}
 }

@@ -45,7 +45,7 @@ func PrepareDatabase(ctx context.Context) *sql.DB {
 
 func mockFileAwardPoint(ctx context.Context, dbClient *ent.Client) {
 	logger.Infof("Mock File Award Point ...")
-	_, err := fileawardpoint.SaveAll(ctx, dbClient, fileAwardPoints)
+	_, err := fileawardpoint.SaveAll(ctx, dbClient, fileAwardPoints, false)
 	if err != nil {
 		logger.Errorf("Mock File Award Point ... Failed: %v", err)
 	}

@@ -27,9 +27,9 @@ type FileAwardPoint struct {
 	// Status holds the value of the "status" field.
 	Status int16 `json:"status,omitempty"`
 	// StatsTotalRow holds the value of the "stats_total_row" field.
-	StatsTotalRow int16 `json:"stats_total_row,omitempty"`
+	StatsTotalRow int32 `json:"stats_total_row,omitempty"`
 	// StatsTotalSuccess holds the value of the "stats_total_success" field.
-	StatsTotalSuccess int16 `json:"stats_total_success,omitempty"`
+	StatsTotalSuccess int32 `json:"stats_total_success,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -106,13 +106,13 @@ func (fap *FileAwardPoint) assignValues(columns []string, values []interface{}) 
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field stats_total_row", values[i])
 			} else if value.Valid {
-				fap.StatsTotalRow = int16(value.Int64)
+				fap.StatsTotalRow = int32(value.Int64)
 			}
 		case fileawardpoint.FieldStatsTotalSuccess:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field stats_total_success", values[i])
 			} else if value.Valid {
-				fap.StatsTotalSuccess = int16(value.Int64)
+				fap.StatsTotalSuccess = int32(value.Int64)
 			}
 		case fileawardpoint.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {

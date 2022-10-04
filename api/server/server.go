@@ -39,7 +39,7 @@ func NewServer(cfg config.Config, opts ...Option) (*Server, error) {
 			logger.Errorf("Fail to open db, got: %v", err)
 			return nil, fmt.Errorf("failed open DB: %w", err)
 		}
-		logger.Info("Connected to db")
+		logger.Infof("Connected to db %v", cfg.Database.MySQL.DBName)
 		srv.db = db
 	}
 

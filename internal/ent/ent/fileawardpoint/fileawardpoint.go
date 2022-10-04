@@ -73,9 +73,9 @@ var (
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus int16
 	// DefaultStatsTotalRow holds the default value on creation for the "stats_total_row" field.
-	DefaultStatsTotalRow int16
+	DefaultStatsTotalRow int32
 	// DefaultStatsTotalSuccess holds the default value on creation for the "stats_total_success" field.
-	DefaultStatsTotalSuccess int16
+	DefaultStatsTotalSuccess int32
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

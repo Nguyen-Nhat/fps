@@ -36,11 +36,11 @@ func init() {
 	// fileawardpointDescStatsTotalRow is the schema descriptor for stats_total_row field.
 	fileawardpointDescStatsTotalRow := fileawardpointFields[5].Descriptor()
 	// fileawardpoint.DefaultStatsTotalRow holds the default value on creation for the stats_total_row field.
-	fileawardpoint.DefaultStatsTotalRow = fileawardpointDescStatsTotalRow.Default.(int16)
+	fileawardpoint.DefaultStatsTotalRow = fileawardpointDescStatsTotalRow.Default.(int32)
 	// fileawardpointDescStatsTotalSuccess is the schema descriptor for stats_total_success field.
 	fileawardpointDescStatsTotalSuccess := fileawardpointFields[6].Descriptor()
 	// fileawardpoint.DefaultStatsTotalSuccess holds the default value on creation for the stats_total_success field.
-	fileawardpoint.DefaultStatsTotalSuccess = fileawardpointDescStatsTotalSuccess.Default.(int16)
+	fileawardpoint.DefaultStatsTotalSuccess = fileawardpointDescStatsTotalSuccess.Default.(int32)
 	// fileawardpointDescCreatedAt is the schema descriptor for created_at field.
 	fileawardpointDescCreatedAt := fileawardpointFields[7].Descriptor()
 	// fileawardpoint.DefaultCreatedAt holds the default value on creation for the created_at field.

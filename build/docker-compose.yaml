@@ -9,10 +9,10 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: Teko12345
-      MYSQL_DATABASE: idp
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: loyalty_file_processing
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1
 
 
 volumes:

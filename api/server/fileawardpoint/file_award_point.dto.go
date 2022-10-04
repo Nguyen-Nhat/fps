@@ -31,13 +31,13 @@ func (a *GetFileAwardPointDetailRequest) Bind(_ *http.Request) error {
 // Render is called in top-down order, like a http handler middleware chain.
 type GetFileAwardPointDetailResponse struct {
 	Id                int       `json:"id"`
-	MerchantId        int       `json:"merchant_id"`
+	MerchantId        int64     `json:"merchant_id"`
 	DisplayName       string    `json:"display_name"`
 	FileUrl           string    `json:"file_url"`
 	ResultFileUrl     string    `json:"result_file_url"`
-	Status            int       `json:"status"`
-	StatsTotalRow     int       `json:"stats_total_row"`
-	StatsTotalSuccess int       `json:"stats_total_success"`
+	Status            int16     `json:"status"`
+	StatsTotalRow     int32     `json:"stats_total_row"`
+	StatsTotalSuccess int32     `json:"stats_total_success"`
 	CreatedAt         time.Time `json:"created_at"`
 	CreatedBy         string    `json:"created_by"`
 }

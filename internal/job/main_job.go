@@ -25,7 +25,7 @@ func InitJob(cfg config.Config) {
 		logger.Errorf("Fail to open db, got: %v", err)
 		return
 	}
-	logger.Info("Connected to db")
+	logger.Infof("Connected to db %v", cfg.Database.MySQL.DBName)
 
 	// file award point
 	fapRepo := fileawardpoint.NewRepo(db)

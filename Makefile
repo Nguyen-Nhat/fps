@@ -13,7 +13,8 @@ jira-test:
 	rm -f testrun.*
 	REPORTED_ISSUE_LINKS=${REPORTED_ISSUE_LINKS} JIRA_PWD=${PWD} \
 		go test -count=1 -p 1 -covermode=count -coverprofile loyalty-file-processing-coverage.cov -tags integration \
-		./... && (cat testrun.tmp.json | jq -s "." > testrun.json)
+		./...
+
 jira-test-push:
 	 /bin/zsh ./push-testcase.sh
 

@@ -1,5 +1,0 @@
-export IDP_MYSQL_HOST=127.0.0.1
-export IDP_MYSQL_PORT=3306
-export IDP_MYSQL_USERNAME=user
-export IDP_MYSQL_PASSWORD=password
-export IDP_MYSQL_DATABASE=idp

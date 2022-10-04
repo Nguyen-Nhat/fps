@@ -44,10 +44,10 @@ type FileAwardPointMutation struct {
 	result_file_url        *string
 	status                 *int16
 	addstatus              *int16
-	stats_total_row        *int16
-	addstats_total_row     *int16
-	stats_total_success    *int16
-	addstats_total_success *int16
+	stats_total_row        *int32
+	addstats_total_row     *int32
+	stats_total_success    *int32
+	addstats_total_success *int32
 	created_at             *time.Time
 	updated_at             *time.Time
 	created_by             *string
@@ -377,13 +377,13 @@ func (m *FileAwardPointMutation) ResetStatus() {
 }
 
 // SetStatsTotalRow sets the "stats_total_row" field.
-func (m *FileAwardPointMutation) SetStatsTotalRow(i int16) {
+func (m *FileAwardPointMutation) SetStatsTotalRow(i int32) {
 	m.stats_total_row = &i
 	m.addstats_total_row = nil
 }
 
 // StatsTotalRow returns the value of the "stats_total_row" field in the mutation.
-func (m *FileAwardPointMutation) StatsTotalRow() (r int16, exists bool) {
+func (m *FileAwardPointMutation) StatsTotalRow() (r int32, exists bool) {
 	v := m.stats_total_row
 	if v == nil {
 		return
@@ -394,7 +394,7 @@ func (m *FileAwardPointMutation) StatsTotalRow() (r int16, exists bool) {
 // OldStatsTotalRow returns the old "stats_total_row" field's value of the FileAwardPoint entity.
 // If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FileAwardPointMutation) OldStatsTotalRow(ctx context.Context) (v int16, err error) {
+func (m *FileAwardPointMutation) OldStatsTotalRow(ctx context.Context) (v int32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStatsTotalRow is only allowed on UpdateOne operations")
 	}
@@ -409,7 +409,7 @@ func (m *FileAwardPointMutation) OldStatsTotalRow(ctx context.Context) (v int16,
 }
 
 // AddStatsTotalRow adds i to the "stats_total_row" field.
-func (m *FileAwardPointMutation) AddStatsTotalRow(i int16) {
+func (m *FileAwardPointMutation) AddStatsTotalRow(i int32) {
 	if m.addstats_total_row != nil {
 		*m.addstats_total_row += i
 	} else {
@@ -418,7 +418,7 @@ func (m *FileAwardPointMutation) AddStatsTotalRow(i int16) {
 }
 
 // AddedStatsTotalRow returns the value that was added to the "stats_total_row" field in this mutation.
-func (m *FileAwardPointMutation) AddedStatsTotalRow() (r int16, exists bool) {
+func (m *FileAwardPointMutation) AddedStatsTotalRow() (r int32, exists bool) {
 	v := m.addstats_total_row
 	if v == nil {
 		return
@@ -433,13 +433,13 @@ func (m *FileAwardPointMutation) ResetStatsTotalRow() {
 }
 
 // SetStatsTotalSuccess sets the "stats_total_success" field.
-func (m *FileAwardPointMutation) SetStatsTotalSuccess(i int16) {
+func (m *FileAwardPointMutation) SetStatsTotalSuccess(i int32) {
 	m.stats_total_success = &i
 	m.addstats_total_success = nil
 }
 
 // StatsTotalSuccess returns the value of the "stats_total_success" field in the mutation.
-func (m *FileAwardPointMutation) StatsTotalSuccess() (r int16, exists bool) {
+func (m *FileAwardPointMutation) StatsTotalSuccess() (r int32, exists bool) {
 	v := m.stats_total_success
 	if v == nil {
 		return
@@ -450,7 +450,7 @@ func (m *FileAwardPointMutation) StatsTotalSuccess() (r int16, exists bool) {
 // OldStatsTotalSuccess returns the old "stats_total_success" field's value of the FileAwardPoint entity.
 // If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FileAwardPointMutation) OldStatsTotalSuccess(ctx context.Context) (v int16, err error) {
+func (m *FileAwardPointMutation) OldStatsTotalSuccess(ctx context.Context) (v int32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStatsTotalSuccess is only allowed on UpdateOne operations")
 	}
@@ -465,7 +465,7 @@ func (m *FileAwardPointMutation) OldStatsTotalSuccess(ctx context.Context) (v in
 }
 
 // AddStatsTotalSuccess adds i to the "stats_total_success" field.
-func (m *FileAwardPointMutation) AddStatsTotalSuccess(i int16) {
+func (m *FileAwardPointMutation) AddStatsTotalSuccess(i int32) {
 	if m.addstats_total_success != nil {
 		*m.addstats_total_success += i
 	} else {
@@ -474,7 +474,7 @@ func (m *FileAwardPointMutation) AddStatsTotalSuccess(i int16) {
 }
 
 // AddedStatsTotalSuccess returns the value that was added to the "stats_total_success" field in this mutation.
-func (m *FileAwardPointMutation) AddedStatsTotalSuccess() (r int16, exists bool) {
+func (m *FileAwardPointMutation) AddedStatsTotalSuccess() (r int32, exists bool) {
 	v := m.addstats_total_success
 	if v == nil {
 		return
@@ -791,14 +791,14 @@ func (m *FileAwardPointMutation) SetField(name string, value ent.Value) error {
 		m.SetStatus(v)
 		return nil
 	case fileawardpoint.FieldStatsTotalRow:
-		v, ok := value.(int16)
+		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatsTotalRow(v)
 		return nil
 	case fileawardpoint.FieldStatsTotalSuccess:
-		v, ok := value.(int16)
+		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -892,14 +892,14 @@ func (m *FileAwardPointMutation) AddField(name string, value ent.Value) error {
 		m.AddStatus(v)
 		return nil
 	case fileawardpoint.FieldStatsTotalRow:
-		v, ok := value.(int16)
+		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddStatsTotalRow(v)
 		return nil
 	case fileawardpoint.FieldStatsTotalSuccess:
-		v, ok := value.(int16)
+		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

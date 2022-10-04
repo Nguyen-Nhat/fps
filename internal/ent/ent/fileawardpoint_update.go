@@ -81,14 +81,14 @@ func (fapu *FileAwardPointUpdate) AddStatus(i int16) *FileAwardPointUpdate {
 }
 
 // SetStatsTotalRow sets the "stats_total_row" field.
-func (fapu *FileAwardPointUpdate) SetStatsTotalRow(i int16) *FileAwardPointUpdate {
+func (fapu *FileAwardPointUpdate) SetStatsTotalRow(i int32) *FileAwardPointUpdate {
 	fapu.mutation.ResetStatsTotalRow()
 	fapu.mutation.SetStatsTotalRow(i)
 	return fapu
 }
 
 // SetNillableStatsTotalRow sets the "stats_total_row" field if the given value is not nil.
-func (fapu *FileAwardPointUpdate) SetNillableStatsTotalRow(i *int16) *FileAwardPointUpdate {
+func (fapu *FileAwardPointUpdate) SetNillableStatsTotalRow(i *int32) *FileAwardPointUpdate {
 	if i != nil {
 		fapu.SetStatsTotalRow(*i)
 	}
@@ -96,20 +96,20 @@ func (fapu *FileAwardPointUpdate) SetNillableStatsTotalRow(i *int16) *FileAwardP
 }
 
 // AddStatsTotalRow adds i to the "stats_total_row" field.
-func (fapu *FileAwardPointUpdate) AddStatsTotalRow(i int16) *FileAwardPointUpdate {
+func (fapu *FileAwardPointUpdate) AddStatsTotalRow(i int32) *FileAwardPointUpdate {
 	fapu.mutation.AddStatsTotalRow(i)
 	return fapu
 }
 
 // SetStatsTotalSuccess sets the "stats_total_success" field.
-func (fapu *FileAwardPointUpdate) SetStatsTotalSuccess(i int16) *FileAwardPointUpdate {
+func (fapu *FileAwardPointUpdate) SetStatsTotalSuccess(i int32) *FileAwardPointUpdate {
 	fapu.mutation.ResetStatsTotalSuccess()
 	fapu.mutation.SetStatsTotalSuccess(i)
 	return fapu
 }
 
 // SetNillableStatsTotalSuccess sets the "stats_total_success" field if the given value is not nil.
-func (fapu *FileAwardPointUpdate) SetNillableStatsTotalSuccess(i *int16) *FileAwardPointUpdate {
+func (fapu *FileAwardPointUpdate) SetNillableStatsTotalSuccess(i *int32) *FileAwardPointUpdate {
 	if i != nil {
 		fapu.SetStatsTotalSuccess(*i)
 	}
@@ -117,7 +117,7 @@ func (fapu *FileAwardPointUpdate) SetNillableStatsTotalSuccess(i *int16) *FileAw
 }
 
 // AddStatsTotalSuccess adds i to the "stats_total_success" field.
-func (fapu *FileAwardPointUpdate) AddStatsTotalSuccess(i int16) *FileAwardPointUpdate {
+func (fapu *FileAwardPointUpdate) AddStatsTotalSuccess(i int32) *FileAwardPointUpdate {
 	fapu.mutation.AddStatsTotalSuccess(i)
 	return fapu
 }
@@ -316,28 +316,28 @@ func (fapu *FileAwardPointUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if value, ok := fapu.mutation.StatsTotalRow(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalRow,
 		})
 	}
 	if value, ok := fapu.mutation.AddedStatsTotalRow(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalRow,
 		})
 	}
 	if value, ok := fapu.mutation.StatsTotalSuccess(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalSuccess,
 		})
 	}
 	if value, ok := fapu.mutation.AddedStatsTotalSuccess(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalSuccess,
 		})
@@ -442,14 +442,14 @@ func (fapuo *FileAwardPointUpdateOne) AddStatus(i int16) *FileAwardPointUpdateOn
 }
 
 // SetStatsTotalRow sets the "stats_total_row" field.
-func (fapuo *FileAwardPointUpdateOne) SetStatsTotalRow(i int16) *FileAwardPointUpdateOne {
+func (fapuo *FileAwardPointUpdateOne) SetStatsTotalRow(i int32) *FileAwardPointUpdateOne {
 	fapuo.mutation.ResetStatsTotalRow()
 	fapuo.mutation.SetStatsTotalRow(i)
 	return fapuo
 }
 
 // SetNillableStatsTotalRow sets the "stats_total_row" field if the given value is not nil.
-func (fapuo *FileAwardPointUpdateOne) SetNillableStatsTotalRow(i *int16) *FileAwardPointUpdateOne {
+func (fapuo *FileAwardPointUpdateOne) SetNillableStatsTotalRow(i *int32) *FileAwardPointUpdateOne {
 	if i != nil {
 		fapuo.SetStatsTotalRow(*i)
 	}
@@ -457,20 +457,20 @@ func (fapuo *FileAwardPointUpdateOne) SetNillableStatsTotalRow(i *int16) *FileAw
 }
 
 // AddStatsTotalRow adds i to the "stats_total_row" field.
-func (fapuo *FileAwardPointUpdateOne) AddStatsTotalRow(i int16) *FileAwardPointUpdateOne {
+func (fapuo *FileAwardPointUpdateOne) AddStatsTotalRow(i int32) *FileAwardPointUpdateOne {
 	fapuo.mutation.AddStatsTotalRow(i)
 	return fapuo
 }
 
 // SetStatsTotalSuccess sets the "stats_total_success" field.
-func (fapuo *FileAwardPointUpdateOne) SetStatsTotalSuccess(i int16) *FileAwardPointUpdateOne {
+func (fapuo *FileAwardPointUpdateOne) SetStatsTotalSuccess(i int32) *FileAwardPointUpdateOne {
 	fapuo.mutation.ResetStatsTotalSuccess()
 	fapuo.mutation.SetStatsTotalSuccess(i)
 	return fapuo
 }
 
 // SetNillableStatsTotalSuccess sets the "stats_total_success" field if the given value is not nil.
-func (fapuo *FileAwardPointUpdateOne) SetNillableStatsTotalSuccess(i *int16) *FileAwardPointUpdateOne {
+func (fapuo *FileAwardPointUpdateOne) SetNillableStatsTotalSuccess(i *int32) *FileAwardPointUpdateOne {
 	if i != nil {
 		fapuo.SetStatsTotalSuccess(*i)
 	}
@@ -478,7 +478,7 @@ func (fapuo *FileAwardPointUpdateOne) SetNillableStatsTotalSuccess(i *int16) *Fi
 }
 
 // AddStatsTotalSuccess adds i to the "stats_total_success" field.
-func (fapuo *FileAwardPointUpdateOne) AddStatsTotalSuccess(i int16) *FileAwardPointUpdateOne {
+func (fapuo *FileAwardPointUpdateOne) AddStatsTotalSuccess(i int32) *FileAwardPointUpdateOne {
 	fapuo.mutation.AddStatsTotalSuccess(i)
 	return fapuo
 }
@@ -707,28 +707,28 @@ func (fapuo *FileAwardPointUpdateOne) sqlSave(ctx context.Context) (_node *FileA
 	}
 	if value, ok := fapuo.mutation.StatsTotalRow(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalRow,
 		})
 	}
 	if value, ok := fapuo.mutation.AddedStatsTotalRow(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalRow,
 		})
 	}
 	if value, ok := fapuo.mutation.StatsTotalSuccess(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalSuccess,
 		})
 	}
 	if value, ok := fapuo.mutation.AddedStatsTotalSuccess(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: fileawardpoint.FieldStatsTotalSuccess,
 		})

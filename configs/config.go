@@ -82,13 +82,18 @@ func Load(paths ...string) Config {
 		panic(err)
 	}
 
+	checkRunProfile(&cfg)
+
+	return cfg
+}
+
+func checkRunProfile(cfg *Config) {
 	runProfile := os.Getenv(EnvKeyRunProfile)
 	fmt.Println("\n===== Running in Profile =", runProfile)
 	if strings.ToUpper(runProfile) == ProfileTest {
 		testingDBName := cfg.Database.MySQL.DBName + "_test" // add suffix `_test`
 		cfg.Database.MySQL.DBName = testingDBName
-		fmt.Printf("===== ---> When running in TEST profile, DB Name is changed to %v\n\n", testingDBName)
+		fmt.Println("===== ---> When running in TEST profile, DB is switched to", testingDBName)
 	}
-
-	return cfg
+	fmt.Println() // only new line
 }

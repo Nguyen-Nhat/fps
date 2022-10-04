@@ -1,21 +1,12 @@
 package fileawardpoint
 
-import "time"
+import (
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
+)
 
 // FileAwardPoint is model of table `file_award_point`
 type FileAwardPoint struct {
-	Id                int       `json:"id"`
-	MerchantId        int64     `json:"merchant_id"`
-	DisplayName       string    `json:"display_name"`
-	FileUrl           string    `json:"file_url"`
-	ResultFileUrl     string    `json:"result_file_url"`
-	Status            int16     `json:"status"`
-	StatsTotalRow     int16     `json:"stats_total_row"`
-	StatsTotalSuccess int16     `json:"stats_total_success"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
-	CreatedBy         string    `json:"created_by"`
-	UpdatedBy         string    `json:"updated_by"`
+	ent.FileAwardPoint
 }
 
 // Status ENUM ...
