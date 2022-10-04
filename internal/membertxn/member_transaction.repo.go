@@ -40,10 +40,6 @@ func (r RepoImpl) FindByFileAwardPointId(ctx context.Context, fileAwardPointId i
 	}
 
 	var res []MemberTransaction
-	//if err := mapstructure.Decode(txns, res); err != nil {
-	//	return nil, fmt.Errorf("failed decode member transaction list from DB")
-	//}
-
 	for _, txn := range txns {
 		model := &MemberTransaction{}
 		if err := mapstructure.Decode(txn, model); err != nil {

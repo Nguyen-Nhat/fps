@@ -2,6 +2,8 @@ package fileawardpoint
 
 import (
 	"context"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 type (
@@ -25,5 +27,7 @@ func NewService(repo Repo) *ServiceImpl {
 // Implementation function ---------------------------------------------------------------------------------------------
 
 func (s *ServiceImpl) GetFileAwardPoint(ctx context.Context, req *GetFileAwardPointDetailDTO) (*FileAwardPoint, error) {
+	user := middleware.GetUserFromContext(ctx)
+	logger.Infof("GetFileAwardPoint by %v", user.Email)
 	return s.repo.FindById(ctx, req.Id)
 }
