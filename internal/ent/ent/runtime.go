@@ -3,6 +3,10 @@
 package ent
 
 import (
+	"time"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/membertransaction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/schema"
 )
@@ -11,6 +15,116 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	fileawardpointFields := schema.FileAwardPoint{}.Fields()
+	_ = fileawardpointFields
+	// fileawardpointDescDisplayName is the schema descriptor for display_name field.
+	fileawardpointDescDisplayName := fileawardpointFields[1].Descriptor()
+	// fileawardpoint.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
+	fileawardpoint.DisplayNameValidator = fileawardpointDescDisplayName.Validators[0].(func(string) error)
+	// fileawardpointDescFileURL is the schema descriptor for file_url field.
+	fileawardpointDescFileURL := fileawardpointFields[2].Descriptor()
+	// fileawardpoint.FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
+	fileawardpoint.FileURLValidator = fileawardpointDescFileURL.Validators[0].(func(string) error)
+	// fileawardpointDescResultFileURL is the schema descriptor for result_file_url field.
+	fileawardpointDescResultFileURL := fileawardpointFields[3].Descriptor()
+	// fileawardpoint.ResultFileURLValidator is a validator for the "result_file_url" field. It is called by the builders before save.
+	fileawardpoint.ResultFileURLValidator = fileawardpointDescResultFileURL.Validators[0].(func(string) error)
+	// fileawardpointDescStatus is the schema descriptor for status field.
+	fileawardpointDescStatus := fileawardpointFields[4].Descriptor()
+	// fileawardpoint.DefaultStatus holds the default value on creation for the status field.
+	fileawardpoint.DefaultStatus = fileawardpointDescStatus.Default.(int16)
+	// fileawardpointDescStatsTotalRow is the schema descriptor for stats_total_row field.
+	fileawardpointDescStatsTotalRow := fileawardpointFields[5].Descriptor()
+	// fileawardpoint.DefaultStatsTotalRow holds the default value on creation for the stats_total_row field.
+	fileawardpoint.DefaultStatsTotalRow = fileawardpointDescStatsTotalRow.Default.(int16)
+	// fileawardpointDescStatsTotalSuccess is the schema descriptor for stats_total_success field.
+	fileawardpointDescStatsTotalSuccess := fileawardpointFields[6].Descriptor()
+	// fileawardpoint.DefaultStatsTotalSuccess holds the default value on creation for the stats_total_success field.
+	fileawardpoint.DefaultStatsTotalSuccess = fileawardpointDescStatsTotalSuccess.Default.(int16)
+	// fileawardpointDescCreatedAt is the schema descriptor for created_at field.
+	fileawardpointDescCreatedAt := fileawardpointFields[7].Descriptor()
+	// fileawardpoint.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fileawardpoint.DefaultCreatedAt = fileawardpointDescCreatedAt.Default.(time.Time)
+	// fileawardpointDescUpdatedAt is the schema descriptor for updated_at field.
+	fileawardpointDescUpdatedAt := fileawardpointFields[8].Descriptor()
+	// fileawardpoint.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fileawardpoint.DefaultUpdatedAt = fileawardpointDescUpdatedAt.Default.(time.Time)
+	membertransactionFields := schema.MemberTransaction{}.Fields()
+	_ = membertransactionFields
+	// membertransactionDescPhone is the schema descriptor for phone field.
+	membertransactionDescPhone := membertransactionFields[2].Descriptor()
+	// membertransaction.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	membertransaction.PhoneValidator = func() func(string) error {
+		validators := membertransactionDescPhone.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(phone string) error {
+			for _, fn := range fns {
+				if err := fn(phone); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// membertransactionDescOrderCode is the schema descriptor for order_code field.
+	membertransactionDescOrderCode := membertransactionFields[3].Descriptor()
+	// membertransaction.OrderCodeValidator is a validator for the "order_code" field. It is called by the builders before save.
+	membertransaction.OrderCodeValidator = func() func(string) error {
+		validators := membertransactionDescOrderCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(order_code string) error {
+			for _, fn := range fns {
+				if err := fn(order_code); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// membertransactionDescRefID is the schema descriptor for ref_id field.
+	membertransactionDescRefID := membertransactionFields[4].Descriptor()
+	// membertransaction.RefIDValidator is a validator for the "ref_id" field. It is called by the builders before save.
+	membertransaction.RefIDValidator = func() func(string) error {
+		validators := membertransactionDescRefID.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(ref_id string) error {
+			for _, fn := range fns {
+				if err := fn(ref_id); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// membertransactionDescSentTime is the schema descriptor for sent_time field.
+	membertransactionDescSentTime := membertransactionFields[5].Descriptor()
+	// membertransaction.DefaultSentTime holds the default value on creation for the sent_time field.
+	membertransaction.DefaultSentTime = membertransactionDescSentTime.Default.(time.Time)
+	// membertransactionDescTxnDesc is the schema descriptor for txn_desc field.
+	membertransactionDescTxnDesc := membertransactionFields[6].Descriptor()
+	// membertransaction.TxnDescValidator is a validator for the "txn_desc" field. It is called by the builders before save.
+	membertransaction.TxnDescValidator = membertransactionDescTxnDesc.Validators[0].(func(string) error)
+	// membertransactionDescStatus is the schema descriptor for status field.
+	membertransactionDescStatus := membertransactionFields[7].Descriptor()
+	// membertransaction.DefaultStatus holds the default value on creation for the status field.
+	membertransaction.DefaultStatus = membertransactionDescStatus.Default.(int16)
+	// membertransactionDescCreatedAt is the schema descriptor for created_at field.
+	membertransactionDescCreatedAt := membertransactionFields[8].Descriptor()
+	// membertransaction.DefaultCreatedAt holds the default value on creation for the created_at field.
+	membertransaction.DefaultCreatedAt = membertransactionDescCreatedAt.Default.(time.Time)
+	// membertransactionDescUpdatedAt is the schema descriptor for updated_at field.
+	membertransactionDescUpdatedAt := membertransactionFields[9].Descriptor()
+	// membertransaction.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	membertransaction.DefaultUpdatedAt = membertransactionDescUpdatedAt.Default.(time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

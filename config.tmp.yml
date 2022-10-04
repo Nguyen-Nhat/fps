@@ -10,8 +10,13 @@ database:
     port: 3306
     username: loyalty_file_process_service
     password: 1
+    options: parseTime=true
 
 logger:
   console: true
   format_json: false
   level: debug
+
+job:
+  award_point:
+    schedule: '0/5 * * * *' # every 5 minutes at first minute

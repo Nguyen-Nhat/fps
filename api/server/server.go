@@ -3,11 +3,12 @@ package server
 import (
 	"database/sql"
 	"fmt"
-	"net/http"
-
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"github.com/go-chi/chi/v5/middleware"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
@@ -54,13 +55,20 @@ func (s *Server) initRoutes() {
 	s.Router.Mount("/healthz", healthzRouter)
 
 	// 2. User API
-	userServer := InitUserServer(s.db)
+	userServer := user.InitUserServer(s.db)
 	userRouter := chi.NewRouter()
-	userRouter.Use(middleware.Logger, apiKeyMiddleware)
+	userRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
 	userRouter.Post("/", userServer.CreateUserAPI())
 	s.Router.Mount("/lfp/users", userRouter)
 
-	// 3. Other APIs
+	// 3. File Award Point API
+	fapServer := fileawardpoint.InitFileAwardPointServer(s.db)
+	fapRouter := chi.NewRouter()
+	fapRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
+	fapRouter.Post("/getListOrDetail", fapServer.GetDetailAPI())
+	s.Router.Mount("/lfp/fileAwardPoint", fapRouter)
+
+	// 4. Other APIs
 	// ...
 }
 
@@ -75,15 +83,3 @@ func WithDB(db *sql.DB) Option {
 		s.db = db
 	}
 }
-
-// apiKeyMiddleware ...
-func apiKeyMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		apiKey := r.Header.Get("X-API-KEY")
-		fmt.Printf("API KEY = %v\n", apiKey)
-		next.ServeHTTP(w, r)
-	})
-}
-
-// todo middleware for get Author
-// ...

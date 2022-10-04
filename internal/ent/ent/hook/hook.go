@@ -9,6 +9,32 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 )
 
+// The FileAwardPointFunc type is an adapter to allow the use of ordinary
+// function as FileAwardPoint mutator.
+type FileAwardPointFunc func(context.Context, *ent.FileAwardPointMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FileAwardPointFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.FileAwardPointMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FileAwardPointMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The MemberTransactionFunc type is an adapter to allow the use of ordinary
+// function as MemberTransaction mutator.
+type MemberTransactionFunc func(context.Context, *ent.MemberTransactionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MemberTransactionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.MemberTransactionMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MemberTransactionMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)

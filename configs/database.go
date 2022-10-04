@@ -14,7 +14,7 @@ type MySqlDBConfig struct {
 	Port     string `mapstructure:"port"`
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
-	Options  string `mapstructure:"pptions"`
+	Options  string `mapstructure:"options"`
 }
 
 func (c *MySqlDBConfig) DatabaseURI() string {

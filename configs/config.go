@@ -24,24 +24,30 @@ func (s ServerListen) ListenString() string {
 
 // ServerConfig for configure HTTP & gRPC host & port
 type ServerConfig struct {
-	HTTP ServerListen `mapstructure:"http"`
-	GRPC ServerListen `mapstructure:"grpc"`
+	HTTP   ServerListen `mapstructure:"http"`
+	GRPC   ServerListen `mapstructure:"grpc"`
+	ApiKey string       `mapstructure:"api_key"`
 }
 
 // Config for app configuration
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Logger   LoggerConfig   `mapstructure:"logger"`
+	Server    ServerConfig   `mapstructure:"server"`
+	Database  DatabaseConfig `mapstructure:"database"`
+	Logger    LoggerConfig   `mapstructure:"logger"`
+	JobConfig JobConfig      `mapstructure:"job"`
 }
 
 // Load config from config.yml
-func Load() Config {
+func Load(paths ...string) Config {
 	vip := viper.New()
 
 	vip.SetConfigName("config")
 	vip.SetConfigType("yml")
-	vip.AddConfigPath(".")
+	if len(paths) == 0 {
+		vip.AddConfigPath(".") // ROOT
+	} else {
+		vip.AddConfigPath(paths[0])
+	}
 
 	vip.SetEnvPrefix("docker")
 	vip.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))

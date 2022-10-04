@@ -20,3 +20,5 @@ jira-test-push:
 coverage:
 	go tool cover -func loyalty-file-processing-coverage.cov | grep ^total
 
+migrate:
+	go run cmd/migrate/main.go start

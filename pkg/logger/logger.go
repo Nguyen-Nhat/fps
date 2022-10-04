@@ -3,7 +3,7 @@ package logger
 import (
 	"sync"
 
-	"git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"go.uber.org/zap"
 )
 
@@ -129,4 +129,8 @@ func WithFields(keyValues Fields) Logger {
 
 func GetDelegate() interface{} {
 	return log.GetDelegate()
+}
+
+func GetLogger() Logger {
+	return log
 }

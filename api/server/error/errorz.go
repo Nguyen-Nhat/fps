@@ -1,4 +1,4 @@
-package server
+package error
 
 import (
 	"net/http"
@@ -44,5 +44,14 @@ func ErrRender(err error) render.Renderer {
 		HTTPStatusCode: 422,
 		StatusText:     "Error rendering response.",
 		ErrorText:      err.Error(),
+	}
+}
+
+func ErrNoPermissionRequest(msg string) render.Renderer {
+	return &ErrResponse{
+		Err:            nil,
+		HTTPStatusCode: 403,
+		StatusText:     "No Permission To Access",
+		ErrorText:      msg,
 	}
 }
