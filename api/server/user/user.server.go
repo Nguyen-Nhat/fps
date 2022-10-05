@@ -3,7 +3,8 @@ package user
 import (
 	"context"
 	"database/sql"
-	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/error"
+	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
+	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/user"
 	"net/http"
 
@@ -64,7 +65,7 @@ func (s *UserServer) CreateUserAPI() func(w http.ResponseWriter, r *http.Request
 }
 
 // CreateUser ...
-func (s *UserServer) CreateUser(ctx context.Context, data *CreateUserRequest) (*CreateUserResponse, error) {
+func (s *UserServer) CreateUser(ctx context.Context, data *CreateUserRequest) (*res.BaseResponse[CreateUserResponse], error) {
 	// 2. Map request to internal DTO
 	req := &user.CreateUserRequestDTO{
 		Name: data.Name,
@@ -77,6 +78,7 @@ func (s *UserServer) CreateUser(ctx context.Context, data *CreateUserRequest) (*
 	}
 
 	// 4. Map result to response
-	res := toUserResponseByUserEntity(u)
-	return res, nil
+	resp := toUserResponseByUserEntity(u)
+	resp2 := res.ToResponse(resp)
+	return resp2, nil
 }

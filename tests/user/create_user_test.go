@@ -6,6 +6,8 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/tests/common"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc/codes"
 	"testing"
 )
 
@@ -44,9 +46,6 @@ func TestReturnGrantPoint_All_Success(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error create user: %v", err)
 	}
-	if req.Name == userRes.Name {
-		t.Logf("Create success with name = %v", userRes.Name)
-	} else {
-		t.Errorf("Create failed with name = %v <> %v", req.Name, userRes.Name)
-	}
+	assert.Equal(t, codes.OK, userRes.Error)
+	assert.Equal(t, req.Name, userRes.Data.Name)
 }

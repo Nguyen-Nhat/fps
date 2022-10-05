@@ -12,6 +12,7 @@ require (
 	github.com/urfave/cli/v2 v2.16.3
 	github.com/xo/dburl v0.12.4
 	go.uber.org/zap v1.23.0
+	google.golang.org/grpc v1.42.0
 )
 
 require (

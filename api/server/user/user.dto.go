@@ -26,6 +26,8 @@ func (a *CreateUserRequest) Bind(_ *http.Request) error {
 	return nil
 }
 
+// Response DTO ========================================================================================================
+
 // CreateUserResponse is the response payload for the User data model.
 //
 // In the userResponse object, first a Render() is called on itself,

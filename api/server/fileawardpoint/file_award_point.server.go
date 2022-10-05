@@ -4,7 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/error"
+	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
+	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"github.com/go-chi/render"
 	"net/http"
@@ -17,7 +18,7 @@ type (
 		// GetDetailAPI is used for defining Router
 		GetDetailAPI() func(http.ResponseWriter, *http.Request)
 		// GetDetail is called in GetDetailAPI() and it handles logic of API
-		GetDetail(context.Context, *GetFileAwardPointDetailRequest) (*GetFileAwardPointDetailResponse, error)
+		GetDetail(context.Context, *GetFileAwardPointDetailRequest) (*res.BaseResponse[GetFileAwardPointDetailResponse], error)
 
 		// APIs for <DO STH> User --------------------------------------------------------------------------------------
 
@@ -54,7 +55,7 @@ func (s Server) GetDetailAPI() func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func (s Server) GetDetail(ctx context.Context, request *GetFileAwardPointDetailRequest) (*GetFileAwardPointDetailResponse, error) {
+func (s Server) GetDetail(ctx context.Context, request *GetFileAwardPointDetailRequest) (*res.BaseResponse[GetFileAwardPointDetailResponse], error) {
 	// 1. Map the request to internal DTO if input for Service too complex
 	req := &fileawardpoint.GetFileAwardPointDetailDTO{
 		Id: request.Id,
@@ -67,8 +68,9 @@ func (s Server) GetDetail(ctx context.Context, request *GetFileAwardPointDetailR
 	}
 
 	// 4. Map result to response
-	res := toFapDetailResponseByEntity(fap)
-	return res, nil
+	resp := toFapDetailResponseByEntity(fap)
+	resp2 := res.ToResponse(resp)
+	return resp2, nil
 }
 
 var _ IServer = &Server{}

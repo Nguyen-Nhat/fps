@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/error"
+	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"github.com/go-chi/render"
 	"net/http"
