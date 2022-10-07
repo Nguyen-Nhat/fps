@@ -2,6 +2,7 @@ package fileawardpoint
 
 import (
 	"errors"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"net/http"
 	"time"
 )
@@ -45,4 +46,22 @@ type GetFileAwardPointDetailResponse struct {
 func (ur *GetFileAwardPointDetailResponse) Render(_ http.ResponseWriter, _ *http.Request) error {
 	// Pre-processing before a response is marshalled and sent across the wire
 	return nil
+}
+
+type GetListFileAwardPointData struct {
+	FileAwardPoints []FileAwardPoint    `json:"fileAwardPoints"`
+	Pagination      response.Pagination `json:"pagination"`
+}
+
+type FileAwardPoint struct {
+	MerchantId        int64     `json:"merchantId"`
+	FileAwardPointId  int       `json:"fileAwardPointId"`
+	FileDisplayName   string    `json:"fileDisplayName"`
+	FileUrl           string    `json:"fileUrl"`
+	ResultFileUrl     string    `json:"resultFileUrl"`
+	Status            int16     `json:"status"`
+	StatsTotalRow     int32     `json:"statsTotalRow"`
+	StatsTotalSuccess int32     `json:"statsTotalSuccess"`
+	CreatedAt         time.Time `json:"createdAt"`
+	CreatedBy         string    `json:"createdBy"`
 }

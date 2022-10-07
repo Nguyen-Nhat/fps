@@ -66,6 +66,7 @@ func (s *Server) initRoutes() {
 	fapRouter := chi.NewRouter()
 	fapRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
 	fapRouter.Post("/getListOrDetail", fapServer.GetDetailAPI())
+	fapRouter.Get("/getList", fapServer.GetListAPI())
 	s.Router.Mount("/lfp/fileAwardPoint", fapRouter)
 
 	// 4. Other APIs

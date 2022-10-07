@@ -64,3 +64,14 @@ func ErrNoPermissionRequest(msg string) render.Renderer {
 		ErrorText: msg,
 	}
 }
+
+func ErrInternal(err error) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: 500,
+
+		Error:     codes.Internal,
+		Message:   "Internal server error",
+		ErrorText: err.Error(),
+	}
+}

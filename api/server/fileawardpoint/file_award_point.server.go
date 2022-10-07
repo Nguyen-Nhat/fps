@@ -6,9 +6,11 @@ import (
 	"fmt"
 	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"github.com/go-chi/render"
 	"net/http"
+	"strconv"
 )
 
 type (
@@ -20,6 +22,9 @@ type (
 		// GetDetail is called in GetDetailAPI() and it handles logic of API
 		GetDetail(context.Context, *GetFileAwardPointDetailRequest) (*res.BaseResponse[GetFileAwardPointDetailResponse], error)
 
+		GetListAPI() func(http.ResponseWriter, *http.Request)
+
+		GetList(context.Context, *fileawardpoint.GetListFileAwardPointDTO) (*res.BaseResponse[GetListFileAwardPointData], error)
 		// APIs for <DO STH> User --------------------------------------------------------------------------------------
 
 		// DoSthUserAPI() ...
@@ -42,12 +47,12 @@ func (s Server) GetDetailAPI() func(http.ResponseWriter, *http.Request) {
 			render.Render(w, r, error2.ErrInvalidRequest(err))
 			return
 		}
-		fmt.Printf("data = %v", data)
 
 		// 2. Handle request
 		res, err := s.GetDetail(r.Context(), data)
 		if err != nil {
 			render.Render(w, r, error2.ErrInvalidRequest(err)) // TODO @dung.nx correct error status
+			return
 		}
 
 		// 3. Render response
@@ -69,6 +74,66 @@ func (s Server) GetDetail(ctx context.Context, request *GetFileAwardPointDetailR
 
 	// 4. Map result to response
 	resp := toFapDetailResponseByEntity(fap)
+	resp2 := res.ToResponse(resp)
+	return resp2, nil
+}
+
+func (s Server) GetListAPI() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data, err := validateAndSetDataValue(r)
+		if err != nil {
+			render.Render(w, r, error2.ErrInvalidRequest(err))
+			return
+		}
+
+		resp, err := s.GetList(r.Context(), data)
+		if err != nil {
+			render.Render(w, r, error2.ErrInternal(err))
+			return
+		}
+
+		render.Render(w, r, resp)
+	}
+}
+
+func validateAndSetDataValue(r *http.Request) (*fileawardpoint.GetListFileAwardPointDTO, error) {
+	data := &fileawardpoint.GetListFileAwardPointDTO{}
+	data.InitDefaultValue()
+
+	values := r.URL.Query()
+	for k, v := range values {
+		if len(v) > 1 {
+			return nil, fmt.Errorf("parameter cannot have multiple value")
+		}
+
+		val, err := strconv.Atoi(v[0])
+		if err != nil {
+			return nil, fmt.Errorf("invalid parameter")
+		}
+		if k == "merchantId" {
+			data.MerchantId = val
+		} else if k == "page" {
+			if val == 0 || val > constant.PaginationMaxPage {
+				return nil, fmt.Errorf("page out of range")
+			}
+			data.Page = val
+		} else if k == "size" {
+			if val == 0 || val > constant.PaginationMaxSize {
+				return nil, fmt.Errorf("size out of range")
+			}
+			data.Size = val
+		}
+	}
+	return data, nil
+}
+
+func (s Server) GetList(ctx context.Context, req *fileawardpoint.GetListFileAwardPointDTO) (*res.BaseResponse[GetListFileAwardPointData], error) {
+	faps, pagination, err := s.service.GetListFileAwardPoint(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := fromFileArrToGetListData(faps, pagination)
 	resp2 := res.ToResponse(resp)
 	return resp2, nil
 }

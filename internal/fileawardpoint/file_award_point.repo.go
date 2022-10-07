@@ -5,13 +5,17 @@ import (
 	"database/sql"
 	entsql "entgo.io/ent/dialect/sql"
 	"fmt"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
+	"math"
 )
 
 type (
 	Repo interface {
 		FindById(context.Context, int) (*FileAwardPoint, error)
+		FindAndPaginationByMerchantId(context.Context, *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error)
+		GetAllAndPagination(context.Context, *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error)
 		Save(context.Context, FileAwardPoint) (*FileAwardPoint, error)
 	}
 
@@ -40,6 +44,36 @@ func (r *repoImpl) FindById(ctx context.Context, id int) (*FileAwardPoint, error
 	}
 
 	return &FileAwardPoint{*fap}, nil
+}
+
+func (r *repoImpl) FindAndPaginationByMerchantId(ctx context.Context, dto *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error) {
+	query := r.client.FileAwardPoint.Query().Where(fileawardpoint.MerchantID(int64(dto.MerchantId)))
+	pagination, err := getPagination(ctx, query, dto.Page, dto.Size)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to count from db while querying file award with merchantId")
+	}
+
+	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).All(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed querying list file award point with merchantId: %w", err)
+	}
+
+	return mapEntArrToFileAwardPointArr(faps), pagination, nil
+}
+
+func (r *repoImpl) GetAllAndPagination(ctx context.Context, dto *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error) {
+	query := r.client.FileAwardPoint.Query()
+	pagination, err := getPagination(ctx, query, dto.Page, dto.Size)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to count from db while querying all file award point")
+	}
+
+	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).All(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed querying all file award point: %w", err)
+	}
+
+	return mapEntArrToFileAwardPointArr(faps), pagination, nil
 }
 
 func (r *repoImpl) Save(ctx context.Context, fap FileAwardPoint) (*FileAwardPoint, error) {
@@ -106,4 +140,32 @@ func mapFileAwardPoint(client *ent.Client, fap FileAwardPoint) *ent.FileAwardPoi
 		SetUpdatedAt(fap.UpdatedAt).
 		SetCreatedBy(fap.CreatedBy).
 		SetUpdatedBy(fap.UpdatedBy)
+}
+
+func mapEntArrToFileAwardPointArr(arr ent.FileAwardPoints) []*FileAwardPoint {
+	var result []*FileAwardPoint
+	for _, v := range arr {
+		result = append(result, &FileAwardPoint{*v})
+	}
+	return result
+}
+
+func getPagination(ctx context.Context, query *ent.FileAwardPointQuery, page int, size int) (*response.Pagination, error) {
+	total, err := query.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var pageSize int
+	if total > page*size {
+		pageSize = size
+	} else {
+		pageSize = int(math.Max(float64(total-(page-1)*size), 0))
+	}
+	return &response.Pagination{
+		CurrentPage: page,
+		PageSize:    pageSize,
+		TotalItems:  total,
+		TotalPage:   int(math.Ceil(float64(total) / float64(size))),
+	}, nil
 }
