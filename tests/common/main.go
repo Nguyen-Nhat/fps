@@ -9,6 +9,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/xo/dburl"
 	"log"
 	"os"
