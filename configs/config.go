@@ -32,10 +32,15 @@ type ServerConfig struct {
 
 // Config for app configuration
 type Config struct {
-	Server    ServerConfig   `mapstructure:"server"`
-	Database  DatabaseConfig `mapstructure:"database"`
-	Logger    LoggerConfig   `mapstructure:"logger"`
-	JobConfig JobConfig      `mapstructure:"job"`
+	Server         ServerConfig   `mapstructure:"server"`
+	Database       DatabaseConfig `mapstructure:"database"`
+	Logger         LoggerConfig   `mapstructure:"logger"`
+	JobConfig      JobConfig      `mapstructure:"job"`
+	ProviderConfig ProviderConfig `mapstructure:"provider_config"`
+}
+
+type ProviderConfig struct {
+	Loyalty LoyaltyConfig `mapstructure:"loyalty"`
 }
 
 const (

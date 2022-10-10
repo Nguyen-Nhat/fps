@@ -20,3 +20,11 @@ logger:
 job:
   award_point:
     schedule: '0/5 * * * *' # every 5 minutes at first minute
+
+provider_config:
+  loyalty:
+    endpoint: http://localhost:8080
+    x_api_key: _need_to_fill_api_key_
+    paths:
+      txn_get_list: /api/v4/transaction/getListTransaction
+      txn_grant: /api/v4/transaction/grantPoint
