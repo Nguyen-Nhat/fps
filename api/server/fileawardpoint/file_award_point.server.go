@@ -3,11 +3,15 @@ package fileawardpoint
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"net/http"
+
 	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"github.com/go-chi/render"
 	"net/http"
 	"strconv"
@@ -134,6 +138,58 @@ func (s Server) GetList(ctx context.Context, req *fileawardpoint.GetListFileAwar
 	}
 
 	resp := fromFileArrToGetListData(faps, pagination)
+	resp2 := res.ToResponse(resp)
+	return resp2, nil
+}
+
+func (s Server) CreateFileAwardPointAPI() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 1. Bind data & validate input
+		data := &CreateFileAwardPointDetailRequest{}
+		if err := render.Bind(r, data); err != nil {
+			render.Render(w, r, error2.ErrInvalidRequest(err))
+			return
+		}
+		logger.Infof("data = %v", data)
+
+		// 2. Handle request
+		res, err := s.CreateFileAwardPoint(r.Context(), data)
+		if err != nil {
+			render.Render(w, r, error2.ErrInvalidRequest(err))
+			return
+		}
+
+		// 3. Render response
+		render.Render(w, r, res)
+	}
+}
+
+func (s Server) CreateFileAwardPoint(ctx context.Context, request *CreateFileAwardPointDetailRequest) (*res.BaseResponse[CreateFileAwardPointDetailResponse], error) {
+
+	// 1. Validate request
+	fileNameMatch := constant.FileNameRegex.FindStringSubmatch(request.FileUrl)
+
+	if len(fileNameMatch) < 2 {
+		logger.Errorf("Cannot extract file name from %s", request.FileUrl)
+		return nil, errors.New("cannot extract file name from url")
+	}
+
+	fileName := fileNameMatch[1]
+
+	// 2. Call function of Service
+	fap, err := s.service.CreateFileAwardPoint(ctx, &fileawardpoint.CreateFileAwardPointReqDTO{
+		MerchantID: request.MerchantID,
+		FileUrl:    request.FileUrl,
+		Note:       request.Note,
+		FileName:   fileName,
+	})
+	if err != nil {
+		logger.Errorf("CreateFileAwardPoint: cannot create file award point, got: %v", err)
+		return nil, err
+	}
+
+	// 3. Map result to response
+	resp := toFapCreateResponseByEntity(fap)
 	resp2 := res.ToResponse(resp)
 	return resp2, nil
 }

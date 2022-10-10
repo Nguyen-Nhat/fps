@@ -3,12 +3,14 @@ package fileawardpoint
 import (
 	"context"
 	"database/sql"
-	entsql "entgo.io/ent/dialect/sql"
 	"fmt"
+
+	entsql "entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
 	"math"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 type (
@@ -119,6 +121,7 @@ func save(ctx context.Context, client *ent.Client, fap FileAwardPoint) (*FileAwa
 	// 1. Create
 	fapSaved, err := mapFileAwardPoint(client, fap).Save(ctx)
 	if err != nil {
+		logger.Errorf("Cannot save to file award point, got: %v", err)
 		return nil, fmt.Errorf("failed to save file award point to DB")
 	}
 
@@ -134,10 +137,9 @@ func mapFileAwardPoint(client *ent.Client, fap FileAwardPoint) *ent.FileAwardPoi
 		SetFileURL(fap.FileURL).
 		SetResultFileURL(fap.ResultFileURL).
 		SetStatus(fap.Status).
+		SetNote(fap.Note).
 		SetStatsTotalRow(fap.StatsTotalRow).
 		SetStatsTotalSuccess(fap.StatsTotalSuccess).
-		SetCreatedAt(fap.CreatedAt).
-		SetUpdatedAt(fap.UpdatedAt).
 		SetCreatedBy(fap.CreatedBy).
 		SetUpdatedBy(fap.UpdatedBy)
 }

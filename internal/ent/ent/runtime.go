@@ -25,30 +25,32 @@ func init() {
 	fileawardpointDescFileURL := fileawardpointFields[2].Descriptor()
 	// fileawardpoint.FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
 	fileawardpoint.FileURLValidator = fileawardpointDescFileURL.Validators[0].(func(string) error)
-	// fileawardpointDescResultFileURL is the schema descriptor for result_file_url field.
-	fileawardpointDescResultFileURL := fileawardpointFields[3].Descriptor()
-	// fileawardpoint.ResultFileURLValidator is a validator for the "result_file_url" field. It is called by the builders before save.
-	fileawardpoint.ResultFileURLValidator = fileawardpointDescResultFileURL.Validators[0].(func(string) error)
+	// fileawardpointDescNote is the schema descriptor for note field.
+	fileawardpointDescNote := fileawardpointFields[4].Descriptor()
+	// fileawardpoint.NoteValidator is a validator for the "note" field. It is called by the builders before save.
+	fileawardpoint.NoteValidator = fileawardpointDescNote.Validators[0].(func(string) error)
 	// fileawardpointDescStatus is the schema descriptor for status field.
-	fileawardpointDescStatus := fileawardpointFields[4].Descriptor()
+	fileawardpointDescStatus := fileawardpointFields[5].Descriptor()
 	// fileawardpoint.DefaultStatus holds the default value on creation for the status field.
 	fileawardpoint.DefaultStatus = fileawardpointDescStatus.Default.(int16)
 	// fileawardpointDescStatsTotalRow is the schema descriptor for stats_total_row field.
-	fileawardpointDescStatsTotalRow := fileawardpointFields[5].Descriptor()
+	fileawardpointDescStatsTotalRow := fileawardpointFields[6].Descriptor()
 	// fileawardpoint.DefaultStatsTotalRow holds the default value on creation for the stats_total_row field.
 	fileawardpoint.DefaultStatsTotalRow = fileawardpointDescStatsTotalRow.Default.(int32)
 	// fileawardpointDescStatsTotalSuccess is the schema descriptor for stats_total_success field.
-	fileawardpointDescStatsTotalSuccess := fileawardpointFields[6].Descriptor()
+	fileawardpointDescStatsTotalSuccess := fileawardpointFields[7].Descriptor()
 	// fileawardpoint.DefaultStatsTotalSuccess holds the default value on creation for the stats_total_success field.
 	fileawardpoint.DefaultStatsTotalSuccess = fileawardpointDescStatsTotalSuccess.Default.(int32)
 	// fileawardpointDescCreatedAt is the schema descriptor for created_at field.
-	fileawardpointDescCreatedAt := fileawardpointFields[7].Descriptor()
+	fileawardpointDescCreatedAt := fileawardpointFields[8].Descriptor()
 	// fileawardpoint.DefaultCreatedAt holds the default value on creation for the created_at field.
-	fileawardpoint.DefaultCreatedAt = fileawardpointDescCreatedAt.Default.(time.Time)
+	fileawardpoint.DefaultCreatedAt = fileawardpointDescCreatedAt.Default.(func() time.Time)
 	// fileawardpointDescUpdatedAt is the schema descriptor for updated_at field.
-	fileawardpointDescUpdatedAt := fileawardpointFields[8].Descriptor()
+	fileawardpointDescUpdatedAt := fileawardpointFields[9].Descriptor()
 	// fileawardpoint.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	fileawardpoint.DefaultUpdatedAt = fileawardpointDescUpdatedAt.Default.(time.Time)
+	fileawardpoint.DefaultUpdatedAt = fileawardpointDescUpdatedAt.Default.(func() time.Time)
+	// fileawardpoint.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	fileawardpoint.UpdateDefaultUpdatedAt = fileawardpointDescUpdatedAt.UpdateDefault.(func() time.Time)
 	membertransactionFields := schema.MemberTransaction{}.Fields()
 	_ = membertransactionFields
 	// membertransactionDescPhone is the schema descriptor for phone field.

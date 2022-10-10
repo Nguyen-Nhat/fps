@@ -59,6 +59,12 @@ func (fapu *FileAwardPointUpdate) SetResultFileURL(s string) *FileAwardPointUpda
 	return fapu
 }
 
+// SetNote sets the "note" field.
+func (fapu *FileAwardPointUpdate) SetNote(s string) *FileAwardPointUpdate {
+	fapu.mutation.SetNote(s)
+	return fapu
+}
+
 // SetStatus sets the "status" field.
 func (fapu *FileAwardPointUpdate) SetStatus(i int16) *FileAwardPointUpdate {
 	fapu.mutation.ResetStatus()
@@ -142,14 +148,6 @@ func (fapu *FileAwardPointUpdate) SetUpdatedAt(t time.Time) *FileAwardPointUpdat
 	return fapu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (fapu *FileAwardPointUpdate) SetNillableUpdatedAt(t *time.Time) *FileAwardPointUpdate {
-	if t != nil {
-		fapu.SetUpdatedAt(*t)
-	}
-	return fapu
-}
-
 // SetCreatedBy sets the "created_by" field.
 func (fapu *FileAwardPointUpdate) SetCreatedBy(s string) *FileAwardPointUpdate {
 	fapu.mutation.SetCreatedBy(s)
@@ -173,6 +171,7 @@ func (fapu *FileAwardPointUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	fapu.defaults()
 	if len(fapu.hooks) == 0 {
 		if err = fapu.check(); err != nil {
 			return 0, err
@@ -227,6 +226,14 @@ func (fapu *FileAwardPointUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (fapu *FileAwardPointUpdate) defaults() {
+	if _, ok := fapu.mutation.UpdatedAt(); !ok {
+		v := fileawardpoint.UpdateDefaultUpdatedAt()
+		fapu.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (fapu *FileAwardPointUpdate) check() error {
 	if v, ok := fapu.mutation.DisplayName(); ok {
@@ -239,9 +246,9 @@ func (fapu *FileAwardPointUpdate) check() error {
 			return &ValidationError{Name: "file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.file_url": %w`, err)}
 		}
 	}
-	if v, ok := fapu.mutation.ResultFileURL(); ok {
-		if err := fileawardpoint.ResultFileURLValidator(v); err != nil {
-			return &ValidationError{Name: "result_file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.result_file_url": %w`, err)}
+	if v, ok := fapu.mutation.Note(); ok {
+		if err := fileawardpoint.NoteValidator(v); err != nil {
+			return &ValidationError{Name: "note", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.note": %w`, err)}
 		}
 	}
 	return nil
@@ -298,6 +305,13 @@ func (fapu *FileAwardPointUpdate) sqlSave(ctx context.Context) (n int, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: fileawardpoint.FieldResultFileURL,
+		})
+	}
+	if value, ok := fapu.mutation.Note(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fileawardpoint.FieldNote,
 		})
 	}
 	if value, ok := fapu.mutation.Status(); ok {
@@ -420,6 +434,12 @@ func (fapuo *FileAwardPointUpdateOne) SetResultFileURL(s string) *FileAwardPoint
 	return fapuo
 }
 
+// SetNote sets the "note" field.
+func (fapuo *FileAwardPointUpdateOne) SetNote(s string) *FileAwardPointUpdateOne {
+	fapuo.mutation.SetNote(s)
+	return fapuo
+}
+
 // SetStatus sets the "status" field.
 func (fapuo *FileAwardPointUpdateOne) SetStatus(i int16) *FileAwardPointUpdateOne {
 	fapuo.mutation.ResetStatus()
@@ -503,14 +523,6 @@ func (fapuo *FileAwardPointUpdateOne) SetUpdatedAt(t time.Time) *FileAwardPointU
 	return fapuo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (fapuo *FileAwardPointUpdateOne) SetNillableUpdatedAt(t *time.Time) *FileAwardPointUpdateOne {
-	if t != nil {
-		fapuo.SetUpdatedAt(*t)
-	}
-	return fapuo
-}
-
 // SetCreatedBy sets the "created_by" field.
 func (fapuo *FileAwardPointUpdateOne) SetCreatedBy(s string) *FileAwardPointUpdateOne {
 	fapuo.mutation.SetCreatedBy(s)
@@ -541,6 +553,7 @@ func (fapuo *FileAwardPointUpdateOne) Save(ctx context.Context) (*FileAwardPoint
 		err  error
 		node *FileAwardPoint
 	)
+	fapuo.defaults()
 	if len(fapuo.hooks) == 0 {
 		if err = fapuo.check(); err != nil {
 			return nil, err
@@ -601,6 +614,14 @@ func (fapuo *FileAwardPointUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (fapuo *FileAwardPointUpdateOne) defaults() {
+	if _, ok := fapuo.mutation.UpdatedAt(); !ok {
+		v := fileawardpoint.UpdateDefaultUpdatedAt()
+		fapuo.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (fapuo *FileAwardPointUpdateOne) check() error {
 	if v, ok := fapuo.mutation.DisplayName(); ok {
@@ -613,9 +634,9 @@ func (fapuo *FileAwardPointUpdateOne) check() error {
 			return &ValidationError{Name: "file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.file_url": %w`, err)}
 		}
 	}
-	if v, ok := fapuo.mutation.ResultFileURL(); ok {
-		if err := fileawardpoint.ResultFileURLValidator(v); err != nil {
-			return &ValidationError{Name: "result_file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.result_file_url": %w`, err)}
+	if v, ok := fapuo.mutation.Note(); ok {
+		if err := fileawardpoint.NoteValidator(v); err != nil {
+			return &ValidationError{Name: "note", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.note": %w`, err)}
 		}
 	}
 	return nil
@@ -689,6 +710,13 @@ func (fapuo *FileAwardPointUpdateOne) sqlSave(ctx context.Context) (_node *FileA
 			Type:   field.TypeString,
 			Value:  value,
 			Column: fileawardpoint.FieldResultFileURL,
+		})
+	}
+	if value, ok := fapuo.mutation.Note(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fileawardpoint.FieldNote,
 		})
 	}
 	if value, ok := fapuo.mutation.Status(); ok {

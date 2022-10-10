@@ -35,7 +35,7 @@ func UserMW(next http.Handler) http.Handler {
 
 		// Set to context
 		ctx := r.Context()
-		ctx = setUserToContext(ctx, *user)
+		ctx = SetUserToContext(ctx, *user)
 		r = r.WithContext(ctx)
 
 		// Next
@@ -54,8 +54,8 @@ type contextKey string
 
 var contextKeyUser = contextKey("user-attribute")
 
-// setUserToContext ...
-func setUserToContext(ctx context.Context, user User) context.Context {
+// SetUserToContext ...
+func SetUserToContext(ctx context.Context, user User) context.Context {
 	return context.WithValue(ctx, contextKeyUser, user)
 }
 

@@ -19,3 +19,15 @@ func (s *GetListFileAwardPointDTO) InitDefaultValue() {
 		s.Size = 10
 	}
 }
+
+type CreateFileAwardPointReqDTO struct {
+	MerchantID  int64
+	FileUrl     string
+	Note        string
+	FileName    string
+	CreatedUser string
+}
+
+type CreateFileAwardPointResDTO struct {
+	FileAwardPointId int32
+}

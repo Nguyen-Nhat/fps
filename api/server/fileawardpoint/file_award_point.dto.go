@@ -65,3 +65,40 @@ type FileAwardPoint struct {
 	CreatedAt         time.Time `json:"createdAt"`
 	CreatedBy         string    `json:"createdBy"`
 }
+
+// CreateFileAwardPointDetailRequest ...
+type CreateFileAwardPointDetailRequest struct {
+	MerchantID int64  `json:"merchantId"`
+	FileUrl    string `json:"fileUrl"`
+	Note       string `json:"note"`
+}
+
+func (c *CreateFileAwardPointDetailRequest) Bind(_ *http.Request) error {
+	// validate Id missing
+	if c.MerchantID == 0 {
+		return ErrMerchantIDRequired
+	}
+
+	// validate fileUrl missing
+	if c.FileUrl == "" {
+		return ErrFileUrlRequired
+	}
+
+	// validate Note length
+	if len(c.Note) > 255 {
+		return ErrNoteOverMaxLength
+	}
+
+	return nil
+}
+
+// CreateFileAwardPointDetailResponse ...
+type CreateFileAwardPointDetailResponse struct {
+	FileAwardPointID int `json:"fileAwardPointId"`
+}
+
+var (
+	ErrMerchantIDRequired = errors.New("merchant id is required")
+	ErrFileUrlRequired    = errors.New("file url is required")
+	ErrNoteOverMaxLength  = errors.New("note over 255 character")
+)

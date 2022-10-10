@@ -20,6 +20,12 @@ func toFapDetailResponseByEntity(fap *fileawardpoint.FileAwardPoint) *GetFileAwa
 	}
 }
 
+func toFapCreateResponseByEntity(fap *fileawardpoint.CreateFileAwardPointResDTO) *CreateFileAwardPointDetailResponse {
+	return &CreateFileAwardPointDetailResponse{
+		FileAwardPointID: int(fap.FileAwardPointId),
+	}
+}
+
 func toGetListResponseByEntity(fap *fileawardpoint.FileAwardPoint) FileAwardPoint {
 	return FileAwardPoint{
 		MerchantId:        fap.MerchantID,
