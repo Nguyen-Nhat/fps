@@ -16,6 +16,7 @@ var (
 		{Name: "display_name", Type: field.TypeString},
 		{Name: "file_url", Type: field.TypeString},
 		{Name: "result_file_url", Type: field.TypeString},
+		{Name: "note", Type: field.TypeString, Size: 255},
 		{Name: "status", Type: field.TypeInt16, Default: 0},
 		{Name: "stats_total_row", Type: field.TypeInt32, Default: 0},
 		{Name: "stats_total_success", Type: field.TypeInt32, Default: 0},

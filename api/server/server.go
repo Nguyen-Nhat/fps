@@ -3,12 +3,13 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
@@ -67,7 +68,8 @@ func (s *Server) initRoutes() {
 	fapRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
 	fapRouter.Post("/getListOrDetail", fapServer.GetDetailAPI())
 	fapRouter.Get("/getList", fapServer.GetListAPI())
-	s.Router.Mount("/lfp/fileAwardPoint", fapRouter)
+	fapRouter.Post("/create", fapServer.CreateFileAwardPointAPI())
+	s.Router.Mount("/lfp/v1/fileAwardPoint", fapRouter)
 
 	// 4. Other APIs
 	// ...

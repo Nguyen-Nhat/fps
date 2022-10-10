@@ -44,6 +44,12 @@ func (fapc *FileAwardPointCreate) SetResultFileURL(s string) *FileAwardPointCrea
 	return fapc
 }
 
+// SetNote sets the "note" field.
+func (fapc *FileAwardPointCreate) SetNote(s string) *FileAwardPointCreate {
+	fapc.mutation.SetNote(s)
+	return fapc
+}
+
 // SetStatus sets the "status" field.
 func (fapc *FileAwardPointCreate) SetStatus(i int16) *FileAwardPointCreate {
 	fapc.mutation.SetStatus(i)
@@ -216,11 +222,11 @@ func (fapc *FileAwardPointCreate) defaults() {
 		fapc.mutation.SetStatsTotalSuccess(v)
 	}
 	if _, ok := fapc.mutation.CreatedAt(); !ok {
-		v := fileawardpoint.DefaultCreatedAt
+		v := fileawardpoint.DefaultCreatedAt()
 		fapc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := fapc.mutation.UpdatedAt(); !ok {
-		v := fileawardpoint.DefaultUpdatedAt
+		v := fileawardpoint.DefaultUpdatedAt()
 		fapc.mutation.SetUpdatedAt(v)
 	}
 }
@@ -249,9 +255,12 @@ func (fapc *FileAwardPointCreate) check() error {
 	if _, ok := fapc.mutation.ResultFileURL(); !ok {
 		return &ValidationError{Name: "result_file_url", err: errors.New(`ent: missing required field "FileAwardPoint.result_file_url"`)}
 	}
-	if v, ok := fapc.mutation.ResultFileURL(); ok {
-		if err := fileawardpoint.ResultFileURLValidator(v); err != nil {
-			return &ValidationError{Name: "result_file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.result_file_url": %w`, err)}
+	if _, ok := fapc.mutation.Note(); !ok {
+		return &ValidationError{Name: "note", err: errors.New(`ent: missing required field "FileAwardPoint.note"`)}
+	}
+	if v, ok := fapc.mutation.Note(); ok {
+		if err := fileawardpoint.NoteValidator(v); err != nil {
+			return &ValidationError{Name: "note", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.note": %w`, err)}
 		}
 	}
 	if _, ok := fapc.mutation.Status(); !ok {
@@ -333,6 +342,14 @@ func (fapc *FileAwardPointCreate) createSpec() (*FileAwardPoint, *sqlgraph.Creat
 			Column: fileawardpoint.FieldResultFileURL,
 		})
 		_node.ResultFileURL = value
+	}
+	if value, ok := fapc.mutation.Note(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fileawardpoint.FieldNote,
+		})
+		_node.Note = value
 	}
 	if value, ok := fapc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

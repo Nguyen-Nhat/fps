@@ -2,8 +2,10 @@ package fileawardpoint
 
 import (
 	"context"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
@@ -55,4 +57,27 @@ func (s *ServiceImpl) GetListFileAwardPoint(ctx context.Context, req *GetListFil
 	}
 
 	return faps, pagination, nil
+}
+
+func (s *ServiceImpl) CreateFileAwardPoint(ctx context.Context, req *CreateFileAwardPointReqDTO) (*CreateFileAwardPointResDTO, error) {
+	user := middleware.GetUserFromContext(ctx)
+	logger.Infof("GetFileAwardPoint by %v", user.Email)
+
+	fileAwardRecord, err := s.repo.Save(ctx, FileAwardPoint{
+		FileAwardPoint: ent.FileAwardPoint{
+			MerchantID:  req.MerchantID,
+			DisplayName: req.FileName,
+			FileURL:     req.FileUrl,
+			Note:        req.Note,
+			CreatedBy:   user.Email,
+			UpdatedBy:   user.Email,
+		},
+	})
+	if err != nil {
+		logger.Errorf("Cannot insert file award point, got %v", err)
+		return nil, err
+	}
+	return &CreateFileAwardPointResDTO{
+		FileAwardPointId: int32(fileAwardRecord.ID),
+	}, nil
 }
