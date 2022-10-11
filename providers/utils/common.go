@@ -3,9 +3,13 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"io"
+	"log"
+	"mime/multipart"
 	"net/http"
+	"net/textproto"
 )
 
 func HiddenString(input string, numberOfTailChar int) string {
@@ -66,4 +70,64 @@ func SendHTTPRequest[REQ any, RES any](
 		return nil, err
 	}
 	return &respBodyObj, nil
+}
+
+type FileContent struct {
+	FieldName string
+	FileName  string
+	Data      []byte
+}
+
+func UploadFile[RES any](client *http.Client, urlPath string, content FileContent) (*RES, error) {
+	// New multipart writer.
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	fw, err := createFormFile(writer, content.FieldName, content.FileName)
+	if err != nil {
+		log.Printf("make request failed: %d", err)
+		return nil, err
+	}
+	_, _ = fw.Write(content.Data)
+
+	// Close multipart writer.
+	writer.Close()
+
+	req, err := http.NewRequest(http.MethodPost, urlPath, bytes.NewReader(body.Bytes()))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	rsp, err := client.Do(req)
+	if err != nil {
+		logger.Errorf("error request %v", err)
+		return nil, err
+	}
+	if rsp.StatusCode != http.StatusOK {
+		log.Printf("Request failed with response code: %d", rsp.StatusCode)
+		return nil, fmt.Errorf("request failed with http status %v", rsp.StatusCode)
+	}
+	defer func() {
+		_ = rsp.Body.Close()
+	}()
+
+	respBody, err := io.ReadAll(rsp.Body)
+	if err != nil {
+		logger.Errorf("error read response body %v", err)
+		return nil, err
+	}
+
+	// 6. Convert response body to Entity
+	var respBodyObj RES
+	if err := json.Unmarshal(respBody, &respBodyObj); err != nil {
+		logger.Errorf("===== http: Decode to entity error: %+v\n", err.Error())
+		return nil, err
+	}
+	return &respBodyObj, nil
+}
+
+func createFormFile(w *multipart.Writer, fieldName, fileName string) (io.Writer, error) {
+	h := make(textproto.MIMEHeader)
+	h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, fieldName, fileName))
+	h.Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	return w.CreatePart(h)
 }

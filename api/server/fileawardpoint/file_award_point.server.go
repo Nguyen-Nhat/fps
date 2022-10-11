@@ -13,7 +13,6 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"github.com/go-chi/render"
-	"net/http"
 	"strconv"
 )
 
