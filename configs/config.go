@@ -40,7 +40,8 @@ type Config struct {
 }
 
 type ProviderConfig struct {
-	Loyalty LoyaltyConfig `mapstructure:"loyalty"`
+	Loyalty     LoyaltyConfig     `mapstructure:"loyalty"`
+	FileService FileServiceConfig `mapstructure:"file_service"`
 }
 
 const (

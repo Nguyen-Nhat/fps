@@ -9,7 +9,7 @@ database:
     host: localhost
     port: 3306
     username: loyalty_file_process_service
-    password: 1
+    password: 1 # --no-verify
     options: parseTime=true
 
 logger:
@@ -28,3 +28,9 @@ provider_config:
     paths:
       txn_get_list: /api/v4/transaction/getListTransaction
       txn_grant: /api/v4/transaction/grantPoint
+  file_service:
+    endpoint: https://files.dev.tekoapis.net
+    paths:
+      upload_doc: /upload/doc
+      download: /files/{fileId}
+      delete: /files/{fileId}
