@@ -4,7 +4,6 @@ import (
 	"errors"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"net/http"
-	"time"
 )
 
 // Request DTO =========================================================================================================
@@ -31,16 +30,16 @@ func (a *GetFileAwardPointDetailRequest) Bind(_ *http.Request) error {
 // then the next field, and so on, all the way down the tree.
 // Render is called in top-down order, like a http handler middleware chain.
 type GetFileAwardPointDetailResponse struct {
-	Id                int       `json:"id"`
-	MerchantId        int64     `json:"merchant_id"`
-	DisplayName       string    `json:"display_name"`
-	FileUrl           string    `json:"file_url"`
-	ResultFileUrl     string    `json:"result_file_url"`
-	Status            int16     `json:"status"`
-	StatsTotalRow     int32     `json:"stats_total_row"`
-	StatsTotalSuccess int32     `json:"stats_total_success"`
-	CreatedAt         time.Time `json:"created_at"`
-	CreatedBy         string    `json:"created_by"`
+	Id                int    `json:"id"`
+	MerchantId        int64  `json:"merchantId"`
+	DisplayName       string `json:"displayName"`
+	FileUrl           string `json:"fileUrl"`
+	ResultFileUrl     string `json:"resultFileUrl"`
+	Status            string `json:"status"`
+	StatsTotalRow     int32  `json:"statsTotalRow"`
+	StatsTotalSuccess int32  `json:"StatsTotalSuccess"`
+	CreatedAt         int64  `json:"createdAt"`
+	CreatedBy         string `json:"createdBy"`
 }
 
 func (ur *GetFileAwardPointDetailResponse) Render(_ http.ResponseWriter, _ *http.Request) error {
@@ -54,16 +53,16 @@ type GetListFileAwardPointData struct {
 }
 
 type FileAwardPoint struct {
-	MerchantId        int64     `json:"merchantId"`
-	FileAwardPointId  int       `json:"fileAwardPointId"`
-	FileDisplayName   string    `json:"fileDisplayName"`
-	FileUrl           string    `json:"fileUrl"`
-	ResultFileUrl     string    `json:"resultFileUrl"`
-	Status            int16     `json:"status"`
-	StatsTotalRow     int32     `json:"statsTotalRow"`
-	StatsTotalSuccess int32     `json:"statsTotalSuccess"`
-	CreatedAt         time.Time `json:"createdAt"`
-	CreatedBy         string    `json:"createdBy"`
+	MerchantId        int64  `json:"merchantId"`
+	FileAwardPointId  int    `json:"fileAwardPointId"`
+	FileDisplayName   string `json:"fileDisplayName"`
+	FileUrl           string `json:"fileUrl"`
+	ResultFileUrl     string `json:"resultFileUrl"`
+	Status            string `json:"status"`
+	StatsTotalRow     int32  `json:"statsTotalRow"`
+	StatsTotalSuccess int32  `json:"statsTotalSuccess"`
+	CreatedAt         int64  `json:"createdAt"`
+	CreatedBy         string `json:"createdBy"`
 }
 
 // CreateFileAwardPointDetailRequest ...
@@ -101,4 +100,11 @@ var (
 	ErrMerchantIDRequired = errors.New("merchant id is required")
 	ErrFileUrlRequired    = errors.New("file url is required")
 	ErrNoteOverMaxLength  = errors.New("note over 255 character")
+)
+
+const (
+	FapStatusInit       = "INIT"
+	FapStatusProcessing = "PROCESSING"
+	FapStatusFailed     = "FAILED"
+	FapStatusFinished   = "FINISHED"
 )

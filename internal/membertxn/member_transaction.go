@@ -11,7 +11,8 @@ type MemberTransaction struct {
 
 // Status ENUM ...
 const (
-	statusInit    = 0
-	statusSuccess = 2
-	statusFailed  = 3
+	statusInit       = 1
+	statusProcessing = 2
+	statusFailed     = 3
+	statusSuccess    = 4
 )

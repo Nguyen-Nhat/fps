@@ -12,10 +12,10 @@ func toFapDetailResponseByEntity(fap *fileawardpoint.FileAwardPoint) *GetFileAwa
 		DisplayName:       fap.DisplayName,
 		FileUrl:           fap.FileURL,
 		ResultFileUrl:     fap.ResultFileURL,
-		Status:            fap.Status,
+		Status:            mapStatus(fap.Status),
 		StatsTotalRow:     fap.StatsTotalRow,
 		StatsTotalSuccess: fap.StatsTotalSuccess,
-		CreatedAt:         fap.CreatedAt,
+		CreatedAt:         fap.CreatedAt.UnixMilli(),
 		CreatedBy:         fap.CreatedBy,
 	}
 }
@@ -33,10 +33,10 @@ func toGetListResponseByEntity(fap *fileawardpoint.FileAwardPoint) FileAwardPoin
 		FileDisplayName:   fap.DisplayName,
 		FileUrl:           fap.FileURL,
 		ResultFileUrl:     fap.ResultFileURL,
-		Status:            fap.Status,
+		Status:            mapStatus(fap.Status),
 		StatsTotalRow:     fap.StatsTotalRow,
 		StatsTotalSuccess: fap.StatsTotalSuccess,
-		CreatedAt:         fap.CreatedAt,
+		CreatedAt:         fap.CreatedAt.UnixMilli(),
 		CreatedBy:         fap.CreatedBy,
 	}
 }
@@ -50,5 +50,20 @@ func fromFileArrToGetListData(fap []*fileawardpoint.FileAwardPoint, pagination *
 	return &GetListFileAwardPointData{
 		FileAwardPoints: result,
 		Pagination:      *pagination,
+	}
+}
+
+func mapStatus(statusInDB int16) string {
+	switch statusInDB {
+	case fileawardpoint.StatusInit:
+		return FapStatusInit
+	case fileawardpoint.StatusProcessing:
+		return FapStatusProcessing
+	case fileawardpoint.StatusFailed:
+		return FapStatusFailed
+	case fileawardpoint.StatusFinished:
+		return FapStatusFinished
+	default:
+		return ""
 	}
 }

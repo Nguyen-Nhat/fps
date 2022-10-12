@@ -25,9 +25,16 @@ type (
 		// GetDetail is called in GetDetailAPI() and it handles logic of API
 		GetDetail(context.Context, *GetFileAwardPointDetailRequest) (*res.BaseResponse[GetFileAwardPointDetailResponse], error)
 
-		GetListAPI() func(http.ResponseWriter, *http.Request)
+		// APIs for Get List File Award Point --------------------------------------------------------------------------
 
+		GetListAPI() func(http.ResponseWriter, *http.Request)
 		GetList(context.Context, *fileawardpoint.GetListFileAwardPointDTO) (*res.BaseResponse[GetListFileAwardPointData], error)
+
+		// APIs for Create List File Award Point --------------------------------------------------------------------------
+
+		CreateFileAwardPointAPI() func(http.ResponseWriter, *http.Request)
+		CreateFileAwardPoint(context.Context, *CreateFileAwardPointDetailRequest) (*res.BaseResponse[CreateFileAwardPointDetailResponse], error)
+
 		// APIs for <DO STH> User --------------------------------------------------------------------------------------
 
 		// DoSthUserAPI() ...
@@ -63,7 +70,7 @@ func (s Server) GetDetailAPI() func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func (s Server) GetDetail(ctx context.Context, request *GetFileAwardPointDetailRequest) (*res.BaseResponse[GetFileAwardPointDetailResponse], error) {
+func (s *Server) GetDetail(ctx context.Context, request *GetFileAwardPointDetailRequest) (*res.BaseResponse[GetFileAwardPointDetailResponse], error) {
 	// 1. Map the request to internal DTO if input for Service too complex
 	req := &fileawardpoint.GetFileAwardPointDetailDTO{
 		Id: request.Id,
@@ -81,7 +88,7 @@ func (s Server) GetDetail(ctx context.Context, request *GetFileAwardPointDetailR
 	return resp2, nil
 }
 
-func (s Server) GetListAPI() func(http.ResponseWriter, *http.Request) {
+func (s *Server) GetListAPI() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data, err := validateAndSetDataValue(r)
 		if err != nil {
@@ -130,7 +137,7 @@ func validateAndSetDataValue(r *http.Request) (*fileawardpoint.GetListFileAwardP
 	return data, nil
 }
 
-func (s Server) GetList(ctx context.Context, req *fileawardpoint.GetListFileAwardPointDTO) (*res.BaseResponse[GetListFileAwardPointData], error) {
+func (s *Server) GetList(ctx context.Context, req *fileawardpoint.GetListFileAwardPointDTO) (*res.BaseResponse[GetListFileAwardPointData], error) {
 	faps, pagination, err := s.service.GetListFileAwardPoint(ctx, req)
 	if err != nil {
 		return nil, err
@@ -141,7 +148,7 @@ func (s Server) GetList(ctx context.Context, req *fileawardpoint.GetListFileAwar
 	return resp2, nil
 }
 
-func (s Server) CreateFileAwardPointAPI() func(http.ResponseWriter, *http.Request) {
+func (s *Server) CreateFileAwardPointAPI() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// 1. Bind data & validate input
 		data := &CreateFileAwardPointDetailRequest{}
@@ -163,7 +170,7 @@ func (s Server) CreateFileAwardPointAPI() func(http.ResponseWriter, *http.Reques
 	}
 }
 
-func (s Server) CreateFileAwardPoint(ctx context.Context, request *CreateFileAwardPointDetailRequest) (*res.BaseResponse[CreateFileAwardPointDetailResponse], error) {
+func (s *Server) CreateFileAwardPoint(ctx context.Context, request *CreateFileAwardPointDetailRequest) (*res.BaseResponse[CreateFileAwardPointDetailResponse], error) {
 
 	// 1. Validate request
 	fileNameMatch := constant.FileNameRegex.FindStringSubmatch(request.FileUrl)
