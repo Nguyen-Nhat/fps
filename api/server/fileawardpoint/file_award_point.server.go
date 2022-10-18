@@ -3,17 +3,17 @@ package fileawardpoint
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"github.com/go-chi/render"
-	"strconv"
 )
 
 type (
@@ -156,7 +156,6 @@ func (s *Server) CreateFileAwardPointAPI() func(http.ResponseWriter, *http.Reque
 			render.Render(w, r, error2.ErrInvalidRequest(err))
 			return
 		}
-		logger.Infof("data = %v", data)
 
 		// 2. Handle request
 		res, err := s.CreateFileAwardPoint(r.Context(), data)
@@ -173,21 +172,14 @@ func (s *Server) CreateFileAwardPointAPI() func(http.ResponseWriter, *http.Reque
 func (s *Server) CreateFileAwardPoint(ctx context.Context, request *CreateFileAwardPointDetailRequest) (*res.BaseResponse[CreateFileAwardPointDetailResponse], error) {
 
 	// 1. Validate request
-	fileNameMatch := constant.FileNameRegex.FindStringSubmatch(request.FileUrl)
 
-	if len(fileNameMatch) < 2 {
-		logger.Errorf("Cannot extract file name from %s", request.FileUrl)
-		return nil, errors.New("cannot extract file name from url")
-	}
-
-	fileName := fileNameMatch[1]
-
+	fileName := utils.ExtractFileName(request.FileUrl)
 	// 2. Call function of Service
 	fap, err := s.service.CreateFileAwardPoint(ctx, &fileawardpoint.CreateFileAwardPointReqDTO{
 		MerchantID: request.MerchantID,
 		FileUrl:    request.FileUrl,
 		Note:       request.Note,
-		FileName:   fileName,
+		FileName:   fileName.FullName,
 	})
 	if err != nil {
 		logger.Errorf("CreateFileAwardPoint: cannot create file award point, got: %v", err)

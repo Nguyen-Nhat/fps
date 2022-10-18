@@ -1,5 +1,7 @@
 package dto
 
+import "regexp"
+
 // Metadata ------------------------------------------------------------------------------------------------------------
 
 type CellData[V any] struct {
@@ -13,7 +15,9 @@ type Constrains struct {
 	IsRequired bool
 	MinLength  *int
 	MaxLength  *int
-	Regexp     *string
+	Regexp     *regexp.Regexp
+	Min        *int
+	Max        *int
 }
 
 //func (c *CellData[any]) format() {
@@ -39,7 +43,15 @@ type Sheet[R any] struct {
 	ErrorRows      []ErrorRow
 }
 
+type ExcelSheet[R any] struct {
+	DataIndexStart int
+	SuccessRows    []R
+	Rows           []R
+	ErrorRows      []R
+}
+
 type ErrorRow struct {
-	RowId  int
-	Reason string
+	RowId   int
+	Reason  string
+	RowData []string
 }

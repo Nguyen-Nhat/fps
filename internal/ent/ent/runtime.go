@@ -74,57 +74,39 @@ func init() {
 	// membertransactionDescOrderCode is the schema descriptor for order_code field.
 	membertransactionDescOrderCode := membertransactionFields[3].Descriptor()
 	// membertransaction.OrderCodeValidator is a validator for the "order_code" field. It is called by the builders before save.
-	membertransaction.OrderCodeValidator = func() func(string) error {
-		validators := membertransactionDescOrderCode.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(order_code string) error {
-			for _, fn := range fns {
-				if err := fn(order_code); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	membertransaction.OrderCodeValidator = membertransactionDescOrderCode.Validators[0].(func(string) error)
 	// membertransactionDescRefID is the schema descriptor for ref_id field.
 	membertransactionDescRefID := membertransactionFields[4].Descriptor()
 	// membertransaction.RefIDValidator is a validator for the "ref_id" field. It is called by the builders before save.
-	membertransaction.RefIDValidator = func() func(string) error {
-		validators := membertransactionDescRefID.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(ref_id string) error {
-			for _, fn := range fns {
-				if err := fn(ref_id); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	membertransaction.RefIDValidator = membertransactionDescRefID.Validators[0].(func(string) error)
 	// membertransactionDescSentTime is the schema descriptor for sent_time field.
 	membertransactionDescSentTime := membertransactionFields[5].Descriptor()
 	// membertransaction.DefaultSentTime holds the default value on creation for the sent_time field.
 	membertransaction.DefaultSentTime = membertransactionDescSentTime.Default.(time.Time)
+	// membertransactionDescLoyaltyTxnID is the schema descriptor for loyalty_txn_id field.
+	membertransactionDescLoyaltyTxnID := membertransactionFields[6].Descriptor()
+	// membertransaction.DefaultLoyaltyTxnID holds the default value on creation for the loyalty_txn_id field.
+	membertransaction.DefaultLoyaltyTxnID = membertransactionDescLoyaltyTxnID.Default.(string)
+	// membertransaction.LoyaltyTxnIDValidator is a validator for the "loyalty_txn_id" field. It is called by the builders before save.
+	membertransaction.LoyaltyTxnIDValidator = membertransactionDescLoyaltyTxnID.Validators[0].(func(string) error)
 	// membertransactionDescTxnDesc is the schema descriptor for txn_desc field.
-	membertransactionDescTxnDesc := membertransactionFields[6].Descriptor()
+	membertransactionDescTxnDesc := membertransactionFields[7].Descriptor()
 	// membertransaction.TxnDescValidator is a validator for the "txn_desc" field. It is called by the builders before save.
 	membertransaction.TxnDescValidator = membertransactionDescTxnDesc.Validators[0].(func(string) error)
 	// membertransactionDescStatus is the schema descriptor for status field.
-	membertransactionDescStatus := membertransactionFields[7].Descriptor()
+	membertransactionDescStatus := membertransactionFields[8].Descriptor()
 	// membertransaction.DefaultStatus holds the default value on creation for the status field.
 	membertransaction.DefaultStatus = membertransactionDescStatus.Default.(int16)
+	// membertransactionDescError is the schema descriptor for error field.
+	membertransactionDescError := membertransactionFields[9].Descriptor()
+	// membertransaction.ErrorValidator is a validator for the "error" field. It is called by the builders before save.
+	membertransaction.ErrorValidator = membertransactionDescError.Validators[0].(func(string) error)
 	// membertransactionDescCreatedAt is the schema descriptor for created_at field.
-	membertransactionDescCreatedAt := membertransactionFields[8].Descriptor()
+	membertransactionDescCreatedAt := membertransactionFields[10].Descriptor()
 	// membertransaction.DefaultCreatedAt holds the default value on creation for the created_at field.
 	membertransaction.DefaultCreatedAt = membertransactionDescCreatedAt.Default.(time.Time)
 	// membertransactionDescUpdatedAt is the schema descriptor for updated_at field.
-	membertransactionDescUpdatedAt := membertransactionFields[9].Descriptor()
+	membertransactionDescUpdatedAt := membertransactionFields[11].Descriptor()
 	// membertransaction.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	membertransaction.DefaultUpdatedAt = membertransactionDescUpdatedAt.Default.(time.Time)
 	userFields := schema.User{}.Fields()

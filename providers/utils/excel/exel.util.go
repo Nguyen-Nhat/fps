@@ -3,9 +3,11 @@ package excel
 import (
 	"bytes"
 	"fmt"
-	"github.com/xuri/excelize/v2"
 	"io"
 	"net/http"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"github.com/xuri/excelize/v2"
 )
 
 func LoadExcelByUrl(fileURL string) ([][]string, error) {
@@ -17,14 +19,14 @@ func LoadExcelByUrl(fileURL string) ([][]string, error) {
 	// Open the ZIP file with Excelize
 	excel, err := excelize.OpenReader(bytes.NewReader(data))
 	if err != nil {
-		fmt.Println("Reader", err)
+		logger.Infof("Reader", err)
 		return nil, err
 	}
 
 	// Check no sheet
 	lst := excel.GetSheetList()
 	if len(lst) == 0 {
-		fmt.Println("Empty document")
+		logger.Infof("Empty document")
 		return nil, fmt.Errorf("file empty")
 	}
 
@@ -36,7 +38,7 @@ func LoadExcelByUrl(fileURL string) ([][]string, error) {
 	// Close file excel
 	defer func() {
 		if err = excel.Close(); err != nil {
-			fmt.Println(err)
+			logger.Errorf("Cannot close excel file, got: %v", err)
 		}
 	}()
 

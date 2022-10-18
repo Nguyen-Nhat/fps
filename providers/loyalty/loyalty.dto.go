@@ -68,7 +68,7 @@ func (r *grantPointRequest) mapByRequest(req GrantPointRequest) {
 	r.Phone = req.Phone
 	r.OrderCode = req.RefId
 	r.RefID = req.RefId
-	r.RefTime = time.Now().UnixMilli()
+	r.RefTime = time.Now().Truncate(time.Second).UnixMilli()
 	r.TxnDesc = req.TxnDesc
 }
 

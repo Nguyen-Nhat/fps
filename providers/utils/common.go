@@ -2,14 +2,18 @@ package utils
 
 import (
 	"bytes"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 func HiddenString(input string, numberOfTailChar int) string {
@@ -130,4 +134,45 @@ func createFormFile(w *multipart.Writer, fieldName, fileName string) (io.Writer,
 	h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, fieldName, fileName))
 	h.Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	return w.CreatePart(h)
+}
+
+// GenerateRandomBytes returns securely generated random bytes.
+// It will return an error if the system's secure random
+// number generator fails to function correctly, in which
+// case the caller should not continue.
+func GenerateRandomBytes(byteLength int) ([]byte, error) {
+	b := make([]byte, byteLength)
+	_, err := rand.Read(b)
+	// Note that err == nil only if we read len(b) bytes.
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// GenerateRandomString returns a URL-safe, base64 encoded
+// Length of string = ceil(1.333 * byteLength)
+// securely generated random string.
+func GenerateRandomString(byteLength int) (string, error) {
+	b, err := GenerateRandomBytes(byteLength)
+	return base64.RawStdEncoding.EncodeToString(b), err
+}
+
+type FileName struct {
+	FullName  string
+	Name      string
+	Extension string
+}
+
+func ExtractFileName(filePath string) FileName {
+	matches := constant.FileNameRegex.FindStringSubmatch(filePath)
+	if len(matches) >= 4 {
+		return FileName{
+			FullName:  matches[1],
+			Name:      matches[2],
+			Extension: matches[3],
+		}
+	}
+	return FileName{}
 }

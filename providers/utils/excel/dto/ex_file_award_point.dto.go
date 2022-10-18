@@ -1,5 +1,9 @@
 package dto
 
+import (
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/membertxn"
+)
+
 type FileAwardPointMetadata struct {
 	Phone CellData[string]
 	Point CellData[int]
@@ -43,4 +47,27 @@ type FileAwardPointRow struct {
 	Phone string
 	Point int
 	Note  string
+	Error string
+}
+
+func (f FileAwardPointRow) SetError(errMessage string) {
+
+}
+
+func MapMemberTxnToFileAwardPointRow(records []membertxn.MemberTransaction) []membertxn.MemberTxnDTO {
+	var rs []membertxn.MemberTxnDTO
+	for _, record := range records {
+		rs = append(rs, membertxn.MemberTxnDTO{
+			ID:               int64(record.ID),
+			FileAwardPointID: int64(record.FileAwardPointID),
+			Point:            record.Point,
+			Phone:            record.Phone,
+			RefID:            record.RefID,
+			TxnDesc:          record.TxnDesc,
+			Status:           record.Status,
+			Error:            record.Error,
+			LoyaltyTxnID:     record.LoyaltyTxnID,
+		})
+	}
+	return rs
 }

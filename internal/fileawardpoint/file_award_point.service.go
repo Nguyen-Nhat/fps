@@ -13,6 +13,10 @@ type (
 	Service interface {
 		GetFileAwardPoint(context.Context, *GetFileAwardPointDetailDTO) (*FileAwardPoint, error)
 		GetListFileAwardPoint(context.Context, *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error)
+		GetListFileAwardPointByStatuses(context.Context, []int16) ([]*FileAwardPoint, error)
+		UpdateStatusOne(context.Context, int, int16) (*FileAwardPoint, error)
+		UpdateTotalRowOne(context.Context, int, int) (*FileAwardPoint, error)
+		UpdateResultFileUrlOne(context.Context, int, string) (*FileAwardPoint, error)
 	}
 
 	ServiceImpl struct {
@@ -58,6 +62,14 @@ func (s *ServiceImpl) GetListFileAwardPoint(ctx context.Context, req *GetListFil
 
 	return faps, pagination, nil
 }
+func (s *ServiceImpl) GetListFileAwardPointByStatuses(ctx context.Context, statuses []int16) ([]*FileAwardPoint, error) {
+	faps, err := s.repo.FindByStatuses(ctx, statuses)
+	if err != nil {
+		return nil, err
+	}
+
+	return faps, nil
+}
 
 func (s *ServiceImpl) CreateFileAwardPoint(ctx context.Context, req *CreateFileAwardPointReqDTO) (*CreateFileAwardPointResDTO, error) {
 	user := middleware.GetUserFromContext(ctx)
@@ -80,4 +92,30 @@ func (s *ServiceImpl) CreateFileAwardPoint(ctx context.Context, req *CreateFileA
 	return &CreateFileAwardPointResDTO{
 		FileAwardPointId: int32(fileAwardRecord.ID),
 	}, nil
+}
+
+func (s *ServiceImpl) UpdateStatusOne(ctx context.Context, id int, status int16) (*FileAwardPoint, error) {
+	fap, err := s.repo.UpdateStatusOne(ctx, id, status)
+	if err != nil {
+		return nil, err
+	}
+
+	return fap, nil
+}
+func (s *ServiceImpl) UpdateTotalRowOne(ctx context.Context, id int, totalRow int) (*FileAwardPoint, error) {
+	fap, err := s.repo.UpdateTotalRowOne(ctx, id, totalRow)
+	if err != nil {
+		return nil, err
+	}
+
+	return fap, nil
+}
+
+func (s *ServiceImpl) UpdateResultFileUrlOne(ctx context.Context, id int, resultFileUrl string) (*FileAwardPoint, error) {
+	fap, err := s.repo.UpdateResultFileUrlOne(ctx, id, resultFileUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	return fap, nil
 }
