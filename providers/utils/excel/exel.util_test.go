@@ -2,8 +2,10 @@ package excel
 
 import (
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
+	"regexp"
 	"testing"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 )
 
 func Test_openFileURL_convertToStruct(t *testing.T) {
@@ -47,7 +49,7 @@ func Test_openFileURL_convertToStruct2(t *testing.T) {
 
 	phoneMinLength := 9
 	phoneMaxLength := 9
-	phoneRegexp := "^[0-9]+$" // "^[a-z]+$"
+	phoneRegexp := regexp.MustCompile("^[0-9]+$") // "^[a-z]+$"
 	fileAwardPointMetadata := dto.FileAwardPointResultMetadata{
 		Phone: dto.CellData[string]{
 			ColumnName: "Phone number (*)",
@@ -55,7 +57,7 @@ func Test_openFileURL_convertToStruct2(t *testing.T) {
 				IsRequired: true,
 				MinLength:  &phoneMinLength,
 				MaxLength:  &phoneMaxLength,
-				Regexp:     &phoneRegexp,
+				Regexp:     phoneRegexp,
 			},
 		},
 	}
@@ -68,12 +70,12 @@ func Test_openFileURL_convertToStruct2(t *testing.T) {
 	dataIndexStart := 3
 	sheet, err := ConvertToStruct[
 		dto.FileAwardPointResultMetadata,
-		dto.FileAwardPointResultRow,
-		dto.Converter[dto.FileAwardPointResultMetadata, dto.FileAwardPointResultRow],
+		dto.FileAwardPointRow,
+		dto.Converter[dto.FileAwardPointResultMetadata, dto.FileAwardPointRow],
 	](dataIndexStart, &fileAwardPointMetadata, sheetData)
 	if err != nil {
 		fmt.Printf("error %v", err)
 		return
 	}
-	fmt.Printf("done %v", sheet)
+	fmt.Printf("done %+v", sheet)
 }

@@ -122,6 +122,13 @@ func SentTime(v time.Time) predicate.MemberTransaction {
 	})
 }
 
+// LoyaltyTxnID applies equality check predicate on the "loyalty_txn_id" field. It's identical to LoyaltyTxnIDEQ.
+func LoyaltyTxnID(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
 // TxnDesc applies equality check predicate on the "txn_desc" field. It's identical to TxnDescEQ.
 func TxnDesc(v string) predicate.MemberTransaction {
 	return predicate.MemberTransaction(func(s *sql.Selector) {
@@ -133,6 +140,13 @@ func TxnDesc(v string) predicate.MemberTransaction {
 func Status(v int16) predicate.MemberTransaction {
 	return predicate.MemberTransaction(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStatus), v))
+	})
+}
+
+// Error applies equality check predicate on the "error" field. It's identical to ErrorEQ.
+func Error(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldError), v))
 	})
 }
 
@@ -639,6 +653,105 @@ func SentTimeLTE(v time.Time) predicate.MemberTransaction {
 	})
 }
 
+// LoyaltyTxnIDEQ applies the EQ predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDEQ(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDNEQ applies the NEQ predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDNEQ(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDIn applies the In predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDIn(vs ...string) predicate.MemberTransaction {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldLoyaltyTxnID), v...))
+	})
+}
+
+// LoyaltyTxnIDNotIn applies the NotIn predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDNotIn(vs ...string) predicate.MemberTransaction {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldLoyaltyTxnID), v...))
+	})
+}
+
+// LoyaltyTxnIDGT applies the GT predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDGT(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDGTE applies the GTE predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDGTE(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDLT applies the LT predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDLT(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDLTE applies the LTE predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDLTE(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDContains applies the Contains predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDContains(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDHasPrefix applies the HasPrefix predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDHasPrefix(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDHasSuffix applies the HasSuffix predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDHasSuffix(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDEqualFold applies the EqualFold predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDEqualFold(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
+// LoyaltyTxnIDContainsFold applies the ContainsFold predicate on the "loyalty_txn_id" field.
+func LoyaltyTxnIDContainsFold(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldLoyaltyTxnID), v))
+	})
+}
+
 // TxnDescEQ applies the EQ predicate on the "txn_desc" field.
 func TxnDescEQ(v string) predicate.MemberTransaction {
 	return predicate.MemberTransaction(func(s *sql.Selector) {
@@ -799,6 +912,105 @@ func StatusLT(v int16) predicate.MemberTransaction {
 func StatusLTE(v int16) predicate.MemberTransaction {
 	return predicate.MemberTransaction(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
+	})
+}
+
+// ErrorEQ applies the EQ predicate on the "error" field.
+func ErrorEQ(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldError), v))
+	})
+}
+
+// ErrorNEQ applies the NEQ predicate on the "error" field.
+func ErrorNEQ(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldError), v))
+	})
+}
+
+// ErrorIn applies the In predicate on the "error" field.
+func ErrorIn(vs ...string) predicate.MemberTransaction {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldError), v...))
+	})
+}
+
+// ErrorNotIn applies the NotIn predicate on the "error" field.
+func ErrorNotIn(vs ...string) predicate.MemberTransaction {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldError), v...))
+	})
+}
+
+// ErrorGT applies the GT predicate on the "error" field.
+func ErrorGT(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldError), v))
+	})
+}
+
+// ErrorGTE applies the GTE predicate on the "error" field.
+func ErrorGTE(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldError), v))
+	})
+}
+
+// ErrorLT applies the LT predicate on the "error" field.
+func ErrorLT(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldError), v))
+	})
+}
+
+// ErrorLTE applies the LTE predicate on the "error" field.
+func ErrorLTE(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldError), v))
+	})
+}
+
+// ErrorContains applies the Contains predicate on the "error" field.
+func ErrorContains(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldError), v))
+	})
+}
+
+// ErrorHasPrefix applies the HasPrefix predicate on the "error" field.
+func ErrorHasPrefix(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldError), v))
+	})
+}
+
+// ErrorHasSuffix applies the HasSuffix predicate on the "error" field.
+func ErrorHasSuffix(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldError), v))
+	})
+}
+
+// ErrorEqualFold applies the EqualFold predicate on the "error" field.
+func ErrorEqualFold(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldError), v))
+	})
+}
+
+// ErrorContainsFold applies the ContainsFold predicate on the "error" field.
+func ErrorContainsFold(v string) predicate.MemberTransaction {
+	return predicate.MemberTransaction(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldError), v))
 	})
 }
 

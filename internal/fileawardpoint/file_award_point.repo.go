@@ -3,24 +3,29 @@ package fileawardpoint
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+
+	"math"
 
 	entsql "entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
-	"math"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 type (
 	Repo interface {
 		FindById(context.Context, int) (*FileAwardPoint, error)
+		FindByStatuses(context.Context, []int16) ([]*FileAwardPoint, error)
 		FindAndPaginationByMerchantId(context.Context, *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error)
 		GetAllAndPagination(context.Context, *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error)
 		Save(context.Context, FileAwardPoint) (*FileAwardPoint, error)
+		UpdateStatusOne(context.Context, int, int16) (*FileAwardPoint, error)
+		UpdateTotalRowOne(context.Context, int, int) (*FileAwardPoint, error)
+		UpdateResultFileUrlOne(context.Context, int, string) (*FileAwardPoint, error)
 	}
-
 	repoImpl struct {
 		client *ent.Client
 	}
@@ -63,6 +68,17 @@ func (r *repoImpl) FindAndPaginationByMerchantId(ctx context.Context, dto *GetLi
 	return mapEntArrToFileAwardPointArr(faps), pagination, nil
 }
 
+func (r *repoImpl) FindByStatuses(ctx context.Context, statuses []int16) ([]*FileAwardPoint, error) {
+	faps, err := r.client.FileAwardPoint.Query().Where(fileawardpoint.StatusIn(statuses...)).All(ctx)
+
+	if err != nil {
+		logger.Errorf("fail to get file award point by status with status %#v", statuses)
+		return nil, errors.New("fail to get file award point by status")
+	}
+
+	return mapEntArrToFileAwardPointArr(faps), nil
+}
+
 func (r *repoImpl) GetAllAndPagination(ctx context.Context, dto *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error) {
 	query := r.client.FileAwardPoint.Query()
 	pagination, err := getPagination(ctx, query, dto.Page, dto.Size)
@@ -80,6 +96,34 @@ func (r *repoImpl) GetAllAndPagination(ctx context.Context, dto *GetListFileAwar
 
 func (r *repoImpl) Save(ctx context.Context, fap FileAwardPoint) (*FileAwardPoint, error) {
 	return save(ctx, r.client, fap)
+}
+
+func (r *repoImpl) UpdateStatusOne(ctx context.Context, id int, status int16) (*FileAwardPoint, error) {
+	fap, err := r.client.FileAwardPoint.UpdateOneID(id).SetStatus(status).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &FileAwardPoint{
+		FileAwardPoint: *fap,
+	}, nil
+}
+func (r *repoImpl) UpdateResultFileUrlOne(ctx context.Context, id int, resultFileUrl string) (*FileAwardPoint, error) {
+	fap, err := r.client.FileAwardPoint.UpdateOneID(id).SetResultFileURL(resultFileUrl).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &FileAwardPoint{
+		FileAwardPoint: *fap,
+	}, nil
+}
+func (r *repoImpl) UpdateTotalRowOne(ctx context.Context, id int, totalRow int) (*FileAwardPoint, error) {
+	fap, err := r.client.FileAwardPoint.UpdateOneID(id).SetStatsTotalRow(int32(totalRow)).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &FileAwardPoint{
+		FileAwardPoint: *fap,
+	}, nil
 }
 
 // Other Public functions ----------------------------------------------------------------------------------------------

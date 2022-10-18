@@ -86,6 +86,20 @@ func (mtu *MemberTransactionUpdate) SetNillableSentTime(t *time.Time) *MemberTra
 	return mtu
 }
 
+// SetLoyaltyTxnID sets the "loyalty_txn_id" field.
+func (mtu *MemberTransactionUpdate) SetLoyaltyTxnID(s string) *MemberTransactionUpdate {
+	mtu.mutation.SetLoyaltyTxnID(s)
+	return mtu
+}
+
+// SetNillableLoyaltyTxnID sets the "loyalty_txn_id" field if the given value is not nil.
+func (mtu *MemberTransactionUpdate) SetNillableLoyaltyTxnID(s *string) *MemberTransactionUpdate {
+	if s != nil {
+		mtu.SetLoyaltyTxnID(*s)
+	}
+	return mtu
+}
+
 // SetTxnDesc sets the "txn_desc" field.
 func (mtu *MemberTransactionUpdate) SetTxnDesc(s string) *MemberTransactionUpdate {
 	mtu.mutation.SetTxnDesc(s)
@@ -110,6 +124,12 @@ func (mtu *MemberTransactionUpdate) SetNillableStatus(i *int16) *MemberTransacti
 // AddStatus adds i to the "status" field.
 func (mtu *MemberTransactionUpdate) AddStatus(i int16) *MemberTransactionUpdate {
 	mtu.mutation.AddStatus(i)
+	return mtu
+}
+
+// SetError sets the "error" field.
+func (mtu *MemberTransactionUpdate) SetError(s string) *MemberTransactionUpdate {
+	mtu.mutation.SetError(s)
 	return mtu
 }
 
@@ -223,9 +243,19 @@ func (mtu *MemberTransactionUpdate) check() error {
 			return &ValidationError{Name: "ref_id", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.ref_id": %w`, err)}
 		}
 	}
+	if v, ok := mtu.mutation.LoyaltyTxnID(); ok {
+		if err := membertransaction.LoyaltyTxnIDValidator(v); err != nil {
+			return &ValidationError{Name: "loyalty_txn_id", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.loyalty_txn_id": %w`, err)}
+		}
+	}
 	if v, ok := mtu.mutation.TxnDesc(); ok {
 		if err := membertransaction.TxnDescValidator(v); err != nil {
 			return &ValidationError{Name: "txn_desc", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.txn_desc": %w`, err)}
+		}
+	}
+	if v, ok := mtu.mutation.Error(); ok {
+		if err := membertransaction.ErrorValidator(v); err != nil {
+			return &ValidationError{Name: "error", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.error": %w`, err)}
 		}
 	}
 	return nil
@@ -305,6 +335,13 @@ func (mtu *MemberTransactionUpdate) sqlSave(ctx context.Context) (n int, err err
 			Column: membertransaction.FieldSentTime,
 		})
 	}
+	if value, ok := mtu.mutation.LoyaltyTxnID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: membertransaction.FieldLoyaltyTxnID,
+		})
+	}
 	if value, ok := mtu.mutation.TxnDesc(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -324,6 +361,13 @@ func (mtu *MemberTransactionUpdate) sqlSave(ctx context.Context) (n int, err err
 			Type:   field.TypeInt16,
 			Value:  value,
 			Column: membertransaction.FieldStatus,
+		})
+	}
+	if value, ok := mtu.mutation.Error(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: membertransaction.FieldError,
 		})
 	}
 	if value, ok := mtu.mutation.CreatedAt(); ok {
@@ -417,6 +461,20 @@ func (mtuo *MemberTransactionUpdateOne) SetNillableSentTime(t *time.Time) *Membe
 	return mtuo
 }
 
+// SetLoyaltyTxnID sets the "loyalty_txn_id" field.
+func (mtuo *MemberTransactionUpdateOne) SetLoyaltyTxnID(s string) *MemberTransactionUpdateOne {
+	mtuo.mutation.SetLoyaltyTxnID(s)
+	return mtuo
+}
+
+// SetNillableLoyaltyTxnID sets the "loyalty_txn_id" field if the given value is not nil.
+func (mtuo *MemberTransactionUpdateOne) SetNillableLoyaltyTxnID(s *string) *MemberTransactionUpdateOne {
+	if s != nil {
+		mtuo.SetLoyaltyTxnID(*s)
+	}
+	return mtuo
+}
+
 // SetTxnDesc sets the "txn_desc" field.
 func (mtuo *MemberTransactionUpdateOne) SetTxnDesc(s string) *MemberTransactionUpdateOne {
 	mtuo.mutation.SetTxnDesc(s)
@@ -441,6 +499,12 @@ func (mtuo *MemberTransactionUpdateOne) SetNillableStatus(i *int16) *MemberTrans
 // AddStatus adds i to the "status" field.
 func (mtuo *MemberTransactionUpdateOne) AddStatus(i int16) *MemberTransactionUpdateOne {
 	mtuo.mutation.AddStatus(i)
+	return mtuo
+}
+
+// SetError sets the "error" field.
+func (mtuo *MemberTransactionUpdateOne) SetError(s string) *MemberTransactionUpdateOne {
+	mtuo.mutation.SetError(s)
 	return mtuo
 }
 
@@ -567,9 +631,19 @@ func (mtuo *MemberTransactionUpdateOne) check() error {
 			return &ValidationError{Name: "ref_id", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.ref_id": %w`, err)}
 		}
 	}
+	if v, ok := mtuo.mutation.LoyaltyTxnID(); ok {
+		if err := membertransaction.LoyaltyTxnIDValidator(v); err != nil {
+			return &ValidationError{Name: "loyalty_txn_id", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.loyalty_txn_id": %w`, err)}
+		}
+	}
 	if v, ok := mtuo.mutation.TxnDesc(); ok {
 		if err := membertransaction.TxnDescValidator(v); err != nil {
 			return &ValidationError{Name: "txn_desc", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.txn_desc": %w`, err)}
+		}
+	}
+	if v, ok := mtuo.mutation.Error(); ok {
+		if err := membertransaction.ErrorValidator(v); err != nil {
+			return &ValidationError{Name: "error", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.error": %w`, err)}
 		}
 	}
 	return nil
@@ -666,6 +740,13 @@ func (mtuo *MemberTransactionUpdateOne) sqlSave(ctx context.Context) (_node *Mem
 			Column: membertransaction.FieldSentTime,
 		})
 	}
+	if value, ok := mtuo.mutation.LoyaltyTxnID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: membertransaction.FieldLoyaltyTxnID,
+		})
+	}
 	if value, ok := mtuo.mutation.TxnDesc(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -685,6 +766,13 @@ func (mtuo *MemberTransactionUpdateOne) sqlSave(ctx context.Context) (_node *Mem
 			Type:   field.TypeInt16,
 			Value:  value,
 			Column: membertransaction.FieldStatus,
+		})
+	}
+	if value, ok := mtuo.mutation.Error(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: membertransaction.FieldError,
 		})
 	}
 	if value, ok := mtuo.mutation.CreatedAt(); ok {

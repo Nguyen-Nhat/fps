@@ -39,7 +39,7 @@ func TestService_UploadFileAwardPointResult(t *testing.T) {
 
 	fileUrl := "https://storage.googleapis.com/develop-teko-storage/media/doc/2022/10/9/Fumart%20Loyalty%20-%20nap%20diem%20KH_6.xlsx"
 
-	fabResults := []dto.FileAwardPointResultRow{
+	fabResults := []dto.FileAwardPointRow{
 		{RowId: 1, Phone: "0393227489", Point: 1, Note: "This is note....", Error: "This is error ..."},
 		{RowId: 2, Phone: "0393227433", Point: 32, Note: "This is note 23 ....", Error: "This is error 23 ..."},
 		{RowId: 3, Phone: "0393227433", Point: 32, Note: "This is note 23 ....", Error: "This is error 23 ..."},

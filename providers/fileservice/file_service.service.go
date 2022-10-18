@@ -3,19 +3,21 @@ package fileservice
 import (
 	"bytes"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
+	"strconv"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 	"github.com/xuri/excelize/v2"
-	"strconv"
 )
 
 type (
 	// IService ...
 	IService interface {
-		UploadFileAwardPointResult([]dto.FileAwardPointResultRow, string) (string, error)
+		UploadFileAwardPointResult([]dto.FileAwardPointRow, string) (string, error)
 		LoadFileAwardPoint(string) (*dto.Sheet[dto.FileAwardPointRow], error)
+		UploadFileAwardPointError([]dto.ErrorRow, string) (string, error)
 	}
 
 	// Service ...
@@ -33,14 +35,16 @@ func NewService(client IClient) *Service {
 	}
 }
 
-func (s *Service) UploadFileAwardPointResult(fabResults []dto.FileAwardPointResultRow, previousResultFileUrl string) (string, error) {
+func (s *Service) UploadFileAwardPointResult(fabResults []dto.FileAwardPointRow, previousResultFileUrl string) (string, error) {
 	// 1. Load previous result file
-	logger.Infof("fetch file %v", previousResultFileUrl)
-	var previousFAPResults []dto.FileAwardPointResultRow
+	var previousFAPResults []dto.FileAwardPointRow
 
 	// 2. Mix previous result with current result
 	// todo need to check this case, we can append data (as below line), override data or mix data
-	combinedFAPResults := append(previousFAPResults, fabResults...)
+	combinedFAPResults := fabResults
+	if previousResultFileUrl != "" {
+		combinedFAPResults = append(combinedFAPResults, previousFAPResults...)
+	}
 
 	// 3. Convert data to bytes
 	dataByteBuffer, err := makeResultFile(combinedFAPResults)
@@ -49,20 +53,48 @@ func (s *Service) UploadFileAwardPointResult(fabResults []dto.FileAwardPointResu
 	}
 
 	// 4. Build request
-	fileName := getResultFileNameFromUrl(previousResultFileUrl)
+	fileName := utils.ExtractFileName(previousResultFileUrl)
+	fileUrl, err := s.UploadFile(dataByteBuffer, fileName.FullName)
+	if err != nil {
+		logger.Errorf("Cannot upload file, got: %v", err)
+		return "", err
+	}
+
+	return fileUrl, nil
+}
+
+func (s *Service) UploadFileAwardPointError(errorRows []dto.ErrorRow, fileName string) (string, error) {
+	// 1. Convert data to bytes
+	dataByteBuffer, err := makeResultFileByError(errorRows)
+	if err != nil {
+		logger.Errorf("Failed to convert data to excel %v", err)
+	}
+
+	// 4. Build request
+	fileUrl, err := s.UploadFile(dataByteBuffer, fileName)
+	if err != nil {
+		logger.Errorf("Cannot upload file, got: %v", err)
+		return "", err
+	}
+
+	return fileUrl, nil
+}
+
+func (s *Service) UploadFile(byteData *bytes.Buffer, fileName string) (string, error) {
+	// 1. Build request
 	req := uploadFileRequest{
-		FileData: dataByteBuffer.Bytes(),
+		FileData: byteData.Bytes(),
 		FileName: fileName,
 	}
 
-	// 5. Request upload
+	// 2. Request upload
 	res, err := s.client.uploadFile(req)
 	if err != nil {
 		logger.Errorf("Upload file to File Service failed: %v", err)
 		return "", err
 	}
 
-	// 6. Return
+	// 3. Return
 	logger.Infof("Response = %v", res)
 	return res.Url, nil
 }
@@ -101,17 +133,7 @@ func (s *Service) LoadFileAwardPoint(url string) (*dto.Sheet[dto.FileAwardPointR
 
 // Private method ------------------------------------------------------------------------------------------------------
 
-func getResultFileNameFromUrl(previousResultFileUrl string) string {
-	fileNameMatch := constant.FileNameRegex.FindStringSubmatch(previousResultFileUrl)
-	var fileName string
-	if len(fileNameMatch) < 2 {
-		fileName = "file_award_point_result.xlsx"
-	}
-	fileName = fileNameMatch[1]
-	return fileName
-}
-
-func makeResultFile(rows []dto.FileAwardPointResultRow) (*bytes.Buffer, error) {
+func makeResultFile(rows []dto.FileAwardPointRow) (*bytes.Buffer, error) {
 	f := excelize.NewFile()
 	// Create a new sheet.
 	sheetName := "Sheet1"
@@ -128,7 +150,48 @@ func makeResultFile(rows []dto.FileAwardPointResultRow) (*bytes.Buffer, error) {
 	for rowId, row := range rows {
 		axis := fmt.Sprintf("A%v", rowId+dataIndexStart)
 		pointStr := strconv.Itoa(row.Point)
-		_ = f.SetSheetRow(sheetName, axis, &[]interface{}{row.RowId, row.Phone, pointStr, row.Note, row.Error})
+		err := f.SetSheetRow(sheetName, axis, &[]interface{}{row.RowId, row.Phone, pointStr, row.Note, row.Error})
+		if err != nil {
+			logger.Errorf("Cannot set sheet row, got %v", err)
+			return nil, err
+		}
+	}
+
+	return f.WriteToBuffer()
+}
+
+func makeResultFileByError(rows []dto.ErrorRow) (*bytes.Buffer, error) {
+	f := excelize.NewFile()
+	// Create a new sheet.
+	sheetName := "Sheet1"
+	index := f.NewSheet(sheetName)
+	// Set active sheet of the workbook.
+	f.SetActiveSheet(index)
+
+	// Set header
+	_ = f.SetSheetRow(sheetName, "A1", &[]interface{}{"STT", "Phone number (*)", "Points (*)", "Note", "Error"})
+	_ = f.SetSheetRow(sheetName, "A2", &[]interface{}{"Số thứ tự", "SĐT khách hàng", "Số điểm nạp", "Ghi chú giao dịch", "Kết quả"})
+
+	// Set each row
+	dataIndexStart := 3
+	numberOfColumn := 5
+
+	for rowId, row := range rows {
+		rawDataRow := make([]interface{}, numberOfColumn)
+		rawDataRow[0] = row.RowId
+		for index, rowCell := range row.RowData {
+			if index <= numberOfColumn-2 {
+				rawDataRow[index+1] = rowCell
+			}
+		}
+
+		rawDataRow[numberOfColumn-1] = row.Reason
+		axis := fmt.Sprintf("A%v", rowId+dataIndexStart)
+		err := f.SetSheetRow(sheetName, axis, &rawDataRow)
+		if err != nil {
+			logger.Errorf("Cannot set sheet row, got %v", err)
+			return nil, err
+		}
 	}
 
 	return f.WriteToBuffer()

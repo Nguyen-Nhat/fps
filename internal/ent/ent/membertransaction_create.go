@@ -64,6 +64,20 @@ func (mtc *MemberTransactionCreate) SetNillableSentTime(t *time.Time) *MemberTra
 	return mtc
 }
 
+// SetLoyaltyTxnID sets the "loyalty_txn_id" field.
+func (mtc *MemberTransactionCreate) SetLoyaltyTxnID(s string) *MemberTransactionCreate {
+	mtc.mutation.SetLoyaltyTxnID(s)
+	return mtc
+}
+
+// SetNillableLoyaltyTxnID sets the "loyalty_txn_id" field if the given value is not nil.
+func (mtc *MemberTransactionCreate) SetNillableLoyaltyTxnID(s *string) *MemberTransactionCreate {
+	if s != nil {
+		mtc.SetLoyaltyTxnID(*s)
+	}
+	return mtc
+}
+
 // SetTxnDesc sets the "txn_desc" field.
 func (mtc *MemberTransactionCreate) SetTxnDesc(s string) *MemberTransactionCreate {
 	mtc.mutation.SetTxnDesc(s)
@@ -81,6 +95,12 @@ func (mtc *MemberTransactionCreate) SetNillableStatus(i *int16) *MemberTransacti
 	if i != nil {
 		mtc.SetStatus(*i)
 	}
+	return mtc
+}
+
+// SetError sets the "error" field.
+func (mtc *MemberTransactionCreate) SetError(s string) *MemberTransactionCreate {
+	mtc.mutation.SetError(s)
 	return mtc
 }
 
@@ -193,6 +213,10 @@ func (mtc *MemberTransactionCreate) defaults() {
 		v := membertransaction.DefaultSentTime
 		mtc.mutation.SetSentTime(v)
 	}
+	if _, ok := mtc.mutation.LoyaltyTxnID(); !ok {
+		v := membertransaction.DefaultLoyaltyTxnID
+		mtc.mutation.SetLoyaltyTxnID(v)
+	}
 	if _, ok := mtc.mutation.Status(); !ok {
 		v := membertransaction.DefaultStatus
 		mtc.mutation.SetStatus(v)
@@ -242,6 +266,14 @@ func (mtc *MemberTransactionCreate) check() error {
 	if _, ok := mtc.mutation.SentTime(); !ok {
 		return &ValidationError{Name: "sent_time", err: errors.New(`ent: missing required field "MemberTransaction.sent_time"`)}
 	}
+	if _, ok := mtc.mutation.LoyaltyTxnID(); !ok {
+		return &ValidationError{Name: "loyalty_txn_id", err: errors.New(`ent: missing required field "MemberTransaction.loyalty_txn_id"`)}
+	}
+	if v, ok := mtc.mutation.LoyaltyTxnID(); ok {
+		if err := membertransaction.LoyaltyTxnIDValidator(v); err != nil {
+			return &ValidationError{Name: "loyalty_txn_id", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.loyalty_txn_id": %w`, err)}
+		}
+	}
 	if _, ok := mtc.mutation.TxnDesc(); !ok {
 		return &ValidationError{Name: "txn_desc", err: errors.New(`ent: missing required field "MemberTransaction.txn_desc"`)}
 	}
@@ -252,6 +284,14 @@ func (mtc *MemberTransactionCreate) check() error {
 	}
 	if _, ok := mtc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "MemberTransaction.status"`)}
+	}
+	if _, ok := mtc.mutation.Error(); !ok {
+		return &ValidationError{Name: "error", err: errors.New(`ent: missing required field "MemberTransaction.error"`)}
+	}
+	if v, ok := mtc.mutation.Error(); ok {
+		if err := membertransaction.ErrorValidator(v); err != nil {
+			return &ValidationError{Name: "error", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.error": %w`, err)}
+		}
 	}
 	if _, ok := mtc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "MemberTransaction.created_at"`)}
@@ -334,6 +374,14 @@ func (mtc *MemberTransactionCreate) createSpec() (*MemberTransaction, *sqlgraph.
 		})
 		_node.SentTime = value
 	}
+	if value, ok := mtc.mutation.LoyaltyTxnID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: membertransaction.FieldLoyaltyTxnID,
+		})
+		_node.LoyaltyTxnID = value
+	}
 	if value, ok := mtc.mutation.TxnDesc(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -349,6 +397,14 @@ func (mtc *MemberTransactionCreate) createSpec() (*MemberTransaction, *sqlgraph.
 			Column: membertransaction.FieldStatus,
 		})
 		_node.Status = value
+	}
+	if value, ok := mtc.mutation.Error(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: membertransaction.FieldError,
+		})
+		_node.Error = value
 	}
 	if value, ok := mtc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
