@@ -130,7 +130,7 @@ func TestGenerateRandomBytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GenerateRandomBytes(tt.args.byteLength)
+			got, err := generateRandomBytes(tt.args.byteLength)
 			if !errors.Is(err, tt.err) {
 				t.Errorf("HiddenString() = %v, want err %v", err, tt.err)
 			}
@@ -204,12 +204,55 @@ func TestExtractFileName(t *testing.T) {
 				Extension: "xlsx",
 			},
 		},
+		{
+			name: "get file name from path",
+			args: args{"https://storage.googleapis.com/develop-teko-storage/media/doc/2022/10/19/7f60d01e-1e0a-47ab-a7fc-4c8e4816f7a0/VietMeta%20-%20nap%20diem%20KH%202022-10-19%20%28part%204%29.xlsx"},
+			want: FileName{
+				FullName:  "VietMeta - nap diem KH 2022-10-19 (part 4).xlsx",
+				Name:      "VietMeta - nap diem KH 2022-10-19 (part 4)",
+				Extension: "xlsx",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ExtractFileName(tt.args.filePath)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Filename = %#v, want %#v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRandStringBytes(t *testing.T) {
+	type args struct {
+		numberChars int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "test random string with length = 0",
+			args: args{numberChars: 0},
+			want: 0,
+		},
+		{
+			name: "test random string with length = 1",
+			args: args{numberChars: 1},
+			want: 1,
+		},
+		{
+			name: "test random string with length = 100",
+			args: args{numberChars: 100},
+			want: 100,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := RandStringBytes(tt.args.numberChars); len(got) != tt.want {
+				t.Errorf("RandStringBytes() = %v, want %v", got, tt.want)
 			}
 		})
 	}

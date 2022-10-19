@@ -10,6 +10,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"io"
 	"log"
+	mr "math/rand"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -152,11 +153,11 @@ func createFormFile(w *multipart.Writer, fieldName, fileName string) (io.Writer,
 	return w.CreatePart(h)
 }
 
-// GenerateRandomBytes returns securely generated random bytes.
+// generateRandomBytes returns securely generated random bytes.
 // It will return an error if the system's secure random
 // number generator fails to function correctly, in which
 // case the caller should not continue.
-func GenerateRandomBytes(byteLength int) ([]byte, error) {
+func generateRandomBytes(byteLength int) ([]byte, error) {
 	b := make([]byte, byteLength)
 	_, err := rand.Read(b)
 	// Note that err == nil only if we read len(b) bytes.
@@ -171,8 +172,18 @@ func GenerateRandomBytes(byteLength int) ([]byte, error) {
 // Length of string = ceil(1.333 * byteLength)
 // securely generated random string.
 func GenerateRandomString(byteLength int) (string, error) {
-	b, err := GenerateRandomBytes(byteLength)
+	b, err := generateRandomBytes(byteLength)
 	return base64.RawStdEncoding.EncodeToString(b), err
+}
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func RandStringBytes(numberChars int) string {
+	b := make([]byte, numberChars)
+	for i := range b {
+		b[i] = letterBytes[mr.Intn(len(letterBytes))]
+	}
+	return string(b)
 }
 
 func ExtractFileName(filePath string) FileName {

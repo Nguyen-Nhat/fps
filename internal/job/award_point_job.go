@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
@@ -240,11 +241,7 @@ func (f FileProcessingJob) handleCaseProcessingAwardPoint(ctx context.Context, f
 func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *fileawardpoint.FileAwardPoint, record membertxn.MemberTxnDTO) (string, error) {
 	logger.Infof("Granting point for phone number %s", record.Phone)
 	// 1. Generate refID
-	refID, err := utils.GenerateRandomString(16)
-	if err != nil {
-		logger.Errorf("Cannot generate random id, got %v", err)
-		return "Nạp điểm lỗi. Thử lại sau!", err
-	}
+	refID := strings.ToUpper(utils.RandStringBytes(10))
 
 	// 2. Call API grant point in loyalty core
 	res, err := f.loyalClient.GrantPoint(loyalty.GrantPointRequest{
