@@ -2,6 +2,7 @@ server:
   http:
     host: localhost
     port: 10080
+  api_key: '_api_key_' # should replace api key by K8S Env
 
 database:
   mysql:
@@ -9,7 +10,7 @@ database:
     host: localhost
     port: 3306
     username: loyalty_file_process_service
-    password: 1 # --no-verify
+    password: 1
     options: parseTime=true
 
 logger:
