@@ -195,6 +195,15 @@ func TestExtractFileName(t *testing.T) {
 				Extension: "doc",
 			},
 		},
+		{
+			name: "get file name from path",
+			args: args{"https://storage.googleapis.com/develop-teko-storage/media/doc/2022/10/19/4d9ee61c-b725-47ef-b652-4e7bbf1c57fb/VietMeta%20-%20nap%20diem%20KH%202022-10-19.xlsx"},
+			want: FileName{
+				FullName:  "VietMeta - nap diem KH 2022-10-19.xlsx",
+				Name:      "VietMeta - nap diem KH 2022-10-19",
+				Extension: "xlsx",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

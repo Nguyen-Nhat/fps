@@ -6,14 +6,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
-
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"net/url"
 )
 
 // Type ----------------------------------------------------------------------------------------------------------------
@@ -179,10 +179,18 @@ func ExtractFileName(filePath string) FileName {
 	matches := constant.FileNameRegex.FindStringSubmatch(filePath)
 	if len(matches) >= 4 {
 		return FileName{
-			FullName:  matches[1],
-			Name:      matches[2],
+			FullName:  urlDecoded(matches[1]),
+			Name:      urlDecoded(matches[2]),
 			Extension: matches[3],
 		}
 	}
 	return FileName{"unknown", "unknown", "unknown"}
+}
+
+func urlDecoded(filePath string) string {
+	result, err := url.QueryUnescape(filePath)
+	if err != nil {
+		result = filePath
+	}
+	return result
 }
