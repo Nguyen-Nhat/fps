@@ -16,6 +16,7 @@ var (
 		{Name: "display_name", Type: field.TypeString},
 		{Name: "file_url", Type: field.TypeString},
 		{Name: "result_file_url", Type: field.TypeString},
+		{Name: "note", Type: field.TypeString, Size: 255},
 		{Name: "status", Type: field.TypeInt16, Default: 0},
 		{Name: "stats_total_row", Type: field.TypeInt32, Default: 0},
 		{Name: "stats_total_success", Type: field.TypeInt32, Default: 0},
@@ -39,8 +40,10 @@ var (
 		{Name: "order_code", Type: field.TypeString, Size: 50},
 		{Name: "ref_id", Type: field.TypeString, Size: 50},
 		{Name: "sent_time", Type: field.TypeTime},
+		{Name: "loyalty_txn_id", Type: field.TypeInt64, Default: 0},
 		{Name: "txn_desc", Type: field.TypeString, Size: 255},
 		{Name: "status", Type: field.TypeInt16, Default: 0},
+		{Name: "error", Type: field.TypeString, Size: 255},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}

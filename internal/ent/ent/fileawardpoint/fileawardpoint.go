@@ -19,6 +19,8 @@ const (
 	FieldFileURL = "file_url"
 	// FieldResultFileURL holds the string denoting the result_file_url field in the database.
 	FieldResultFileURL = "result_file_url"
+	// FieldNote holds the string denoting the note field in the database.
+	FieldNote = "note"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldStatsTotalRow holds the string denoting the stats_total_row field in the database.
@@ -44,6 +46,7 @@ var Columns = []string{
 	FieldDisplayName,
 	FieldFileURL,
 	FieldResultFileURL,
+	FieldNote,
 	FieldStatus,
 	FieldStatsTotalRow,
 	FieldStatsTotalSuccess,
@@ -68,8 +71,8 @@ var (
 	DisplayNameValidator func(string) error
 	// FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
 	FileURLValidator func(string) error
-	// ResultFileURLValidator is a validator for the "result_file_url" field. It is called by the builders before save.
-	ResultFileURLValidator func(string) error
+	// NoteValidator is a validator for the "note" field. It is called by the builders before save.
+	NoteValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus int16
 	// DefaultStatsTotalRow holds the default value on creation for the "stats_total_row" field.
@@ -77,7 +80,9 @@ var (
 	// DefaultStatsTotalSuccess holds the default value on creation for the "stats_total_success" field.
 	DefaultStatsTotalSuccess int32
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
-	DefaultCreatedAt time.Time
+	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt time.Time
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
 )

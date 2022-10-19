@@ -24,7 +24,9 @@ type FileAwardPoint struct {
 	FileURL string `json:"file_url,omitempty"`
 	// ResultFileURL holds the value of the "result_file_url" field.
 	ResultFileURL string `json:"result_file_url,omitempty"`
-	// Status holds the value of the "status" field.
+	// Note holds the value of the "note" field.
+	Note string `json:"note,omitempty"`
+	// Init=1; Processing=2; Failed=3; Finished=4
 	Status int16 `json:"status,omitempty"`
 	// StatsTotalRow holds the value of the "stats_total_row" field.
 	StatsTotalRow int32 `json:"stats_total_row,omitempty"`
@@ -47,7 +49,7 @@ func (*FileAwardPoint) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case fileawardpoint.FieldID, fileawardpoint.FieldMerchantID, fileawardpoint.FieldStatus, fileawardpoint.FieldStatsTotalRow, fileawardpoint.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
-		case fileawardpoint.FieldDisplayName, fileawardpoint.FieldFileURL, fileawardpoint.FieldResultFileURL, fileawardpoint.FieldCreatedBy, fileawardpoint.FieldUpdatedBy:
+		case fileawardpoint.FieldDisplayName, fileawardpoint.FieldFileURL, fileawardpoint.FieldResultFileURL, fileawardpoint.FieldNote, fileawardpoint.FieldCreatedBy, fileawardpoint.FieldUpdatedBy:
 			values[i] = new(sql.NullString)
 		case fileawardpoint.FieldCreatedAt, fileawardpoint.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -95,6 +97,12 @@ func (fap *FileAwardPoint) assignValues(columns []string, values []interface{}) 
 				return fmt.Errorf("unexpected type %T for field result_file_url", values[i])
 			} else if value.Valid {
 				fap.ResultFileURL = value.String
+			}
+		case fileawardpoint.FieldNote:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field note", values[i])
+			} else if value.Valid {
+				fap.Note = value.String
 			}
 		case fileawardpoint.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -177,6 +185,9 @@ func (fap *FileAwardPoint) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("result_file_url=")
 	builder.WriteString(fap.ResultFileURL)
+	builder.WriteString(", ")
+	builder.WriteString("note=")
+	builder.WriteString(fap.Note)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", fap.Status))

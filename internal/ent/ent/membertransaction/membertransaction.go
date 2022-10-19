@@ -23,10 +23,14 @@ const (
 	FieldRefID = "ref_id"
 	// FieldSentTime holds the string denoting the sent_time field in the database.
 	FieldSentTime = "sent_time"
+	// FieldLoyaltyTxnID holds the string denoting the loyalty_txn_id field in the database.
+	FieldLoyaltyTxnID = "loyalty_txn_id"
 	// FieldTxnDesc holds the string denoting the txn_desc field in the database.
 	FieldTxnDesc = "txn_desc"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldError holds the string denoting the error field in the database.
+	FieldError = "error"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -44,8 +48,10 @@ var Columns = []string{
 	FieldOrderCode,
 	FieldRefID,
 	FieldSentTime,
+	FieldLoyaltyTxnID,
 	FieldTxnDesc,
 	FieldStatus,
+	FieldError,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -69,10 +75,14 @@ var (
 	RefIDValidator func(string) error
 	// DefaultSentTime holds the default value on creation for the "sent_time" field.
 	DefaultSentTime time.Time
+	// DefaultLoyaltyTxnID holds the default value on creation for the "loyalty_txn_id" field.
+	DefaultLoyaltyTxnID int64
 	// TxnDescValidator is a validator for the "txn_desc" field. It is called by the builders before save.
 	TxnDescValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus int16
+	// ErrorValidator is a validator for the "error" field. It is called by the builders before save.
+	ErrorValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

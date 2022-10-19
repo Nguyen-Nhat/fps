@@ -3,16 +3,23 @@ package common
 import (
 	"context"
 	"database/sql"
-	entsql "entgo.io/ent/dialect/sql"
 	"fmt"
+	"log"
+	"os"
+
+	entsql "entgo.io/ent/dialect/sql"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/xo/dburl"
-	"log"
-	"os"
 )
+
+func CreateEntClientFromDB(db *sql.DB) *ent.Client {
+	drv := entsql.OpenDB("mysql", db)
+	return ent.NewClient(ent.Driver(drv))
+}
 
 func PrepareDatabase(ctx context.Context) *sql.DB {
 	// 1. Set `RUN_PROFILE=TEST` for testing
@@ -21,9 +28,7 @@ func PrepareDatabase(ctx context.Context) *sql.DB {
 	// 2. Init DB Connection, DB Client
 	dbConf := config.Load("../..").Database.MySQL
 	db, _ := dburl.Open(dbConf.DatabaseURI()) // no handle error, if error test will be terminated
-	drv := entsql.OpenDB("mysql", db)
-	entClient := ent.NewClient(ent.Driver(drv))
-
+	entClient := CreateEntClientFromDB(db)
 	// 3. Drop tables in DB
 	_, _ = db.ExecContext(ctx, "DROP TABLE users")
 	_, _ = db.ExecContext(ctx, "DROP TABLE file_award_point")

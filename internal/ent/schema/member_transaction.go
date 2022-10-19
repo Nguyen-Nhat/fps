@@ -1,11 +1,12 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
-	"time"
 )
 
 type MemberTransaction struct {
@@ -25,11 +26,13 @@ func (MemberTransaction) Fields() []ent.Field {
 		field.Int32("file_award_point_id"),
 		field.Int64("point"),
 		field.String("phone").MaxLen(15).NotEmpty(),
-		field.String("order_code").MaxLen(50).NotEmpty(),
-		field.String("ref_id").MaxLen(50).NotEmpty(),
+		field.String("order_code").MaxLen(50),
+		field.String("ref_id").MaxLen(50),
 		field.Time("sent_time").Default(time.Now()),
+		field.Int64("loyalty_txn_id").Default(0),
 		field.String("txn_desc").MaxLen(255),
-		field.Int16("status").Default(0),
+		field.Int16("status").Default(0).Comment("Init=1; Processing=2; Failed=3; Success=4; Timeout=5"),
+		field.String("error").MaxLen(255),
 		field.Time("created_at").Default(time.Now()),
 		field.Time("updated_at").Default(time.Now()),
 	}

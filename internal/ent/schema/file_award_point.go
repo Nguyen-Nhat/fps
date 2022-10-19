@@ -1,11 +1,12 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
-	"time"
 )
 
 type FileAwardPoint struct {
@@ -25,12 +26,13 @@ func (FileAwardPoint) Fields() []ent.Field {
 		field.Int64("merchant_id"),
 		field.String("display_name").NotEmpty(),
 		field.String("file_url").NotEmpty(),
-		field.String("result_file_url").NotEmpty(),
-		field.Int16("status").Default(0),
+		field.String("result_file_url"),
+		field.String("note").MaxLen(255),
+		field.Int16("status").Default(0).Comment("Init=1; Processing=2; Failed=3; Finished=4"),
 		field.Int32("stats_total_row").Default(0),
 		field.Int32("stats_total_success").Default(0),
-		field.Time("created_at").Default(time.Now()),
-		field.Time("updated_at").Default(time.Now()),
+		field.Time("created_at").Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 		field.String("created_by"),
 		field.String("updated_by"),
 	}

@@ -9,10 +9,14 @@ type FileAwardPoint struct {
 	ent.FileAwardPoint
 }
 
+func Name() string {
+	return "FileAwardPoint"
+}
+
 // Status ENUM ...
 const (
-	statusInit       = 0
-	statusProcessing = 1
-	statusSuccess    = 2
-	statusFailed     = 3
+	StatusInit       = 1
+	StatusProcessing = 2
+	StatusFailed     = 3
+	StatusFinished   = 4
 )

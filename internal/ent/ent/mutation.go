@@ -42,6 +42,7 @@ type FileAwardPointMutation struct {
 	display_name           *string
 	file_url               *string
 	result_file_url        *string
+	note                   *string
 	status                 *int16
 	addstatus              *int16
 	stats_total_row        *int32
@@ -318,6 +319,42 @@ func (m *FileAwardPointMutation) OldResultFileURL(ctx context.Context) (v string
 // ResetResultFileURL resets all changes to the "result_file_url" field.
 func (m *FileAwardPointMutation) ResetResultFileURL() {
 	m.result_file_url = nil
+}
+
+// SetNote sets the "note" field.
+func (m *FileAwardPointMutation) SetNote(s string) {
+	m.note = &s
+}
+
+// Note returns the value of the "note" field in the mutation.
+func (m *FileAwardPointMutation) Note() (r string, exists bool) {
+	v := m.note
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNote returns the old "note" field's value of the FileAwardPoint entity.
+// If the FileAwardPoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileAwardPointMutation) OldNote(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNote is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNote requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNote: %w", err)
+	}
+	return oldValue.Note, nil
+}
+
+// ResetNote resets all changes to the "note" field.
+func (m *FileAwardPointMutation) ResetNote() {
+	m.note = nil
 }
 
 // SetStatus sets the "status" field.
@@ -651,7 +688,7 @@ func (m *FileAwardPointMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FileAwardPointMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.merchant_id != nil {
 		fields = append(fields, fileawardpoint.FieldMerchantID)
 	}
@@ -663,6 +700,9 @@ func (m *FileAwardPointMutation) Fields() []string {
 	}
 	if m.result_file_url != nil {
 		fields = append(fields, fileawardpoint.FieldResultFileURL)
+	}
+	if m.note != nil {
+		fields = append(fields, fileawardpoint.FieldNote)
 	}
 	if m.status != nil {
 		fields = append(fields, fileawardpoint.FieldStatus)
@@ -701,6 +741,8 @@ func (m *FileAwardPointMutation) Field(name string) (ent.Value, bool) {
 		return m.FileURL()
 	case fileawardpoint.FieldResultFileURL:
 		return m.ResultFileURL()
+	case fileawardpoint.FieldNote:
+		return m.Note()
 	case fileawardpoint.FieldStatus:
 		return m.Status()
 	case fileawardpoint.FieldStatsTotalRow:
@@ -732,6 +774,8 @@ func (m *FileAwardPointMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldFileURL(ctx)
 	case fileawardpoint.FieldResultFileURL:
 		return m.OldResultFileURL(ctx)
+	case fileawardpoint.FieldNote:
+		return m.OldNote(ctx)
 	case fileawardpoint.FieldStatus:
 		return m.OldStatus(ctx)
 	case fileawardpoint.FieldStatsTotalRow:
@@ -782,6 +826,13 @@ func (m *FileAwardPointMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetResultFileURL(v)
+		return nil
+	case fileawardpoint.FieldNote:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNote(v)
 		return nil
 	case fileawardpoint.FieldStatus:
 		v, ok := value.(int16)
@@ -944,6 +995,9 @@ func (m *FileAwardPointMutation) ResetField(name string) error {
 	case fileawardpoint.FieldResultFileURL:
 		m.ResetResultFileURL()
 		return nil
+	case fileawardpoint.FieldNote:
+		m.ResetNote()
+		return nil
 	case fileawardpoint.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -1031,9 +1085,12 @@ type MemberTransactionMutation struct {
 	order_code             *string
 	ref_id                 *string
 	sent_time              *time.Time
+	loyalty_txn_id         *int64
+	addloyalty_txn_id      *int64
 	txn_desc               *string
 	status                 *int16
 	addstatus              *int16
+	error                  *string
 	created_at             *time.Time
 	updated_at             *time.Time
 	clearedFields          map[string]struct{}
@@ -1396,6 +1453,62 @@ func (m *MemberTransactionMutation) ResetSentTime() {
 	m.sent_time = nil
 }
 
+// SetLoyaltyTxnID sets the "loyalty_txn_id" field.
+func (m *MemberTransactionMutation) SetLoyaltyTxnID(i int64) {
+	m.loyalty_txn_id = &i
+	m.addloyalty_txn_id = nil
+}
+
+// LoyaltyTxnID returns the value of the "loyalty_txn_id" field in the mutation.
+func (m *MemberTransactionMutation) LoyaltyTxnID() (r int64, exists bool) {
+	v := m.loyalty_txn_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLoyaltyTxnID returns the old "loyalty_txn_id" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldLoyaltyTxnID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLoyaltyTxnID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLoyaltyTxnID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLoyaltyTxnID: %w", err)
+	}
+	return oldValue.LoyaltyTxnID, nil
+}
+
+// AddLoyaltyTxnID adds i to the "loyalty_txn_id" field.
+func (m *MemberTransactionMutation) AddLoyaltyTxnID(i int64) {
+	if m.addloyalty_txn_id != nil {
+		*m.addloyalty_txn_id += i
+	} else {
+		m.addloyalty_txn_id = &i
+	}
+}
+
+// AddedLoyaltyTxnID returns the value that was added to the "loyalty_txn_id" field in this mutation.
+func (m *MemberTransactionMutation) AddedLoyaltyTxnID() (r int64, exists bool) {
+	v := m.addloyalty_txn_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLoyaltyTxnID resets all changes to the "loyalty_txn_id" field.
+func (m *MemberTransactionMutation) ResetLoyaltyTxnID() {
+	m.loyalty_txn_id = nil
+	m.addloyalty_txn_id = nil
+}
+
 // SetTxnDesc sets the "txn_desc" field.
 func (m *MemberTransactionMutation) SetTxnDesc(s string) {
 	m.txn_desc = &s
@@ -1486,6 +1599,42 @@ func (m *MemberTransactionMutation) AddedStatus() (r int16, exists bool) {
 func (m *MemberTransactionMutation) ResetStatus() {
 	m.status = nil
 	m.addstatus = nil
+}
+
+// SetError sets the "error" field.
+func (m *MemberTransactionMutation) SetError(s string) {
+	m.error = &s
+}
+
+// Error returns the value of the "error" field in the mutation.
+func (m *MemberTransactionMutation) Error() (r string, exists bool) {
+	v := m.error
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldError returns the old "error" field's value of the MemberTransaction entity.
+// If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberTransactionMutation) OldError(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldError is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldError requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldError: %w", err)
+	}
+	return oldValue.Error, nil
+}
+
+// ResetError resets all changes to the "error" field.
+func (m *MemberTransactionMutation) ResetError() {
+	m.error = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1579,7 +1728,7 @@ func (m *MemberTransactionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MemberTransactionMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.file_award_point_id != nil {
 		fields = append(fields, membertransaction.FieldFileAwardPointID)
 	}
@@ -1598,11 +1747,17 @@ func (m *MemberTransactionMutation) Fields() []string {
 	if m.sent_time != nil {
 		fields = append(fields, membertransaction.FieldSentTime)
 	}
+	if m.loyalty_txn_id != nil {
+		fields = append(fields, membertransaction.FieldLoyaltyTxnID)
+	}
 	if m.txn_desc != nil {
 		fields = append(fields, membertransaction.FieldTxnDesc)
 	}
 	if m.status != nil {
 		fields = append(fields, membertransaction.FieldStatus)
+	}
+	if m.error != nil {
+		fields = append(fields, membertransaction.FieldError)
 	}
 	if m.created_at != nil {
 		fields = append(fields, membertransaction.FieldCreatedAt)
@@ -1630,10 +1785,14 @@ func (m *MemberTransactionMutation) Field(name string) (ent.Value, bool) {
 		return m.RefID()
 	case membertransaction.FieldSentTime:
 		return m.SentTime()
+	case membertransaction.FieldLoyaltyTxnID:
+		return m.LoyaltyTxnID()
 	case membertransaction.FieldTxnDesc:
 		return m.TxnDesc()
 	case membertransaction.FieldStatus:
 		return m.Status()
+	case membertransaction.FieldError:
+		return m.Error()
 	case membertransaction.FieldCreatedAt:
 		return m.CreatedAt()
 	case membertransaction.FieldUpdatedAt:
@@ -1659,10 +1818,14 @@ func (m *MemberTransactionMutation) OldField(ctx context.Context, name string) (
 		return m.OldRefID(ctx)
 	case membertransaction.FieldSentTime:
 		return m.OldSentTime(ctx)
+	case membertransaction.FieldLoyaltyTxnID:
+		return m.OldLoyaltyTxnID(ctx)
 	case membertransaction.FieldTxnDesc:
 		return m.OldTxnDesc(ctx)
 	case membertransaction.FieldStatus:
 		return m.OldStatus(ctx)
+	case membertransaction.FieldError:
+		return m.OldError(ctx)
 	case membertransaction.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case membertransaction.FieldUpdatedAt:
@@ -1718,6 +1881,13 @@ func (m *MemberTransactionMutation) SetField(name string, value ent.Value) error
 		}
 		m.SetSentTime(v)
 		return nil
+	case membertransaction.FieldLoyaltyTxnID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLoyaltyTxnID(v)
+		return nil
 	case membertransaction.FieldTxnDesc:
 		v, ok := value.(string)
 		if !ok {
@@ -1731,6 +1901,13 @@ func (m *MemberTransactionMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case membertransaction.FieldError:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetError(v)
 		return nil
 	case membertransaction.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1760,6 +1937,9 @@ func (m *MemberTransactionMutation) AddedFields() []string {
 	if m.addpoint != nil {
 		fields = append(fields, membertransaction.FieldPoint)
 	}
+	if m.addloyalty_txn_id != nil {
+		fields = append(fields, membertransaction.FieldLoyaltyTxnID)
+	}
 	if m.addstatus != nil {
 		fields = append(fields, membertransaction.FieldStatus)
 	}
@@ -1775,6 +1955,8 @@ func (m *MemberTransactionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedFileAwardPointID()
 	case membertransaction.FieldPoint:
 		return m.AddedPoint()
+	case membertransaction.FieldLoyaltyTxnID:
+		return m.AddedLoyaltyTxnID()
 	case membertransaction.FieldStatus:
 		return m.AddedStatus()
 	}
@@ -1799,6 +1981,13 @@ func (m *MemberTransactionMutation) AddField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPoint(v)
+		return nil
+	case membertransaction.FieldLoyaltyTxnID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLoyaltyTxnID(v)
 		return nil
 	case membertransaction.FieldStatus:
 		v, ok := value.(int16)
@@ -1852,11 +2041,17 @@ func (m *MemberTransactionMutation) ResetField(name string) error {
 	case membertransaction.FieldSentTime:
 		m.ResetSentTime()
 		return nil
+	case membertransaction.FieldLoyaltyTxnID:
+		m.ResetLoyaltyTxnID()
+		return nil
 	case membertransaction.FieldTxnDesc:
 		m.ResetTxnDesc()
 		return nil
 	case membertransaction.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case membertransaction.FieldError:
+		m.ResetError()
 		return nil
 	case membertransaction.FieldCreatedAt:
 		m.ResetCreatedAt()
