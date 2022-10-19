@@ -72,7 +72,6 @@ func (r *grantPointRequest) mapByRequest(req GrantPointRequest) {
 	r.GrantType = 2
 	r.Point = req.Point
 	r.Phone = req.Phone
-	r.OrderCode = req.RefId
 	r.RefID = req.RefId
 	r.RefTime = time.Now().Truncate(time.Second).UnixMilli()
 	r.TxnDesc = req.TxnDesc

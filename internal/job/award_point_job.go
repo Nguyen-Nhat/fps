@@ -241,7 +241,8 @@ func (f FileProcessingJob) handleCaseProcessingAwardPoint(ctx context.Context, f
 func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *fileawardpoint.FileAwardPoint, record membertxn.MemberTxnDTO) (string, error) {
 	logger.Infof("Granting point for phone number %s", record.Phone)
 	// 1. Generate refID
-	refID := strings.ToUpper(utils.RandStringBytes(10))
+	refID := strings.ToUpper(utils.RandStringBytes(12))
+	refID = fmt.Sprintf("%v%v", record.ID, refID)
 
 	// 2. Call API grant point in loyalty core
 	res, err := f.loyalClient.GrantPoint(loyalty.GrantPointRequest{
