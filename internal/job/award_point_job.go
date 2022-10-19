@@ -99,6 +99,8 @@ func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
 			errorDisplay, err := f.grantPointForEachMemberTxn(ctx, fap, record)
 			if err != nil {
 				logger.Errorf("Grand point for member transaction %#v fail, got %v", record, err)
+			}
+			if len(errorDisplay) > 0 {
 				errorResult := dto.FileAwardPointResultRow{
 					Phone: record.Phone, Point: int(record.Point), Note: record.TxnDesc, Error: errorDisplay,
 				}
