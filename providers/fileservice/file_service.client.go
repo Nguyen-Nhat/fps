@@ -1,6 +1,7 @@
 package fileservice
 
 import (
+	"crypto/tls"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
@@ -29,10 +30,17 @@ func NewClient(conf config.FileServiceConfig) *Client {
 		panic("===== File Service Endpoint Must Not Empty")
 	}
 
+	transportCfg := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+
 	return &Client{
 		conf: conf,
 		client: &http.Client{
-			Timeout: 2 * time.Minute,
+			Timeout:   2 * time.Minute,
+			Transport: transportCfg,
 		},
 	}
 }
