@@ -29,10 +29,10 @@ type MemberTransaction struct {
 	// SentTime holds the value of the "sent_time" field.
 	SentTime time.Time `json:"sent_time,omitempty"`
 	// LoyaltyTxnID holds the value of the "loyalty_txn_id" field.
-	LoyaltyTxnID string `json:"loyalty_txn_id,omitempty"`
+	LoyaltyTxnID int64 `json:"loyalty_txn_id,omitempty"`
 	// TxnDesc holds the value of the "txn_desc" field.
 	TxnDesc string `json:"txn_desc,omitempty"`
-	// Status holds the value of the "status" field.
+	// Init=1; Processing=2; Failed=3; Success=4; Timeout=5
 	Status int16 `json:"status,omitempty"`
 	// Error holds the value of the "error" field.
 	Error string `json:"error,omitempty"`
@@ -47,9 +47,9 @@ func (*MemberTransaction) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case membertransaction.FieldID, membertransaction.FieldFileAwardPointID, membertransaction.FieldPoint, membertransaction.FieldStatus:
+		case membertransaction.FieldID, membertransaction.FieldFileAwardPointID, membertransaction.FieldPoint, membertransaction.FieldLoyaltyTxnID, membertransaction.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case membertransaction.FieldPhone, membertransaction.FieldOrderCode, membertransaction.FieldRefID, membertransaction.FieldLoyaltyTxnID, membertransaction.FieldTxnDesc, membertransaction.FieldError:
+		case membertransaction.FieldPhone, membertransaction.FieldOrderCode, membertransaction.FieldRefID, membertransaction.FieldTxnDesc, membertransaction.FieldError:
 			values[i] = new(sql.NullString)
 		case membertransaction.FieldSentTime, membertransaction.FieldCreatedAt, membertransaction.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -111,10 +111,10 @@ func (mt *MemberTransaction) assignValues(columns []string, values []interface{}
 				mt.SentTime = value.Time
 			}
 		case membertransaction.FieldLoyaltyTxnID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field loyalty_txn_id", values[i])
 			} else if value.Valid {
-				mt.LoyaltyTxnID = value.String
+				mt.LoyaltyTxnID = value.Int64
 			}
 		case membertransaction.FieldTxnDesc:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -193,7 +193,7 @@ func (mt *MemberTransaction) String() string {
 	builder.WriteString(mt.SentTime.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("loyalty_txn_id=")
-	builder.WriteString(mt.LoyaltyTxnID)
+	builder.WriteString(fmt.Sprintf("%v", mt.LoyaltyTxnID))
 	builder.WriteString(", ")
 	builder.WriteString("txn_desc=")
 	builder.WriteString(mt.TxnDesc)

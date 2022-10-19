@@ -40,7 +40,7 @@ var (
 		{Name: "order_code", Type: field.TypeString, Size: 50},
 		{Name: "ref_id", Type: field.TypeString, Size: 50},
 		{Name: "sent_time", Type: field.TypeTime},
-		{Name: "loyalty_txn_id", Type: field.TypeString, Size: 50, Default: ""},
+		{Name: "loyalty_txn_id", Type: field.TypeInt64, Default: 0},
 		{Name: "txn_desc", Type: field.TypeString, Size: 255},
 		{Name: "status", Type: field.TypeInt16, Default: 0},
 		{Name: "error", Type: field.TypeString, Size: 255},

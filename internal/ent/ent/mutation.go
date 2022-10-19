@@ -1085,7 +1085,8 @@ type MemberTransactionMutation struct {
 	order_code             *string
 	ref_id                 *string
 	sent_time              *time.Time
-	loyalty_txn_id         *string
+	loyalty_txn_id         *int64
+	addloyalty_txn_id      *int64
 	txn_desc               *string
 	status                 *int16
 	addstatus              *int16
@@ -1453,12 +1454,13 @@ func (m *MemberTransactionMutation) ResetSentTime() {
 }
 
 // SetLoyaltyTxnID sets the "loyalty_txn_id" field.
-func (m *MemberTransactionMutation) SetLoyaltyTxnID(s string) {
-	m.loyalty_txn_id = &s
+func (m *MemberTransactionMutation) SetLoyaltyTxnID(i int64) {
+	m.loyalty_txn_id = &i
+	m.addloyalty_txn_id = nil
 }
 
 // LoyaltyTxnID returns the value of the "loyalty_txn_id" field in the mutation.
-func (m *MemberTransactionMutation) LoyaltyTxnID() (r string, exists bool) {
+func (m *MemberTransactionMutation) LoyaltyTxnID() (r int64, exists bool) {
 	v := m.loyalty_txn_id
 	if v == nil {
 		return
@@ -1469,7 +1471,7 @@ func (m *MemberTransactionMutation) LoyaltyTxnID() (r string, exists bool) {
 // OldLoyaltyTxnID returns the old "loyalty_txn_id" field's value of the MemberTransaction entity.
 // If the MemberTransaction object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MemberTransactionMutation) OldLoyaltyTxnID(ctx context.Context) (v string, err error) {
+func (m *MemberTransactionMutation) OldLoyaltyTxnID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLoyaltyTxnID is only allowed on UpdateOne operations")
 	}
@@ -1483,9 +1485,28 @@ func (m *MemberTransactionMutation) OldLoyaltyTxnID(ctx context.Context) (v stri
 	return oldValue.LoyaltyTxnID, nil
 }
 
+// AddLoyaltyTxnID adds i to the "loyalty_txn_id" field.
+func (m *MemberTransactionMutation) AddLoyaltyTxnID(i int64) {
+	if m.addloyalty_txn_id != nil {
+		*m.addloyalty_txn_id += i
+	} else {
+		m.addloyalty_txn_id = &i
+	}
+}
+
+// AddedLoyaltyTxnID returns the value that was added to the "loyalty_txn_id" field in this mutation.
+func (m *MemberTransactionMutation) AddedLoyaltyTxnID() (r int64, exists bool) {
+	v := m.addloyalty_txn_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetLoyaltyTxnID resets all changes to the "loyalty_txn_id" field.
 func (m *MemberTransactionMutation) ResetLoyaltyTxnID() {
 	m.loyalty_txn_id = nil
+	m.addloyalty_txn_id = nil
 }
 
 // SetTxnDesc sets the "txn_desc" field.
@@ -1861,7 +1882,7 @@ func (m *MemberTransactionMutation) SetField(name string, value ent.Value) error
 		m.SetSentTime(v)
 		return nil
 	case membertransaction.FieldLoyaltyTxnID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1916,6 +1937,9 @@ func (m *MemberTransactionMutation) AddedFields() []string {
 	if m.addpoint != nil {
 		fields = append(fields, membertransaction.FieldPoint)
 	}
+	if m.addloyalty_txn_id != nil {
+		fields = append(fields, membertransaction.FieldLoyaltyTxnID)
+	}
 	if m.addstatus != nil {
 		fields = append(fields, membertransaction.FieldStatus)
 	}
@@ -1931,6 +1955,8 @@ func (m *MemberTransactionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedFileAwardPointID()
 	case membertransaction.FieldPoint:
 		return m.AddedPoint()
+	case membertransaction.FieldLoyaltyTxnID:
+		return m.AddedLoyaltyTxnID()
 	case membertransaction.FieldStatus:
 		return m.AddedStatus()
 	}
@@ -1955,6 +1981,13 @@ func (m *MemberTransactionMutation) AddField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPoint(v)
+		return nil
+	case membertransaction.FieldLoyaltyTxnID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLoyaltyTxnID(v)
 		return nil
 	case membertransaction.FieldStatus:
 		v, ok := value.(int16)

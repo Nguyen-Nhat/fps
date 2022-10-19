@@ -2,7 +2,6 @@ package job
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -34,12 +33,12 @@ var fileAwardPointMetadata = dto.FileAwardPointMetadata{
 	},
 }
 
-func (a FileProcessingJob) StartGrantPointJob() bool {
+func (f FileProcessingJob) StartGrantPointJob() bool {
 	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
 
-	id, err := c.AddFunc(a.cfg.AwardPointJobConfig.Schedule, func() {
+	id, err := c.AddFunc(f.cfg.AwardPointJobConfig.Schedule, func() {
 		logger.Infof("Running job GrantPointForMember Start  ...")
-		a.grantPointForAllMemberTxn(context.Background())
+		f.grantPointForAllMemberTxn(context.Background())
 		logger.Infof("Running job GrantPointForMember Finish ...")
 	})
 	if err != nil {
@@ -186,8 +185,8 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 
 	// 5. Upload validation result file
 	fileName := utils.ExtractFileName(fap.DisplayName)
-	newFileResultUrl, err := f.fileService.UploadFileAwardPointError(sheet.ErrorRows,
-		fmt.Sprintf("%s_result.%s", fileName.Name, fileName.Extension))
+	resultFileName := fileName.FullNameWithSuffix("_result")
+	newFileResultUrl, err := f.fileService.UploadFileAwardPointError(sheet.ErrorRows, resultFileName)
 	if err != nil {
 		logger.Errorf("Cannot upload result file, got %v", err)
 		return nil, err
@@ -204,7 +203,7 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 // handleCaseProcessingAwardPoint handle logic for file with processing status
 // 1. Read member transaction record with status init from db
 func (f FileProcessingJob) handleCaseProcessingAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, error) {
-	memberTxnRecord, err := f.memTxnService.GetByFileAwardPointIDStatuses(context.Background(), int32(fap.ID), []int16{membertxn.StatusInit})
+	memberTxnRecord, err := f.memTxnService.GetByFileAwardPointIDStatuses(ctx, int32(fap.ID), []int16{membertxn.StatusInit})
 	if err != nil {
 		logger.Errorf("GetByFileAwardPointIDStatuses got err: %v", err)
 		return nil, err
@@ -241,17 +240,18 @@ func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *
 
 	// 3. Update status member txn record
 	if res.Code == constant.LoyaltyCoreCodeSuccess {
+		loyaltyTxnId, _ := strconv.Atoi(res.Data.Transaction.TxnID)
 		_, err = f.memTxnService.UpdateOne(ctx, membertxn.UpdateMemberTxnDTO{
-			ID:           int64(record.ID),
+			ID:           record.ID,
 			RefID:        refID,
 			SentTime:     time.Now().Truncate(time.Second),
 			Status:       membertxn.StatusProcessing,
 			Error:        res.Message,
-			LoyaltyTxnID: res.Data.Transaction.TxnID,
+			LoyaltyTxnID: int64(loyaltyTxnId),
 		})
 	} else {
 		_, err = f.memTxnService.UpdateOne(ctx, membertxn.UpdateMemberTxnDTO{
-			ID:       int64(record.ID),
+			ID:       record.ID,
 			RefID:    refID,
 			SentTime: time.Now(),
 			Status:   membertxn.StatusFailed,

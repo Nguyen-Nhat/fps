@@ -3,8 +3,6 @@ package fileservice
 import (
 	"bytes"
 	"fmt"
-	"strconv"
-
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
@@ -15,7 +13,7 @@ import (
 type (
 	// IService ...
 	IService interface {
-		UploadFileAwardPointResult([]dto.FileAwardPointRow, string) (string, error)
+		AppendErrorAndUploadFileAwardPointResult([]dto.FileAwardPointResultRow, string) (string, error)
 		LoadFileAwardPoint(string) (*dto.Sheet[dto.FileAwardPointRow], error)
 		UploadFileAwardPointError([]dto.ErrorRow, string) (string, error)
 	}
@@ -35,24 +33,22 @@ func NewService(client IClient) *Service {
 	}
 }
 
-func (s *Service) UploadFileAwardPointResult(fabResults []dto.FileAwardPointRow, previousResultFileUrl string) (string, error) {
+func (s *Service) AppendErrorAndUploadFileAwardPointResult(fabResults []dto.FileAwardPointResultRow, previousResultFileUrl string) (string, error) {
 	// 1. Load previous result file
-	var previousFAPResults []dto.FileAwardPointRow
-
-	// 2. Mix previous result with current result
-	// todo need to check this case, we can append data (as below line), override data or mix data
-	combinedFAPResults := fabResults
-	if previousResultFileUrl != "" {
-		combinedFAPResults = append(combinedFAPResults, previousFAPResults...)
+	logger.Infof("fetch file %v", previousResultFileUrl)
+	previousFAPResults, err := excel.LoadExcelByUrl(previousResultFileUrl)
+	if err != nil {
+		logger.Errorf("Failed to fetch file: ", err)
 	}
 
-	// 3. Convert data to bytes
-	dataByteBuffer, err := makeResultFile(combinedFAPResults)
+	// 2. Mix data then Convert data to bytes
+	dataByteBuffer, err := mixAndMakeResultFile(previousFAPResults, fabResults)
 	if err != nil {
 		logger.Errorf("Failed to convert data to excel %v", err)
+		return "", err
 	}
 
-	// 4. Build request
+	// 3. Build request
 	fileName := utils.ExtractFileName(previousResultFileUrl)
 	fileUrl, err := s.UploadFile(dataByteBuffer, fileName.FullName)
 	if err != nil {
@@ -133,66 +129,86 @@ func (s *Service) LoadFileAwardPoint(url string) (*dto.Sheet[dto.FileAwardPointR
 
 // Private method ------------------------------------------------------------------------------------------------------
 
-func makeResultFile(rows []dto.FileAwardPointRow) (*bytes.Buffer, error) {
-	f := excelize.NewFile()
-	// Create a new sheet.
-	sheetName := "Sheet1"
-	index := f.NewSheet(sheetName)
-	// Set active sheet of the workbook.
-	f.SetActiveSheet(index)
+func mixAndMakeResultFile(previousFAPResults [][]string, newResults []dto.FileAwardPointResultRow) (*bytes.Buffer, error) {
+	// 1. Init sheet
+	const dataIndexStart = 3
+	exFile, sheetName := initFapResultSheetWithHeader()
 
-	// Set header
-	_ = f.SetSheetRow(sheetName, "A1", &[]interface{}{"STT", "Phone number (*)", "Points (*)", "Note", "Error"})
-	_ = f.SetSheetRow(sheetName, "A2", &[]interface{}{"Số thứ tự", "SĐT khách hàng", "Số điểm nạp", "Ghi chú giao dịch", "Kết quả"})
-
-	// Set each row
-	dataIndexStart := 3
-	for rowId, row := range rows {
+	// 2. Set previous result
+	if len(previousFAPResults) >= dataIndexStart {
+		previousFAPResults = previousFAPResults[dataIndexStart-1:] // ignore header
+	}
+	for rowId, previousResultRow := range previousFAPResults {
 		axis := fmt.Sprintf("A%v", rowId+dataIndexStart)
-		pointStr := strconv.Itoa(row.Point)
-		err := f.SetSheetRow(sheetName, axis, &[]interface{}{row.RowId, row.Phone, pointStr, row.Note, row.Error})
+		sheetRow := toInterfacesByStrings(previousResultRow)
+		err := exFile.SetSheetRow(sheetName, axis, &sheetRow)
 		if err != nil {
 			logger.Errorf("Cannot set sheet row, got %v", err)
 			return nil, err
 		}
 	}
 
-	return f.WriteToBuffer()
+	// 3. Set new result
+	for rowId, row := range newResults {
+		axis := fmt.Sprintf("A%v", rowId+dataIndexStart+len(previousFAPResults))
+		sheetRow := row.ToInterfaces()
+		err := exFile.SetSheetRow(sheetName, axis, &sheetRow)
+		if err != nil {
+			logger.Errorf("Cannot set sheet row, got %v", err)
+			return nil, err
+		}
+	}
+
+	// 4. Return
+	return exFile.WriteToBuffer()
 }
 
 func makeResultFileByError(rows []dto.ErrorRow) (*bytes.Buffer, error) {
-	f := excelize.NewFile()
-	// Create a new sheet.
-	sheetName := "Sheet1"
-	index := f.NewSheet(sheetName)
-	// Set active sheet of the workbook.
-	f.SetActiveSheet(index)
-
-	// Set header
-	_ = f.SetSheetRow(sheetName, "A1", &[]interface{}{"STT", "Phone number (*)", "Points (*)", "Note", "Error"})
-	_ = f.SetSheetRow(sheetName, "A2", &[]interface{}{"Số thứ tự", "SĐT khách hàng", "Số điểm nạp", "Ghi chú giao dịch", "Kết quả"})
-
-	// Set each row
-	dataIndexStart := 3
-	numberOfColumn := 5
+	const dataIndexStart = 3
+	const numberOfColumn = 4
+	exFile, sheetName := initFapResultSheetWithHeader()
 
 	for rowId, row := range rows {
 		rawDataRow := make([]interface{}, numberOfColumn)
-		rawDataRow[0] = row.RowId
 		for index, rowCell := range row.RowData {
 			if index <= numberOfColumn-2 {
-				rawDataRow[index+1] = rowCell
+				rawDataRow[index] = rowCell
 			}
 		}
 
 		rawDataRow[numberOfColumn-1] = row.Reason
 		axis := fmt.Sprintf("A%v", rowId+dataIndexStart)
-		err := f.SetSheetRow(sheetName, axis, &rawDataRow)
+		err := exFile.SetSheetRow(sheetName, axis, &rawDataRow)
 		if err != nil {
 			logger.Errorf("Cannot set sheet row, got %v", err)
 			return nil, err
 		}
 	}
 
-	return f.WriteToBuffer()
+	return exFile.WriteToBuffer()
+}
+
+func initFapResultSheetWithHeader() (*excelize.File, string) {
+	// 1. Init file
+	exFile := excelize.NewFile()
+
+	// 2. Create a new sheet & set active
+	const sheetName = "Sheet1"
+	index := exFile.NewSheet(sheetName)
+	exFile.SetActiveSheet(index)
+
+	// 3. Set header
+	_ = exFile.SetSheetRow(sheetName, "A1", &[]interface{}{"Phone number (*)", "Points (*)", "Note", "Error"})
+	_ = exFile.SetSheetRow(sheetName, "A2", &[]interface{}{"SĐT khách hàng", "Số điểm nạp", "Ghi chú giao dịch", "Kết quả"})
+
+	// 4. return
+	return exFile, sheetName
+}
+
+func toInterfacesByStrings(previousResultRow []string) []interface{} {
+	var sheetRow []interface{}
+	for i := 0; i < len(previousResultRow); i++ {
+		sheetRow = append(sheetRow, previousResultRow[i])
+	}
+	return sheetRow
 }

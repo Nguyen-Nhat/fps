@@ -13,7 +13,7 @@ import (
 func LoadExcelByUrl(fileURL string) ([][]string, error) {
 	data, err := loadDataFromUrl(fileURL)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Open the ZIP file with Excelize

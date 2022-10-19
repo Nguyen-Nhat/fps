@@ -7,7 +7,7 @@ run:
 build:
 	go build -o bin/server cmd/server/main.go
 
-REPORTED_ISSUE_LINKS := "LOY-1232"
+REPORTED_ISSUE_LINKS := "LOY-1225"
 
 jira-test:
 	rm -f testrun.*

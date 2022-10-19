@@ -1,5 +1,7 @@
 package dto
 
+import "strconv"
+
 type FileAwardPointResultMetadata struct {
 	Phone CellData[string]
 	Point CellData[int]
@@ -30,4 +32,18 @@ func (f *FileAwardPointResultMetadata) ToOutput(rowId int) FileAwardPointRow {
 // GetMetadata implement from Converter interface
 func (f *FileAwardPointResultMetadata) GetMetadata() *FileAwardPointResultMetadata {
 	return f
+}
+
+type FileAwardPointResultRow struct {
+	RowId int
+	Phone string
+	Point int
+	Note  string
+	Error string
+}
+
+func (f *FileAwardPointResultRow) ToInterfaces() []interface{} {
+	var pointStr string
+	pointStr = strconv.Itoa(f.Point)
+	return []interface{}{f.Phone, pointStr, f.Note, f.Error}
 }

@@ -44,7 +44,7 @@ func InitJob(cfg config.Config) {
 	fileServiceClient := fileservice.NewClient(cfg.ProviderConfig.FileService)
 	fileService := fileservice.NewService(fileServiceClient)
 
-	// loyaltyClient``
+	// loyaltyClient
 	loyaltyClient := loyalty.NewClient(cfg.ProviderConfig.Loyalty)
 
 	if awardPointJob == nil {
@@ -63,4 +63,5 @@ func InitJob(cfg config.Config) {
 
 	// run job method
 	awardPointJob.StartGrantPointJob()
+	initJobUpdateStatusFAP(cfg.JobConfig.UpdateStatusFAPJobConfig, fapService, memberTxnService, loyaltyClient, fileService)
 }

@@ -13,7 +13,7 @@ type MemberTxnDTO struct {
 	TxnDesc          string
 	Status           int16
 	Error            string
-	LoyaltyTxnID     string
+	LoyaltyTxnID     int64
 }
 
 type UpdateMemberTxnDTO struct {
@@ -22,5 +22,5 @@ type UpdateMemberTxnDTO struct {
 	SentTime     time.Time
 	Status       int16
 	Error        string
-	LoyaltyTxnID string
+	LoyaltyTxnID int64
 }

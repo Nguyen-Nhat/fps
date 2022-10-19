@@ -76,9 +76,7 @@ var (
 	// DefaultSentTime holds the default value on creation for the "sent_time" field.
 	DefaultSentTime time.Time
 	// DefaultLoyaltyTxnID holds the default value on creation for the "loyalty_txn_id" field.
-	DefaultLoyaltyTxnID string
-	// LoyaltyTxnIDValidator is a validator for the "loyalty_txn_id" field. It is called by the builders before save.
-	LoyaltyTxnIDValidator func(string) error
+	DefaultLoyaltyTxnID int64
 	// TxnDescValidator is a validator for the "txn_desc" field. It is called by the builders before save.
 	TxnDescValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
