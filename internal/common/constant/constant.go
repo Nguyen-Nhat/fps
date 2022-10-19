@@ -18,8 +18,3 @@ const (
 	ExcelMsgLength              = "đô dài phải"
 	ExcelMsgValue               = "giá trị phải"
 )
-
-// Loyalty core response code
-const (
-	LoyaltyCoreCodeSuccess = "00"
-)

@@ -71,9 +71,9 @@ func (j *updateStatusFAPJobImpl) InitCron() {
 
 	// 2. Declare Job schedule
 	id, err := c.AddFunc(j.cfg.Schedule, func() {
-		logger.Infof("Running %v: Start  ...", jobName)
+		logger.Infof("========== Running %v: Start  ...", jobName)
 		j.Start()
-		logger.Infof("Running %v: Finish ...", jobName)
+		logger.Infof("========== Running %v: Finish ...", jobName)
 	})
 	if err != nil {
 		logger.Errorf("Init %v Failed: %v", jobName, err)

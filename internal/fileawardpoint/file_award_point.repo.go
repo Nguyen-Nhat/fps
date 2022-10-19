@@ -62,7 +62,7 @@ func (r *repoImpl) FindAndPaginationByMerchantId(ctx context.Context, dto *GetLi
 		return nil, nil, fmt.Errorf("failed to count from db while querying file award with merchantId")
 	}
 
-	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).All(ctx)
+	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).Order(ent.Desc(fileawardpoint.FieldCreatedAt)).All(ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed querying list file award point with merchantId: %w", err)
 	}
@@ -88,7 +88,7 @@ func (r *repoImpl) GetAllAndPagination(ctx context.Context, dto *GetListFileAwar
 		return nil, nil, fmt.Errorf("failed to count from db while querying all file award point")
 	}
 
-	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).All(ctx)
+	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).Order(ent.Desc(fileawardpoint.FieldCreatedAt)).All(ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed querying all file award point: %w", err)
 	}

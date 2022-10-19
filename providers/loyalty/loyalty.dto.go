@@ -8,8 +8,10 @@ import (
 // Common --------------------------------------------------------------------------------------------------------------
 
 const (
-	responseSuccessCode = "00"
-	txnSuccessStatus    = "4"
+	responseSuccessCode      = "00"
+	responseNotEnoughBalance = "4280"
+
+	txnSuccessStatus = "4"
 )
 
 type BaseLsResponse[D any] struct {
@@ -20,6 +22,10 @@ type BaseLsResponse[D any] struct {
 
 func (r *BaseLsResponse[any]) IsSuccess() bool {
 	return r.Code == responseSuccessCode
+}
+
+func (r *BaseLsResponse[any]) IsNotEnoughBalance() bool {
+	return r.Code == responseNotEnoughBalance
 }
 
 func (r *BaseLsResponse[any]) IsFailed() bool {

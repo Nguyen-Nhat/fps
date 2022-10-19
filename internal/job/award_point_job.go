@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -37,9 +38,9 @@ func (f FileProcessingJob) StartGrantPointJob() bool {
 	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
 
 	id, err := c.AddFunc(f.cfg.AwardPointJobConfig.Schedule, func() {
-		logger.Infof("Running job GrantPointForMember Start  ...")
+		logger.Infof("========== Running job GrantPointForMember Start  ...")
 		f.grantPointForAllMemberTxn(context.Background())
-		logger.Infof("Running job GrantPointForMember Finish ...")
+		logger.Infof("========== Running job GrantPointForMember Finish ...")
 	})
 	if err != nil {
 		logger.Errorf("Init Job failed: %v", err)
@@ -70,10 +71,11 @@ func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
 		logger.Infof("Processing file award point ID = %v", fap.ID)
 
 		var validTxnRecords []membertxn.MemberTxnDTO
+		newFileResultUrl := fap.ResultFileURL
 		switch fap.Status {
 		case fileawardpoint.StatusInit:
 			{
-				validTxnRecords, err = f.handleCaseInitAwardPoint(ctx, fap)
+				validTxnRecords, newFileResultUrl, err = f.handleCaseInitAwardPoint(ctx, fap)
 				if err != nil {
 					logger.Errorf("Cannot handle init file award point %#v, got %v", fap, err)
 					continue
@@ -91,12 +93,30 @@ func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
 
 		// Grant point for all member
 		logger.Infof("Granting point for %d phone number", len(validTxnRecords))
+		var errorResults []dto.FileAwardPointResultRow
 		for _, record := range validTxnRecords {
 			// Grand point for each member txn
-			err = f.grantPointForEachMemberTxn(ctx, fap, record)
+			errorDisplay, err := f.grantPointForEachMemberTxn(ctx, fap, record)
 			if err != nil {
 				logger.Errorf("Grand point for member transaction %#v fail, got %v", record, err)
-				continue
+				errorResult := dto.FileAwardPointResultRow{
+					Phone: record.Phone, Point: int(record.Point), Note: record.TxnDesc, Error: errorDisplay,
+				}
+				errorResults = append(errorResults, errorResult)
+			}
+		}
+
+		// Save error grant point to result file
+		if len(errorResults) > 0 {
+			resultFileUrl, err := f.fileService.AppendErrorAndUploadFileAwardPointResult(errorResults, newFileResultUrl)
+			if err != nil {
+				logger.Errorf("===== Upload result filed failed")
+			} else {
+				logger.Infof("===== Update Result File URL to %v", resultFileUrl)
+				_, err = f.fapService.UpdateResultFileUrlOne(ctx, fap.ID, resultFileUrl)
+				if err != nil {
+					logger.Errorf("===== Update Result File URL failed")
+				}
 			}
 		}
 	}
@@ -108,12 +128,12 @@ func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
 // 3. Insert member transaction to db
 // 4. Update file status to processing or failed if errorRow == totalRow
 // 5. Upload validation result file
-func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, error) {
+func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, string, error) {
 	// 1. Download and extract data
 	sheetData, err := excel.LoadExcelByUrl(fap.FileURL)
 	if err != nil {
 		logger.Errorf("Cannot get data from file url %v, got %v", fap.FileURL, err)
-		return nil, err
+		return nil, "", err
 	}
 
 	indexStart := 3
@@ -126,7 +146,7 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 
 	if err != nil {
 		logger.Errorf("Cannot convert data from file url %v, got %v", fap.FileURL, err)
-		return nil, err
+		return nil, "", err
 	}
 
 	var (
@@ -141,7 +161,7 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 	_, err = f.fapService.UpdateTotalRowOne(ctx, fap.ID, totalValidRow+totalInvalidRow)
 	if err != nil {
 		logger.Errorf("Cannot update file award point total row: got: %v", err)
-		return nil, err
+		return nil, "", err
 	}
 
 	var validTxnRecords []membertxn.MemberTxnDTO
@@ -180,7 +200,7 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 
 	if err != nil {
 		logger.Errorf("Cannot update file award point status: got: %v", err)
-		return nil, err
+		return nil, "", err
 	}
 
 	// 5. Upload validation result file
@@ -189,15 +209,15 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 	newFileResultUrl, err := f.fileService.UploadFileAwardPointError(sheet.ErrorRows, resultFileName)
 	if err != nil {
 		logger.Errorf("Cannot upload result file, got %v", err)
-		return nil, err
+		return nil, "", err
 	}
 
 	_, err = f.fapService.UpdateResultFileUrlOne(ctx, fap.ID, newFileResultUrl)
 	if err != nil {
 		logger.Errorf("Cannot save file award point result URL, got: %v", err)
-		return nil, err
+		return nil, newFileResultUrl, err
 	}
-	return validTxnRecords, nil
+	return validTxnRecords, newFileResultUrl, nil
 }
 
 // handleCaseProcessingAwardPoint handle logic for file with processing status
@@ -215,13 +235,13 @@ func (f FileProcessingJob) handleCaseProcessingAwardPoint(ctx context.Context, f
 // 1. Generate refID
 // 2. Call API grant point in loyalty core
 // 3. Update status member txn record
-func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *fileawardpoint.FileAwardPoint, record membertxn.MemberTxnDTO) error {
+func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *fileawardpoint.FileAwardPoint, record membertxn.MemberTxnDTO) (string, error) {
 	logger.Infof("Granting point for phone number %s", record.Phone)
 	// 1. Generate refID
 	refID, err := utils.GenerateRandomString(16)
 	if err != nil {
 		logger.Errorf("Cannot generate random id, got %v", err)
-		return err
+		return "Nạp điểm lỗi. Thử lại sau!", err
 	}
 
 	// 2. Call API grant point in loyalty core
@@ -235,11 +255,12 @@ func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *
 
 	if err != nil {
 		logger.Errorf("Call API grant point for number %v with info failed, %v got err: %v", record.Phone, record, err)
-		return err
+		return "Nạp điểm lỗi. Thử lại sau!", err
 	}
 
 	// 3. Update status member txn record
-	if res.Code == constant.LoyaltyCoreCodeSuccess {
+	if res.IsSuccess() {
+		logger.Infof("Grant Point success for %v", record.Phone)
 		loyaltyTxnId, _ := strconv.Atoi(res.Data.Transaction.TxnID)
 		_, err = f.memTxnService.UpdateOne(ctx, membertxn.UpdateMemberTxnDTO{
 			ID:           record.ID,
@@ -249,7 +270,9 @@ func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *
 			Error:        res.Message,
 			LoyaltyTxnID: int64(loyaltyTxnId),
 		})
+		return "", err
 	} else {
+		logger.Infof("Grant Point failed for %v: %v", record.Phone, res)
 		_, err = f.memTxnService.UpdateOne(ctx, membertxn.UpdateMemberTxnDTO{
 			ID:       record.ID,
 			RefID:    refID,
@@ -257,6 +280,14 @@ func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *
 			Status:   membertxn.StatusFailed,
 			Error:    res.Message,
 		})
+
+		// build error display -> save to result file
+		errorDisplay := ""
+		if res.IsNotEnoughBalance() {
+			errorDisplay = "Nạp điểm lỗi do hệ thống thiếu điểm"
+		} else {
+			errorDisplay = fmt.Sprintf("Nạp điểm lỗi: %v", res.Message)
+		}
+		return errorDisplay, err
 	}
-	return err
 }
