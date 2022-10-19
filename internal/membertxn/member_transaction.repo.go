@@ -17,6 +17,8 @@ type (
 		FindByFileAwardPointIDStatuses(context.Context, int32, []int16) ([]MemberTransaction, error)
 		Save(context.Context, MemberTransaction) (*MemberTransaction, error)
 		UpdateOne(context.Context, MemberTransaction) (*MemberTransaction, error)
+		UpdateStatusAndError(context.Context, int, int16, string) bool
+		GetTotalByFapIdAndStatusIn(context.Context, int, []int16) (int, error)
 	}
 
 	repoImpl struct {
@@ -37,7 +39,7 @@ func NewRepo(db *sql.DB) *repoImpl {
 
 // Implementation function ---------------------------------------------------------------------------------------------
 
-func (r repoImpl) FindByFileAwardPointId(ctx context.Context, fileAwardPointId int32) ([]MemberTransaction, error) {
+func (r *repoImpl) FindByFileAwardPointId(ctx context.Context, fileAwardPointId int32) ([]MemberTransaction, error) {
 	txnArr, err := r.client.MemberTransaction.Query().
 		Where(membertransaction.FileAwardPointID(fileAwardPointId)).
 		All(ctx)
@@ -121,4 +123,32 @@ func mapMemberTxn(client *ent.Client, memberTxn MemberTransaction) *ent.MemberTr
 		SetTxnDesc(memberTxn.TxnDesc).
 		SetStatus(memberTxn.Status).
 		SetError(memberTxn.Error)
+}
+
+func (r *repoImpl) UpdateStatusAndError(ctx context.Context, id int, status int16, errMsg string) bool {
+	_, err := r.client.MemberTransaction.
+		Update().
+		Where(membertransaction.ID(id)).
+		SetStatus(status).SetError(errMsg).
+		Save(ctx)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func (r *repoImpl) GetTotalByFapIdAndStatusIn(ctx context.Context, fileAwardPointID int, statuses []int16) (int, error) {
+	if len(statuses) == 0 {
+		// count by fapId
+		return r.client.MemberTransaction.Query().
+			Where(membertransaction.FileAwardPointID(int32(fileAwardPointID))).
+			Count(ctx)
+	}
+
+	// count by fapId & status
+	return r.client.MemberTransaction.Query().
+		Where(
+			membertransaction.FileAwardPointID(int32(fileAwardPointID)),
+			membertransaction.StatusIn(statuses...),
+		).Count(ctx)
 }

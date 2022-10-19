@@ -16,6 +16,28 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
+// Type ----------------------------------------------------------------------------------------------------------------
+
+type (
+	FileContent struct {
+		FieldName string
+		FileName  string
+		Data      []byte
+	}
+
+	FileName struct {
+		FullName  string
+		Name      string
+		Extension string
+	}
+)
+
+func (f *FileName) FullNameWithSuffix(suffix string) string {
+	return fmt.Sprintf("%s%s.%s", f.Name, suffix, f.Extension)
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 func HiddenString(input string, numberOfTailChar int) string {
 	if numberOfTailChar >= len(input) {
 		return input
@@ -74,12 +96,6 @@ func SendHTTPRequest[REQ any, RES any](
 		return nil, err
 	}
 	return &respBodyObj, nil
-}
-
-type FileContent struct {
-	FieldName string
-	FileName  string
-	Data      []byte
 }
 
 func UploadFile[RES any](client *http.Client, urlPath string, content FileContent) (*RES, error) {
@@ -159,12 +175,6 @@ func GenerateRandomString(byteLength int) (string, error) {
 	return base64.RawStdEncoding.EncodeToString(b), err
 }
 
-type FileName struct {
-	FullName  string
-	Name      string
-	Extension string
-}
-
 func ExtractFileName(filePath string) FileName {
 	matches := constant.FileNameRegex.FindStringSubmatch(filePath)
 	if len(matches) >= 4 {
@@ -174,5 +184,5 @@ func ExtractFileName(filePath string) FileName {
 			Extension: matches[3],
 		}
 	}
-	return FileName{}
+	return FileName{"unknown", "unknown", "unknown"}
 }

@@ -20,6 +20,9 @@ logger:
 job:
   award_point:
     schedule: '0/5 * * * *' # every 5 minutes at first minute
+  update_status_fap:
+    schedule: '0/5 * * * *' # every 5 minutes at first minute
+    max_checking_time: 60 # unit is minutes
 
 provider_config:
   loyalty:

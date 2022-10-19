@@ -25,7 +25,9 @@ type (
 		UpdateStatusOne(context.Context, int, int16) (*FileAwardPoint, error)
 		UpdateTotalRowOne(context.Context, int, int) (*FileAwardPoint, error)
 		UpdateResultFileUrlOne(context.Context, int, string) (*FileAwardPoint, error)
+		UpdateStatsTotalSuccessOne(context.Context, int, int) (*FileAwardPoint, error)
 	}
+
 	repoImpl struct {
 		client *ent.Client
 	}
@@ -213,5 +215,15 @@ func getPagination(ctx context.Context, query *ent.FileAwardPointQuery, page int
 		PageSize:    pageSize,
 		TotalItems:  total,
 		TotalPage:   int(math.Ceil(float64(total) / float64(size))),
+	}, nil
+}
+
+func (r *repoImpl) UpdateStatsTotalSuccessOne(ctx context.Context, id int, totalSuccess int) (*FileAwardPoint, error) {
+	fap, err := r.client.FileAwardPoint.UpdateOneID(id).SetStatsTotalSuccess(int32(totalSuccess)).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &FileAwardPoint{
+		FileAwardPoint: *fap,
 	}, nil
 }

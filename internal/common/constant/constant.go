@@ -21,5 +21,5 @@ const (
 
 // Loyalty core response code
 const (
-	LoyaltyCoreCodeSuccess = "0"
+	LoyaltyCoreCodeSuccess = "00"
 )

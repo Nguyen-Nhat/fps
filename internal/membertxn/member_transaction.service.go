@@ -13,6 +13,9 @@ type (
 		GetByFileAwardPointIDStatuses(context.Context, int32, []int16) ([]MemberTransaction, error)
 		Create(context.Context, MemberTxnDTO) (*MemberTransaction, error)
 		UpdateOne(context.Context, UpdateMemberTxnDTO) (*MemberTransaction, error)
+		GetTxnStillProcessing(context.Context, int) ([]MemberTransaction, error)
+		UpdateStatusAndError(context.Context, int, int16, string) bool
+		GetStatistic(context.Context, int) (int, int, int)
 	}
 
 	ServiceImpl struct {
@@ -30,14 +33,14 @@ func NewService(repo Repo) *ServiceImpl {
 
 // Implementation function ---------------------------------------------------------------------------------------------
 
-func (s ServiceImpl) GetByFileAwardPointId(ctx context.Context, fileAwardPointId int32) ([]MemberTransaction, error) {
+func (s *ServiceImpl) GetByFileAwardPointId(ctx context.Context, fileAwardPointId int32) ([]MemberTransaction, error) {
 	return s.repo.FindByFileAwardPointId(ctx, fileAwardPointId)
 }
-func (s ServiceImpl) GetByFileAwardPointIDStatuses(ctx context.Context, fileAwardPointId int32, statuses []int16) ([]MemberTransaction, error) {
+func (s *ServiceImpl) GetByFileAwardPointIDStatuses(ctx context.Context, fileAwardPointId int32, statuses []int16) ([]MemberTransaction, error) {
 	return s.repo.FindByFileAwardPointIDStatuses(ctx, fileAwardPointId, statuses)
 }
 
-func (s ServiceImpl) Create(ctx context.Context, memberTxn MemberTxnDTO) (*MemberTransaction, error) {
+func (s *ServiceImpl) Create(ctx context.Context, memberTxn MemberTxnDTO) (*MemberTransaction, error) {
 	savedMemberTxn, err := s.repo.Save(ctx, MemberTransaction{
 		MemberTransaction: ent.MemberTransaction{
 			FileAwardPointID: int32(memberTxn.FileAwardPointID),
@@ -58,7 +61,7 @@ func (s ServiceImpl) Create(ctx context.Context, memberTxn MemberTxnDTO) (*Membe
 	}
 	return savedMemberTxn, nil
 }
-func (s ServiceImpl) UpdateOne(ctx context.Context, memberTxn UpdateMemberTxnDTO) (*MemberTransaction, error) {
+func (s *ServiceImpl) UpdateOne(ctx context.Context, memberTxn UpdateMemberTxnDTO) (*MemberTransaction, error) {
 	savedMemberTxn, err := s.repo.UpdateOne(ctx, MemberTransaction{
 		MemberTransaction: ent.MemberTransaction{
 			ID:           int(memberTxn.ID),
@@ -74,4 +77,19 @@ func (s ServiceImpl) UpdateOne(ctx context.Context, memberTxn UpdateMemberTxnDTO
 		return nil, err
 	}
 	return savedMemberTxn, nil
+}
+
+func (s *ServiceImpl) GetTxnStillProcessing(ctx context.Context, fileAwardPointId int) ([]MemberTransaction, error) {
+	return s.repo.FindByFileAwardPointIDStatuses(ctx, int32(fileAwardPointId), []int16{StatusProcessing})
+}
+
+func (s *ServiceImpl) UpdateStatusAndError(ctx context.Context, id int, status int16, errMsg string) bool {
+	return s.repo.UpdateStatusAndError(ctx, id, status, errMsg)
+}
+
+func (s *ServiceImpl) GetStatistic(ctx context.Context, fileAwardPointId int) (int, int, int) {
+	total, _ := s.repo.GetTotalByFapIdAndStatusIn(ctx, fileAwardPointId, nil)
+	totalSuccess, _ := s.repo.GetTotalByFapIdAndStatusIn(ctx, fileAwardPointId, []int16{StatusSuccess})
+	totalHaveNotTerminated, _ := s.repo.GetTotalByFapIdAndStatusIn(ctx, fileAwardPointId, []int16{StatusInit, StatusProcessing})
+	return total, totalSuccess, totalHaveNotTerminated
 }

@@ -26,7 +26,7 @@ type FileAwardPoint struct {
 	ResultFileURL string `json:"result_file_url,omitempty"`
 	// Note holds the value of the "note" field.
 	Note string `json:"note,omitempty"`
-	// Status holds the value of the "status" field.
+	// Init=1; Processing=2; Failed=3; Finished=4
 	Status int16 `json:"status,omitempty"`
 	// StatsTotalRow holds the value of the "stats_total_row" field.
 	StatsTotalRow int32 `json:"stats_total_row,omitempty"`

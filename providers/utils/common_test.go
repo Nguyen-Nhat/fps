@@ -172,9 +172,9 @@ func TestExtractFileName(t *testing.T) {
 			name: "not panic when meet invalid path",
 			args: args{"a/b/c/d"},
 			want: FileName{
-				FullName:  "",
-				Name:      "",
-				Extension: "",
+				FullName:  "unknown",
+				Name:      "unknown",
+				Extension: "unknown",
 			},
 		},
 		{

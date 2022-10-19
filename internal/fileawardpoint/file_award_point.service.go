@@ -17,6 +17,7 @@ type (
 		UpdateStatusOne(context.Context, int, int16) (*FileAwardPoint, error)
 		UpdateTotalRowOne(context.Context, int, int) (*FileAwardPoint, error)
 		UpdateResultFileUrlOne(context.Context, int, string) (*FileAwardPoint, error)
+		UpdateStatsTotalSuccessOne(context.Context, int, int) (*FileAwardPoint, error)
 	}
 
 	ServiceImpl struct {
@@ -81,6 +82,7 @@ func (s *ServiceImpl) CreateFileAwardPoint(ctx context.Context, req *CreateFileA
 			DisplayName: req.FileName,
 			FileURL:     req.FileUrl,
 			Note:        req.Note,
+			Status:      StatusInit,
 			CreatedBy:   user.Email,
 			UpdatedBy:   user.Email,
 		},
@@ -118,4 +120,8 @@ func (s *ServiceImpl) UpdateResultFileUrlOne(ctx context.Context, id int, result
 	}
 
 	return fap, nil
+}
+
+func (s *ServiceImpl) UpdateStatsTotalSuccessOne(ctx context.Context, id int, totalSuccess int) (*FileAwardPoint, error) {
+	return s.repo.UpdateStatsTotalSuccessOne(ctx, id, totalSuccess)
 }

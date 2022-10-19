@@ -86,9 +86,7 @@ func init() {
 	// membertransactionDescLoyaltyTxnID is the schema descriptor for loyalty_txn_id field.
 	membertransactionDescLoyaltyTxnID := membertransactionFields[6].Descriptor()
 	// membertransaction.DefaultLoyaltyTxnID holds the default value on creation for the loyalty_txn_id field.
-	membertransaction.DefaultLoyaltyTxnID = membertransactionDescLoyaltyTxnID.Default.(string)
-	// membertransaction.LoyaltyTxnIDValidator is a validator for the "loyalty_txn_id" field. It is called by the builders before save.
-	membertransaction.LoyaltyTxnIDValidator = membertransactionDescLoyaltyTxnID.Validators[0].(func(string) error)
+	membertransaction.DefaultLoyaltyTxnID = membertransactionDescLoyaltyTxnID.Default.(int64)
 	// membertransactionDescTxnDesc is the schema descriptor for txn_desc field.
 	membertransactionDescTxnDesc := membertransactionFields[7].Descriptor()
 	// membertransaction.TxnDescValidator is a validator for the "txn_desc" field. It is called by the builders before save.

@@ -65,15 +65,15 @@ func (mtc *MemberTransactionCreate) SetNillableSentTime(t *time.Time) *MemberTra
 }
 
 // SetLoyaltyTxnID sets the "loyalty_txn_id" field.
-func (mtc *MemberTransactionCreate) SetLoyaltyTxnID(s string) *MemberTransactionCreate {
-	mtc.mutation.SetLoyaltyTxnID(s)
+func (mtc *MemberTransactionCreate) SetLoyaltyTxnID(i int64) *MemberTransactionCreate {
+	mtc.mutation.SetLoyaltyTxnID(i)
 	return mtc
 }
 
 // SetNillableLoyaltyTxnID sets the "loyalty_txn_id" field if the given value is not nil.
-func (mtc *MemberTransactionCreate) SetNillableLoyaltyTxnID(s *string) *MemberTransactionCreate {
-	if s != nil {
-		mtc.SetLoyaltyTxnID(*s)
+func (mtc *MemberTransactionCreate) SetNillableLoyaltyTxnID(i *int64) *MemberTransactionCreate {
+	if i != nil {
+		mtc.SetLoyaltyTxnID(*i)
 	}
 	return mtc
 }
@@ -269,11 +269,6 @@ func (mtc *MemberTransactionCreate) check() error {
 	if _, ok := mtc.mutation.LoyaltyTxnID(); !ok {
 		return &ValidationError{Name: "loyalty_txn_id", err: errors.New(`ent: missing required field "MemberTransaction.loyalty_txn_id"`)}
 	}
-	if v, ok := mtc.mutation.LoyaltyTxnID(); ok {
-		if err := membertransaction.LoyaltyTxnIDValidator(v); err != nil {
-			return &ValidationError{Name: "loyalty_txn_id", err: fmt.Errorf(`ent: validator failed for field "MemberTransaction.loyalty_txn_id": %w`, err)}
-		}
-	}
 	if _, ok := mtc.mutation.TxnDesc(); !ok {
 		return &ValidationError{Name: "txn_desc", err: errors.New(`ent: missing required field "MemberTransaction.txn_desc"`)}
 	}
@@ -376,7 +371,7 @@ func (mtc *MemberTransactionCreate) createSpec() (*MemberTransaction, *sqlgraph.
 	}
 	if value, ok := mtc.mutation.LoyaltyTxnID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: membertransaction.FieldLoyaltyTxnID,
 		})
