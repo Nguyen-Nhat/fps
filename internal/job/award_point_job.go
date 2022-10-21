@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -147,9 +148,27 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 		dto.Converter[dto.FileAwardPointMetadata, dto.FileAwardPointRow],
 	](indexStart, &fileAwardPointMetadata, sheetData)
 
+	// Handle if cannot extract data
+	// If error is empty sheet, update status to finished
+	// Else update status to failed
 	if err != nil {
 		logger.Errorf("Cannot convert data from file url %v, got %v", fap.FileURL, err)
+		if errors.Is(err, excel.ErrEmptySheet) {
+			// If sheet empty, change status to Finished
+			_, updateStatusErr := f.fapService.UpdateStatusOne(ctx, fap.ID, fileawardpoint.StatusFinished)
+			if updateStatusErr != nil {
+				logger.Errorf("Cannot update file award status to finished, got %v", err)
+			}
+
+		} else {
+			// If cannot convert, set status to fail
+			_, updateStatusErr := f.fapService.UpdateStatusOne(ctx, fap.ID, fileawardpoint.StatusFailed)
+			if updateStatusErr != nil {
+				logger.Errorf("Cannot update file award status to fail, got %v", err)
+			}
+		}
 		return nil, "", err
+
 	}
 
 	var (

@@ -10,6 +10,10 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 )
 
+var (
+	ErrEmptySheet = fmt.Errorf("sheet empty")
+)
+
 func ConvertToStruct[META any, OUT any, C dto.Converter[META, OUT]](
 	dataIndexStart int, metadata C, data [][]string,
 ) (*dto.Sheet[OUT], error) {
@@ -17,7 +21,7 @@ func ConvertToStruct[META any, OUT any, C dto.Converter[META, OUT]](
 	totalRows := len(data)
 	logger.Infof("Total rows = %v\n", totalRows)
 	if totalRows < dataIndexStart {
-		return nil, fmt.Errorf("sheet empty")
+		return nil, ErrEmptySheet
 	}
 
 	// Mapping Header with Column Index in file

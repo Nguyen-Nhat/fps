@@ -122,7 +122,7 @@ func (j *updateStatusFAPJobImpl) Start() {
 		}
 		if len(txnArr) == 0 { // check empty
 			logger.Infof("No %v for executing!", membertxn.Name())
-			continue // next FAP
+			//continue // no finished, need to handle at step 2.4
 		}
 
 		// 2.2. Execute each transaction
