@@ -204,15 +204,9 @@ func getPagination(ctx context.Context, query *ent.FileAwardPointQuery, page int
 		return nil, err
 	}
 
-	var pageSize int
-	if total > page*size {
-		pageSize = size
-	} else {
-		pageSize = int(math.Max(float64(total-(page-1)*size), 0))
-	}
 	return &response.Pagination{
 		CurrentPage: page,
-		PageSize:    pageSize,
+		PageSize:    size,
 		TotalItems:  total,
 		TotalPage:   int(math.Ceil(float64(total) / float64(size))),
 	}, nil
