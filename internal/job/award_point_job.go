@@ -284,7 +284,7 @@ func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *
 		_, err = f.memTxnService.UpdateOne(ctx, membertxn.UpdateMemberTxnDTO{
 			ID:           record.ID,
 			RefID:        refID,
-			SentTime:     time.Now().Truncate(time.Second),
+			SentTime:     time.Now().Truncate(time.Second).Add(-5 * time.Second), // Minus 5 second due to time diff between loyalty file process and loyalty core
 			Status:       membertxn.StatusProcessing,
 			Error:        res.Message,
 			LoyaltyTxnID: int64(loyaltyTxnId),

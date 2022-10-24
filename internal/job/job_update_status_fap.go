@@ -3,6 +3,8 @@ package job
 import (
 	"context"
 	"fmt"
+	"sync"
+
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/membertxn"
@@ -11,7 +13,6 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/loyalty"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 	"github.com/robfig/cron/v3"
-	"sync"
 )
 
 var onceUSJ sync.Once
@@ -173,8 +174,19 @@ func (j *updateStatusFAPJobImpl) Start() {
 			}
 		}
 		// in case finished
+		// if total success = 0, set status to failed
+		// else set status to finished
 		if totalHaveNotTerminated == 0 {
-			logger.Infof("===== Update Status to Success (%v)", fileawardpoint.StatusFinished)
+			if totalSuccessTxn == 0 {
+				logger.Infof("===== Update Status to Failed (%v)", fileawardpoint.StatusFailed)
+				_, err := j.fapService.UpdateStatusOne(ctx, fap.ID, fileawardpoint.StatusFailed)
+				if err != nil {
+					logger.Errorf("===== Update Status failed: %v", err)
+				}
+				return
+			}
+
+			logger.Infof("===== Update Status to Finished (%v)", fileawardpoint.StatusFinished)
 			_, err := j.fapService.UpdateStatusOne(ctx, fap.ID, fileawardpoint.StatusFinished)
 			if err != nil {
 				logger.Errorf("===== Update Status failed: %v", err)
