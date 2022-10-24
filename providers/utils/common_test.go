@@ -213,6 +213,15 @@ func TestExtractFileName(t *testing.T) {
 				Extension: "xlsx",
 			},
 		},
+		{
+			name: "get file name from name with space",
+			args: args{"VietMeta - nap diem KH 2022-10-19 (part 4).xlsx"},
+			want: FileName{
+				FullName:  "VietMeta - nap diem KH 2022-10-19 (part 4).xlsx",
+				Name:      "VietMeta - nap diem KH 2022-10-19 (part 4)",
+				Extension: "xlsx",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
