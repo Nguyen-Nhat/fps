@@ -135,8 +135,10 @@ func mixAndMakeResultFile(previousFAPResults [][]string, newResults []dto.FileAw
 	exFile, sheetName := initFapResultSheetWithHeader()
 
 	// 2. Set previous result
-	if len(previousFAPResults) >= dataIndexStart {
+	if len(previousFAPResults) >= dataIndexStart-1 {
 		previousFAPResults = previousFAPResults[dataIndexStart-1:] // ignore header
+	} else {
+		previousFAPResults = [][]string{}
 	}
 	for rowId, previousResultRow := range previousFAPResults {
 		axis := fmt.Sprintf("A%v", rowId+dataIndexStart)
