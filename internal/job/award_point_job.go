@@ -72,11 +72,10 @@ func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
 		logger.Infof("Processing file award point ID = %v", fap.ID)
 
 		var validTxnRecords []membertxn.MemberTxnDTO
-		newFileResultUrl := fap.ResultFileURL
 		switch fap.Status {
 		case fileawardpoint.StatusInit:
 			{
-				validTxnRecords, newFileResultUrl, err = f.handleCaseInitAwardPoint(ctx, fap)
+				validTxnRecords, err = f.handleCaseInitAwardPoint(ctx, fap)
 				if err != nil {
 					logger.Errorf("Cannot handle init file award point %#v, got %v", fap, err)
 					continue
@@ -111,7 +110,7 @@ func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
 
 		// Save error grant point to result file
 		if len(errorResults) > 0 {
-			resultFileUrl, err := f.fileService.AppendErrorAndUploadFileAwardPointResult(errorResults, newFileResultUrl)
+			resultFileUrl, err := f.fileService.AppendErrorAndUploadFileAwardPointResult(errorResults, fap.ResultFileURL)
 			if err != nil {
 				logger.Errorf("===== Upload result filed failed")
 			} else {
@@ -131,12 +130,12 @@ func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
 // 3. Insert member transaction to db
 // 4. Update file status to processing or failed if errorRow == totalRow
 // 5. Upload validation result file
-func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, string, error) {
+func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, error) {
 	// 1. Download and extract data
 	sheetData, err := excel.LoadExcelByUrl(fap.FileURL)
 	if err != nil {
 		logger.Errorf("Cannot get data from file url %v, got %v", fap.FileURL, err)
-		return nil, "", err
+		return nil, err
 	}
 
 	indexStart := 3
@@ -155,7 +154,7 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 		if updateStatusErr != nil {
 			logger.Errorf("Cannot update file award status to fail, got %v", err)
 		}
-		return nil, "", err
+		return nil, err
 	}
 
 	var (
@@ -170,7 +169,7 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 	_, err = f.fapService.UpdateTotalRowOne(ctx, fap.ID, totalValidRow+totalInvalidRow)
 	if err != nil {
 		logger.Errorf("Cannot update file award point total row: got: %v", err)
-		return nil, "", err
+		return nil, err
 	}
 
 	var validTxnRecords []membertxn.MemberTxnDTO
@@ -209,7 +208,7 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 
 	if err != nil {
 		logger.Errorf("Cannot update file award point status: got: %v", err)
-		return nil, "", err
+		return nil, err
 	}
 
 	// 5. Upload validation result file
@@ -218,15 +217,16 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 	newFileResultUrl, err := f.fileService.UploadFileAwardPointError(sheet.ErrorRows, resultFileName)
 	if err != nil {
 		logger.Errorf("Cannot upload result file, got %v", err)
-		return nil, "", err
+		return nil, err
 	}
 
 	_, err = f.fapService.UpdateResultFileUrlOne(ctx, fap.ID, newFileResultUrl)
 	if err != nil {
 		logger.Errorf("Cannot save file award point result URL, got: %v", err)
-		return nil, newFileResultUrl, err
+		return nil, err
 	}
-	return validTxnRecords, newFileResultUrl, nil
+	fap.ResultFileURL = newFileResultUrl // newFileResultUrl will be get in next step (outside this function)
+	return validTxnRecords, nil
 }
 
 // handleCaseProcessingAwardPoint handle logic for file with processing status
