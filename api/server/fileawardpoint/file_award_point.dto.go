@@ -2,8 +2,10 @@ package fileawardpoint
 
 import (
 	"errors"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
+	"fmt"
 	"net/http"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 )
 
 // Request DTO =========================================================================================================
@@ -83,8 +85,13 @@ func (c *CreateFileAwardPointDetailRequest) Bind(_ *http.Request) error {
 		return ErrFileUrlRequired
 	}
 
+	// validate fileUrl length
+	if len(c.FileUrl) > FileUrlMaxLength {
+		return ErrFileUrlMaxLength
+	}
+
 	// validate Note length
-	if len(c.Note) > 255 {
+	if len(c.Note) > NoteMaxLength {
 		return ErrNoteOverMaxLength
 	}
 
@@ -99,7 +106,13 @@ type CreateFileAwardPointDetailResponse struct {
 var (
 	ErrMerchantIDRequired = errors.New("merchant id is required")
 	ErrFileUrlRequired    = errors.New("file url is required")
-	ErrNoteOverMaxLength  = errors.New("note over 255 character")
+	ErrFileUrlMaxLength   = fmt.Errorf("file url over %d character", FileUrlMaxLength)
+	ErrNoteOverMaxLength  = fmt.Errorf("note over %d character", NoteMaxLength)
+)
+
+const (
+	FileUrlMaxLength = 500
+	NoteMaxLength    = 255
 )
 
 const (

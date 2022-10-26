@@ -71,6 +71,8 @@ var (
 	DisplayNameValidator func(string) error
 	// FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
 	FileURLValidator func(string) error
+	// ResultFileURLValidator is a validator for the "result_file_url" field. It is called by the builders before save.
+	ResultFileURLValidator func(string) error
 	// NoteValidator is a validator for the "note" field. It is called by the builders before save.
 	NoteValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.

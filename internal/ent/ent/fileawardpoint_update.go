@@ -246,6 +246,11 @@ func (fapu *FileAwardPointUpdate) check() error {
 			return &ValidationError{Name: "file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.file_url": %w`, err)}
 		}
 	}
+	if v, ok := fapu.mutation.ResultFileURL(); ok {
+		if err := fileawardpoint.ResultFileURLValidator(v); err != nil {
+			return &ValidationError{Name: "result_file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.result_file_url": %w`, err)}
+		}
+	}
 	if v, ok := fapu.mutation.Note(); ok {
 		if err := fileawardpoint.NoteValidator(v); err != nil {
 			return &ValidationError{Name: "note", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.note": %w`, err)}
@@ -632,6 +637,11 @@ func (fapuo *FileAwardPointUpdateOne) check() error {
 	if v, ok := fapuo.mutation.FileURL(); ok {
 		if err := fileawardpoint.FileURLValidator(v); err != nil {
 			return &ValidationError{Name: "file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.file_url": %w`, err)}
+		}
+	}
+	if v, ok := fapuo.mutation.ResultFileURL(); ok {
+		if err := fileawardpoint.ResultFileURLValidator(v); err != nil {
+			return &ValidationError{Name: "result_file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.result_file_url": %w`, err)}
 		}
 	}
 	if v, ok := fapuo.mutation.Note(); ok {
