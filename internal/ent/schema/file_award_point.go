@@ -25,8 +25,8 @@ func (FileAwardPoint) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("merchant_id"),
 		field.String("display_name").NotEmpty(),
-		field.String("file_url").NotEmpty(),
-		field.String("result_file_url"),
+		field.String("file_url").MaxLen(500).NotEmpty(),
+		field.String("result_file_url").MaxLen(510),
 		field.String("note").MaxLen(255),
 		field.Int16("status").Default(0).Comment("Init=1; Processing=2; Failed=3; Finished=4"),
 		field.Int32("stats_total_row").Default(0),

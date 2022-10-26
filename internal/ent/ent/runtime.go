@@ -24,7 +24,25 @@ func init() {
 	// fileawardpointDescFileURL is the schema descriptor for file_url field.
 	fileawardpointDescFileURL := fileawardpointFields[2].Descriptor()
 	// fileawardpoint.FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
-	fileawardpoint.FileURLValidator = fileawardpointDescFileURL.Validators[0].(func(string) error)
+	fileawardpoint.FileURLValidator = func() func(string) error {
+		validators := fileawardpointDescFileURL.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(file_url string) error {
+			for _, fn := range fns {
+				if err := fn(file_url); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// fileawardpointDescResultFileURL is the schema descriptor for result_file_url field.
+	fileawardpointDescResultFileURL := fileawardpointFields[3].Descriptor()
+	// fileawardpoint.ResultFileURLValidator is a validator for the "result_file_url" field. It is called by the builders before save.
+	fileawardpoint.ResultFileURLValidator = fileawardpointDescResultFileURL.Validators[0].(func(string) error)
 	// fileawardpointDescNote is the schema descriptor for note field.
 	fileawardpointDescNote := fileawardpointFields[4].Descriptor()
 	// fileawardpoint.NoteValidator is a validator for the "note" field. It is called by the builders before save.

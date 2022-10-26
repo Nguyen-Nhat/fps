@@ -255,6 +255,11 @@ func (fapc *FileAwardPointCreate) check() error {
 	if _, ok := fapc.mutation.ResultFileURL(); !ok {
 		return &ValidationError{Name: "result_file_url", err: errors.New(`ent: missing required field "FileAwardPoint.result_file_url"`)}
 	}
+	if v, ok := fapc.mutation.ResultFileURL(); ok {
+		if err := fileawardpoint.ResultFileURLValidator(v); err != nil {
+			return &ValidationError{Name: "result_file_url", err: fmt.Errorf(`ent: validator failed for field "FileAwardPoint.result_file_url": %w`, err)}
+		}
+	}
 	if _, ok := fapc.mutation.Note(); !ok {
 		return &ValidationError{Name: "note", err: errors.New(`ent: missing required field "FileAwardPoint.note"`)}
 	}
