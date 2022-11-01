@@ -90,7 +90,7 @@ func (r *repoImpl) GetAllAndPagination(ctx context.Context, dto *GetListFileAwar
 
 	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).Order(ent.Desc(fileawardpoint.FieldCreatedAt)).All(ctx)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed querying all file award point: %w", err)
+		return nil, nil, fmt.Errorf("failed querying all file award point: %v", err)
 	}
 
 	return mapEntArrToFileAwardPointArr(faps), pagination, nil
@@ -204,15 +204,9 @@ func getPagination(ctx context.Context, query *ent.FileAwardPointQuery, page int
 		return nil, err
 	}
 
-	var pageSize int
-	if total > page*size {
-		pageSize = size
-	} else {
-		pageSize = int(math.Max(float64(total-(page-1)*size), 0))
-	}
 	return &response.Pagination{
 		CurrentPage: page,
-		PageSize:    pageSize,
+		PageSize:    size,
 		TotalItems:  total,
 		TotalPage:   int(math.Ceil(float64(total) / float64(size))),
 	}, nil

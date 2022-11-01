@@ -80,7 +80,7 @@ func TestAPIListFile_Parameter_empty__Should_return_code_200(t *testing.T) {
 	// Assert pagination
 	expectedPagination := response.Pagination{
 		CurrentPage: req.Page,
-		PageSize:    expectedDataLength,
+		PageSize:    req.Size,
 		TotalItems:  dbRowCount,
 		TotalPage:   pageCalculator(dbRowCount, req.Size),
 	}
@@ -129,7 +129,7 @@ func TestAPIListFile_Parameter_include_only_merchantId__Should_return_code_200(t
 	// Assert pagination
 	expectedPagination := response.Pagination{
 		CurrentPage: req.Page,
-		PageSize:    expectedDataLength,
+		PageSize:    req.Size,
 		TotalItems:  dbRowCount,
 		TotalPage:   pageCalculator(dbRowCount, req.Size),
 	}
@@ -179,7 +179,7 @@ func TestAPIListFile_Parameter_include_all__Should_return_code_200(t *testing.T)
 	// Assert pagination
 	expectedPagination := response.Pagination{
 		CurrentPage: req.Page,
-		PageSize:    expectedDataLength,
+		PageSize:    req.Size,
 		TotalItems:  dbRowCount,
 		TotalPage:   pageCalculator(dbRowCount, req.Size),
 	}
@@ -228,7 +228,7 @@ func TestAPIListFile_Parameter_only_include_page_and_size__Should_return_code_20
 	// Assert pagination
 	expectedPagination := response.Pagination{
 		CurrentPage: req.Page,
-		PageSize:    expectedDataLength,
+		PageSize:    req.Size,
 		TotalItems:  dbRowCount,
 		TotalPage:   pageCalculator(dbRowCount, req.Size),
 	}

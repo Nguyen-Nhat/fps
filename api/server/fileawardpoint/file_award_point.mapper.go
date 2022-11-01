@@ -42,7 +42,7 @@ func toGetListResponseByEntity(fap *fileawardpoint.FileAwardPoint) FileAwardPoin
 }
 
 func fromFileArrToGetListData(fap []*fileawardpoint.FileAwardPoint, pagination *response.Pagination) *GetListFileAwardPointData {
-	var result []FileAwardPoint
+	result := make([]FileAwardPoint, 0)
 	for _, v := range fap {
 		result = append(result, toGetListResponseByEntity(v))
 	}
