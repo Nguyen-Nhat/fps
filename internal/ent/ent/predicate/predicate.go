@@ -12,5 +12,11 @@ type FileAwardPoint func(*sql.Selector)
 // MemberTransaction is the predicate function for membertransaction builders.
 type MemberTransaction func(*sql.Selector)
 
+// ProcessingFile is the predicate function for processingfile builders.
+type ProcessingFile func(*sql.Selector)
+
+// ProcessingFileRow is the predicate function for processingfilerow builders.
+type ProcessingFileRow func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

@@ -16,6 +16,10 @@ type Tx struct {
 	FileAwardPoint *FileAwardPointClient
 	// MemberTransaction is the client for interacting with the MemberTransaction builders.
 	MemberTransaction *MemberTransactionClient
+	// ProcessingFile is the client for interacting with the ProcessingFile builders.
+	ProcessingFile *ProcessingFileClient
+	// ProcessingFileRow is the client for interacting with the ProcessingFileRow builders.
+	ProcessingFileRow *ProcessingFileRowClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -155,6 +159,8 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.FileAwardPoint = NewFileAwardPointClient(tx.config)
 	tx.MemberTransaction = NewMemberTransactionClient(tx.config)
+	tx.ProcessingFile = NewProcessingFileClient(tx.config)
+	tx.ProcessingFileRow = NewProcessingFileRowClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 
