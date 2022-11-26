@@ -143,7 +143,7 @@ func init() {
 	// processingfileDescCreatedAt is the schema descriptor for created_at field.
 	processingfileDescCreatedAt := processingfileFields[8].Descriptor()
 	// processingfile.DefaultCreatedAt holds the default value on creation for the created_at field.
-	processingfile.DefaultCreatedAt = processingfileDescCreatedAt.Default.(time.Time)
+	processingfile.DefaultCreatedAt = processingfileDescCreatedAt.Default.(func() time.Time)
 	// processingfileDescCreatedBy is the schema descriptor for created_by field.
 	processingfileDescCreatedBy := processingfileFields[9].Descriptor()
 	// processingfile.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
@@ -151,7 +151,9 @@ func init() {
 	// processingfileDescUpdatedAt is the schema descriptor for updated_at field.
 	processingfileDescUpdatedAt := processingfileFields[10].Descriptor()
 	// processingfile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	processingfile.DefaultUpdatedAt = processingfileDescUpdatedAt.Default.(time.Time)
+	processingfile.DefaultUpdatedAt = processingfileDescUpdatedAt.Default.(func() time.Time)
+	// processingfile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	processingfile.UpdateDefaultUpdatedAt = processingfileDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

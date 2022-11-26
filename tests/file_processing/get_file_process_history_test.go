@@ -1,9 +1,10 @@
-package processingFile
+package fileprocessing
 
 import (
+	"testing"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 const issue1296 = "LOY-1296"

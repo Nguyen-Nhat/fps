@@ -71,9 +71,11 @@ var (
 	// FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
 	FileURLValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
-	DefaultCreatedAt time.Time
+	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	CreatedByValidator func(string) error
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt time.Time
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
 )
