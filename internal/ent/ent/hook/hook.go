@@ -35,6 +35,32 @@ func (f MemberTransactionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return f(ctx, mv)
 }
 
+// The ProcessingFileFunc type is an adapter to allow the use of ordinary
+// function as ProcessingFile mutator.
+type ProcessingFileFunc func(context.Context, *ent.ProcessingFileMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProcessingFileFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProcessingFileMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProcessingFileMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The ProcessingFileRowFunc type is an adapter to allow the use of ordinary
+// function as ProcessingFileRow mutator.
+type ProcessingFileRowFunc func(context.Context, *ent.ProcessingFileRowMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProcessingFileRowFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProcessingFileRowMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProcessingFileRowMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
