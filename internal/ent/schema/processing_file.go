@@ -1,11 +1,12 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
-	"time"
 )
 
 type ProcessingFile struct {
@@ -30,8 +31,8 @@ func (ProcessingFile) Fields() []ent.Field {
 		field.Int32("total_mapping"),
 		field.Int32("stats_total_row"),
 		field.Int32("stats_total_success"),
-		field.Time("created_at").Default(time.Now()),
+		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),
-		field.Time("updated_at").Default(time.Now()),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }

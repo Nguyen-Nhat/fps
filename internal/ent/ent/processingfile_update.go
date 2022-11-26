@@ -130,14 +130,6 @@ func (pfu *ProcessingFileUpdate) SetUpdatedAt(t time.Time) *ProcessingFileUpdate
 	return pfu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (pfu *ProcessingFileUpdate) SetNillableUpdatedAt(t *time.Time) *ProcessingFileUpdate {
-	if t != nil {
-		pfu.SetUpdatedAt(*t)
-	}
-	return pfu
-}
-
 // Mutation returns the ProcessingFileMutation object of the builder.
 func (pfu *ProcessingFileUpdate) Mutation() *ProcessingFileMutation {
 	return pfu.mutation
@@ -149,6 +141,7 @@ func (pfu *ProcessingFileUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	pfu.defaults()
 	if len(pfu.hooks) == 0 {
 		if err = pfu.check(); err != nil {
 			return 0, err
@@ -200,6 +193,14 @@ func (pfu *ProcessingFileUpdate) Exec(ctx context.Context) error {
 func (pfu *ProcessingFileUpdate) ExecX(ctx context.Context) {
 	if err := pfu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pfu *ProcessingFileUpdate) defaults() {
+	if _, ok := pfu.mutation.UpdatedAt(); !ok {
+		v := processingfile.UpdateDefaultUpdatedAt()
+		pfu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -472,14 +473,6 @@ func (pfuo *ProcessingFileUpdateOne) SetUpdatedAt(t time.Time) *ProcessingFileUp
 	return pfuo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (pfuo *ProcessingFileUpdateOne) SetNillableUpdatedAt(t *time.Time) *ProcessingFileUpdateOne {
-	if t != nil {
-		pfuo.SetUpdatedAt(*t)
-	}
-	return pfuo
-}
-
 // Mutation returns the ProcessingFileMutation object of the builder.
 func (pfuo *ProcessingFileUpdateOne) Mutation() *ProcessingFileMutation {
 	return pfuo.mutation
@@ -498,6 +491,7 @@ func (pfuo *ProcessingFileUpdateOne) Save(ctx context.Context) (*ProcessingFile,
 		err  error
 		node *ProcessingFile
 	)
+	pfuo.defaults()
 	if len(pfuo.hooks) == 0 {
 		if err = pfuo.check(); err != nil {
 			return nil, err
@@ -555,6 +549,14 @@ func (pfuo *ProcessingFileUpdateOne) Exec(ctx context.Context) error {
 func (pfuo *ProcessingFileUpdateOne) ExecX(ctx context.Context) {
 	if err := pfuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pfuo *ProcessingFileUpdateOne) defaults() {
+	if _, ok := pfuo.mutation.UpdatedAt(); !ok {
+		v := processingfile.UpdateDefaultUpdatedAt()
+		pfuo.mutation.SetUpdatedAt(v)
 	}
 }
 

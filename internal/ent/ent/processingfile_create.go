@@ -180,11 +180,11 @@ func (pfc *ProcessingFileCreate) ExecX(ctx context.Context) {
 // defaults sets the default values of the builder before save.
 func (pfc *ProcessingFileCreate) defaults() {
 	if _, ok := pfc.mutation.CreatedAt(); !ok {
-		v := processingfile.DefaultCreatedAt
+		v := processingfile.DefaultCreatedAt()
 		pfc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := pfc.mutation.UpdatedAt(); !ok {
-		v := processingfile.DefaultUpdatedAt
+		v := processingfile.DefaultUpdatedAt()
 		pfc.mutation.SetUpdatedAt(v)
 	}
 }
