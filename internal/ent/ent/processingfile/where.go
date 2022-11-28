@@ -81,7 +81,7 @@ func IDLTE(id int) predicate.ProcessingFile {
 }
 
 // ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
-func ClientID(v string) predicate.ProcessingFile {
+func ClientID(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldClientID), v))
 	})
@@ -158,21 +158,21 @@ func UpdatedAt(v time.Time) predicate.ProcessingFile {
 }
 
 // ClientIDEQ applies the EQ predicate on the "client_id" field.
-func ClientIDEQ(v string) predicate.ProcessingFile {
+func ClientIDEQ(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDNEQ applies the NEQ predicate on the "client_id" field.
-func ClientIDNEQ(v string) predicate.ProcessingFile {
+func ClientIDNEQ(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDIn applies the In predicate on the "client_id" field.
-func ClientIDIn(vs ...string) predicate.ProcessingFile {
+func ClientIDIn(vs ...int32) predicate.ProcessingFile {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -183,7 +183,7 @@ func ClientIDIn(vs ...string) predicate.ProcessingFile {
 }
 
 // ClientIDNotIn applies the NotIn predicate on the "client_id" field.
-func ClientIDNotIn(vs ...string) predicate.ProcessingFile {
+func ClientIDNotIn(vs ...int32) predicate.ProcessingFile {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -194,65 +194,30 @@ func ClientIDNotIn(vs ...string) predicate.ProcessingFile {
 }
 
 // ClientIDGT applies the GT predicate on the "client_id" field.
-func ClientIDGT(v string) predicate.ProcessingFile {
+func ClientIDGT(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDGTE applies the GTE predicate on the "client_id" field.
-func ClientIDGTE(v string) predicate.ProcessingFile {
+func ClientIDGTE(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDLT applies the LT predicate on the "client_id" field.
-func ClientIDLT(v string) predicate.ProcessingFile {
+func ClientIDLT(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDLTE applies the LTE predicate on the "client_id" field.
-func ClientIDLTE(v string) predicate.ProcessingFile {
+func ClientIDLTE(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldClientID), v))
-	})
-}
-
-// ClientIDContains applies the Contains predicate on the "client_id" field.
-func ClientIDContains(v string) predicate.ProcessingFile {
-	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldClientID), v))
-	})
-}
-
-// ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
-func ClientIDHasPrefix(v string) predicate.ProcessingFile {
-	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldClientID), v))
-	})
-}
-
-// ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
-func ClientIDHasSuffix(v string) predicate.ProcessingFile {
-	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldClientID), v))
-	})
-}
-
-// ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
-func ClientIDEqualFold(v string) predicate.ProcessingFile {
-	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldClientID), v))
-	})
-}
-
-// ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
-func ClientIDContainsFold(v string) predicate.ProcessingFile {
-	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldClientID), v))
 	})
 }
 

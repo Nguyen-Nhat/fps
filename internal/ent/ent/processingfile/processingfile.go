@@ -64,8 +64,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
-	ClientIDValidator func(string) error
 	// DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
 	DisplayNameValidator func(string) error
 	// FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.

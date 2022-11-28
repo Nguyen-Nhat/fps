@@ -17,7 +17,7 @@ type ProcessingFile struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// ClientID holds the value of the "client_id" field.
-	ClientID string `json:"client_id,omitempty"`
+	ClientID int32 `json:"client_id,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"display_name,omitempty"`
 	// FileURL holds the value of the "file_url" field.
@@ -45,9 +45,9 @@ func (*ProcessingFile) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case processingfile.FieldID, processingfile.FieldStatus, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalSuccess:
+		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
-		case processingfile.FieldClientID, processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldCreatedBy:
+		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case processingfile.FieldCreatedAt, processingfile.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -73,10 +73,10 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 			}
 			pf.ID = int(value.Int64)
 		case processingfile.FieldClientID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
-				pf.ClientID = value.String
+				pf.ClientID = int32(value.Int64)
 			}
 		case processingfile.FieldDisplayName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -167,7 +167,7 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString("ProcessingFile(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", pf.ID))
 	builder.WriteString("client_id=")
-	builder.WriteString(pf.ClientID)
+	builder.WriteString(fmt.Sprintf("%v", pf.ClientID))
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(pf.DisplayName)

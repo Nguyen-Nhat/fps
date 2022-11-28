@@ -10,7 +10,7 @@ import (
 
 // CreateFileProcessingRequest ...
 type CreateFileProcessingRequest struct {
-	ClientID        int64  `json:"clientId"`
+	ClientID        int32  `json:"clientId"`
 	FileURL         string `json:"fileUrl"`
 	FileDisplayName string `json:"fileDisplayName"`
 	CreatedBy       string `json:"createdBy"`

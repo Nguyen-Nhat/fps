@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 	"testing"
 
@@ -21,7 +20,7 @@ import (
 const issue1295 = "LOY-1295"
 
 const (
-	ClientIDTest    int64 = 12387456865126
+	ClientIDTest    int32 = 12345678
 	DisplayNameTest       = "a.xlsx"
 	FileUrlTest           = "https://storage.googleapis.com/folder/file.xlsx"
 	CreatedByTest         = "nguyen.ng@teko.vn"
@@ -284,9 +283,7 @@ func TestAllInputValid__SaveClientIdFileUrlDisplayNameToDB(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, res.Data.ProcessFileID, int64(fp.ID))
 	assert.Equal(t, FileUrlTest, fp.FileURL)
-	dbClientID, err := strconv.ParseInt(fp.ClientID, 10, 64)
-	assert.Nil(t, err)
-	assert.Equal(t, ClientIDTest, dbClientID)
+	assert.Equal(t, ClientIDTest, fp.ClientID)
 	assert.Equal(t, DisplayNameTest, fp.DisplayName)
 	assert.Equal(t, CreatedByTest, fp.CreatedBy)
 }
