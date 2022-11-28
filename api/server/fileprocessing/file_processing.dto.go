@@ -4,7 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 )
+
+import "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 
 // Request DTO =========================================================================================================
 
@@ -71,6 +74,24 @@ var (
 	DisplayNameMaxLength = 255
 	CreatedByMaxLength   = 255
 )
+
+type GetFileProcessHistoryData struct {
+	ProcessingFiles []ProcessingHistoryFile `json:"processingFile"`
+	Pagination      response.Pagination     `json:"pagination"`
+}
+
+type ProcessingHistoryFile struct {
+	ClientId          string    `json:"merchantId"`
+	ProcessingFileId  int       `json:"processingFileId"`
+	FileDisplayName   string    `json:"fileDisplayName"`
+	FileUrl           string    `json:"fileUrl"`
+	ResultFileUrl     string    `json:"resultFileUrl"`
+	Status            int16     `json:"status"`
+	StatsTotalRow     int32     `json:"statsTotalRow"`
+	StatsTotalSuccess int32     `json:"statsTotalSuccess"`
+	CreatedAt         time.Time `json:"createdAt"`
+	CreatedBy         string    `json:"createdBy"`
+}
 
 const (
 	FpStatusInit       = "INIT"

@@ -1,5 +1,12 @@
 package fileprocessing
 
+import "git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/pagination"
+
+type GetFileProcessHistoryDTO struct {
+	ClientId string
+	pagination.PaginatingRequest
+}
+
 type CreateFileProcessingReqDTO struct {
 	ClientID    int64
 	FileURL     string

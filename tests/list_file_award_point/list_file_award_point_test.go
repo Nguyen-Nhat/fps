@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	fileawardpoint2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/pagination"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/tests/common"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/codes"
-	"math"
 	"testing"
 )
 
@@ -22,22 +22,6 @@ var jiraTestDetailsForListFileAwardPoint = jiratest.Detail{
 	Folder:          "HN17/Loyalty File Processing/API List File Award Point",
 	WebLinks:        []string{"https://jira.teko.vn/browse/" + issue1221},
 	ConfluenceLinks: []string{"https://confluence.teko.vn/display/PAYMS/%5Bv4%5D+Upsert+Credential"},
-}
-
-func pageCalculator(total int, pageSize int) int {
-	return int(math.Ceil(float64(total) / float64(pageSize)))
-}
-
-func pageSizeCalculator(total int, page int, pageSize int) int {
-	var expectedPageSize int
-	if (page-1)*pageSize > total {
-		expectedPageSize = 0
-	} else if temp := page * pageSize; temp > total {
-		expectedPageSize = total - temp + pageSize
-	} else {
-		expectedPageSize = pageSize
-	}
-	return expectedPageSize
 }
 
 func TestAPIListFile_Parameter_empty__Should_return_code_200(t *testing.T) {
@@ -74,7 +58,7 @@ func TestAPIListFile_Parameter_empty__Should_return_code_200(t *testing.T) {
 		}
 	}
 
-	expectedDataLength := pageSizeCalculator(dbRowCount, req.Page, req.Size)
+	expectedDataLength := common.PageSizeCalculator(dbRowCount, req.Page, req.Size)
 	assert.Equal(t, expectedDataLength, len(fapRes.Data.FileAwardPoints))
 
 	// Assert pagination
@@ -82,7 +66,7 @@ func TestAPIListFile_Parameter_empty__Should_return_code_200(t *testing.T) {
 		CurrentPage: req.Page,
 		PageSize:    req.Size,
 		TotalItems:  dbRowCount,
-		TotalPage:   pageCalculator(dbRowCount, req.Size),
+		TotalPage:   common.PageCalculator(dbRowCount, req.Size),
 	}
 	assert.Equal(t, expectedPagination, fapRes.Data.Pagination)
 }
@@ -123,7 +107,7 @@ func TestAPIListFile_Parameter_include_only_merchantId__Should_return_code_200(t
 		}
 	}
 
-	expectedDataLength := pageSizeCalculator(dbRowCount, req.Page, req.Size)
+	expectedDataLength := common.PageSizeCalculator(dbRowCount, req.Page, req.Size)
 	assert.Equal(t, expectedDataLength, len(fapRes.Data.FileAwardPoints))
 
 	// Assert pagination
@@ -131,7 +115,7 @@ func TestAPIListFile_Parameter_include_only_merchantId__Should_return_code_200(t
 		CurrentPage: req.Page,
 		PageSize:    req.Size,
 		TotalItems:  dbRowCount,
-		TotalPage:   pageCalculator(dbRowCount, req.Size),
+		TotalPage:   common.PageCalculator(dbRowCount, req.Size),
 	}
 	assert.Equal(t, expectedPagination, fapRes.Data.Pagination)
 }
@@ -149,8 +133,10 @@ func TestAPIListFile_Parameter_include_all__Should_return_code_200(t *testing.T)
 
 	req := fileawardpoint.GetListFileAwardPointDTO{
 		MerchantId: 1,
-		Page:       1,
-		Size:       2,
+		PaginatingRequest: pagination.PaginatingRequest{
+			Page: 1,
+			Size: 2,
+		},
 	}
 
 	fapRes, err := fapServer.GetList(ctx, &req)
@@ -173,7 +159,7 @@ func TestAPIListFile_Parameter_include_all__Should_return_code_200(t *testing.T)
 		}
 	}
 
-	expectedDataLength := pageSizeCalculator(dbRowCount, req.Page, req.Size)
+	expectedDataLength := common.PageSizeCalculator(dbRowCount, req.Page, req.Size)
 	assert.Equal(t, expectedDataLength, len(fapRes.Data.FileAwardPoints))
 
 	// Assert pagination
@@ -181,7 +167,7 @@ func TestAPIListFile_Parameter_include_all__Should_return_code_200(t *testing.T)
 		CurrentPage: req.Page,
 		PageSize:    req.Size,
 		TotalItems:  dbRowCount,
-		TotalPage:   pageCalculator(dbRowCount, req.Size),
+		TotalPage:   common.PageCalculator(dbRowCount, req.Size),
 	}
 	assert.Equal(t, expectedPagination, fapRes.Data.Pagination)
 }
@@ -198,8 +184,10 @@ func TestAPIListFile_Parameter_only_include_page_and_size__Should_return_code_20
 	fapServer := fileawardpoint2.InitFileAwardPointServer(db)
 
 	req := fileawardpoint.GetListFileAwardPointDTO{
-		Page: 2,
-		Size: 1,
+		PaginatingRequest: pagination.PaginatingRequest{
+			Page: 2,
+			Size: 1,
+		},
 	}
 
 	fapRes, err := fapServer.GetList(ctx, &req)
@@ -222,7 +210,7 @@ func TestAPIListFile_Parameter_only_include_page_and_size__Should_return_code_20
 		}
 	}
 
-	expectedDataLength := pageSizeCalculator(dbRowCount, req.Page, req.Size)
+	expectedDataLength := common.PageSizeCalculator(dbRowCount, req.Page, req.Size)
 	assert.Equal(t, expectedDataLength, len(fapRes.Data.FileAwardPoints))
 
 	// Assert pagination
@@ -230,7 +218,7 @@ func TestAPIListFile_Parameter_only_include_page_and_size__Should_return_code_20
 		CurrentPage: req.Page,
 		PageSize:    req.Size,
 		TotalItems:  dbRowCount,
-		TotalPage:   pageCalculator(dbRowCount, req.Size),
+		TotalPage:   common.PageCalculator(dbRowCount, req.Size),
 	}
 	assert.Equal(t, expectedPagination, fapRes.Data.Pagination)
 }

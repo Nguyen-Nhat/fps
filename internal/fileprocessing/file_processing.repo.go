@@ -3,16 +3,18 @@ package fileprocessing
 import (
 	"context"
 	"database/sql"
-	"fmt"
-
 	entsql "entgo.io/ent/dialect/sql"
+	"fmt"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 type (
 	Repo interface {
 		Save(ctx context.Context, fp ProcessingFile) (*ProcessingFile, error)
+		FindByClientIdAndPagination(context.Context, *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error)
 	}
 
 	repoImpl struct {
@@ -62,4 +64,31 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetStatsTotalRow(fp.StatsTotalRow).
 		SetStatsTotalSuccess(fp.StatsTotalSuccess).
 		SetCreatedBy(fp.CreatedBy)
+}
+
+// Implementation function ---------------------------------------------------------------------------------------------
+
+func (r *repoImpl) FindByClientIdAndPagination(ctx context.Context, dto *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error) {
+	query := r.client.ProcessingFile.Query().Where(processingfile.ClientID(dto.ClientId))
+
+	total, err := query.Count(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to count from db while querying all processing file")
+	}
+	pagination := response.GetPagination(total, dto.Page, dto.Size)
+
+	fps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).Order(ent.Desc(processingfile.FieldCreatedAt)).All(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed querying all processing file: %v", err)
+	}
+
+	return mapEntArrToProcessingFileArr(fps), pagination, nil
+}
+
+func mapEntArrToProcessingFileArr(arr []*ent.ProcessingFile) []*ProcessingFile {
+	var result []*ProcessingFile
+	for _, v := range arr {
+		result = append(result, &ProcessingFile{*v})
+	}
+	return result
 }

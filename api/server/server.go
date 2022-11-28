@@ -3,9 +3,8 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	fileprocessing "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
 	"net/http"
-
-	fileprocessing "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/processingfile"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
@@ -77,7 +76,7 @@ func (s *Server) initRoutes() {
 	fpServer := fileprocessing.InitFileProcessingServer(s.db)
 	fpRouter := chi.NewRouter()
 	fpRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
-	fpRouter.Get("/getList", fpServer.GetFileProcessHistoryAPI())
+	fpRouter.Get("/getListProcessFiles", fpServer.GetFileProcessHistoryAPI())
 	fpRouter.Post("/createProcessFile", fpServer.CreateProcessByFileAPI())
 	s.Router.Mount("/v1", fpRouter)
 }

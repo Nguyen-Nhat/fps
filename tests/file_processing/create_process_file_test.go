@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
-	fileprocessing "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/processingfile"
 	fileprocessingrepo "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/tests/common"
