@@ -123,10 +123,6 @@ func UploadFile[RES any](client *http.Client, urlPath string, content FileConten
 		logger.Errorf("error request %v", err)
 		return nil, err
 	}
-	if rsp.StatusCode != http.StatusOK {
-		log.Printf("Request failed with response code: %d", rsp.StatusCode)
-		return nil, fmt.Errorf("request failed with http status %v", rsp.StatusCode)
-	}
 	defer func() {
 		_ = rsp.Body.Close()
 	}()
@@ -135,6 +131,12 @@ func UploadFile[RES any](client *http.Client, urlPath string, content FileConten
 	if err != nil {
 		logger.Errorf("error read response body %v", err)
 		return nil, err
+	}
+	logger.Infof(" ===== Upload file response body: %s", respBody)
+
+	if rsp.StatusCode != http.StatusOK {
+		logger.Infof("Request failed with response code: %d", rsp.StatusCode)
+		return nil, fmt.Errorf("request failed with http status %v", rsp.StatusCode)
 	}
 
 	// 6. Convert response body to Entity
