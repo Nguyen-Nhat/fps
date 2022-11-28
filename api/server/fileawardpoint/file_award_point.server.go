@@ -54,14 +54,14 @@ func (s Server) GetDetailAPI() func(http.ResponseWriter, *http.Request) {
 		// 1. Bind data & validate input
 		data := &GetFileAwardPointDetailRequest{}
 		if err := render.Bind(r, data); err != nil {
-			render.Render(w, r, error2.ErrInvalidRequest(err))
+			render.Render(w, r, error2.ErrRenderInvalidRequest(err))
 			return
 		}
 
 		// 2. Handle request
 		res, err := s.GetDetail(r.Context(), data)
 		if err != nil {
-			render.Render(w, r, error2.ErrInvalidRequest(err)) // TODO @dung.nx correct error status
+			render.Render(w, r, error2.ToErrorResponse(err))
 			return
 		}
 
@@ -92,13 +92,13 @@ func (s *Server) GetListAPI() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data, err := validateAndSetDataValue(r)
 		if err != nil {
-			render.Render(w, r, error2.ErrInvalidRequest(err))
+			render.Render(w, r, error2.ErrRenderInvalidRequest(err))
 			return
 		}
 
 		resp, err := s.GetList(r.Context(), data)
 		if err != nil {
-			render.Render(w, r, error2.ErrInternal(err))
+			render.Render(w, r, error2.ToErrorResponse(err))
 			return
 		}
 
@@ -153,14 +153,14 @@ func (s *Server) CreateFileAwardPointAPI() func(http.ResponseWriter, *http.Reque
 		// 1. Bind data & validate input
 		data := &CreateFileAwardPointDetailRequest{}
 		if err := render.Bind(r, data); err != nil {
-			render.Render(w, r, error2.ErrInvalidRequest(err))
+			render.Render(w, r, error2.ErrRenderInvalidRequest(err))
 			return
 		}
 
 		// 2. Handle request
 		res, err := s.CreateFileAwardPoint(r.Context(), data)
 		if err != nil {
-			render.Render(w, r, error2.ErrInvalidRequest(err))
+			render.Render(w, r, error2.ToErrorResponse(err))
 			return
 		}
 

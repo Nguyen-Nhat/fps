@@ -14,7 +14,7 @@ func APIKeyMW(next http.Handler) http.Handler {
 		apiKey := r.Header.Get("X-API-KEY")
 		logger.Infof("API KEY = %v", utils.HiddenString(apiKey, 5))
 		if len(apiKey) == 0 {
-			_ = render.Render(w, r, error2.ErrNoPermissionRequest("Missing API Key"))
+			_ = render.Render(w, r, error2.ErrRenderNoPermissionRequest("Missing API Key"))
 			return
 		}
 		next.ServeHTTP(w, r)

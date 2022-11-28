@@ -49,14 +49,14 @@ func (s *UserServer) CreateUserAPI() func(w http.ResponseWriter, r *http.Request
 		// 1. Bind data & validate input
 		data := &CreateUserRequest{}
 		if err := render.Bind(r, data); err != nil {
-			render.Render(w, r, error2.ErrInvalidRequest(err))
+			render.Render(w, r, error2.ErrRenderInvalidRequest(err))
 			return
 		}
 
 		// 2. Handle request
 		res, err := s.CreateUser(r.Context(), data)
 		if err != nil {
-			render.Render(w, r, error2.ErrInvalidRequest(err)) // TODO @dung.nx correct error status
+			render.Render(w, r, error2.ToErrorResponse(err))
 		}
 
 		// 3. Render response

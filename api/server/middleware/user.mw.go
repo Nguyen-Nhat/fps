@@ -21,7 +21,7 @@ func UserMW(next http.Handler) http.Handler {
 		logger.Infof("USER = %v", userRaw)
 		if len(userRaw) == 0 {
 			msg := fmt.Sprintf("Missing %v", userHeader)
-			_ = render.Render(w, r, error2.ErrInvalidRequest(errors.New(msg)))
+			_ = render.Render(w, r, error2.ErrRenderInvalidRequest(errors.New(msg)))
 			return
 		}
 
