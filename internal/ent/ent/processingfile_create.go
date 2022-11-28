@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -20,8 +21,8 @@ type ProcessingFileCreate struct {
 }
 
 // SetClientID sets the "client_id" field.
-func (pfc *ProcessingFileCreate) SetClientID(i int64) *ProcessingFileCreate {
-	pfc.mutation.SetClientID(i)
+func (pfc *ProcessingFileCreate) SetClientID(s string) *ProcessingFileCreate {
+	pfc.mutation.SetClientID(s)
 	return pfc
 }
 
@@ -49,9 +50,9 @@ func (pfc *ProcessingFileCreate) SetStatus(i int16) *ProcessingFileCreate {
 	return pfc
 }
 
-// SetNumberTaskInFile sets the "number_task_in_file" field.
-func (pfc *ProcessingFileCreate) SetNumberTaskInFile(i int32) *ProcessingFileCreate {
-	pfc.mutation.SetNumberTaskInFile(i)
+// SetTotalMapping sets the "total_mapping" field.
+func (pfc *ProcessingFileCreate) SetTotalMapping(i int32) *ProcessingFileCreate {
+	pfc.mutation.SetTotalMapping(i)
 	return pfc
 }
 
@@ -67,9 +68,37 @@ func (pfc *ProcessingFileCreate) SetStatsTotalSuccess(i int32) *ProcessingFileCr
 	return pfc
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (pfc *ProcessingFileCreate) SetCreatedAt(t time.Time) *ProcessingFileCreate {
+	pfc.mutation.SetCreatedAt(t)
+	return pfc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableCreatedAt(t *time.Time) *ProcessingFileCreate {
+	if t != nil {
+		pfc.SetCreatedAt(*t)
+	}
+	return pfc
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (pfc *ProcessingFileCreate) SetCreatedBy(s string) *ProcessingFileCreate {
 	pfc.mutation.SetCreatedBy(s)
+	return pfc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pfc *ProcessingFileCreate) SetUpdatedAt(t time.Time) *ProcessingFileCreate {
+	pfc.mutation.SetUpdatedAt(t)
+	return pfc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableUpdatedAt(t *time.Time) *ProcessingFileCreate {
+	if t != nil {
+		pfc.SetUpdatedAt(*t)
+	}
 	return pfc
 }
 
@@ -84,6 +113,7 @@ func (pfc *ProcessingFileCreate) Save(ctx context.Context) (*ProcessingFile, err
 		err  error
 		node *ProcessingFile
 	)
+	pfc.defaults()
 	if len(pfc.hooks) == 0 {
 		if err = pfc.check(); err != nil {
 			return nil, err
@@ -147,16 +177,43 @@ func (pfc *ProcessingFileCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pfc *ProcessingFileCreate) defaults() {
+	if _, ok := pfc.mutation.CreatedAt(); !ok {
+		v := processingfile.DefaultCreatedAt()
+		pfc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pfc.mutation.UpdatedAt(); !ok {
+		v := processingfile.DefaultUpdatedAt()
+		pfc.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.ClientID(); !ok {
 		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "ProcessingFile.client_id"`)}
 	}
+	if v, ok := pfc.mutation.ClientID(); ok {
+		if err := processingfile.ClientIDValidator(v); err != nil {
+			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.client_id": %w`, err)}
+		}
+	}
 	if _, ok := pfc.mutation.DisplayName(); !ok {
 		return &ValidationError{Name: "display_name", err: errors.New(`ent: missing required field "ProcessingFile.display_name"`)}
 	}
+	if v, ok := pfc.mutation.DisplayName(); ok {
+		if err := processingfile.DisplayNameValidator(v); err != nil {
+			return &ValidationError{Name: "display_name", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.display_name": %w`, err)}
+		}
+	}
 	if _, ok := pfc.mutation.FileURL(); !ok {
 		return &ValidationError{Name: "file_url", err: errors.New(`ent: missing required field "ProcessingFile.file_url"`)}
+	}
+	if v, ok := pfc.mutation.FileURL(); ok {
+		if err := processingfile.FileURLValidator(v); err != nil {
+			return &ValidationError{Name: "file_url", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.file_url": %w`, err)}
+		}
 	}
 	if _, ok := pfc.mutation.ResultFileURL(); !ok {
 		return &ValidationError{Name: "result_file_url", err: errors.New(`ent: missing required field "ProcessingFile.result_file_url"`)}
@@ -164,8 +221,8 @@ func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "ProcessingFile.status"`)}
 	}
-	if _, ok := pfc.mutation.NumberTaskInFile(); !ok {
-		return &ValidationError{Name: "number_task_in_file", err: errors.New(`ent: missing required field "ProcessingFile.number_task_in_file"`)}
+	if _, ok := pfc.mutation.TotalMapping(); !ok {
+		return &ValidationError{Name: "total_mapping", err: errors.New(`ent: missing required field "ProcessingFile.total_mapping"`)}
 	}
 	if _, ok := pfc.mutation.StatsTotalRow(); !ok {
 		return &ValidationError{Name: "stats_total_row", err: errors.New(`ent: missing required field "ProcessingFile.stats_total_row"`)}
@@ -173,8 +230,19 @@ func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.StatsTotalSuccess(); !ok {
 		return &ValidationError{Name: "stats_total_success", err: errors.New(`ent: missing required field "ProcessingFile.stats_total_success"`)}
 	}
+	if _, ok := pfc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProcessingFile.created_at"`)}
+	}
 	if _, ok := pfc.mutation.CreatedBy(); !ok {
 		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "ProcessingFile.created_by"`)}
+	}
+	if v, ok := pfc.mutation.CreatedBy(); ok {
+		if err := processingfile.CreatedByValidator(v); err != nil {
+			return &ValidationError{Name: "created_by", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.created_by": %w`, err)}
+		}
+	}
+	if _, ok := pfc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "ProcessingFile.updated_at"`)}
 	}
 	return nil
 }
@@ -205,7 +273,7 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 	)
 	if value, ok := pfc.mutation.ClientID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldClientID,
 		})
@@ -243,13 +311,13 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 		})
 		_node.Status = value
 	}
-	if value, ok := pfc.mutation.NumberTaskInFile(); ok {
+	if value, ok := pfc.mutation.TotalMapping(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
 			Value:  value,
-			Column: processingfile.FieldNumberTaskInFile,
+			Column: processingfile.FieldTotalMapping,
 		})
-		_node.NumberTaskInFile = value
+		_node.TotalMapping = value
 	}
 	if value, ok := pfc.mutation.StatsTotalRow(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -267,6 +335,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 		})
 		_node.StatsTotalSuccess = value
 	}
+	if value, ok := pfc.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfile.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
 	if value, ok := pfc.mutation.CreatedBy(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -274,6 +350,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 			Column: processingfile.FieldCreatedBy,
 		})
 		_node.CreatedBy = value
+	}
+	if value, ok := pfc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfile.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
 	}
 	return _node, _spec
 }
@@ -292,6 +376,7 @@ func (pfcb *ProcessingFileCreateBulk) Save(ctx context.Context) ([]*ProcessingFi
 	for i := range pfcb.builders {
 		func(i int, root context.Context) {
 			builder := pfcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ProcessingFileMutation)
 				if !ok {

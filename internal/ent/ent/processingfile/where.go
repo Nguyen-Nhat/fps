@@ -3,6 +3,8 @@
 package processingfile
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/predicate"
 )
@@ -79,7 +81,7 @@ func IDLTE(id int) predicate.ProcessingFile {
 }
 
 // ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
-func ClientID(v int64) predicate.ProcessingFile {
+func ClientID(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldClientID), v))
 	})
@@ -113,10 +115,10 @@ func Status(v int16) predicate.ProcessingFile {
 	})
 }
 
-// NumberTaskInFile applies equality check predicate on the "number_task_in_file" field. It's identical to NumberTaskInFileEQ.
-func NumberTaskInFile(v int32) predicate.ProcessingFile {
+// TotalMapping applies equality check predicate on the "total_mapping" field. It's identical to TotalMappingEQ.
+func TotalMapping(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNumberTaskInFile), v))
+		s.Where(sql.EQ(s.C(FieldTotalMapping), v))
 	})
 }
 
@@ -134,6 +136,13 @@ func StatsTotalSuccess(v int32) predicate.ProcessingFile {
 	})
 }
 
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
+	})
+}
+
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
 func CreatedBy(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -141,22 +150,29 @@ func CreatedBy(v string) predicate.ProcessingFile {
 	})
 }
 
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
+	})
+}
+
 // ClientIDEQ applies the EQ predicate on the "client_id" field.
-func ClientIDEQ(v int64) predicate.ProcessingFile {
+func ClientIDEQ(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDNEQ applies the NEQ predicate on the "client_id" field.
-func ClientIDNEQ(v int64) predicate.ProcessingFile {
+func ClientIDNEQ(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDIn applies the In predicate on the "client_id" field.
-func ClientIDIn(vs ...int64) predicate.ProcessingFile {
+func ClientIDIn(vs ...string) predicate.ProcessingFile {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -167,7 +183,7 @@ func ClientIDIn(vs ...int64) predicate.ProcessingFile {
 }
 
 // ClientIDNotIn applies the NotIn predicate on the "client_id" field.
-func ClientIDNotIn(vs ...int64) predicate.ProcessingFile {
+func ClientIDNotIn(vs ...string) predicate.ProcessingFile {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -178,30 +194,65 @@ func ClientIDNotIn(vs ...int64) predicate.ProcessingFile {
 }
 
 // ClientIDGT applies the GT predicate on the "client_id" field.
-func ClientIDGT(v int64) predicate.ProcessingFile {
+func ClientIDGT(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDGTE applies the GTE predicate on the "client_id" field.
-func ClientIDGTE(v int64) predicate.ProcessingFile {
+func ClientIDGTE(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDLT applies the LT predicate on the "client_id" field.
-func ClientIDLT(v int64) predicate.ProcessingFile {
+func ClientIDLT(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldClientID), v))
 	})
 }
 
 // ClientIDLTE applies the LTE predicate on the "client_id" field.
-func ClientIDLTE(v int64) predicate.ProcessingFile {
+func ClientIDLTE(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDContains applies the Contains predicate on the "client_id" field.
+func ClientIDContains(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
+func ClientIDHasPrefix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
+func ClientIDHasSuffix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
+func ClientIDEqualFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
+func ClientIDContainsFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldClientID), v))
 	})
 }
 
@@ -566,67 +617,67 @@ func StatusLTE(v int16) predicate.ProcessingFile {
 	})
 }
 
-// NumberTaskInFileEQ applies the EQ predicate on the "number_task_in_file" field.
-func NumberTaskInFileEQ(v int32) predicate.ProcessingFile {
+// TotalMappingEQ applies the EQ predicate on the "total_mapping" field.
+func TotalMappingEQ(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNumberTaskInFile), v))
+		s.Where(sql.EQ(s.C(FieldTotalMapping), v))
 	})
 }
 
-// NumberTaskInFileNEQ applies the NEQ predicate on the "number_task_in_file" field.
-func NumberTaskInFileNEQ(v int32) predicate.ProcessingFile {
+// TotalMappingNEQ applies the NEQ predicate on the "total_mapping" field.
+func TotalMappingNEQ(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldNumberTaskInFile), v))
+		s.Where(sql.NEQ(s.C(FieldTotalMapping), v))
 	})
 }
 
-// NumberTaskInFileIn applies the In predicate on the "number_task_in_file" field.
-func NumberTaskInFileIn(vs ...int32) predicate.ProcessingFile {
+// TotalMappingIn applies the In predicate on the "total_mapping" field.
+func TotalMappingIn(vs ...int32) predicate.ProcessingFile {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldNumberTaskInFile), v...))
+		s.Where(sql.In(s.C(FieldTotalMapping), v...))
 	})
 }
 
-// NumberTaskInFileNotIn applies the NotIn predicate on the "number_task_in_file" field.
-func NumberTaskInFileNotIn(vs ...int32) predicate.ProcessingFile {
+// TotalMappingNotIn applies the NotIn predicate on the "total_mapping" field.
+func TotalMappingNotIn(vs ...int32) predicate.ProcessingFile {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldNumberTaskInFile), v...))
+		s.Where(sql.NotIn(s.C(FieldTotalMapping), v...))
 	})
 }
 
-// NumberTaskInFileGT applies the GT predicate on the "number_task_in_file" field.
-func NumberTaskInFileGT(v int32) predicate.ProcessingFile {
+// TotalMappingGT applies the GT predicate on the "total_mapping" field.
+func TotalMappingGT(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldNumberTaskInFile), v))
+		s.Where(sql.GT(s.C(FieldTotalMapping), v))
 	})
 }
 
-// NumberTaskInFileGTE applies the GTE predicate on the "number_task_in_file" field.
-func NumberTaskInFileGTE(v int32) predicate.ProcessingFile {
+// TotalMappingGTE applies the GTE predicate on the "total_mapping" field.
+func TotalMappingGTE(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldNumberTaskInFile), v))
+		s.Where(sql.GTE(s.C(FieldTotalMapping), v))
 	})
 }
 
-// NumberTaskInFileLT applies the LT predicate on the "number_task_in_file" field.
-func NumberTaskInFileLT(v int32) predicate.ProcessingFile {
+// TotalMappingLT applies the LT predicate on the "total_mapping" field.
+func TotalMappingLT(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldNumberTaskInFile), v))
+		s.Where(sql.LT(s.C(FieldTotalMapping), v))
 	})
 }
 
-// NumberTaskInFileLTE applies the LTE predicate on the "number_task_in_file" field.
-func NumberTaskInFileLTE(v int32) predicate.ProcessingFile {
+// TotalMappingLTE applies the LTE predicate on the "total_mapping" field.
+func TotalMappingLTE(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldNumberTaskInFile), v))
+		s.Where(sql.LTE(s.C(FieldTotalMapping), v))
 	})
 }
 
@@ -758,6 +809,70 @@ func StatsTotalSuccessLTE(v int32) predicate.ProcessingFile {
 	})
 }
 
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldCreatedAt), v...))
+	})
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
+	})
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
+	})
+}
+
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
 func CreatedByEQ(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -854,6 +969,70 @@ func CreatedByEqualFold(v string) predicate.ProcessingFile {
 func CreatedByContainsFold(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldCreatedBy), v))
+	})
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
+	})
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
+	})
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
 	})
 }
 

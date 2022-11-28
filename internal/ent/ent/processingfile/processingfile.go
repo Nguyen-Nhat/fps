@@ -2,6 +2,10 @@
 
 package processingfile
 
+import (
+	"time"
+)
+
 const (
 	// Label holds the string label denoting the processingfile type in the database.
 	Label = "processing_file"
@@ -17,14 +21,18 @@ const (
 	FieldResultFileURL = "result_file_url"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldNumberTaskInFile holds the string denoting the number_task_in_file field in the database.
-	FieldNumberTaskInFile = "number_task_in_file"
+	// FieldTotalMapping holds the string denoting the total_mapping field in the database.
+	FieldTotalMapping = "total_mapping"
 	// FieldStatsTotalRow holds the string denoting the stats_total_row field in the database.
 	FieldStatsTotalRow = "stats_total_row"
 	// FieldStatsTotalSuccess holds the string denoting the stats_total_success field in the database.
 	FieldStatsTotalSuccess = "stats_total_success"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
 	FieldCreatedBy = "created_by"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// Table holds the table name of the processingfile in the database.
 	Table = "processing_file"
 )
@@ -37,10 +45,12 @@ var Columns = []string{
 	FieldFileURL,
 	FieldResultFileURL,
 	FieldStatus,
-	FieldNumberTaskInFile,
+	FieldTotalMapping,
 	FieldStatsTotalRow,
 	FieldStatsTotalSuccess,
+	FieldCreatedAt,
 	FieldCreatedBy,
+	FieldUpdatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -52,3 +62,20 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
+	ClientIDValidator func(string) error
+	// DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
+	DisplayNameValidator func(string) error
+	// FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
+	FileURLValidator func(string) error
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() time.Time
+	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	CreatedByValidator func(string) error
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
+)

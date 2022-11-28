@@ -2121,20 +2121,21 @@ type ProcessingFileMutation struct {
 	op                     Op
 	typ                    string
 	id                     *int
-	client_id              *int64
-	addclient_id           *int64
+	client_id              *string
 	display_name           *string
 	file_url               *string
 	result_file_url        *string
 	status                 *int16
 	addstatus              *int16
-	number_task_in_file    *int32
-	addnumber_task_in_file *int32
+	total_mapping          *int32
+	addtotal_mapping       *int32
 	stats_total_row        *int32
 	addstats_total_row     *int32
 	stats_total_success    *int32
 	addstats_total_success *int32
+	created_at             *time.Time
 	created_by             *string
+	updated_at             *time.Time
 	clearedFields          map[string]struct{}
 	done                   bool
 	oldValue               func(context.Context) (*ProcessingFile, error)
@@ -2240,13 +2241,12 @@ func (m *ProcessingFileMutation) IDs(ctx context.Context) ([]int, error) {
 }
 
 // SetClientID sets the "client_id" field.
-func (m *ProcessingFileMutation) SetClientID(i int64) {
-	m.client_id = &i
-	m.addclient_id = nil
+func (m *ProcessingFileMutation) SetClientID(s string) {
+	m.client_id = &s
 }
 
 // ClientID returns the value of the "client_id" field in the mutation.
-func (m *ProcessingFileMutation) ClientID() (r int64, exists bool) {
+func (m *ProcessingFileMutation) ClientID() (r string, exists bool) {
 	v := m.client_id
 	if v == nil {
 		return
@@ -2257,7 +2257,7 @@ func (m *ProcessingFileMutation) ClientID() (r int64, exists bool) {
 // OldClientID returns the old "client_id" field's value of the ProcessingFile entity.
 // If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProcessingFileMutation) OldClientID(ctx context.Context) (v int64, err error) {
+func (m *ProcessingFileMutation) OldClientID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
 	}
@@ -2271,28 +2271,9 @@ func (m *ProcessingFileMutation) OldClientID(ctx context.Context) (v int64, err 
 	return oldValue.ClientID, nil
 }
 
-// AddClientID adds i to the "client_id" field.
-func (m *ProcessingFileMutation) AddClientID(i int64) {
-	if m.addclient_id != nil {
-		*m.addclient_id += i
-	} else {
-		m.addclient_id = &i
-	}
-}
-
-// AddedClientID returns the value that was added to the "client_id" field in this mutation.
-func (m *ProcessingFileMutation) AddedClientID() (r int64, exists bool) {
-	v := m.addclient_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ResetClientID resets all changes to the "client_id" field.
 func (m *ProcessingFileMutation) ResetClientID() {
 	m.client_id = nil
-	m.addclient_id = nil
 }
 
 // SetDisplayName sets the "display_name" field.
@@ -2459,60 +2440,60 @@ func (m *ProcessingFileMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
-// SetNumberTaskInFile sets the "number_task_in_file" field.
-func (m *ProcessingFileMutation) SetNumberTaskInFile(i int32) {
-	m.number_task_in_file = &i
-	m.addnumber_task_in_file = nil
+// SetTotalMapping sets the "total_mapping" field.
+func (m *ProcessingFileMutation) SetTotalMapping(i int32) {
+	m.total_mapping = &i
+	m.addtotal_mapping = nil
 }
 
-// NumberTaskInFile returns the value of the "number_task_in_file" field in the mutation.
-func (m *ProcessingFileMutation) NumberTaskInFile() (r int32, exists bool) {
-	v := m.number_task_in_file
+// TotalMapping returns the value of the "total_mapping" field in the mutation.
+func (m *ProcessingFileMutation) TotalMapping() (r int32, exists bool) {
+	v := m.total_mapping
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldNumberTaskInFile returns the old "number_task_in_file" field's value of the ProcessingFile entity.
+// OldTotalMapping returns the old "total_mapping" field's value of the ProcessingFile entity.
 // If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProcessingFileMutation) OldNumberTaskInFile(ctx context.Context) (v int32, err error) {
+func (m *ProcessingFileMutation) OldTotalMapping(ctx context.Context) (v int32, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNumberTaskInFile is only allowed on UpdateOne operations")
+		return v, errors.New("OldTotalMapping is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNumberTaskInFile requires an ID field in the mutation")
+		return v, errors.New("OldTotalMapping requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNumberTaskInFile: %w", err)
+		return v, fmt.Errorf("querying old value for OldTotalMapping: %w", err)
 	}
-	return oldValue.NumberTaskInFile, nil
+	return oldValue.TotalMapping, nil
 }
 
-// AddNumberTaskInFile adds i to the "number_task_in_file" field.
-func (m *ProcessingFileMutation) AddNumberTaskInFile(i int32) {
-	if m.addnumber_task_in_file != nil {
-		*m.addnumber_task_in_file += i
+// AddTotalMapping adds i to the "total_mapping" field.
+func (m *ProcessingFileMutation) AddTotalMapping(i int32) {
+	if m.addtotal_mapping != nil {
+		*m.addtotal_mapping += i
 	} else {
-		m.addnumber_task_in_file = &i
+		m.addtotal_mapping = &i
 	}
 }
 
-// AddedNumberTaskInFile returns the value that was added to the "number_task_in_file" field in this mutation.
-func (m *ProcessingFileMutation) AddedNumberTaskInFile() (r int32, exists bool) {
-	v := m.addnumber_task_in_file
+// AddedTotalMapping returns the value that was added to the "total_mapping" field in this mutation.
+func (m *ProcessingFileMutation) AddedTotalMapping() (r int32, exists bool) {
+	v := m.addtotal_mapping
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetNumberTaskInFile resets all changes to the "number_task_in_file" field.
-func (m *ProcessingFileMutation) ResetNumberTaskInFile() {
-	m.number_task_in_file = nil
-	m.addnumber_task_in_file = nil
+// ResetTotalMapping resets all changes to the "total_mapping" field.
+func (m *ProcessingFileMutation) ResetTotalMapping() {
+	m.total_mapping = nil
+	m.addtotal_mapping = nil
 }
 
 // SetStatsTotalRow sets the "stats_total_row" field.
@@ -2627,6 +2608,42 @@ func (m *ProcessingFileMutation) ResetStatsTotalSuccess() {
 	m.addstats_total_success = nil
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (m *ProcessingFileMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProcessingFileMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProcessingFileMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (m *ProcessingFileMutation) SetCreatedBy(s string) {
 	m.created_by = &s
@@ -2663,6 +2680,42 @@ func (m *ProcessingFileMutation) ResetCreatedBy() {
 	m.created_by = nil
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProcessingFileMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProcessingFileMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProcessingFileMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
 // Where appends a list predicates to the ProcessingFileMutation builder.
 func (m *ProcessingFileMutation) Where(ps ...predicate.ProcessingFile) {
 	m.predicates = append(m.predicates, ps...)
@@ -2682,7 +2735,7 @@ func (m *ProcessingFileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 11)
 	if m.client_id != nil {
 		fields = append(fields, processingfile.FieldClientID)
 	}
@@ -2698,8 +2751,8 @@ func (m *ProcessingFileMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, processingfile.FieldStatus)
 	}
-	if m.number_task_in_file != nil {
-		fields = append(fields, processingfile.FieldNumberTaskInFile)
+	if m.total_mapping != nil {
+		fields = append(fields, processingfile.FieldTotalMapping)
 	}
 	if m.stats_total_row != nil {
 		fields = append(fields, processingfile.FieldStatsTotalRow)
@@ -2707,8 +2760,14 @@ func (m *ProcessingFileMutation) Fields() []string {
 	if m.stats_total_success != nil {
 		fields = append(fields, processingfile.FieldStatsTotalSuccess)
 	}
+	if m.created_at != nil {
+		fields = append(fields, processingfile.FieldCreatedAt)
+	}
 	if m.created_by != nil {
 		fields = append(fields, processingfile.FieldCreatedBy)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, processingfile.FieldUpdatedAt)
 	}
 	return fields
 }
@@ -2728,14 +2787,18 @@ func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
 		return m.ResultFileURL()
 	case processingfile.FieldStatus:
 		return m.Status()
-	case processingfile.FieldNumberTaskInFile:
-		return m.NumberTaskInFile()
+	case processingfile.FieldTotalMapping:
+		return m.TotalMapping()
 	case processingfile.FieldStatsTotalRow:
 		return m.StatsTotalRow()
 	case processingfile.FieldStatsTotalSuccess:
 		return m.StatsTotalSuccess()
+	case processingfile.FieldCreatedAt:
+		return m.CreatedAt()
 	case processingfile.FieldCreatedBy:
 		return m.CreatedBy()
+	case processingfile.FieldUpdatedAt:
+		return m.UpdatedAt()
 	}
 	return nil, false
 }
@@ -2755,14 +2818,18 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldResultFileURL(ctx)
 	case processingfile.FieldStatus:
 		return m.OldStatus(ctx)
-	case processingfile.FieldNumberTaskInFile:
-		return m.OldNumberTaskInFile(ctx)
+	case processingfile.FieldTotalMapping:
+		return m.OldTotalMapping(ctx)
 	case processingfile.FieldStatsTotalRow:
 		return m.OldStatsTotalRow(ctx)
 	case processingfile.FieldStatsTotalSuccess:
 		return m.OldStatsTotalSuccess(ctx)
+	case processingfile.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
 	case processingfile.FieldCreatedBy:
 		return m.OldCreatedBy(ctx)
+	case processingfile.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown ProcessingFile field %s", name)
 }
@@ -2773,7 +2840,7 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case processingfile.FieldClientID:
-		v, ok := value.(int64)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2807,12 +2874,12 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
-	case processingfile.FieldNumberTaskInFile:
+	case processingfile.FieldTotalMapping:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetNumberTaskInFile(v)
+		m.SetTotalMapping(v)
 		return nil
 	case processingfile.FieldStatsTotalRow:
 		v, ok := value.(int32)
@@ -2828,12 +2895,26 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatsTotalSuccess(v)
 		return nil
+	case processingfile.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
 	case processingfile.FieldCreatedBy:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedBy(v)
+		return nil
+	case processingfile.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown ProcessingFile field %s", name)
@@ -2843,14 +2924,11 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ProcessingFileMutation) AddedFields() []string {
 	var fields []string
-	if m.addclient_id != nil {
-		fields = append(fields, processingfile.FieldClientID)
-	}
 	if m.addstatus != nil {
 		fields = append(fields, processingfile.FieldStatus)
 	}
-	if m.addnumber_task_in_file != nil {
-		fields = append(fields, processingfile.FieldNumberTaskInFile)
+	if m.addtotal_mapping != nil {
+		fields = append(fields, processingfile.FieldTotalMapping)
 	}
 	if m.addstats_total_row != nil {
 		fields = append(fields, processingfile.FieldStatsTotalRow)
@@ -2866,12 +2944,10 @@ func (m *ProcessingFileMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ProcessingFileMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case processingfile.FieldClientID:
-		return m.AddedClientID()
 	case processingfile.FieldStatus:
 		return m.AddedStatus()
-	case processingfile.FieldNumberTaskInFile:
-		return m.AddedNumberTaskInFile()
+	case processingfile.FieldTotalMapping:
+		return m.AddedTotalMapping()
 	case processingfile.FieldStatsTotalRow:
 		return m.AddedStatsTotalRow()
 	case processingfile.FieldStatsTotalSuccess:
@@ -2885,13 +2961,6 @@ func (m *ProcessingFileMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ProcessingFileMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case processingfile.FieldClientID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddClientID(v)
-		return nil
 	case processingfile.FieldStatus:
 		v, ok := value.(int16)
 		if !ok {
@@ -2899,12 +2968,12 @@ func (m *ProcessingFileMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddStatus(v)
 		return nil
-	case processingfile.FieldNumberTaskInFile:
+	case processingfile.FieldTotalMapping:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddNumberTaskInFile(v)
+		m.AddTotalMapping(v)
 		return nil
 	case processingfile.FieldStatsTotalRow:
 		v, ok := value.(int32)
@@ -2962,8 +3031,8 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 	case processingfile.FieldStatus:
 		m.ResetStatus()
 		return nil
-	case processingfile.FieldNumberTaskInFile:
-		m.ResetNumberTaskInFile()
+	case processingfile.FieldTotalMapping:
+		m.ResetTotalMapping()
 		return nil
 	case processingfile.FieldStatsTotalRow:
 		m.ResetStatsTotalRow()
@@ -2971,8 +3040,14 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 	case processingfile.FieldStatsTotalSuccess:
 		m.ResetStatsTotalSuccess()
 		return nil
+	case processingfile.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
 	case processingfile.FieldCreatedBy:
 		m.ResetCreatedBy()
+		return nil
+	case processingfile.FieldUpdatedAt:
+		m.ResetUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown ProcessingFile field %s", name)
@@ -3045,8 +3120,7 @@ type ProcessingFileRowMutation struct {
 	task_response_raw *string
 	status            *int16
 	addstatus         *int16
-	error_display     *int16
-	adderror_display  *int16
+	error_display     *string
 	clearedFields     map[string]struct{}
 	done              bool
 	oldValue          func(context.Context) (*ProcessingFileRow, error)
@@ -3556,13 +3630,12 @@ func (m *ProcessingFileRowMutation) ResetStatus() {
 }
 
 // SetErrorDisplay sets the "error_display" field.
-func (m *ProcessingFileRowMutation) SetErrorDisplay(i int16) {
-	m.error_display = &i
-	m.adderror_display = nil
+func (m *ProcessingFileRowMutation) SetErrorDisplay(s string) {
+	m.error_display = &s
 }
 
 // ErrorDisplay returns the value of the "error_display" field in the mutation.
-func (m *ProcessingFileRowMutation) ErrorDisplay() (r int16, exists bool) {
+func (m *ProcessingFileRowMutation) ErrorDisplay() (r string, exists bool) {
 	v := m.error_display
 	if v == nil {
 		return
@@ -3573,7 +3646,7 @@ func (m *ProcessingFileRowMutation) ErrorDisplay() (r int16, exists bool) {
 // OldErrorDisplay returns the old "error_display" field's value of the ProcessingFileRow entity.
 // If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProcessingFileRowMutation) OldErrorDisplay(ctx context.Context) (v int16, err error) {
+func (m *ProcessingFileRowMutation) OldErrorDisplay(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldErrorDisplay is only allowed on UpdateOne operations")
 	}
@@ -3587,28 +3660,9 @@ func (m *ProcessingFileRowMutation) OldErrorDisplay(ctx context.Context) (v int1
 	return oldValue.ErrorDisplay, nil
 }
 
-// AddErrorDisplay adds i to the "error_display" field.
-func (m *ProcessingFileRowMutation) AddErrorDisplay(i int16) {
-	if m.adderror_display != nil {
-		*m.adderror_display += i
-	} else {
-		m.adderror_display = &i
-	}
-}
-
-// AddedErrorDisplay returns the value that was added to the "error_display" field in this mutation.
-func (m *ProcessingFileRowMutation) AddedErrorDisplay() (r int16, exists bool) {
-	v := m.adderror_display
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ResetErrorDisplay resets all changes to the "error_display" field.
 func (m *ProcessingFileRowMutation) ResetErrorDisplay() {
 	m.error_display = nil
-	m.adderror_display = nil
 }
 
 // Where appends a list predicates to the ProcessingFileRowMutation builder.
@@ -3791,7 +3845,7 @@ func (m *ProcessingFileRowMutation) SetField(name string, value ent.Value) error
 		m.SetStatus(v)
 		return nil
 	case processingfilerow.FieldErrorDisplay:
-		v, ok := value.(int16)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -3817,9 +3871,6 @@ func (m *ProcessingFileRowMutation) AddedFields() []string {
 	if m.addstatus != nil {
 		fields = append(fields, processingfilerow.FieldStatus)
 	}
-	if m.adderror_display != nil {
-		fields = append(fields, processingfilerow.FieldErrorDisplay)
-	}
 	return fields
 }
 
@@ -3836,8 +3887,6 @@ func (m *ProcessingFileRowMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTaskIndex()
 	case processingfilerow.FieldStatus:
 		return m.AddedStatus()
-	case processingfilerow.FieldErrorDisplay:
-		return m.AddedErrorDisplay()
 	}
 	return nil, false
 }
@@ -3874,13 +3923,6 @@ func (m *ProcessingFileRowMutation) AddField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddStatus(v)
-		return nil
-	case processingfilerow.FieldErrorDisplay:
-		v, ok := value.(int16)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddErrorDisplay(v)
 		return nil
 	}
 	return fmt.Errorf("unknown ProcessingFileRow numeric field %s", name)

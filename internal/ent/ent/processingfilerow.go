@@ -31,10 +31,10 @@ type ProcessingFileRow struct {
 	TaskRequestRaw string `json:"task_request_raw,omitempty"`
 	// TaskResponseRaw holds the value of the "task_response_raw" field.
 	TaskResponseRaw string `json:"task_response_raw,omitempty"`
-	// Init=1; Processing=2; Failed=3; Finished=4
+	// Init=1; Processing=2; Failed=3; Success=4; Timeout=5
 	Status int16 `json:"status,omitempty"`
 	// ErrorDisplay holds the value of the "error_display" field.
-	ErrorDisplay int16 `json:"error_display,omitempty"`
+	ErrorDisplay string `json:"error_display,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -42,9 +42,9 @@ func (*ProcessingFileRow) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case processingfilerow.FieldID, processingfilerow.FieldFileID, processingfilerow.FieldRowIndex, processingfilerow.FieldTaskIndex, processingfilerow.FieldStatus, processingfilerow.FieldErrorDisplay:
+		case processingfilerow.FieldID, processingfilerow.FieldFileID, processingfilerow.FieldRowIndex, processingfilerow.FieldTaskIndex, processingfilerow.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case processingfilerow.FieldRowDataRaw, processingfilerow.FieldTaskMapping, processingfilerow.FieldTaskDependsOn, processingfilerow.FieldTaskRequestRaw, processingfilerow.FieldTaskResponseRaw:
+		case processingfilerow.FieldRowDataRaw, processingfilerow.FieldTaskMapping, processingfilerow.FieldTaskDependsOn, processingfilerow.FieldTaskRequestRaw, processingfilerow.FieldTaskResponseRaw, processingfilerow.FieldErrorDisplay:
 			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type ProcessingFileRow", columns[i])
@@ -122,10 +122,10 @@ func (pfr *ProcessingFileRow) assignValues(columns []string, values []interface{
 				pfr.Status = int16(value.Int64)
 			}
 		case processingfilerow.FieldErrorDisplay:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field error_display", values[i])
 			} else if value.Valid {
-				pfr.ErrorDisplay = int16(value.Int64)
+				pfr.ErrorDisplay = value.String
 			}
 		}
 	}
@@ -183,7 +183,7 @@ func (pfr *ProcessingFileRow) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pfr.Status))
 	builder.WriteString(", ")
 	builder.WriteString("error_display=")
-	builder.WriteString(fmt.Sprintf("%v", pfr.ErrorDisplay))
+	builder.WriteString(pfr.ErrorDisplay)
 	builder.WriteByte(')')
 	return builder.String()
 }

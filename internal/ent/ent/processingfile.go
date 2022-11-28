@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
@@ -16,7 +17,7 @@ type ProcessingFile struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// ClientID holds the value of the "client_id" field.
-	ClientID int64 `json:"client_id,omitempty"`
+	ClientID string `json:"client_id,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"display_name,omitempty"`
 	// FileURL holds the value of the "file_url" field.
@@ -25,14 +26,18 @@ type ProcessingFile struct {
 	ResultFileURL string `json:"result_file_url,omitempty"`
 	// Init=1; Processing=2; Failed=3; Finished=4
 	Status int16 `json:"status,omitempty"`
-	// NumberTaskInFile holds the value of the "number_task_in_file" field.
-	NumberTaskInFile int32 `json:"number_task_in_file,omitempty"`
+	// TotalMapping holds the value of the "total_mapping" field.
+	TotalMapping int32 `json:"total_mapping,omitempty"`
 	// StatsTotalRow holds the value of the "stats_total_row" field.
 	StatsTotalRow int32 `json:"stats_total_row,omitempty"`
 	// StatsTotalSuccess holds the value of the "stats_total_success" field.
 	StatsTotalSuccess int32 `json:"stats_total_success,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
 	CreatedBy string `json:"created_by,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -40,10 +45,12 @@ func (*ProcessingFile) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldNumberTaskInFile, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalSuccess:
+		case processingfile.FieldID, processingfile.FieldStatus, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
-		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldCreatedBy:
+		case processingfile.FieldClientID, processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldCreatedBy:
 			values[i] = new(sql.NullString)
+		case processingfile.FieldCreatedAt, processingfile.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type ProcessingFile", columns[i])
 		}
@@ -66,10 +73,10 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 			}
 			pf.ID = int(value.Int64)
 		case processingfile.FieldClientID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
-				pf.ClientID = value.Int64
+				pf.ClientID = value.String
 			}
 		case processingfile.FieldDisplayName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -95,11 +102,11 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				pf.Status = int16(value.Int64)
 			}
-		case processingfile.FieldNumberTaskInFile:
+		case processingfile.FieldTotalMapping:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field number_task_in_file", values[i])
+				return fmt.Errorf("unexpected type %T for field total_mapping", values[i])
 			} else if value.Valid {
-				pf.NumberTaskInFile = int32(value.Int64)
+				pf.TotalMapping = int32(value.Int64)
 			}
 		case processingfile.FieldStatsTotalRow:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -113,11 +120,23 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				pf.StatsTotalSuccess = int32(value.Int64)
 			}
+		case processingfile.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				pf.CreatedAt = value.Time
+			}
 		case processingfile.FieldCreatedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
 				pf.CreatedBy = value.String
+			}
+		case processingfile.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				pf.UpdatedAt = value.Time
 			}
 		}
 	}
@@ -148,7 +167,7 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString("ProcessingFile(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", pf.ID))
 	builder.WriteString("client_id=")
-	builder.WriteString(fmt.Sprintf("%v", pf.ClientID))
+	builder.WriteString(pf.ClientID)
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(pf.DisplayName)
@@ -162,8 +181,8 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", pf.Status))
 	builder.WriteString(", ")
-	builder.WriteString("number_task_in_file=")
-	builder.WriteString(fmt.Sprintf("%v", pf.NumberTaskInFile))
+	builder.WriteString("total_mapping=")
+	builder.WriteString(fmt.Sprintf("%v", pf.TotalMapping))
 	builder.WriteString(", ")
 	builder.WriteString("stats_total_row=")
 	builder.WriteString(fmt.Sprintf("%v", pf.StatsTotalRow))
@@ -171,8 +190,14 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString("stats_total_success=")
 	builder.WriteString(fmt.Sprintf("%v", pf.StatsTotalSuccess))
 	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(pf.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("created_by=")
 	builder.WriteString(pf.CreatedBy)
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(pf.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -110,15 +110,8 @@ func (pfru *ProcessingFileRowUpdate) AddStatus(i int16) *ProcessingFileRowUpdate
 }
 
 // SetErrorDisplay sets the "error_display" field.
-func (pfru *ProcessingFileRowUpdate) SetErrorDisplay(i int16) *ProcessingFileRowUpdate {
-	pfru.mutation.ResetErrorDisplay()
-	pfru.mutation.SetErrorDisplay(i)
-	return pfru
-}
-
-// AddErrorDisplay adds i to the "error_display" field.
-func (pfru *ProcessingFileRowUpdate) AddErrorDisplay(i int16) *ProcessingFileRowUpdate {
-	pfru.mutation.AddErrorDisplay(i)
+func (pfru *ProcessingFileRowUpdate) SetErrorDisplay(s string) *ProcessingFileRowUpdate {
+	pfru.mutation.SetErrorDisplay(s)
 	return pfru
 }
 
@@ -292,14 +285,7 @@ func (pfru *ProcessingFileRowUpdate) sqlSave(ctx context.Context) (n int, err er
 	}
 	if value, ok := pfru.mutation.ErrorDisplay(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
-			Value:  value,
-			Column: processingfilerow.FieldErrorDisplay,
-		})
-	}
-	if value, ok := pfru.mutation.AddedErrorDisplay(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfilerow.FieldErrorDisplay,
 		})
@@ -406,15 +392,8 @@ func (pfruo *ProcessingFileRowUpdateOne) AddStatus(i int16) *ProcessingFileRowUp
 }
 
 // SetErrorDisplay sets the "error_display" field.
-func (pfruo *ProcessingFileRowUpdateOne) SetErrorDisplay(i int16) *ProcessingFileRowUpdateOne {
-	pfruo.mutation.ResetErrorDisplay()
-	pfruo.mutation.SetErrorDisplay(i)
-	return pfruo
-}
-
-// AddErrorDisplay adds i to the "error_display" field.
-func (pfruo *ProcessingFileRowUpdateOne) AddErrorDisplay(i int16) *ProcessingFileRowUpdateOne {
-	pfruo.mutation.AddErrorDisplay(i)
+func (pfruo *ProcessingFileRowUpdateOne) SetErrorDisplay(s string) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetErrorDisplay(s)
 	return pfruo
 }
 
@@ -618,14 +597,7 @@ func (pfruo *ProcessingFileRowUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 	}
 	if value, ok := pfruo.mutation.ErrorDisplay(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
-			Value:  value,
-			Column: processingfilerow.FieldErrorDisplay,
-		})
-	}
-	if value, ok := pfruo.mutation.AddedErrorDisplay(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfilerow.FieldErrorDisplay,
 		})

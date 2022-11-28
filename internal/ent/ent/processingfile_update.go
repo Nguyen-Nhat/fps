@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,15 +29,8 @@ func (pfu *ProcessingFileUpdate) Where(ps ...predicate.ProcessingFile) *Processi
 }
 
 // SetClientID sets the "client_id" field.
-func (pfu *ProcessingFileUpdate) SetClientID(i int64) *ProcessingFileUpdate {
-	pfu.mutation.ResetClientID()
-	pfu.mutation.SetClientID(i)
-	return pfu
-}
-
-// AddClientID adds i to the "client_id" field.
-func (pfu *ProcessingFileUpdate) AddClientID(i int64) *ProcessingFileUpdate {
-	pfu.mutation.AddClientID(i)
+func (pfu *ProcessingFileUpdate) SetClientID(s string) *ProcessingFileUpdate {
+	pfu.mutation.SetClientID(s)
 	return pfu
 }
 
@@ -71,16 +65,16 @@ func (pfu *ProcessingFileUpdate) AddStatus(i int16) *ProcessingFileUpdate {
 	return pfu
 }
 
-// SetNumberTaskInFile sets the "number_task_in_file" field.
-func (pfu *ProcessingFileUpdate) SetNumberTaskInFile(i int32) *ProcessingFileUpdate {
-	pfu.mutation.ResetNumberTaskInFile()
-	pfu.mutation.SetNumberTaskInFile(i)
+// SetTotalMapping sets the "total_mapping" field.
+func (pfu *ProcessingFileUpdate) SetTotalMapping(i int32) *ProcessingFileUpdate {
+	pfu.mutation.ResetTotalMapping()
+	pfu.mutation.SetTotalMapping(i)
 	return pfu
 }
 
-// AddNumberTaskInFile adds i to the "number_task_in_file" field.
-func (pfu *ProcessingFileUpdate) AddNumberTaskInFile(i int32) *ProcessingFileUpdate {
-	pfu.mutation.AddNumberTaskInFile(i)
+// AddTotalMapping adds i to the "total_mapping" field.
+func (pfu *ProcessingFileUpdate) AddTotalMapping(i int32) *ProcessingFileUpdate {
+	pfu.mutation.AddTotalMapping(i)
 	return pfu
 }
 
@@ -110,9 +104,29 @@ func (pfu *ProcessingFileUpdate) AddStatsTotalSuccess(i int32) *ProcessingFileUp
 	return pfu
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (pfu *ProcessingFileUpdate) SetCreatedAt(t time.Time) *ProcessingFileUpdate {
+	pfu.mutation.SetCreatedAt(t)
+	return pfu
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pfu *ProcessingFileUpdate) SetNillableCreatedAt(t *time.Time) *ProcessingFileUpdate {
+	if t != nil {
+		pfu.SetCreatedAt(*t)
+	}
+	return pfu
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (pfu *ProcessingFileUpdate) SetCreatedBy(s string) *ProcessingFileUpdate {
 	pfu.mutation.SetCreatedBy(s)
+	return pfu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pfu *ProcessingFileUpdate) SetUpdatedAt(t time.Time) *ProcessingFileUpdate {
+	pfu.mutation.SetUpdatedAt(t)
 	return pfu
 }
 
@@ -127,13 +141,20 @@ func (pfu *ProcessingFileUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	pfu.defaults()
 	if len(pfu.hooks) == 0 {
+		if err = pfu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = pfu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ProcessingFileMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = pfu.check(); err != nil {
+				return 0, err
 			}
 			pfu.mutation = mutation
 			affected, err = pfu.sqlSave(ctx)
@@ -175,6 +196,39 @@ func (pfu *ProcessingFileUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pfu *ProcessingFileUpdate) defaults() {
+	if _, ok := pfu.mutation.UpdatedAt(); !ok {
+		v := processingfile.UpdateDefaultUpdatedAt()
+		pfu.mutation.SetUpdatedAt(v)
+	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (pfu *ProcessingFileUpdate) check() error {
+	if v, ok := pfu.mutation.ClientID(); ok {
+		if err := processingfile.ClientIDValidator(v); err != nil {
+			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.client_id": %w`, err)}
+		}
+	}
+	if v, ok := pfu.mutation.DisplayName(); ok {
+		if err := processingfile.DisplayNameValidator(v); err != nil {
+			return &ValidationError{Name: "display_name", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.display_name": %w`, err)}
+		}
+	}
+	if v, ok := pfu.mutation.FileURL(); ok {
+		if err := processingfile.FileURLValidator(v); err != nil {
+			return &ValidationError{Name: "file_url", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.file_url": %w`, err)}
+		}
+	}
+	if v, ok := pfu.mutation.CreatedBy(); ok {
+		if err := processingfile.CreatedByValidator(v); err != nil {
+			return &ValidationError{Name: "created_by", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.created_by": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -195,14 +249,7 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 	}
 	if value, ok := pfu.mutation.ClientID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: processingfile.FieldClientID,
-		})
-	}
-	if value, ok := pfu.mutation.AddedClientID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldClientID,
 		})
@@ -242,18 +289,18 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldStatus,
 		})
 	}
-	if value, ok := pfu.mutation.NumberTaskInFile(); ok {
+	if value, ok := pfu.mutation.TotalMapping(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
 			Value:  value,
-			Column: processingfile.FieldNumberTaskInFile,
+			Column: processingfile.FieldTotalMapping,
 		})
 	}
-	if value, ok := pfu.mutation.AddedNumberTaskInFile(); ok {
+	if value, ok := pfu.mutation.AddedTotalMapping(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
 			Value:  value,
-			Column: processingfile.FieldNumberTaskInFile,
+			Column: processingfile.FieldTotalMapping,
 		})
 	}
 	if value, ok := pfu.mutation.StatsTotalRow(); ok {
@@ -284,11 +331,25 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldStatsTotalSuccess,
 		})
 	}
+	if value, ok := pfu.mutation.CreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfile.FieldCreatedAt,
+		})
+	}
 	if value, ok := pfu.mutation.CreatedBy(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldCreatedBy,
+		})
+	}
+	if value, ok := pfu.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfile.FieldUpdatedAt,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pfu.driver, _spec); err != nil {
@@ -311,15 +372,8 @@ type ProcessingFileUpdateOne struct {
 }
 
 // SetClientID sets the "client_id" field.
-func (pfuo *ProcessingFileUpdateOne) SetClientID(i int64) *ProcessingFileUpdateOne {
-	pfuo.mutation.ResetClientID()
-	pfuo.mutation.SetClientID(i)
-	return pfuo
-}
-
-// AddClientID adds i to the "client_id" field.
-func (pfuo *ProcessingFileUpdateOne) AddClientID(i int64) *ProcessingFileUpdateOne {
-	pfuo.mutation.AddClientID(i)
+func (pfuo *ProcessingFileUpdateOne) SetClientID(s string) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetClientID(s)
 	return pfuo
 }
 
@@ -354,16 +408,16 @@ func (pfuo *ProcessingFileUpdateOne) AddStatus(i int16) *ProcessingFileUpdateOne
 	return pfuo
 }
 
-// SetNumberTaskInFile sets the "number_task_in_file" field.
-func (pfuo *ProcessingFileUpdateOne) SetNumberTaskInFile(i int32) *ProcessingFileUpdateOne {
-	pfuo.mutation.ResetNumberTaskInFile()
-	pfuo.mutation.SetNumberTaskInFile(i)
+// SetTotalMapping sets the "total_mapping" field.
+func (pfuo *ProcessingFileUpdateOne) SetTotalMapping(i int32) *ProcessingFileUpdateOne {
+	pfuo.mutation.ResetTotalMapping()
+	pfuo.mutation.SetTotalMapping(i)
 	return pfuo
 }
 
-// AddNumberTaskInFile adds i to the "number_task_in_file" field.
-func (pfuo *ProcessingFileUpdateOne) AddNumberTaskInFile(i int32) *ProcessingFileUpdateOne {
-	pfuo.mutation.AddNumberTaskInFile(i)
+// AddTotalMapping adds i to the "total_mapping" field.
+func (pfuo *ProcessingFileUpdateOne) AddTotalMapping(i int32) *ProcessingFileUpdateOne {
+	pfuo.mutation.AddTotalMapping(i)
 	return pfuo
 }
 
@@ -393,9 +447,29 @@ func (pfuo *ProcessingFileUpdateOne) AddStatsTotalSuccess(i int32) *ProcessingFi
 	return pfuo
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (pfuo *ProcessingFileUpdateOne) SetCreatedAt(t time.Time) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetCreatedAt(t)
+	return pfuo
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pfuo *ProcessingFileUpdateOne) SetNillableCreatedAt(t *time.Time) *ProcessingFileUpdateOne {
+	if t != nil {
+		pfuo.SetCreatedAt(*t)
+	}
+	return pfuo
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (pfuo *ProcessingFileUpdateOne) SetCreatedBy(s string) *ProcessingFileUpdateOne {
 	pfuo.mutation.SetCreatedBy(s)
+	return pfuo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pfuo *ProcessingFileUpdateOne) SetUpdatedAt(t time.Time) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetUpdatedAt(t)
 	return pfuo
 }
 
@@ -417,13 +491,20 @@ func (pfuo *ProcessingFileUpdateOne) Save(ctx context.Context) (*ProcessingFile,
 		err  error
 		node *ProcessingFile
 	)
+	pfuo.defaults()
 	if len(pfuo.hooks) == 0 {
+		if err = pfuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = pfuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ProcessingFileMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = pfuo.check(); err != nil {
+				return nil, err
 			}
 			pfuo.mutation = mutation
 			node, err = pfuo.sqlSave(ctx)
@@ -471,6 +552,39 @@ func (pfuo *ProcessingFileUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pfuo *ProcessingFileUpdateOne) defaults() {
+	if _, ok := pfuo.mutation.UpdatedAt(); !ok {
+		v := processingfile.UpdateDefaultUpdatedAt()
+		pfuo.mutation.SetUpdatedAt(v)
+	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (pfuo *ProcessingFileUpdateOne) check() error {
+	if v, ok := pfuo.mutation.ClientID(); ok {
+		if err := processingfile.ClientIDValidator(v); err != nil {
+			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.client_id": %w`, err)}
+		}
+	}
+	if v, ok := pfuo.mutation.DisplayName(); ok {
+		if err := processingfile.DisplayNameValidator(v); err != nil {
+			return &ValidationError{Name: "display_name", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.display_name": %w`, err)}
+		}
+	}
+	if v, ok := pfuo.mutation.FileURL(); ok {
+		if err := processingfile.FileURLValidator(v); err != nil {
+			return &ValidationError{Name: "file_url", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.file_url": %w`, err)}
+		}
+	}
+	if v, ok := pfuo.mutation.CreatedBy(); ok {
+		if err := processingfile.CreatedByValidator(v); err != nil {
+			return &ValidationError{Name: "created_by", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.created_by": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *ProcessingFile, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -508,14 +622,7 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 	}
 	if value, ok := pfuo.mutation.ClientID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: processingfile.FieldClientID,
-		})
-	}
-	if value, ok := pfuo.mutation.AddedClientID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldClientID,
 		})
@@ -555,18 +662,18 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Column: processingfile.FieldStatus,
 		})
 	}
-	if value, ok := pfuo.mutation.NumberTaskInFile(); ok {
+	if value, ok := pfuo.mutation.TotalMapping(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
 			Value:  value,
-			Column: processingfile.FieldNumberTaskInFile,
+			Column: processingfile.FieldTotalMapping,
 		})
 	}
-	if value, ok := pfuo.mutation.AddedNumberTaskInFile(); ok {
+	if value, ok := pfuo.mutation.AddedTotalMapping(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
 			Value:  value,
-			Column: processingfile.FieldNumberTaskInFile,
+			Column: processingfile.FieldTotalMapping,
 		})
 	}
 	if value, ok := pfuo.mutation.StatsTotalRow(); ok {
@@ -597,11 +704,25 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Column: processingfile.FieldStatsTotalSuccess,
 		})
 	}
+	if value, ok := pfuo.mutation.CreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfile.FieldCreatedAt,
+		})
+	}
 	if value, ok := pfuo.mutation.CreatedBy(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldCreatedBy,
+		})
+	}
+	if value, ok := pfuo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfile.FieldUpdatedAt,
 		})
 	}
 	_node = &ProcessingFile{config: pfuo.config}

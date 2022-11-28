@@ -253,7 +253,7 @@ func (pfq *ProcessingFileQuery) Clone() *ProcessingFileQuery {
 // Example:
 //
 //	var v []struct {
-//		ClientID int64 `json:"client_id,omitempty"`
+//		ClientID string `json:"client_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -281,7 +281,7 @@ func (pfq *ProcessingFileQuery) GroupBy(field string, fields ...string) *Process
 // Example:
 //
 //	var v []struct {
-//		ClientID int64 `json:"client_id,omitempty"`
+//		ClientID string `json:"client_id,omitempty"`
 //	}
 //
 //	client.ProcessingFile.Query().

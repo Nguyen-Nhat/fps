@@ -74,8 +74,8 @@ func (pfrc *ProcessingFileRowCreate) SetStatus(i int16) *ProcessingFileRowCreate
 }
 
 // SetErrorDisplay sets the "error_display" field.
-func (pfrc *ProcessingFileRowCreate) SetErrorDisplay(i int16) *ProcessingFileRowCreate {
-	pfrc.mutation.SetErrorDisplay(i)
+func (pfrc *ProcessingFileRowCreate) SetErrorDisplay(s string) *ProcessingFileRowCreate {
+	pfrc.mutation.SetErrorDisplay(s)
 	return pfrc
 }
 
@@ -286,7 +286,7 @@ func (pfrc *ProcessingFileRowCreate) createSpec() (*ProcessingFileRow, *sqlgraph
 	}
 	if value, ok := pfrc.mutation.ErrorDisplay(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt16,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfilerow.FieldErrorDisplay,
 		})
