@@ -1,7 +1,7 @@
 package fileprocessing
 
 type CreateFileProcessingReqDTO struct {
-	ClientID    int64
+	ClientID    int32
 	FileURL     string
 	DisplayName string
 	CreatedBy   string

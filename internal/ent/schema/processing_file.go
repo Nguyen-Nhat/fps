@@ -23,7 +23,7 @@ func (ProcessingFile) Annotations() []schema.Annotation {
 // Fields of the FileAwardPoint.
 func (ProcessingFile) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("client_id").NotEmpty(),
+		field.Int32("client_id"),
 		field.String("display_name").NotEmpty(),
 		field.String("file_url").NotEmpty(),
 		field.String("result_file_url"),

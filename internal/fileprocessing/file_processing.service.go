@@ -2,7 +2,6 @@ package fileprocessing
 
 import (
 	"context"
-	"strconv"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -35,7 +34,7 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 	// 2. Create new file processing
 	createdProcessingFile, err := s.repo.Save(ctx, ProcessingFile{
 		ProcessingFile: ent.ProcessingFile{
-			ClientID:    strconv.FormatInt(req.ClientID, 10),
+			ClientID:    req.ClientID,
 			DisplayName: displayName,
 			FileURL:     req.FileURL,
 			Status:      StatusInit,

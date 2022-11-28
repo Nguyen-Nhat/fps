@@ -56,7 +56,7 @@ var (
 	// ProcessingFileColumns holds the columns for the "processing_file" table.
 	ProcessingFileColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "client_id", Type: field.TypeString},
+		{Name: "client_id", Type: field.TypeInt32},
 		{Name: "display_name", Type: field.TypeString},
 		{Name: "file_url", Type: field.TypeString},
 		{Name: "result_file_url", Type: field.TypeString},

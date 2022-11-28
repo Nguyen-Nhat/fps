@@ -2121,7 +2121,8 @@ type ProcessingFileMutation struct {
 	op                     Op
 	typ                    string
 	id                     *int
-	client_id              *string
+	client_id              *int32
+	addclient_id           *int32
 	display_name           *string
 	file_url               *string
 	result_file_url        *string
@@ -2241,12 +2242,13 @@ func (m *ProcessingFileMutation) IDs(ctx context.Context) ([]int, error) {
 }
 
 // SetClientID sets the "client_id" field.
-func (m *ProcessingFileMutation) SetClientID(s string) {
-	m.client_id = &s
+func (m *ProcessingFileMutation) SetClientID(i int32) {
+	m.client_id = &i
+	m.addclient_id = nil
 }
 
 // ClientID returns the value of the "client_id" field in the mutation.
-func (m *ProcessingFileMutation) ClientID() (r string, exists bool) {
+func (m *ProcessingFileMutation) ClientID() (r int32, exists bool) {
 	v := m.client_id
 	if v == nil {
 		return
@@ -2257,7 +2259,7 @@ func (m *ProcessingFileMutation) ClientID() (r string, exists bool) {
 // OldClientID returns the old "client_id" field's value of the ProcessingFile entity.
 // If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProcessingFileMutation) OldClientID(ctx context.Context) (v string, err error) {
+func (m *ProcessingFileMutation) OldClientID(ctx context.Context) (v int32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
 	}
@@ -2271,9 +2273,28 @@ func (m *ProcessingFileMutation) OldClientID(ctx context.Context) (v string, err
 	return oldValue.ClientID, nil
 }
 
+// AddClientID adds i to the "client_id" field.
+func (m *ProcessingFileMutation) AddClientID(i int32) {
+	if m.addclient_id != nil {
+		*m.addclient_id += i
+	} else {
+		m.addclient_id = &i
+	}
+}
+
+// AddedClientID returns the value that was added to the "client_id" field in this mutation.
+func (m *ProcessingFileMutation) AddedClientID() (r int32, exists bool) {
+	v := m.addclient_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetClientID resets all changes to the "client_id" field.
 func (m *ProcessingFileMutation) ResetClientID() {
 	m.client_id = nil
+	m.addclient_id = nil
 }
 
 // SetDisplayName sets the "display_name" field.
@@ -2840,7 +2861,7 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case processingfile.FieldClientID:
-		v, ok := value.(string)
+		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2924,6 +2945,9 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ProcessingFileMutation) AddedFields() []string {
 	var fields []string
+	if m.addclient_id != nil {
+		fields = append(fields, processingfile.FieldClientID)
+	}
 	if m.addstatus != nil {
 		fields = append(fields, processingfile.FieldStatus)
 	}
@@ -2944,6 +2968,8 @@ func (m *ProcessingFileMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ProcessingFileMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case processingfile.FieldClientID:
+		return m.AddedClientID()
 	case processingfile.FieldStatus:
 		return m.AddedStatus()
 	case processingfile.FieldTotalMapping:
@@ -2961,6 +2987,13 @@ func (m *ProcessingFileMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ProcessingFileMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case processingfile.FieldClientID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddClientID(v)
+		return nil
 	case processingfile.FieldStatus:
 		v, ok := value.(int16)
 		if !ok {
