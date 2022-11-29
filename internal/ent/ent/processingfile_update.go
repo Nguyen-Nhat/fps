@@ -29,8 +29,15 @@ func (pfu *ProcessingFileUpdate) Where(ps ...predicate.ProcessingFile) *Processi
 }
 
 // SetClientID sets the "client_id" field.
-func (pfu *ProcessingFileUpdate) SetClientID(s string) *ProcessingFileUpdate {
-	pfu.mutation.SetClientID(s)
+func (pfu *ProcessingFileUpdate) SetClientID(i int32) *ProcessingFileUpdate {
+	pfu.mutation.ResetClientID()
+	pfu.mutation.SetClientID(i)
+	return pfu
+}
+
+// AddClientID adds i to the "client_id" field.
+func (pfu *ProcessingFileUpdate) AddClientID(i int32) *ProcessingFileUpdate {
+	pfu.mutation.AddClientID(i)
 	return pfu
 }
 
@@ -206,11 +213,6 @@ func (pfu *ProcessingFileUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (pfu *ProcessingFileUpdate) check() error {
-	if v, ok := pfu.mutation.ClientID(); ok {
-		if err := processingfile.ClientIDValidator(v); err != nil {
-			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.client_id": %w`, err)}
-		}
-	}
 	if v, ok := pfu.mutation.DisplayName(); ok {
 		if err := processingfile.DisplayNameValidator(v); err != nil {
 			return &ValidationError{Name: "display_name", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.display_name": %w`, err)}
@@ -249,7 +251,14 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 	}
 	if value, ok := pfu.mutation.ClientID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldClientID,
+		})
+	}
+	if value, ok := pfu.mutation.AddedClientID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: processingfile.FieldClientID,
 		})
@@ -372,8 +381,15 @@ type ProcessingFileUpdateOne struct {
 }
 
 // SetClientID sets the "client_id" field.
-func (pfuo *ProcessingFileUpdateOne) SetClientID(s string) *ProcessingFileUpdateOne {
-	pfuo.mutation.SetClientID(s)
+func (pfuo *ProcessingFileUpdateOne) SetClientID(i int32) *ProcessingFileUpdateOne {
+	pfuo.mutation.ResetClientID()
+	pfuo.mutation.SetClientID(i)
+	return pfuo
+}
+
+// AddClientID adds i to the "client_id" field.
+func (pfuo *ProcessingFileUpdateOne) AddClientID(i int32) *ProcessingFileUpdateOne {
+	pfuo.mutation.AddClientID(i)
 	return pfuo
 }
 
@@ -562,11 +578,6 @@ func (pfuo *ProcessingFileUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (pfuo *ProcessingFileUpdateOne) check() error {
-	if v, ok := pfuo.mutation.ClientID(); ok {
-		if err := processingfile.ClientIDValidator(v); err != nil {
-			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.client_id": %w`, err)}
-		}
-	}
 	if v, ok := pfuo.mutation.DisplayName(); ok {
 		if err := processingfile.DisplayNameValidator(v); err != nil {
 			return &ValidationError{Name: "display_name", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.display_name": %w`, err)}
@@ -622,7 +633,14 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 	}
 	if value, ok := pfuo.mutation.ClientID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldClientID,
+		})
+	}
+	if value, ok := pfuo.mutation.AddedClientID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: processingfile.FieldClientID,
 		})

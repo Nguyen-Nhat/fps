@@ -21,8 +21,8 @@ type ProcessingFileCreate struct {
 }
 
 // SetClientID sets the "client_id" field.
-func (pfc *ProcessingFileCreate) SetClientID(s string) *ProcessingFileCreate {
-	pfc.mutation.SetClientID(s)
+func (pfc *ProcessingFileCreate) SetClientID(i int32) *ProcessingFileCreate {
+	pfc.mutation.SetClientID(i)
 	return pfc
 }
 
@@ -194,11 +194,6 @@ func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.ClientID(); !ok {
 		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "ProcessingFile.client_id"`)}
 	}
-	if v, ok := pfc.mutation.ClientID(); ok {
-		if err := processingfile.ClientIDValidator(v); err != nil {
-			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "ProcessingFile.client_id": %w`, err)}
-		}
-	}
 	if _, ok := pfc.mutation.DisplayName(); !ok {
 		return &ValidationError{Name: "display_name", err: errors.New(`ent: missing required field "ProcessingFile.display_name"`)}
 	}
@@ -273,7 +268,7 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 	)
 	if value, ok := pfc.mutation.ClientID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeInt32,
 			Value:  value,
 			Column: processingfile.FieldClientID,
 		})

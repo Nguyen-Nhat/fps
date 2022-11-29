@@ -13,7 +13,7 @@ import "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/res
 
 // CreateFileProcessingRequest ...
 type CreateFileProcessingRequest struct {
-	ClientID        int64  `json:"clientId"`
+	ClientID        int32  `json:"clientId"`
 	FileURL         string `json:"fileUrl"`
 	FileDisplayName string `json:"fileDisplayName"`
 	CreatedBy       string `json:"createdBy"`

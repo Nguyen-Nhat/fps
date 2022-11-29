@@ -128,10 +128,6 @@ func init() {
 	membertransaction.DefaultUpdatedAt = membertransactionDescUpdatedAt.Default.(time.Time)
 	processingfileFields := schema.ProcessingFile{}.Fields()
 	_ = processingfileFields
-	// processingfileDescClientID is the schema descriptor for client_id field.
-	processingfileDescClientID := processingfileFields[0].Descriptor()
-	// processingfile.ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
-	processingfile.ClientIDValidator = processingfileDescClientID.Validators[0].(func(string) error)
 	// processingfileDescDisplayName is the schema descriptor for display_name field.
 	processingfileDescDisplayName := processingfileFields[1].Descriptor()
 	// processingfile.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
