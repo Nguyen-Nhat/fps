@@ -48,6 +48,7 @@ func (s *Server) GetFileProcessHistoryAPI() func(http.ResponseWriter, *http.Requ
 func (s *Server) GetFileProcessHistory(ctx context.Context, req *fileprocessing.GetFileProcessHistoryDTO) (*res.BaseResponse[GetFileProcessHistoryData], error) {
 	fps, pagination, err := s.service.GetFileProcessHistory(ctx, req)
 	if err != nil {
+		logger.Infof("Error in GetFileProcessHistory Internal")
 		return nil, err
 	}
 

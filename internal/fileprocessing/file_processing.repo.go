@@ -80,6 +80,7 @@ func (r *repoImpl) FindByClientIdAndPagination(ctx context.Context, dto *GetFile
 
 	fps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).Order(ent.Desc(processingfile.FieldCreatedAt)).All(ctx)
 	if err != nil {
+		logger.Errorf(err.Error())
 		return nil, nil, fmt.Errorf("failed querying all processing file")
 	}
 

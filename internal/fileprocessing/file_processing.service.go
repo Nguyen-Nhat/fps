@@ -67,6 +67,7 @@ func (s *ServiceImpl) GetFileProcessHistory(ctx context.Context, req *GetFilePro
 
 	files, pagination, err := s.repo.FindByClientIdAndPagination(ctx, req)
 	if err != nil {
+		logger.Infof("Error in FindByClientIdAndPagination")
 		return nil, nil, err
 	}
 
