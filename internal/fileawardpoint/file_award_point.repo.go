@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 
-	"math"
-
 	entsql "entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
@@ -57,10 +55,12 @@ func (r *repoImpl) FindById(ctx context.Context, id int) (*FileAwardPoint, error
 
 func (r *repoImpl) FindAndPaginationByMerchantId(ctx context.Context, dto *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error) {
 	query := r.client.FileAwardPoint.Query().Where(fileawardpoint.MerchantID(int64(dto.MerchantId)))
-	pagination, err := getPagination(ctx, query, dto.Page, dto.Size)
+
+	total, err := query.Count(ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to count from db while querying file award with merchantId")
 	}
+	pagination := response.GetPagination(total, dto.Page, dto.Size)
 
 	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).Order(ent.Desc(fileawardpoint.FieldCreatedAt)).All(ctx)
 	if err != nil {
@@ -83,10 +83,12 @@ func (r *repoImpl) FindByStatuses(ctx context.Context, statuses []int16) ([]*Fil
 
 func (r *repoImpl) GetAllAndPagination(ctx context.Context, dto *GetListFileAwardPointDTO) ([]*FileAwardPoint, *response.Pagination, error) {
 	query := r.client.FileAwardPoint.Query()
-	pagination, err := getPagination(ctx, query, dto.Page, dto.Size)
+
+	total, err := query.Count(ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to count from db while querying all file award point")
 	}
+	pagination := response.GetPagination(total, dto.Page, dto.Size)
 
 	faps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).Order(ent.Desc(fileawardpoint.FieldCreatedAt)).All(ctx)
 	if err != nil {
@@ -196,20 +198,6 @@ func mapEntArrToFileAwardPointArr(arr ent.FileAwardPoints) []*FileAwardPoint {
 		result = append(result, &FileAwardPoint{*v})
 	}
 	return result
-}
-
-func getPagination(ctx context.Context, query *ent.FileAwardPointQuery, page int, size int) (*response.Pagination, error) {
-	total, err := query.Count(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return &response.Pagination{
-		CurrentPage: page,
-		PageSize:    size,
-		TotalItems:  total,
-		TotalPage:   int(math.Ceil(float64(total) / float64(size))),
-	}, nil
 }
 
 func (r *repoImpl) UpdateStatsTotalSuccessOne(ctx context.Context, id int, totalSuccess int) (*FileAwardPoint, error) {

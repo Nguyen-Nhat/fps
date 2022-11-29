@@ -3,6 +3,7 @@ package common
 import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"time"
 )
 
@@ -35,4 +36,34 @@ var fileAwardPoints = []fileawardpoint.FileAwardPoint{{ent.FileAwardPoint{
 	UpdatedBy:         "quy.tm@teko.vn",
 },
 },
+}
+
+var processingFiles = []fileprocessing.ProcessingFile{
+	{ent.ProcessingFile{
+		ID:                1,
+		ClientID:          1,
+		DisplayName:       "processing_file.xlsx",
+		FileURL:           "https://a.com",
+		ResultFileURL:     "https://a.com",
+		Status:            0,
+		TotalMapping:      10,
+		StatsTotalRow:     100,
+		StatsTotalSuccess: 98,
+		CreatedAt:         time.Now(),
+		CreatedBy:         "tan.hm@teko.vn",
+		UpdatedAt:         time.Now(),
+	}}, {ent.ProcessingFile{
+		ID:                2,
+		ClientID:          2,
+		DisplayName:       "processing_file.xlsx",
+		FileURL:           "https://a.com",
+		ResultFileURL:     "https://a.com",
+		Status:            0,
+		TotalMapping:      10,
+		StatsTotalRow:     100,
+		StatsTotalSuccess: 98,
+		CreatedAt:         time.Now(),
+		CreatedBy:         "tan.hm@teko.vn",
+		UpdatedAt:         time.Now(),
+	}},
 }

@@ -1,7 +1,7 @@
 package fileprocessing
 
 import (
-	fileprocessing "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/processingfile"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"github.com/xo/dburl"
 )

@@ -8,6 +8,10 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
+import (
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
+)
+
 type (
 	Service interface {
 		CreateFileProcessing(ctx context.Context, req *CreateFileProcessingReqDTO) (*CreateFileProcessingResDTO, error)
@@ -55,4 +59,17 @@ func NewService(repo Repo) *ServiceImpl {
 	return &ServiceImpl{
 		repo: repo,
 	}
+}
+
+func (s *ServiceImpl) GetFileProcessHistory(ctx context.Context, req *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error) {
+	var files []*ProcessingFile
+	var pagination *response.Pagination
+
+	files, pagination, err := s.repo.FindByClientIdAndPagination(ctx, req)
+	if err != nil {
+		logger.Infof("Error in FindByClientIdAndPagination")
+		return nil, nil, err
+	}
+
+	return files, pagination, err
 }
