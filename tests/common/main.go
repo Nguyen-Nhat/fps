@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"log"
 	"os"
 
@@ -41,6 +42,7 @@ func PrepareDatabase(ctx context.Context) *sql.DB {
 
 	// 5. Mocking data to database
 	mockFileAwardPoint(ctx, entClient)
+	mockProcessingFile(ctx, entClient)
 	mockXXX(ctx, entClient) // will mock data for other models
 
 	fmt.Println() // new line in console => don't care about it
@@ -55,6 +57,15 @@ func mockFileAwardPoint(ctx context.Context, dbClient *ent.Client) {
 		logger.Errorf("Mock File Award Point ... Failed: %v", err)
 	}
 	logger.Infof("Mock File Award Point ... Finished")
+}
+
+func mockProcessingFile(ctx context.Context, dbClient *ent.Client) {
+	logger.Infof("Mock Processing File ...")
+	_, err := fileprocessing.SaveAll(ctx, dbClient, processingFiles, false)
+	if err != nil {
+		logger.Errorf("Mock Processing File ... Failed: %v", err)
+	}
+	logger.Infof("Mock Processing File ... Finished")
 }
 
 func mockXXX(_ context.Context, _ *ent.Client) {

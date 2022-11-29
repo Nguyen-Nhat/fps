@@ -7,7 +7,6 @@ import (
 
 	"fmt"
 	commonError "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
-	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
@@ -32,13 +31,13 @@ func (s *Server) GetFileProcessHistoryAPI() func(http.ResponseWriter, *http.Requ
 	return func(w http.ResponseWriter, r *http.Request) {
 		data, err := validateParameterAndSetDataValue(r)
 		if err != nil {
-			render.Render(w, r, error2.ErrInvalidRequest(err))
+			render.Render(w, r, commonError.ErrInvalidRequest(err))
 			return
 		}
 
 		resp, err := s.GetFileProcessHistory(r.Context(), data)
 		if err != nil {
-			render.Render(w, r, error2.ErrInternal(err))
+			render.Render(w, r, commonError.ErrInternal(err))
 			return
 		}
 
@@ -67,28 +66,37 @@ func validateParameterAndSetDataValue(r *http.Request) (*fileprocessing.GetFileP
 			return nil, fmt.Errorf("parameter cannot have multiple value")
 		}
 
-		if k == "clientId" {
-			data.ClientId = v[0]
-		} else {
+		switch k {
+		case "clientId":
 			val, err := strconv.Atoi(v[0])
 			if err != nil {
-				return nil, fmt.Errorf("invalid parameter")
+				return nil, fmt.Errorf("invalid clientId parameter")
 			}
-			if k == "page" {
-				if val == 0 || val > constant.PaginationMaxPage {
-					return nil, fmt.Errorf("page out of range")
-				}
-				data.Page = val
-			} else if k == "size" {
-				if val == 0 || val > constant.PaginationMaxSize {
-					return nil, fmt.Errorf("size out of range")
-				}
-				data.Size = val
+			data.ClientId = int32(val)
+		case "page":
+			val, err := strconv.Atoi(v[0])
+			if err != nil {
+				return nil, fmt.Errorf("invalid page parameter")
 			}
+			if val == 0 || val > constant.PaginationMaxPage {
+				return nil, fmt.Errorf("page out of range")
+			}
+			data.Page = val
+		case "size":
+			val, err := strconv.Atoi(v[0])
+			if err != nil {
+				return nil, fmt.Errorf("invalid size parameter")
+			}
+			if val == 0 || val > constant.PaginationMaxSize {
+				return nil, fmt.Errorf("size out of range")
+			}
+			data.Size = val
+		default:
+
 		}
 	}
 
-	if data.ClientId == "" {
+	if data.ClientId == 0 {
 		return nil, fmt.Errorf("missing clientId")
 	}
 

@@ -1,4 +1,4 @@
-package list_file_award_point
+package awardpoint
 
 import (
 	"context"

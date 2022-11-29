@@ -3,7 +3,7 @@ package fileprocessing
 import "git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/pagination"
 
 type GetFileProcessHistoryDTO struct {
-	ClientId string
+	ClientId int32
 	pagination.PaginatingRequest
 }
 
