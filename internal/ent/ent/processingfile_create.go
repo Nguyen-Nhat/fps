@@ -68,6 +68,12 @@ func (pfc *ProcessingFileCreate) SetStatsTotalSuccess(i int32) *ProcessingFileCr
 	return pfc
 }
 
+// SetErrorDisplay sets the "error_display" field.
+func (pfc *ProcessingFileCreate) SetErrorDisplay(s string) *ProcessingFileCreate {
+	pfc.mutation.SetErrorDisplay(s)
+	return pfc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pfc *ProcessingFileCreate) SetCreatedAt(t time.Time) *ProcessingFileCreate {
 	pfc.mutation.SetCreatedAt(t)
@@ -225,6 +231,9 @@ func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.StatsTotalSuccess(); !ok {
 		return &ValidationError{Name: "stats_total_success", err: errors.New(`ent: missing required field "ProcessingFile.stats_total_success"`)}
 	}
+	if _, ok := pfc.mutation.ErrorDisplay(); !ok {
+		return &ValidationError{Name: "error_display", err: errors.New(`ent: missing required field "ProcessingFile.error_display"`)}
+	}
 	if _, ok := pfc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProcessingFile.created_at"`)}
 	}
@@ -329,6 +338,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 			Column: processingfile.FieldStatsTotalSuccess,
 		})
 		_node.StatsTotalSuccess = value
+	}
+	if value, ok := pfc.mutation.ErrorDisplay(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldErrorDisplay,
+		})
+		_node.ErrorDisplay = value
 	}
 	if value, ok := pfc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

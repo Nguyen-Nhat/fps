@@ -2134,6 +2134,7 @@ type ProcessingFileMutation struct {
 	addstats_total_row     *int32
 	stats_total_success    *int32
 	addstats_total_success *int32
+	error_display          *string
 	created_at             *time.Time
 	created_by             *string
 	updated_at             *time.Time
@@ -2629,6 +2630,42 @@ func (m *ProcessingFileMutation) ResetStatsTotalSuccess() {
 	m.addstats_total_success = nil
 }
 
+// SetErrorDisplay sets the "error_display" field.
+func (m *ProcessingFileMutation) SetErrorDisplay(s string) {
+	m.error_display = &s
+}
+
+// ErrorDisplay returns the value of the "error_display" field in the mutation.
+func (m *ProcessingFileMutation) ErrorDisplay() (r string, exists bool) {
+	v := m.error_display
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldErrorDisplay returns the old "error_display" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldErrorDisplay(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldErrorDisplay is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldErrorDisplay requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldErrorDisplay: %w", err)
+	}
+	return oldValue.ErrorDisplay, nil
+}
+
+// ResetErrorDisplay resets all changes to the "error_display" field.
+func (m *ProcessingFileMutation) ResetErrorDisplay() {
+	m.error_display = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ProcessingFileMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -2756,7 +2793,7 @@ func (m *ProcessingFileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.client_id != nil {
 		fields = append(fields, processingfile.FieldClientID)
 	}
@@ -2780,6 +2817,9 @@ func (m *ProcessingFileMutation) Fields() []string {
 	}
 	if m.stats_total_success != nil {
 		fields = append(fields, processingfile.FieldStatsTotalSuccess)
+	}
+	if m.error_display != nil {
+		fields = append(fields, processingfile.FieldErrorDisplay)
 	}
 	if m.created_at != nil {
 		fields = append(fields, processingfile.FieldCreatedAt)
@@ -2814,6 +2854,8 @@ func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
 		return m.StatsTotalRow()
 	case processingfile.FieldStatsTotalSuccess:
 		return m.StatsTotalSuccess()
+	case processingfile.FieldErrorDisplay:
+		return m.ErrorDisplay()
 	case processingfile.FieldCreatedAt:
 		return m.CreatedAt()
 	case processingfile.FieldCreatedBy:
@@ -2845,6 +2887,8 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldStatsTotalRow(ctx)
 	case processingfile.FieldStatsTotalSuccess:
 		return m.OldStatsTotalSuccess(ctx)
+	case processingfile.FieldErrorDisplay:
+		return m.OldErrorDisplay(ctx)
 	case processingfile.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case processingfile.FieldCreatedBy:
@@ -2915,6 +2959,13 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatsTotalSuccess(v)
+		return nil
+	case processingfile.FieldErrorDisplay:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetErrorDisplay(v)
 		return nil
 	case processingfile.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3072,6 +3123,9 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 		return nil
 	case processingfile.FieldStatsTotalSuccess:
 		m.ResetStatsTotalSuccess()
+		return nil
+	case processingfile.FieldErrorDisplay:
+		m.ResetErrorDisplay()
 		return nil
 	case processingfile.FieldCreatedAt:
 		m.ResetCreatedAt()

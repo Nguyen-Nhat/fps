@@ -111,6 +111,12 @@ func (pfu *ProcessingFileUpdate) AddStatsTotalSuccess(i int32) *ProcessingFileUp
 	return pfu
 }
 
+// SetErrorDisplay sets the "error_display" field.
+func (pfu *ProcessingFileUpdate) SetErrorDisplay(s string) *ProcessingFileUpdate {
+	pfu.mutation.SetErrorDisplay(s)
+	return pfu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pfu *ProcessingFileUpdate) SetCreatedAt(t time.Time) *ProcessingFileUpdate {
 	pfu.mutation.SetCreatedAt(t)
@@ -340,6 +346,13 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldStatsTotalSuccess,
 		})
 	}
+	if value, ok := pfu.mutation.ErrorDisplay(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldErrorDisplay,
+		})
+	}
 	if value, ok := pfu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -460,6 +473,12 @@ func (pfuo *ProcessingFileUpdateOne) SetStatsTotalSuccess(i int32) *ProcessingFi
 // AddStatsTotalSuccess adds i to the "stats_total_success" field.
 func (pfuo *ProcessingFileUpdateOne) AddStatsTotalSuccess(i int32) *ProcessingFileUpdateOne {
 	pfuo.mutation.AddStatsTotalSuccess(i)
+	return pfuo
+}
+
+// SetErrorDisplay sets the "error_display" field.
+func (pfuo *ProcessingFileUpdateOne) SetErrorDisplay(s string) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetErrorDisplay(s)
 	return pfuo
 }
 
@@ -720,6 +739,13 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: processingfile.FieldStatsTotalSuccess,
+		})
+	}
+	if value, ok := pfuo.mutation.ErrorDisplay(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldErrorDisplay,
 		})
 	}
 	if value, ok := pfuo.mutation.CreatedAt(); ok {

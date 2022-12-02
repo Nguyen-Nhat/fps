@@ -29,7 +29,7 @@ func (ProcessingFileRow) Fields() []ent.Field {
 		field.String("task_depends_on"),
 		field.String("task_request_raw"),
 		field.String("task_response_raw"),
-		field.Int16("status").Comment("Init=1; Processing=2; Failed=3; Success=4; Timeout=5"),
+		field.Int16("status").Comment("Init=1; ; Failed=3; Success=4; Timeout=5"),
 		field.String("error_display"),
 	}
 }

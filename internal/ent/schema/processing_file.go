@@ -31,6 +31,7 @@ func (ProcessingFile) Fields() []ent.Field {
 		field.Int32("total_mapping"),
 		field.Int32("stats_total_row"),
 		field.Int32("stats_total_success"),
+		field.String("error_display"),
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),

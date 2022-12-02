@@ -31,7 +31,7 @@ type ProcessingFileRow struct {
 	TaskRequestRaw string `json:"task_request_raw,omitempty"`
 	// TaskResponseRaw holds the value of the "task_response_raw" field.
 	TaskResponseRaw string `json:"task_response_raw,omitempty"`
-	// Init=1; Processing=2; Failed=3; Success=4; Timeout=5
+	// Init=1; ; Failed=3; Success=4; Timeout=5
 	Status int16 `json:"status,omitempty"`
 	// ErrorDisplay holds the value of the "error_display" field.
 	ErrorDisplay string `json:"error_display,omitempty"`

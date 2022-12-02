@@ -137,15 +137,15 @@ func init() {
 	// processingfile.FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
 	processingfile.FileURLValidator = processingfileDescFileURL.Validators[0].(func(string) error)
 	// processingfileDescCreatedAt is the schema descriptor for created_at field.
-	processingfileDescCreatedAt := processingfileFields[8].Descriptor()
+	processingfileDescCreatedAt := processingfileFields[9].Descriptor()
 	// processingfile.DefaultCreatedAt holds the default value on creation for the created_at field.
 	processingfile.DefaultCreatedAt = processingfileDescCreatedAt.Default.(func() time.Time)
 	// processingfileDescCreatedBy is the schema descriptor for created_by field.
-	processingfileDescCreatedBy := processingfileFields[9].Descriptor()
+	processingfileDescCreatedBy := processingfileFields[10].Descriptor()
 	// processingfile.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	processingfile.CreatedByValidator = processingfileDescCreatedBy.Validators[0].(func(string) error)
 	// processingfileDescUpdatedAt is the schema descriptor for updated_at field.
-	processingfileDescUpdatedAt := processingfileFields[10].Descriptor()
+	processingfileDescUpdatedAt := processingfileFields[11].Descriptor()
 	// processingfile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	processingfile.DefaultUpdatedAt = processingfileDescUpdatedAt.Default.(func() time.Time)
 	// processingfile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

@@ -32,6 +32,8 @@ type ProcessingFile struct {
 	StatsTotalRow int32 `json:"stats_total_row,omitempty"`
 	// StatsTotalSuccess holds the value of the "stats_total_success" field.
 	StatsTotalSuccess int32 `json:"stats_total_success,omitempty"`
+	// ErrorDisplay holds the value of the "error_display" field.
+	ErrorDisplay string `json:"error_display,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -47,7 +49,7 @@ func (*ProcessingFile) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
-		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldCreatedBy:
+		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case processingfile.FieldCreatedAt, processingfile.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -120,6 +122,12 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				pf.StatsTotalSuccess = int32(value.Int64)
 			}
+		case processingfile.FieldErrorDisplay:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field error_display", values[i])
+			} else if value.Valid {
+				pf.ErrorDisplay = value.String
+			}
 		case processingfile.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -189,6 +197,9 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("stats_total_success=")
 	builder.WriteString(fmt.Sprintf("%v", pf.StatsTotalSuccess))
+	builder.WriteString(", ")
+	builder.WriteString("error_display=")
+	builder.WriteString(pf.ErrorDisplay)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(pf.CreatedAt.Format(time.ANSIC))
