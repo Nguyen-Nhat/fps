@@ -136,6 +136,13 @@ func StatsTotalSuccess(v int32) predicate.ProcessingFile {
 	})
 }
 
+// ErrorDisplay applies equality check predicate on the "error_display" field. It's identical to ErrorDisplayEQ.
+func ErrorDisplay(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldErrorDisplay), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -771,6 +778,105 @@ func StatsTotalSuccessLT(v int32) predicate.ProcessingFile {
 func StatsTotalSuccessLTE(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatsTotalSuccess), v))
+	})
+}
+
+// ErrorDisplayEQ applies the EQ predicate on the "error_display" field.
+func ErrorDisplayEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayNEQ applies the NEQ predicate on the "error_display" field.
+func ErrorDisplayNEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayIn applies the In predicate on the "error_display" field.
+func ErrorDisplayIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldErrorDisplay), v...))
+	})
+}
+
+// ErrorDisplayNotIn applies the NotIn predicate on the "error_display" field.
+func ErrorDisplayNotIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldErrorDisplay), v...))
+	})
+}
+
+// ErrorDisplayGT applies the GT predicate on the "error_display" field.
+func ErrorDisplayGT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayGTE applies the GTE predicate on the "error_display" field.
+func ErrorDisplayGTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayLT applies the LT predicate on the "error_display" field.
+func ErrorDisplayLT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayLTE applies the LTE predicate on the "error_display" field.
+func ErrorDisplayLTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayContains applies the Contains predicate on the "error_display" field.
+func ErrorDisplayContains(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayHasPrefix applies the HasPrefix predicate on the "error_display" field.
+func ErrorDisplayHasPrefix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayHasSuffix applies the HasSuffix predicate on the "error_display" field.
+func ErrorDisplayHasSuffix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayEqualFold applies the EqualFold predicate on the "error_display" field.
+func ErrorDisplayEqualFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// ErrorDisplayContainsFold applies the ContainsFold predicate on the "error_display" field.
+func ErrorDisplayContainsFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldErrorDisplay), v))
 	})
 }
 

@@ -27,6 +27,8 @@ const (
 	FieldStatsTotalRow = "stats_total_row"
 	// FieldStatsTotalSuccess holds the string denoting the stats_total_success field in the database.
 	FieldStatsTotalSuccess = "stats_total_success"
+	// FieldErrorDisplay holds the string denoting the error_display field in the database.
+	FieldErrorDisplay = "error_display"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -48,6 +50,7 @@ var Columns = []string{
 	FieldTotalMapping,
 	FieldStatsTotalRow,
 	FieldStatsTotalSuccess,
+	FieldErrorDisplay,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,

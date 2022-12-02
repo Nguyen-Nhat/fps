@@ -64,6 +64,7 @@ var (
 		{Name: "total_mapping", Type: field.TypeInt32},
 		{Name: "stats_total_row", Type: field.TypeInt32},
 		{Name: "stats_total_success", Type: field.TypeInt32},
+		{Name: "error_display", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},
