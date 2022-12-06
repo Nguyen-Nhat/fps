@@ -36,6 +36,10 @@ func NewServer(cfg config.Config, opts ...Option) (*Server, error) {
 	dbConf := cfg.Database.MySQL
 	if srv.db == nil {
 		db, err := dburl.Open(dbConf.DatabaseURI())
+		// config db connection
+		db.SetMaxOpenConns(25)
+		db.SetMaxIdleConns(25)
+
 		if err != nil {
 			logger.Errorf("Fail to open db, got: %v", err)
 			return nil, fmt.Errorf("failed open DB: %w", err)
