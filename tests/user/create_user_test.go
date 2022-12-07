@@ -31,7 +31,7 @@ func TestReturnGrantPoint_All_Success(t *testing.T) {
 	// Testcase Implementation
 	// 1. Init DB & Init Server
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	userServer := user.InitUserServer(db)
 
 	// 2. Mock request

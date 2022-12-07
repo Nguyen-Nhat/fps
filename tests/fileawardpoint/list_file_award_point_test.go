@@ -31,7 +31,7 @@ func TestAPIListFile_Parameter_empty__Should_return_code_200(t *testing.T) {
 	defer detail.Setup(t)()
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	fapServer := fileawardpoint2.InitFileAwardPointServer(db)
 
 	req := fileawardpoint.GetListFileAwardPointDTO{}
@@ -79,7 +79,7 @@ func TestAPIListFile_Parameter_include_only_merchantId__Should_return_code_200(t
 	defer detail.Setup(t)()
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	fapServer := fileawardpoint2.InitFileAwardPointServer(db)
 
 	req := fileawardpoint.GetListFileAwardPointDTO{
@@ -128,7 +128,7 @@ func TestAPIListFile_Parameter_include_all__Should_return_code_200(t *testing.T)
 	defer detail.Setup(t)()
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	fapServer := fileawardpoint2.InitFileAwardPointServer(db)
 
 	req := fileawardpoint.GetListFileAwardPointDTO{
@@ -180,7 +180,7 @@ func TestAPIListFile_Parameter_only_include_page_and_size__Should_return_code_20
 	defer detail.Setup(t)()
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	fapServer := fileawardpoint2.InitFileAwardPointServer(db)
 
 	req := fileawardpoint.GetListFileAwardPointDTO{

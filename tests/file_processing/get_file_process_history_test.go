@@ -42,7 +42,7 @@ func TestGetFileProcessHistory_Parameter_include_only_clientId__Should_return_co
 	defer detail.Setup(t)()
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	fpServer := fileprocessing2.InitFileProcessingServer(db)
 
 	req := fileprocessing.GetFileProcessHistoryDTO{
@@ -93,7 +93,7 @@ func TestGetFileProcessHistory_Parameter_include_clientId_and_page__Should_retur
 	assert.Equal(t, true, true)
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	fpServer := fileprocessing2.InitFileProcessingServer(db)
 
 	req := fileprocessing.GetFileProcessHistoryDTO{
@@ -145,7 +145,7 @@ func TestGetFileProcessHistory_Parameter_include_clientId_and_size__Should_retur
 	defer detail.Setup(t)()
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	fpServer := fileprocessing2.InitFileProcessingServer(db)
 
 	req := fileprocessing.GetFileProcessHistoryDTO{
@@ -206,7 +206,7 @@ func TestGetFileProcessHistory_Parameter_include_all__Should_return_code_200(t *
 	defer detail.Setup(t)()
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 	fpServer := fileprocessing2.InitFileProcessingServer(db)
 
 	req := fileprocessing.GetFileProcessHistoryDTO{

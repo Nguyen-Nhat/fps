@@ -31,13 +31,13 @@ func (s *Server) GetFileProcessHistoryAPI() func(http.ResponseWriter, *http.Requ
 	return func(w http.ResponseWriter, r *http.Request) {
 		data, err := validateParameterAndSetDataValue(r)
 		if err != nil {
-			render.Render(w, r, commonError.ErrInvalidRequest(err))
+			render.Render(w, r, commonError.ErrRenderInvalidRequest(err))
 			return
 		}
 
 		resp, err := s.GetFileProcessHistory(r.Context(), data)
 		if err != nil {
-			render.Render(w, r, commonError.ErrInternal(err))
+			render.Render(w, r, commonError.ToErrorResponse(err))
 			return
 		}
 
@@ -109,14 +109,14 @@ func (s *Server) CreateProcessByFileAPI() func(http.ResponseWriter, *http.Reques
 		// 1. Bind data & validate input
 		data := &CreateFileProcessingRequest{}
 		if err := render.Bind(r, data); err != nil {
-			render.Render(w, r, commonError.ErrInvalidRequest(err))
+			render.Render(w, r, commonError.ErrRenderInvalidRequest(err))
 			return
 		}
 
 		// 2. Handle request
 		res, err := s.CreateProcessingFile(r.Context(), data)
 		if err != nil {
-			render.Render(w, r, commonError.ErrInvalidRequest(err))
+			render.Render(w, r, commonError.ToErrorResponse(err))
 			return
 		}
 

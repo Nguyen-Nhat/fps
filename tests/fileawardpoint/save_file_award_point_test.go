@@ -133,9 +133,9 @@ func TestAllInputValid__Return200FileAwardPointId(t *testing.T) {
 	// Testcase Implementation
 	// 1. Init
 	ctx := context.Background()
-	common.PrepareDatabase(ctx)
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
 
-	fileAwardPointServer := initAwardPointServerForTesting()
+	fileAwardPointServer := fileawardpoint.InitFileAwardPointServer(db)
 
 	// 2. Mock request
 	ctx = middleware.SetUserToContext(ctx, middleware.User{
@@ -168,10 +168,9 @@ func TestAllInputValid__SaveMerchantIdFileUrlNoteToDB(t *testing.T) {
 	// 1. Init
 
 	ctx := context.Background()
-	db := common.PrepareDatabase(ctx)
-	entClient := common.CreateEntClientFromDB(db)
+	db, entClient := common.PrepareDatabaseSqlite(ctx, t)
 
-	fileAwardPointServer := initAwardPointServerForTesting()
+	fileAwardPointServer := fileawardpoint.InitFileAwardPointServer(db)
 
 	// 2. Mock request
 	ctx = middleware.SetUserToContext(ctx, middleware.User{
