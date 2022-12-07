@@ -99,6 +99,54 @@ func SendHTTPRequest[REQ any, RES any](
 	return &respBodyObj, nil
 }
 
+// SendHTTPRequestRaw ... return (httpStatusCode, responseBody, error)
+func SendHTTPRequestRaw(
+	client *http.Client,
+	method, url string,
+	header map[string]string, requestBody map[string]string,
+) (int, string, error) {
+	// 1. Build body
+	var bodyIO *bytes.Buffer
+	if requestBody == nil {
+		bodyIO = bytes.NewBuffer([]byte{})
+	} else {
+		requestBytes, _ := json.Marshal(requestBody)
+		bodyIO = bytes.NewBuffer(requestBytes)
+	}
+
+	// 2. Build request
+	req, err := http.NewRequest(method, url, bodyIO)
+	if err != nil {
+		return 0, "", err
+	}
+
+	// 3. Set Header
+	if len(header) > 0 {
+		for k, v := range header {
+			req.Header.Set(k, v)
+		}
+	}
+
+	// 4. Send request
+	resp, err := client.Do(req)
+	if err != nil {
+		logger.Errorf("===== http: send request error: %+v\n", err.Error())
+		return 0, "", err
+	}
+
+	// 5. Ready response body
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logger.Errorf("===== http: ready response body error: %+v\n", err.Error())
+		return resp.StatusCode, "", err
+	}
+
+	return resp.StatusCode, string(respBody), nil
+}
+
 func UploadFile[RES any](client *http.Client, urlPath string, content FileContent) (*RES, error) {
 	// New multipart writer.
 	body := &bytes.Buffer{}

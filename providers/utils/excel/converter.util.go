@@ -2,12 +2,11 @@ package excel
 
 import (
 	"fmt"
-	"reflect"
-	"strconv"
-
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
+	"reflect"
+	"strconv"
 )
 
 var (
@@ -39,7 +38,12 @@ func ConvertToStruct[META any, OUT any, C dto.Converter[META, OUT]](
 		realRowId := rowId + 1 // real row id of data
 		errorRow, isOk := readDataReflect(mt.GetMetadata(), headerMap, data[rowId])
 		if isOk {
-			dataRows = append(dataRows, mt.ToOutput(realRowId))
+			output, err := mt.ToOutput(realRowId)
+			if err != nil {
+				errorRows = append(errorRows, dto.ErrorRow{RowId: realRowId, Reason: err.Error(), RowData: data[rowId]})
+			} else {
+				dataRows = append(dataRows, output)
+			}
 		} else {
 			errorRow.RowId = realRowId
 			errorRows = append(errorRows, *errorRow)

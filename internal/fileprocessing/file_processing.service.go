@@ -15,6 +15,13 @@ import (
 type (
 	Service interface {
 		CreateFileProcessing(ctx context.Context, req *CreateFileProcessingReqDTO) (*CreateFileProcessingResDTO, error)
+
+		FindById(context.Context, int) (*ProcessingFile, error)
+		GetListFileAwardPointByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
+
+		UpdateToFailedStatusWithErrorMessage(context.Context, int, ErrorDisplay) (*ProcessingFile, error)
+		UpdateToProcessingStatusWithExtractedData(context.Context, int, int, int) (*ProcessingFile, error)
+		UpdateStatusWithStatistics(context.Context, int, int16, int, string) (*ProcessingFile, error)
 	}
 
 	ServiceImpl struct {
@@ -24,7 +31,7 @@ type (
 
 var _ Service = &ServiceImpl{}
 
-// CreateFileProcessing: Create new file processing. If display name is not provided, it will be extract from file name
+// CreateFileProcessing ... Create new file processing. If display name is not provided, it will be extract from file name
 func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileProcessingReqDTO) (*CreateFileProcessingResDTO, error) {
 
 	// 1. Preprocess data
@@ -53,6 +60,50 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 	return &CreateFileProcessingResDTO{
 		ProcessFileID: int32(createdProcessingFile.ID),
 	}, err
+}
+
+func (s *ServiceImpl) FindById(ctx context.Context, id int) (*ProcessingFile, error) {
+	pfs, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return pfs, nil
+}
+
+func (s *ServiceImpl) GetListFileAwardPointByStatuses(ctx context.Context, statuses []int16) ([]*ProcessingFile, error) {
+	pfs, err := s.repo.FindByStatuses(ctx, statuses)
+	if err != nil {
+		return nil, err
+	}
+
+	return pfs, nil
+}
+
+func (s *ServiceImpl) UpdateToFailedStatusWithErrorMessage(ctx context.Context, id int, errorMessage ErrorDisplay) (*ProcessingFile, error) {
+	pf, err := s.repo.UpdateStatusAndErrorDisplay(ctx, id, StatusFailed, errorMessage)
+	if err != nil {
+		return nil, err
+	}
+
+	return pf, nil
+}
+
+func (s *ServiceImpl) UpdateStatusWithStatistics(ctx context.Context, id int, status int16, totalSuccess int, resultFileUrl string) (*ProcessingFile, error) {
+	pf, err := s.repo.UpdateStatusAndStatsAndResultFileUrl(ctx, id, status, totalSuccess, resultFileUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	return pf, nil
+}
+
+func (s *ServiceImpl) UpdateToProcessingStatusWithExtractedData(ctx context.Context, id int, totalMapping int, totalRow int) (*ProcessingFile, error) {
+	fp, err := s.repo.UpdateByExtractedData(ctx, id, StatusProcessing, totalMapping, totalRow)
+	if err != nil {
+		logger.Errorf("Update %v failed, got err %v", Name(), err)
+	}
+	return fp, nil
 }
 
 func NewService(repo Repo) *ServiceImpl {

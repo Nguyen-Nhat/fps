@@ -3,11 +3,13 @@ package fileprocessing
 import (
 	"context"
 	"database/sql"
-	entsql "entgo.io/ent/dialect/sql"
+	"errors"
 	"fmt"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
+
+	entsql "entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
@@ -15,6 +17,12 @@ type (
 	Repo interface {
 		Save(ctx context.Context, fp ProcessingFile) (*ProcessingFile, error)
 		FindByClientIdAndPagination(context.Context, *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error)
+		FindByID(context.Context, int) (*ProcessingFile, error)
+		FindByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
+		UpdateStatusOne(context.Context, int, int16) (*ProcessingFile, error)
+		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay) (*ProcessingFile, error)
+		UpdateStatusAndStatsAndResultFileUrl(context.Context, int, int16, int, string) (*ProcessingFile, error)
+		UpdateByExtractedData(ctx context.Context, id int, status int16, totalMapping int, statsTotalRow int) (*ProcessingFile, error)
 	}
 
 	repoImpl struct {
@@ -33,9 +41,82 @@ func NewRepo(db *sql.DB) *repoImpl {
 	return &repoImpl{client: client}
 }
 
-// Implementation function ---------------------------------------------------------------------------------------------
+// Save ... Implementation function ------------------------------------------------------------------------------------
 func (r *repoImpl) Save(ctx context.Context, fp ProcessingFile) (*ProcessingFile, error) {
 	return save(ctx, r.client, fp)
+}
+
+func (r *repoImpl) FindByID(ctx context.Context, id int) (*ProcessingFile, error) {
+	fp, err := r.client.ProcessingFile.Get(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying singular file award point: %w", err)
+	}
+
+	return &ProcessingFile{*fp}, nil
+}
+
+func (r *repoImpl) FindByStatuses(ctx context.Context, statuses []int16) ([]*ProcessingFile, error) {
+	pfs, err := r.client.ProcessingFile.Query().Where(processingfile.StatusIn(statuses...)).All(ctx)
+
+	if err != nil {
+		logger.Errorf("fail to get file award point by status with status %#v", statuses)
+		return nil, errors.New("fail to get file award point by status")
+	}
+
+	return mapEntArrToProcessingFileArr(pfs), nil
+}
+
+func (r *repoImpl) UpdateStatusOne(ctx context.Context, id int, status int16) (*ProcessingFile, error) {
+	fap, err := r.client.ProcessingFile.UpdateOneID(id).SetStatus(status).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &ProcessingFile{
+		ProcessingFile: *fap,
+	}, nil
+}
+
+func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, status int16, errorDisplay ErrorDisplay) (*ProcessingFile, error) {
+	fap, err := r.client.ProcessingFile.UpdateOneID(id).
+		SetStatus(status).
+		SetErrorDisplay(string(errorDisplay)).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &ProcessingFile{
+		ProcessingFile: *fap,
+	}, nil
+}
+
+func (r *repoImpl) UpdateStatusAndStatsAndResultFileUrl(ctx context.Context, id int, status int16, totalSuccess int,
+	resultFileUrl string) (*ProcessingFile, error) {
+	fap, err := r.client.ProcessingFile.UpdateOneID(id).
+		SetStatus(status).
+		SetStatsTotalSuccess(int32(totalSuccess)).
+		SetResultFileURL(resultFileUrl).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &ProcessingFile{
+		ProcessingFile: *fap,
+	}, nil
+}
+
+func (r *repoImpl) UpdateByExtractedData(ctx context.Context, id int, status int16, totalMapping int, statsTotalRow int) (*ProcessingFile, error) {
+	pf, err := r.client.ProcessingFile.UpdateOneID(id).
+		SetStatus(status).
+		SetTotalMapping(int32(totalMapping)).
+		SetStatsTotalRow(int32(statsTotalRow)).
+		Save(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+	return &ProcessingFile{
+		ProcessingFile: *pf,
+	}, nil
 }
 
 // private function ---------------------------------------------------------------------------------------------
@@ -63,6 +144,7 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetTotalMapping(fp.TotalMapping).
 		SetStatsTotalRow(fp.StatsTotalRow).
 		SetStatsTotalSuccess(fp.StatsTotalSuccess).
+		SetErrorDisplay(fp.ErrorDisplay).
 		SetCreatedBy(fp.CreatedBy)
 }
 
