@@ -3,6 +3,7 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	fileprocessing "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
 	"net/http"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
@@ -75,8 +76,13 @@ func (s *Server) initRoutes() {
 	fapRouter.Post("/create", fapServer.CreateFileAwardPointAPI())
 	s.Router.Mount("/lfp/v1/fileAwardPoint", fapRouter)
 
-	// 4. Other APIs
-	// ...
+	// 4. File Processing API
+	fpServer := fileprocessing.InitFileProcessingServer(s.db)
+	fpRouter := chi.NewRouter()
+	fpRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
+	fpRouter.Get("/getListProcessFiles", fpServer.GetFileProcessHistoryAPI())
+	fpRouter.Post("/createProcessFile", fpServer.CreateProcessByFileAPI())
+	s.Router.Mount("/v1", fpRouter)
 }
 
 func (s *Server) Serve(cfg config.ServerListen) error {

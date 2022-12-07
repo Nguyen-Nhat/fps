@@ -20,19 +20,35 @@ func main() {
 		log.Fatalf("Cannot init logger, got err: %v", err)
 	}
 
-	// Init Job
-	job.InitJob(cfg)
-
 	// Init App for providing API
 	app := &cli.App{
 		Name:  "Loyalty File Processing Server",
 		Usage: "...",
 		Action: func(*cli.Context) error {
+			// Init Job
+			job.InitJob(cfg)
+
 			srv, err := server.NewServer(cfg)
 			if err != nil {
 				return err
 			}
 			return srv.Serve(cfg.Server.HTTP)
+		},
+		Commands: []*cli.Command{
+			{
+				Name:  job.Name,
+				Usage: "File Processing Jobs",
+				Subcommands: []*cli.Command{
+					{
+						Name:  job.ExecuteFile,
+						Usage: "File Processing Jobs - Execute File",
+						Action: func(ctx *cli.Context) error {
+							job.InitJobExecuteFileThenRun(cfg)
+							return nil
+						},
+					},
+				},
+			},
 		},
 	}
 

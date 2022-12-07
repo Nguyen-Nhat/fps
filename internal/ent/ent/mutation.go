@@ -12,6 +12,8 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/membertransaction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/predicate"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 
 	"entgo.io/ent"
@@ -28,6 +30,8 @@ const (
 	// Node types.
 	TypeFileAwardPoint    = "FileAwardPoint"
 	TypeMemberTransaction = "MemberTransaction"
+	TypeProcessingFile    = "ProcessingFile"
+	TypeProcessingFileRow = "ProcessingFileRow"
 	TypeUser              = "User"
 )
 
@@ -2109,6 +2113,2011 @@ func (m *MemberTransactionMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *MemberTransactionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown MemberTransaction edge %s", name)
+}
+
+// ProcessingFileMutation represents an operation that mutates the ProcessingFile nodes in the graph.
+type ProcessingFileMutation struct {
+	config
+	op                     Op
+	typ                    string
+	id                     *int
+	client_id              *int32
+	addclient_id           *int32
+	display_name           *string
+	file_url               *string
+	result_file_url        *string
+	status                 *int16
+	addstatus              *int16
+	total_mapping          *int32
+	addtotal_mapping       *int32
+	stats_total_row        *int32
+	addstats_total_row     *int32
+	stats_total_success    *int32
+	addstats_total_success *int32
+	error_display          *string
+	created_at             *time.Time
+	created_by             *string
+	updated_at             *time.Time
+	clearedFields          map[string]struct{}
+	done                   bool
+	oldValue               func(context.Context) (*ProcessingFile, error)
+	predicates             []predicate.ProcessingFile
+}
+
+var _ ent.Mutation = (*ProcessingFileMutation)(nil)
+
+// processingfileOption allows management of the mutation configuration using functional options.
+type processingfileOption func(*ProcessingFileMutation)
+
+// newProcessingFileMutation creates new mutation for the ProcessingFile entity.
+func newProcessingFileMutation(c config, op Op, opts ...processingfileOption) *ProcessingFileMutation {
+	m := &ProcessingFileMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProcessingFile,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProcessingFileID sets the ID field of the mutation.
+func withProcessingFileID(id int) processingfileOption {
+	return func(m *ProcessingFileMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProcessingFile
+		)
+		m.oldValue = func(ctx context.Context) (*ProcessingFile, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProcessingFile.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProcessingFile sets the old ProcessingFile of the mutation.
+func withProcessingFile(node *ProcessingFile) processingfileOption {
+	return func(m *ProcessingFileMutation) {
+		m.oldValue = func(context.Context) (*ProcessingFile, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProcessingFileMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProcessingFileMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProcessingFileMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ProcessingFileMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ProcessingFile.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetClientID sets the "client_id" field.
+func (m *ProcessingFileMutation) SetClientID(i int32) {
+	m.client_id = &i
+	m.addclient_id = nil
+}
+
+// ClientID returns the value of the "client_id" field in the mutation.
+func (m *ProcessingFileMutation) ClientID() (r int32, exists bool) {
+	v := m.client_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClientID returns the old "client_id" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldClientID(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldClientID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClientID: %w", err)
+	}
+	return oldValue.ClientID, nil
+}
+
+// AddClientID adds i to the "client_id" field.
+func (m *ProcessingFileMutation) AddClientID(i int32) {
+	if m.addclient_id != nil {
+		*m.addclient_id += i
+	} else {
+		m.addclient_id = &i
+	}
+}
+
+// AddedClientID returns the value that was added to the "client_id" field in this mutation.
+func (m *ProcessingFileMutation) AddedClientID() (r int32, exists bool) {
+	v := m.addclient_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetClientID resets all changes to the "client_id" field.
+func (m *ProcessingFileMutation) ResetClientID() {
+	m.client_id = nil
+	m.addclient_id = nil
+}
+
+// SetDisplayName sets the "display_name" field.
+func (m *ProcessingFileMutation) SetDisplayName(s string) {
+	m.display_name = &s
+}
+
+// DisplayName returns the value of the "display_name" field in the mutation.
+func (m *ProcessingFileMutation) DisplayName() (r string, exists bool) {
+	v := m.display_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDisplayName returns the old "display_name" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldDisplayName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDisplayName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDisplayName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDisplayName: %w", err)
+	}
+	return oldValue.DisplayName, nil
+}
+
+// ResetDisplayName resets all changes to the "display_name" field.
+func (m *ProcessingFileMutation) ResetDisplayName() {
+	m.display_name = nil
+}
+
+// SetFileURL sets the "file_url" field.
+func (m *ProcessingFileMutation) SetFileURL(s string) {
+	m.file_url = &s
+}
+
+// FileURL returns the value of the "file_url" field in the mutation.
+func (m *ProcessingFileMutation) FileURL() (r string, exists bool) {
+	v := m.file_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileURL returns the old "file_url" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldFileURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileURL: %w", err)
+	}
+	return oldValue.FileURL, nil
+}
+
+// ResetFileURL resets all changes to the "file_url" field.
+func (m *ProcessingFileMutation) ResetFileURL() {
+	m.file_url = nil
+}
+
+// SetResultFileURL sets the "result_file_url" field.
+func (m *ProcessingFileMutation) SetResultFileURL(s string) {
+	m.result_file_url = &s
+}
+
+// ResultFileURL returns the value of the "result_file_url" field in the mutation.
+func (m *ProcessingFileMutation) ResultFileURL() (r string, exists bool) {
+	v := m.result_file_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResultFileURL returns the old "result_file_url" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldResultFileURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResultFileURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResultFileURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResultFileURL: %w", err)
+	}
+	return oldValue.ResultFileURL, nil
+}
+
+// ResetResultFileURL resets all changes to the "result_file_url" field.
+func (m *ProcessingFileMutation) ResetResultFileURL() {
+	m.result_file_url = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *ProcessingFileMutation) SetStatus(i int16) {
+	m.status = &i
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *ProcessingFileMutation) Status() (r int16, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldStatus(ctx context.Context) (v int16, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds i to the "status" field.
+func (m *ProcessingFileMutation) AddStatus(i int16) {
+	if m.addstatus != nil {
+		*m.addstatus += i
+	} else {
+		m.addstatus = &i
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *ProcessingFileMutation) AddedStatus() (r int16, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *ProcessingFileMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
+// SetTotalMapping sets the "total_mapping" field.
+func (m *ProcessingFileMutation) SetTotalMapping(i int32) {
+	m.total_mapping = &i
+	m.addtotal_mapping = nil
+}
+
+// TotalMapping returns the value of the "total_mapping" field in the mutation.
+func (m *ProcessingFileMutation) TotalMapping() (r int32, exists bool) {
+	v := m.total_mapping
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalMapping returns the old "total_mapping" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldTotalMapping(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalMapping is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalMapping requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalMapping: %w", err)
+	}
+	return oldValue.TotalMapping, nil
+}
+
+// AddTotalMapping adds i to the "total_mapping" field.
+func (m *ProcessingFileMutation) AddTotalMapping(i int32) {
+	if m.addtotal_mapping != nil {
+		*m.addtotal_mapping += i
+	} else {
+		m.addtotal_mapping = &i
+	}
+}
+
+// AddedTotalMapping returns the value that was added to the "total_mapping" field in this mutation.
+func (m *ProcessingFileMutation) AddedTotalMapping() (r int32, exists bool) {
+	v := m.addtotal_mapping
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalMapping resets all changes to the "total_mapping" field.
+func (m *ProcessingFileMutation) ResetTotalMapping() {
+	m.total_mapping = nil
+	m.addtotal_mapping = nil
+}
+
+// SetStatsTotalRow sets the "stats_total_row" field.
+func (m *ProcessingFileMutation) SetStatsTotalRow(i int32) {
+	m.stats_total_row = &i
+	m.addstats_total_row = nil
+}
+
+// StatsTotalRow returns the value of the "stats_total_row" field in the mutation.
+func (m *ProcessingFileMutation) StatsTotalRow() (r int32, exists bool) {
+	v := m.stats_total_row
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatsTotalRow returns the old "stats_total_row" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldStatsTotalRow(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatsTotalRow is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatsTotalRow requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatsTotalRow: %w", err)
+	}
+	return oldValue.StatsTotalRow, nil
+}
+
+// AddStatsTotalRow adds i to the "stats_total_row" field.
+func (m *ProcessingFileMutation) AddStatsTotalRow(i int32) {
+	if m.addstats_total_row != nil {
+		*m.addstats_total_row += i
+	} else {
+		m.addstats_total_row = &i
+	}
+}
+
+// AddedStatsTotalRow returns the value that was added to the "stats_total_row" field in this mutation.
+func (m *ProcessingFileMutation) AddedStatsTotalRow() (r int32, exists bool) {
+	v := m.addstats_total_row
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatsTotalRow resets all changes to the "stats_total_row" field.
+func (m *ProcessingFileMutation) ResetStatsTotalRow() {
+	m.stats_total_row = nil
+	m.addstats_total_row = nil
+}
+
+// SetStatsTotalSuccess sets the "stats_total_success" field.
+func (m *ProcessingFileMutation) SetStatsTotalSuccess(i int32) {
+	m.stats_total_success = &i
+	m.addstats_total_success = nil
+}
+
+// StatsTotalSuccess returns the value of the "stats_total_success" field in the mutation.
+func (m *ProcessingFileMutation) StatsTotalSuccess() (r int32, exists bool) {
+	v := m.stats_total_success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatsTotalSuccess returns the old "stats_total_success" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldStatsTotalSuccess(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatsTotalSuccess is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatsTotalSuccess requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatsTotalSuccess: %w", err)
+	}
+	return oldValue.StatsTotalSuccess, nil
+}
+
+// AddStatsTotalSuccess adds i to the "stats_total_success" field.
+func (m *ProcessingFileMutation) AddStatsTotalSuccess(i int32) {
+	if m.addstats_total_success != nil {
+		*m.addstats_total_success += i
+	} else {
+		m.addstats_total_success = &i
+	}
+}
+
+// AddedStatsTotalSuccess returns the value that was added to the "stats_total_success" field in this mutation.
+func (m *ProcessingFileMutation) AddedStatsTotalSuccess() (r int32, exists bool) {
+	v := m.addstats_total_success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatsTotalSuccess resets all changes to the "stats_total_success" field.
+func (m *ProcessingFileMutation) ResetStatsTotalSuccess() {
+	m.stats_total_success = nil
+	m.addstats_total_success = nil
+}
+
+// SetErrorDisplay sets the "error_display" field.
+func (m *ProcessingFileMutation) SetErrorDisplay(s string) {
+	m.error_display = &s
+}
+
+// ErrorDisplay returns the value of the "error_display" field in the mutation.
+func (m *ProcessingFileMutation) ErrorDisplay() (r string, exists bool) {
+	v := m.error_display
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldErrorDisplay returns the old "error_display" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldErrorDisplay(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldErrorDisplay is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldErrorDisplay requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldErrorDisplay: %w", err)
+	}
+	return oldValue.ErrorDisplay, nil
+}
+
+// ResetErrorDisplay resets all changes to the "error_display" field.
+func (m *ProcessingFileMutation) ResetErrorDisplay() {
+	m.error_display = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ProcessingFileMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProcessingFileMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProcessingFileMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *ProcessingFileMutation) SetCreatedBy(s string) {
+	m.created_by = &s
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *ProcessingFileMutation) CreatedBy() (r string, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldCreatedBy(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *ProcessingFileMutation) ResetCreatedBy() {
+	m.created_by = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProcessingFileMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProcessingFileMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProcessingFileMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the ProcessingFileMutation builder.
+func (m *ProcessingFileMutation) Where(ps ...predicate.ProcessingFile) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ProcessingFileMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ProcessingFile).
+func (m *ProcessingFileMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProcessingFileMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.client_id != nil {
+		fields = append(fields, processingfile.FieldClientID)
+	}
+	if m.display_name != nil {
+		fields = append(fields, processingfile.FieldDisplayName)
+	}
+	if m.file_url != nil {
+		fields = append(fields, processingfile.FieldFileURL)
+	}
+	if m.result_file_url != nil {
+		fields = append(fields, processingfile.FieldResultFileURL)
+	}
+	if m.status != nil {
+		fields = append(fields, processingfile.FieldStatus)
+	}
+	if m.total_mapping != nil {
+		fields = append(fields, processingfile.FieldTotalMapping)
+	}
+	if m.stats_total_row != nil {
+		fields = append(fields, processingfile.FieldStatsTotalRow)
+	}
+	if m.stats_total_success != nil {
+		fields = append(fields, processingfile.FieldStatsTotalSuccess)
+	}
+	if m.error_display != nil {
+		fields = append(fields, processingfile.FieldErrorDisplay)
+	}
+	if m.created_at != nil {
+		fields = append(fields, processingfile.FieldCreatedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, processingfile.FieldCreatedBy)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, processingfile.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case processingfile.FieldClientID:
+		return m.ClientID()
+	case processingfile.FieldDisplayName:
+		return m.DisplayName()
+	case processingfile.FieldFileURL:
+		return m.FileURL()
+	case processingfile.FieldResultFileURL:
+		return m.ResultFileURL()
+	case processingfile.FieldStatus:
+		return m.Status()
+	case processingfile.FieldTotalMapping:
+		return m.TotalMapping()
+	case processingfile.FieldStatsTotalRow:
+		return m.StatsTotalRow()
+	case processingfile.FieldStatsTotalSuccess:
+		return m.StatsTotalSuccess()
+	case processingfile.FieldErrorDisplay:
+		return m.ErrorDisplay()
+	case processingfile.FieldCreatedAt:
+		return m.CreatedAt()
+	case processingfile.FieldCreatedBy:
+		return m.CreatedBy()
+	case processingfile.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case processingfile.FieldClientID:
+		return m.OldClientID(ctx)
+	case processingfile.FieldDisplayName:
+		return m.OldDisplayName(ctx)
+	case processingfile.FieldFileURL:
+		return m.OldFileURL(ctx)
+	case processingfile.FieldResultFileURL:
+		return m.OldResultFileURL(ctx)
+	case processingfile.FieldStatus:
+		return m.OldStatus(ctx)
+	case processingfile.FieldTotalMapping:
+		return m.OldTotalMapping(ctx)
+	case processingfile.FieldStatsTotalRow:
+		return m.OldStatsTotalRow(ctx)
+	case processingfile.FieldStatsTotalSuccess:
+		return m.OldStatsTotalSuccess(ctx)
+	case processingfile.FieldErrorDisplay:
+		return m.OldErrorDisplay(ctx)
+	case processingfile.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case processingfile.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case processingfile.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProcessingFile field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case processingfile.FieldClientID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClientID(v)
+		return nil
+	case processingfile.FieldDisplayName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDisplayName(v)
+		return nil
+	case processingfile.FieldFileURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileURL(v)
+		return nil
+	case processingfile.FieldResultFileURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResultFileURL(v)
+		return nil
+	case processingfile.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case processingfile.FieldTotalMapping:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalMapping(v)
+		return nil
+	case processingfile.FieldStatsTotalRow:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatsTotalRow(v)
+		return nil
+	case processingfile.FieldStatsTotalSuccess:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatsTotalSuccess(v)
+		return nil
+	case processingfile.FieldErrorDisplay:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetErrorDisplay(v)
+		return nil
+	case processingfile.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case processingfile.FieldCreatedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case processingfile.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFile field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProcessingFileMutation) AddedFields() []string {
+	var fields []string
+	if m.addclient_id != nil {
+		fields = append(fields, processingfile.FieldClientID)
+	}
+	if m.addstatus != nil {
+		fields = append(fields, processingfile.FieldStatus)
+	}
+	if m.addtotal_mapping != nil {
+		fields = append(fields, processingfile.FieldTotalMapping)
+	}
+	if m.addstats_total_row != nil {
+		fields = append(fields, processingfile.FieldStatsTotalRow)
+	}
+	if m.addstats_total_success != nil {
+		fields = append(fields, processingfile.FieldStatsTotalSuccess)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProcessingFileMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case processingfile.FieldClientID:
+		return m.AddedClientID()
+	case processingfile.FieldStatus:
+		return m.AddedStatus()
+	case processingfile.FieldTotalMapping:
+		return m.AddedTotalMapping()
+	case processingfile.FieldStatsTotalRow:
+		return m.AddedStatsTotalRow()
+	case processingfile.FieldStatsTotalSuccess:
+		return m.AddedStatsTotalSuccess()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProcessingFileMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case processingfile.FieldClientID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddClientID(v)
+		return nil
+	case processingfile.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
+	case processingfile.FieldTotalMapping:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalMapping(v)
+		return nil
+	case processingfile.FieldStatsTotalRow:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatsTotalRow(v)
+		return nil
+	case processingfile.FieldStatsTotalSuccess:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatsTotalSuccess(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFile numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProcessingFileMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProcessingFileMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProcessingFileMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProcessingFile nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProcessingFileMutation) ResetField(name string) error {
+	switch name {
+	case processingfile.FieldClientID:
+		m.ResetClientID()
+		return nil
+	case processingfile.FieldDisplayName:
+		m.ResetDisplayName()
+		return nil
+	case processingfile.FieldFileURL:
+		m.ResetFileURL()
+		return nil
+	case processingfile.FieldResultFileURL:
+		m.ResetResultFileURL()
+		return nil
+	case processingfile.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case processingfile.FieldTotalMapping:
+		m.ResetTotalMapping()
+		return nil
+	case processingfile.FieldStatsTotalRow:
+		m.ResetStatsTotalRow()
+		return nil
+	case processingfile.FieldStatsTotalSuccess:
+		m.ResetStatsTotalSuccess()
+		return nil
+	case processingfile.FieldErrorDisplay:
+		m.ResetErrorDisplay()
+		return nil
+	case processingfile.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case processingfile.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case processingfile.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFile field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProcessingFileMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProcessingFileMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProcessingFileMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProcessingFileMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProcessingFileMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProcessingFileMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProcessingFileMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ProcessingFile unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProcessingFileMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ProcessingFile edge %s", name)
+}
+
+// ProcessingFileRowMutation represents an operation that mutates the ProcessingFileRow nodes in the graph.
+type ProcessingFileRowMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int
+	file_id           *int64
+	addfile_id        *int64
+	row_index         *int32
+	addrow_index      *int32
+	row_data_raw      *string
+	task_index        *int32
+	addtask_index     *int32
+	task_mapping      *string
+	task_depends_on   *string
+	task_request_raw  *string
+	task_response_raw *string
+	status            *int16
+	addstatus         *int16
+	error_display     *string
+	clearedFields     map[string]struct{}
+	done              bool
+	oldValue          func(context.Context) (*ProcessingFileRow, error)
+	predicates        []predicate.ProcessingFileRow
+}
+
+var _ ent.Mutation = (*ProcessingFileRowMutation)(nil)
+
+// processingfilerowOption allows management of the mutation configuration using functional options.
+type processingfilerowOption func(*ProcessingFileRowMutation)
+
+// newProcessingFileRowMutation creates new mutation for the ProcessingFileRow entity.
+func newProcessingFileRowMutation(c config, op Op, opts ...processingfilerowOption) *ProcessingFileRowMutation {
+	m := &ProcessingFileRowMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProcessingFileRow,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProcessingFileRowID sets the ID field of the mutation.
+func withProcessingFileRowID(id int) processingfilerowOption {
+	return func(m *ProcessingFileRowMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProcessingFileRow
+		)
+		m.oldValue = func(ctx context.Context) (*ProcessingFileRow, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProcessingFileRow.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProcessingFileRow sets the old ProcessingFileRow of the mutation.
+func withProcessingFileRow(node *ProcessingFileRow) processingfilerowOption {
+	return func(m *ProcessingFileRowMutation) {
+		m.oldValue = func(context.Context) (*ProcessingFileRow, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProcessingFileRowMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProcessingFileRowMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProcessingFileRowMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ProcessingFileRowMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ProcessingFileRow.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetFileID sets the "file_id" field.
+func (m *ProcessingFileRowMutation) SetFileID(i int64) {
+	m.file_id = &i
+	m.addfile_id = nil
+}
+
+// FileID returns the value of the "file_id" field in the mutation.
+func (m *ProcessingFileRowMutation) FileID() (r int64, exists bool) {
+	v := m.file_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileID returns the old "file_id" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldFileID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileID: %w", err)
+	}
+	return oldValue.FileID, nil
+}
+
+// AddFileID adds i to the "file_id" field.
+func (m *ProcessingFileRowMutation) AddFileID(i int64) {
+	if m.addfile_id != nil {
+		*m.addfile_id += i
+	} else {
+		m.addfile_id = &i
+	}
+}
+
+// AddedFileID returns the value that was added to the "file_id" field in this mutation.
+func (m *ProcessingFileRowMutation) AddedFileID() (r int64, exists bool) {
+	v := m.addfile_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFileID resets all changes to the "file_id" field.
+func (m *ProcessingFileRowMutation) ResetFileID() {
+	m.file_id = nil
+	m.addfile_id = nil
+}
+
+// SetRowIndex sets the "row_index" field.
+func (m *ProcessingFileRowMutation) SetRowIndex(i int32) {
+	m.row_index = &i
+	m.addrow_index = nil
+}
+
+// RowIndex returns the value of the "row_index" field in the mutation.
+func (m *ProcessingFileRowMutation) RowIndex() (r int32, exists bool) {
+	v := m.row_index
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRowIndex returns the old "row_index" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldRowIndex(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRowIndex is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRowIndex requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRowIndex: %w", err)
+	}
+	return oldValue.RowIndex, nil
+}
+
+// AddRowIndex adds i to the "row_index" field.
+func (m *ProcessingFileRowMutation) AddRowIndex(i int32) {
+	if m.addrow_index != nil {
+		*m.addrow_index += i
+	} else {
+		m.addrow_index = &i
+	}
+}
+
+// AddedRowIndex returns the value that was added to the "row_index" field in this mutation.
+func (m *ProcessingFileRowMutation) AddedRowIndex() (r int32, exists bool) {
+	v := m.addrow_index
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRowIndex resets all changes to the "row_index" field.
+func (m *ProcessingFileRowMutation) ResetRowIndex() {
+	m.row_index = nil
+	m.addrow_index = nil
+}
+
+// SetRowDataRaw sets the "row_data_raw" field.
+func (m *ProcessingFileRowMutation) SetRowDataRaw(s string) {
+	m.row_data_raw = &s
+}
+
+// RowDataRaw returns the value of the "row_data_raw" field in the mutation.
+func (m *ProcessingFileRowMutation) RowDataRaw() (r string, exists bool) {
+	v := m.row_data_raw
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRowDataRaw returns the old "row_data_raw" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldRowDataRaw(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRowDataRaw is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRowDataRaw requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRowDataRaw: %w", err)
+	}
+	return oldValue.RowDataRaw, nil
+}
+
+// ResetRowDataRaw resets all changes to the "row_data_raw" field.
+func (m *ProcessingFileRowMutation) ResetRowDataRaw() {
+	m.row_data_raw = nil
+}
+
+// SetTaskIndex sets the "task_index" field.
+func (m *ProcessingFileRowMutation) SetTaskIndex(i int32) {
+	m.task_index = &i
+	m.addtask_index = nil
+}
+
+// TaskIndex returns the value of the "task_index" field in the mutation.
+func (m *ProcessingFileRowMutation) TaskIndex() (r int32, exists bool) {
+	v := m.task_index
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskIndex returns the old "task_index" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldTaskIndex(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskIndex is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskIndex requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskIndex: %w", err)
+	}
+	return oldValue.TaskIndex, nil
+}
+
+// AddTaskIndex adds i to the "task_index" field.
+func (m *ProcessingFileRowMutation) AddTaskIndex(i int32) {
+	if m.addtask_index != nil {
+		*m.addtask_index += i
+	} else {
+		m.addtask_index = &i
+	}
+}
+
+// AddedTaskIndex returns the value that was added to the "task_index" field in this mutation.
+func (m *ProcessingFileRowMutation) AddedTaskIndex() (r int32, exists bool) {
+	v := m.addtask_index
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTaskIndex resets all changes to the "task_index" field.
+func (m *ProcessingFileRowMutation) ResetTaskIndex() {
+	m.task_index = nil
+	m.addtask_index = nil
+}
+
+// SetTaskMapping sets the "task_mapping" field.
+func (m *ProcessingFileRowMutation) SetTaskMapping(s string) {
+	m.task_mapping = &s
+}
+
+// TaskMapping returns the value of the "task_mapping" field in the mutation.
+func (m *ProcessingFileRowMutation) TaskMapping() (r string, exists bool) {
+	v := m.task_mapping
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskMapping returns the old "task_mapping" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldTaskMapping(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskMapping is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskMapping requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskMapping: %w", err)
+	}
+	return oldValue.TaskMapping, nil
+}
+
+// ResetTaskMapping resets all changes to the "task_mapping" field.
+func (m *ProcessingFileRowMutation) ResetTaskMapping() {
+	m.task_mapping = nil
+}
+
+// SetTaskDependsOn sets the "task_depends_on" field.
+func (m *ProcessingFileRowMutation) SetTaskDependsOn(s string) {
+	m.task_depends_on = &s
+}
+
+// TaskDependsOn returns the value of the "task_depends_on" field in the mutation.
+func (m *ProcessingFileRowMutation) TaskDependsOn() (r string, exists bool) {
+	v := m.task_depends_on
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskDependsOn returns the old "task_depends_on" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldTaskDependsOn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskDependsOn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskDependsOn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskDependsOn: %w", err)
+	}
+	return oldValue.TaskDependsOn, nil
+}
+
+// ResetTaskDependsOn resets all changes to the "task_depends_on" field.
+func (m *ProcessingFileRowMutation) ResetTaskDependsOn() {
+	m.task_depends_on = nil
+}
+
+// SetTaskRequestRaw sets the "task_request_raw" field.
+func (m *ProcessingFileRowMutation) SetTaskRequestRaw(s string) {
+	m.task_request_raw = &s
+}
+
+// TaskRequestRaw returns the value of the "task_request_raw" field in the mutation.
+func (m *ProcessingFileRowMutation) TaskRequestRaw() (r string, exists bool) {
+	v := m.task_request_raw
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskRequestRaw returns the old "task_request_raw" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldTaskRequestRaw(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskRequestRaw is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskRequestRaw requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskRequestRaw: %w", err)
+	}
+	return oldValue.TaskRequestRaw, nil
+}
+
+// ResetTaskRequestRaw resets all changes to the "task_request_raw" field.
+func (m *ProcessingFileRowMutation) ResetTaskRequestRaw() {
+	m.task_request_raw = nil
+}
+
+// SetTaskResponseRaw sets the "task_response_raw" field.
+func (m *ProcessingFileRowMutation) SetTaskResponseRaw(s string) {
+	m.task_response_raw = &s
+}
+
+// TaskResponseRaw returns the value of the "task_response_raw" field in the mutation.
+func (m *ProcessingFileRowMutation) TaskResponseRaw() (r string, exists bool) {
+	v := m.task_response_raw
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskResponseRaw returns the old "task_response_raw" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldTaskResponseRaw(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskResponseRaw is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskResponseRaw requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskResponseRaw: %w", err)
+	}
+	return oldValue.TaskResponseRaw, nil
+}
+
+// ResetTaskResponseRaw resets all changes to the "task_response_raw" field.
+func (m *ProcessingFileRowMutation) ResetTaskResponseRaw() {
+	m.task_response_raw = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *ProcessingFileRowMutation) SetStatus(i int16) {
+	m.status = &i
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *ProcessingFileRowMutation) Status() (r int16, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldStatus(ctx context.Context) (v int16, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds i to the "status" field.
+func (m *ProcessingFileRowMutation) AddStatus(i int16) {
+	if m.addstatus != nil {
+		*m.addstatus += i
+	} else {
+		m.addstatus = &i
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *ProcessingFileRowMutation) AddedStatus() (r int16, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *ProcessingFileRowMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
+// SetErrorDisplay sets the "error_display" field.
+func (m *ProcessingFileRowMutation) SetErrorDisplay(s string) {
+	m.error_display = &s
+}
+
+// ErrorDisplay returns the value of the "error_display" field in the mutation.
+func (m *ProcessingFileRowMutation) ErrorDisplay() (r string, exists bool) {
+	v := m.error_display
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldErrorDisplay returns the old "error_display" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldErrorDisplay(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldErrorDisplay is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldErrorDisplay requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldErrorDisplay: %w", err)
+	}
+	return oldValue.ErrorDisplay, nil
+}
+
+// ResetErrorDisplay resets all changes to the "error_display" field.
+func (m *ProcessingFileRowMutation) ResetErrorDisplay() {
+	m.error_display = nil
+}
+
+// Where appends a list predicates to the ProcessingFileRowMutation builder.
+func (m *ProcessingFileRowMutation) Where(ps ...predicate.ProcessingFileRow) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ProcessingFileRowMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ProcessingFileRow).
+func (m *ProcessingFileRowMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProcessingFileRowMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.file_id != nil {
+		fields = append(fields, processingfilerow.FieldFileID)
+	}
+	if m.row_index != nil {
+		fields = append(fields, processingfilerow.FieldRowIndex)
+	}
+	if m.row_data_raw != nil {
+		fields = append(fields, processingfilerow.FieldRowDataRaw)
+	}
+	if m.task_index != nil {
+		fields = append(fields, processingfilerow.FieldTaskIndex)
+	}
+	if m.task_mapping != nil {
+		fields = append(fields, processingfilerow.FieldTaskMapping)
+	}
+	if m.task_depends_on != nil {
+		fields = append(fields, processingfilerow.FieldTaskDependsOn)
+	}
+	if m.task_request_raw != nil {
+		fields = append(fields, processingfilerow.FieldTaskRequestRaw)
+	}
+	if m.task_response_raw != nil {
+		fields = append(fields, processingfilerow.FieldTaskResponseRaw)
+	}
+	if m.status != nil {
+		fields = append(fields, processingfilerow.FieldStatus)
+	}
+	if m.error_display != nil {
+		fields = append(fields, processingfilerow.FieldErrorDisplay)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProcessingFileRowMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case processingfilerow.FieldFileID:
+		return m.FileID()
+	case processingfilerow.FieldRowIndex:
+		return m.RowIndex()
+	case processingfilerow.FieldRowDataRaw:
+		return m.RowDataRaw()
+	case processingfilerow.FieldTaskIndex:
+		return m.TaskIndex()
+	case processingfilerow.FieldTaskMapping:
+		return m.TaskMapping()
+	case processingfilerow.FieldTaskDependsOn:
+		return m.TaskDependsOn()
+	case processingfilerow.FieldTaskRequestRaw:
+		return m.TaskRequestRaw()
+	case processingfilerow.FieldTaskResponseRaw:
+		return m.TaskResponseRaw()
+	case processingfilerow.FieldStatus:
+		return m.Status()
+	case processingfilerow.FieldErrorDisplay:
+		return m.ErrorDisplay()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProcessingFileRowMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case processingfilerow.FieldFileID:
+		return m.OldFileID(ctx)
+	case processingfilerow.FieldRowIndex:
+		return m.OldRowIndex(ctx)
+	case processingfilerow.FieldRowDataRaw:
+		return m.OldRowDataRaw(ctx)
+	case processingfilerow.FieldTaskIndex:
+		return m.OldTaskIndex(ctx)
+	case processingfilerow.FieldTaskMapping:
+		return m.OldTaskMapping(ctx)
+	case processingfilerow.FieldTaskDependsOn:
+		return m.OldTaskDependsOn(ctx)
+	case processingfilerow.FieldTaskRequestRaw:
+		return m.OldTaskRequestRaw(ctx)
+	case processingfilerow.FieldTaskResponseRaw:
+		return m.OldTaskResponseRaw(ctx)
+	case processingfilerow.FieldStatus:
+		return m.OldStatus(ctx)
+	case processingfilerow.FieldErrorDisplay:
+		return m.OldErrorDisplay(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProcessingFileRow field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProcessingFileRowMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case processingfilerow.FieldFileID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileID(v)
+		return nil
+	case processingfilerow.FieldRowIndex:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRowIndex(v)
+		return nil
+	case processingfilerow.FieldRowDataRaw:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRowDataRaw(v)
+		return nil
+	case processingfilerow.FieldTaskIndex:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskIndex(v)
+		return nil
+	case processingfilerow.FieldTaskMapping:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskMapping(v)
+		return nil
+	case processingfilerow.FieldTaskDependsOn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskDependsOn(v)
+		return nil
+	case processingfilerow.FieldTaskRequestRaw:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskRequestRaw(v)
+		return nil
+	case processingfilerow.FieldTaskResponseRaw:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskResponseRaw(v)
+		return nil
+	case processingfilerow.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case processingfilerow.FieldErrorDisplay:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetErrorDisplay(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFileRow field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProcessingFileRowMutation) AddedFields() []string {
+	var fields []string
+	if m.addfile_id != nil {
+		fields = append(fields, processingfilerow.FieldFileID)
+	}
+	if m.addrow_index != nil {
+		fields = append(fields, processingfilerow.FieldRowIndex)
+	}
+	if m.addtask_index != nil {
+		fields = append(fields, processingfilerow.FieldTaskIndex)
+	}
+	if m.addstatus != nil {
+		fields = append(fields, processingfilerow.FieldStatus)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProcessingFileRowMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case processingfilerow.FieldFileID:
+		return m.AddedFileID()
+	case processingfilerow.FieldRowIndex:
+		return m.AddedRowIndex()
+	case processingfilerow.FieldTaskIndex:
+		return m.AddedTaskIndex()
+	case processingfilerow.FieldStatus:
+		return m.AddedStatus()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProcessingFileRowMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case processingfilerow.FieldFileID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFileID(v)
+		return nil
+	case processingfilerow.FieldRowIndex:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRowIndex(v)
+		return nil
+	case processingfilerow.FieldTaskIndex:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTaskIndex(v)
+		return nil
+	case processingfilerow.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFileRow numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProcessingFileRowMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProcessingFileRowMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProcessingFileRowMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProcessingFileRow nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProcessingFileRowMutation) ResetField(name string) error {
+	switch name {
+	case processingfilerow.FieldFileID:
+		m.ResetFileID()
+		return nil
+	case processingfilerow.FieldRowIndex:
+		m.ResetRowIndex()
+		return nil
+	case processingfilerow.FieldRowDataRaw:
+		m.ResetRowDataRaw()
+		return nil
+	case processingfilerow.FieldTaskIndex:
+		m.ResetTaskIndex()
+		return nil
+	case processingfilerow.FieldTaskMapping:
+		m.ResetTaskMapping()
+		return nil
+	case processingfilerow.FieldTaskDependsOn:
+		m.ResetTaskDependsOn()
+		return nil
+	case processingfilerow.FieldTaskRequestRaw:
+		m.ResetTaskRequestRaw()
+		return nil
+	case processingfilerow.FieldTaskResponseRaw:
+		m.ResetTaskResponseRaw()
+		return nil
+	case processingfilerow.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case processingfilerow.FieldErrorDisplay:
+		m.ResetErrorDisplay()
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFileRow field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProcessingFileRowMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProcessingFileRowMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProcessingFileRowMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProcessingFileRowMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProcessingFileRowMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProcessingFileRowMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProcessingFileRowMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ProcessingFileRow unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProcessingFileRowMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ProcessingFileRow edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

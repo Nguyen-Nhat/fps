@@ -11,39 +11,118 @@ import (
 )
 
 func LoadExcelByUrl(fileURL string) ([][]string, error) {
+	sheetMap, err := LoadSheetsInExcelByUrl(fileURL, []string{})
+	if err != nil {
+		return nil, err
+	}
+
+	for k := range sheetMap {
+		fmt.Println("First Element with loop", sheetMap[k])
+		return sheetMap[k], nil
+	}
+
+	return nil, fmt.Errorf("sheet empty")
+}
+
+func LoadSheetsInExcelByUrl(fileURL string, sheetNameArr []string) (map[string][][]string, error) {
+	// 1. Load data to bytes
 	data, err := loadDataFromUrl(fileURL)
 	if err != nil {
 		return nil, err
 	}
 
-	// Open the ZIP file with Excelize
+	// 2. Read file with Excelize
 	excel, err := excelize.OpenReader(bytes.NewReader(data))
 	if err != nil {
 		logger.Infof("Reader", err)
 		return nil, err
 	}
 
-	// Check no sheet
-	lst := excel.GetSheetList()
-	if len(lst) == 0 {
-		logger.Infof("Empty document")
-		return nil, fmt.Errorf("file empty")
+	sheetMap, err := validateAndGetDataInSheets(excel, sheetNameArr)
+	if err != nil {
+		return nil, err
 	}
 
-	// Get First Sheet
-	sheetName := excel.GetSheetName(0)
-	fmt.Printf("First sheet is %v\n", sheetName)
-	sheetData, err := excel.GetRows(sheetName)
-
-	// Close file excel
+	// 6. Close file excel
 	defer func() {
 		if err = excel.Close(); err != nil {
 			logger.Errorf("Cannot close excel file, got: %v", err)
 		}
 	}()
 
-	// Return
-	return sheetData, nil
+	// 7. Return
+	return sheetMap, nil
+}
+
+func LoadFileByUrl(fileURL string) (*excelize.File, error) {
+	data, err := loadDataFromUrl(fileURL)
+	if err != nil {
+		return nil, err
+	}
+
+	return excelize.OpenReader(bytes.NewReader(data))
+}
+
+func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName string, dataIndexStart int,
+	columnData []string) (*bytes.Buffer, error) {
+	// 1. Load file
+	data, err := loadDataFromUrl(fileUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. Load excel
+	exFile, err := excelize.OpenReader(bytes.NewReader(data))
+	if err != nil {
+		logger.ErrorT("Failed to load file by url %v", sheetName, fileUrl)
+		return nil, err
+	}
+
+	// 3. Get column index
+	columnIndex, err := getColumnIndexInFile(exFile, sheetName, columnName)
+	if err != nil {
+		return nil, err
+	}
+
+	// 4. Update column data
+	for i, data := range columnData {
+		axis := fmt.Sprintf("%v%v", columnIndex, dataIndexStart+i)
+		_ = exFile.SetCellValue(sheetName, axis, data)
+	}
+
+	// 5. Return bytes
+	return exFile.WriteToBuffer()
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+func validateAndGetDataInSheets(excel *excelize.File, listSheetName []string) (map[string][][]string, error) {
+	// 3. Check no sheet
+	lst := excel.GetSheetList()
+	if len(lst) == 0 {
+		logger.Infof("Empty document")
+		return nil, fmt.Errorf("file empty")
+	}
+
+	// 4. Get default sheetName if listSheetName is empty
+	if len(listSheetName) == 0 { // Get First Sheet if no name
+		sheetName := excel.GetSheetName(0)
+		fmt.Printf("First sheet is %v\n", sheetName)
+		listSheetName = []string{sheetName}
+	}
+
+	// 5. Get data in listSheetName
+	sheetMap := make(map[string][][]string) // map of 2-dimensional arrays, with key is sheetName
+	for _, sheetName := range listSheetName {
+		sheetData, err := excel.GetRows(sheetName)
+		if err != nil {
+			logger.Errorf("Get data in sheet `%v` error %v", sheetName, err)
+			return nil, err
+		}
+		sheetMap[sheetName] = sheetData
+	}
+
+	return sheetMap, nil
 }
 
 func loadDataFromUrl(url string) ([]byte, error) {
@@ -57,4 +136,34 @@ func loadDataFromUrl(url string) ([]byte, error) {
 	}()
 
 	return io.ReadAll(r.Body)
+}
+
+func getColumnIndexInFile(exFile *excelize.File, sheetName string, columnName string) (string, error) {
+	// 1. Get data in Sheet
+	sheetData, err := exFile.GetRows(sheetName)
+	if err != nil || sheetData == nil {
+		logger.ErrorT("Failed to load sheet %v in file", sheetName)
+		return "", err
+	}
+
+	// 2. Get list Header then select one of them
+	headers := sheetData[0]
+	columnIndex := ""
+	for index, header := range headers {
+		if header == columnName {
+			intIndex := int('A') + index
+			columnIndex = string(rune(intIndex))
+			break
+		}
+	}
+
+	// return correct value
+	if len(columnIndex) > 0 {
+		return columnIndex, nil
+	}
+
+	// return error
+	errMsg := fmt.Sprintf("not found column %v in in sheet %v", columnName, sheetName)
+	logger.ErrorT(errMsg)
+	return "", fmt.Errorf(errMsg)
 }

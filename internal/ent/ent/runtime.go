@@ -7,6 +7,7 @@ import (
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/membertransaction"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/schema"
 )
@@ -125,6 +126,30 @@ func init() {
 	membertransactionDescUpdatedAt := membertransactionFields[11].Descriptor()
 	// membertransaction.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	membertransaction.DefaultUpdatedAt = membertransactionDescUpdatedAt.Default.(time.Time)
+	processingfileFields := schema.ProcessingFile{}.Fields()
+	_ = processingfileFields
+	// processingfileDescDisplayName is the schema descriptor for display_name field.
+	processingfileDescDisplayName := processingfileFields[1].Descriptor()
+	// processingfile.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
+	processingfile.DisplayNameValidator = processingfileDescDisplayName.Validators[0].(func(string) error)
+	// processingfileDescFileURL is the schema descriptor for file_url field.
+	processingfileDescFileURL := processingfileFields[2].Descriptor()
+	// processingfile.FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
+	processingfile.FileURLValidator = processingfileDescFileURL.Validators[0].(func(string) error)
+	// processingfileDescCreatedAt is the schema descriptor for created_at field.
+	processingfileDescCreatedAt := processingfileFields[9].Descriptor()
+	// processingfile.DefaultCreatedAt holds the default value on creation for the created_at field.
+	processingfile.DefaultCreatedAt = processingfileDescCreatedAt.Default.(func() time.Time)
+	// processingfileDescCreatedBy is the schema descriptor for created_by field.
+	processingfileDescCreatedBy := processingfileFields[10].Descriptor()
+	// processingfile.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	processingfile.CreatedByValidator = processingfileDescCreatedBy.Validators[0].(func(string) error)
+	// processingfileDescUpdatedAt is the schema descriptor for updated_at field.
+	processingfileDescUpdatedAt := processingfileFields[11].Descriptor()
+	// processingfile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	processingfile.DefaultUpdatedAt = processingfileDescUpdatedAt.Default.(func() time.Time)
+	// processingfile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	processingfile.UpdateDefaultUpdatedAt = processingfileDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

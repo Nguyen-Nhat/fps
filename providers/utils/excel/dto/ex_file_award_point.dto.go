@@ -28,13 +28,13 @@ func (f *FileAwardPointMetadata) GetHeaders() []string {
 }
 
 // ToOutput implement from Converter interface
-func (f *FileAwardPointMetadata) ToOutput(rowId int) FileAwardPointRow {
+func (f *FileAwardPointMetadata) ToOutput(rowId int) (FileAwardPointRow, error) {
 	return FileAwardPointRow{
 		RowId: rowId,
 		Phone: f.Phone.Value,
 		Point: f.Point.Value,
 		Note:  f.Note.Value,
-	}
+	}, nil
 }
 
 // GetMetadata implement from Converter interface

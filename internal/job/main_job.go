@@ -14,7 +14,7 @@ import (
 
 var once sync.Once
 
-type FileProcessingJob struct {
+type MainJob struct {
 	fapService    fileawardpoint.Service
 	memTxnService membertxn.Service
 	cfg           config.JobConfig
@@ -22,7 +22,7 @@ type FileProcessingJob struct {
 	loyalClient   loyalty.IClient
 }
 
-var awardPointJob *FileProcessingJob
+var mainJob *MainJob
 
 func InitJob(cfg config.Config) {
 	db, err := dburl.Open(cfg.Database.MySQL.DatabaseURI())
@@ -47,9 +47,9 @@ func InitJob(cfg config.Config) {
 	// loyaltyClient
 	loyaltyClient := loyalty.NewClient(cfg.ProviderConfig.Loyalty)
 
-	if awardPointJob == nil {
+	if mainJob == nil {
 		once.Do(func() {
-			awardPointJob = &FileProcessingJob{
+			mainJob = &MainJob{
 				// config
 				cfg: cfg.JobConfig,
 				// services ...
@@ -62,6 +62,6 @@ func InitJob(cfg config.Config) {
 	}
 
 	// run job method
-	awardPointJob.StartGrantPointJob()
+	mainJob.StartGrantPointJob()
 	initJobUpdateStatusFAP(cfg.JobConfig.UpdateStatusFAPJobConfig, fapService, memberTxnService, loyaltyClient, fileService)
 }

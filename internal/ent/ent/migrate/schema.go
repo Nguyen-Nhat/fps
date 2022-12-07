@@ -53,6 +53,48 @@ var (
 		Columns:    MemberTransactionColumns,
 		PrimaryKey: []*schema.Column{MemberTransactionColumns[0]},
 	}
+	// ProcessingFileColumns holds the columns for the "processing_file" table.
+	ProcessingFileColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "client_id", Type: field.TypeInt32},
+		{Name: "display_name", Type: field.TypeString},
+		{Name: "file_url", Type: field.TypeString},
+		{Name: "result_file_url", Type: field.TypeString},
+		{Name: "status", Type: field.TypeInt16},
+		{Name: "total_mapping", Type: field.TypeInt32},
+		{Name: "stats_total_row", Type: field.TypeInt32},
+		{Name: "stats_total_success", Type: field.TypeInt32},
+		{Name: "error_display", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeString},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ProcessingFileTable holds the schema information for the "processing_file" table.
+	ProcessingFileTable = &schema.Table{
+		Name:       "processing_file",
+		Columns:    ProcessingFileColumns,
+		PrimaryKey: []*schema.Column{ProcessingFileColumns[0]},
+	}
+	// ProcessingFileRowColumns holds the columns for the "processing_file_row" table.
+	ProcessingFileRowColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "file_id", Type: field.TypeInt64},
+		{Name: "row_index", Type: field.TypeInt32},
+		{Name: "row_data_raw", Type: field.TypeString},
+		{Name: "task_index", Type: field.TypeInt32},
+		{Name: "task_mapping", Type: field.TypeString},
+		{Name: "task_depends_on", Type: field.TypeString},
+		{Name: "task_request_raw", Type: field.TypeString},
+		{Name: "task_response_raw", Type: field.TypeString},
+		{Name: "status", Type: field.TypeInt16},
+		{Name: "error_display", Type: field.TypeString},
+	}
+	// ProcessingFileRowTable holds the schema information for the "processing_file_row" table.
+	ProcessingFileRowTable = &schema.Table{
+		Name:       "processing_file_row",
+		Columns:    ProcessingFileRowColumns,
+		PrimaryKey: []*schema.Column{ProcessingFileRowColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -72,6 +114,8 @@ var (
 	Tables = []*schema.Table{
 		FileAwardPointTable,
 		MemberTransactionTable,
+		ProcessingFileTable,
+		ProcessingFileRowTable,
 		UsersTable,
 	}
 )
@@ -82,5 +126,11 @@ func init() {
 	}
 	MemberTransactionTable.Annotation = &entsql.Annotation{
 		Table: "member_transaction",
+	}
+	ProcessingFileTable.Annotation = &entsql.Annotation{
+		Table: "processing_file",
+	}
+	ProcessingFileRowTable.Annotation = &entsql.Annotation{
+		Table: "processing_file_row",
 	}
 }

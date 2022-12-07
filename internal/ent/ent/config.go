@@ -26,6 +26,8 @@ type config struct {
 type hooks struct {
 	FileAwardPoint    []ent.Hook
 	MemberTransaction []ent.Hook
+	ProcessingFile    []ent.Hook
+	ProcessingFileRow []ent.Hook
 	User              []ent.Hook
 }
 

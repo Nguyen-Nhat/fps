@@ -1,5 +1,7 @@
 package fileawardpoint
 
+import "git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/pagination"
+
 // GetFileAwardPointDetailDTO ...
 type GetFileAwardPointDetailDTO struct {
 	Id int
@@ -7,17 +9,7 @@ type GetFileAwardPointDetailDTO struct {
 
 type GetListFileAwardPointDTO struct {
 	MerchantId int
-	Page       int
-	Size       int
-}
-
-func (s *GetListFileAwardPointDTO) InitDefaultValue() {
-	if s.Page == 0 {
-		s.Page = 1
-	}
-	if s.Size == 0 {
-		s.Size = 10
-	}
+	pagination.PaginatingRequest
 }
 
 type CreateFileAwardPointReqDTO struct {

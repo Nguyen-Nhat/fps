@@ -35,7 +35,7 @@ var fileAwardPointMetadata = dto.FileAwardPointMetadata{
 	},
 }
 
-func (f FileProcessingJob) StartGrantPointJob() bool {
+func (f MainJob) StartGrantPointJob() bool {
 	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
 
 	id, err := c.AddFunc(f.cfg.AwardPointJobConfig.Schedule, func() {
@@ -54,7 +54,7 @@ func (f FileProcessingJob) StartGrantPointJob() bool {
 	return false
 }
 
-func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
+func (f MainJob) grantPointForAllMemberTxn(ctx context.Context) {
 	// Get list file award point
 	fileAwardPoints, err := f.fapService.GetListFileAwardPointByStatuses(ctx, []int16{fileawardpoint.StatusInit, fileawardpoint.StatusProcessing})
 	if err != nil {
@@ -130,7 +130,7 @@ func (f FileProcessingJob) grantPointForAllMemberTxn(ctx context.Context) {
 // 3. Insert member transaction to db
 // 4. Update file status to processing or failed if errorRow == totalRow
 // 5. Upload validation result file
-func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, error) {
+func (f MainJob) handleCaseInitAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, error) {
 	// 1. Download and extract data
 	sheetData, err := excel.LoadExcelByUrl(fap.FileURL)
 	if err != nil {
@@ -231,7 +231,7 @@ func (f FileProcessingJob) handleCaseInitAwardPoint(ctx context.Context, fap *fi
 
 // handleCaseProcessingAwardPoint handle logic for file with processing status
 // 1. Read member transaction record with status init from db
-func (f FileProcessingJob) handleCaseProcessingAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, error) {
+func (f MainJob) handleCaseProcessingAwardPoint(ctx context.Context, fap *fileawardpoint.FileAwardPoint) ([]membertxn.MemberTxnDTO, error) {
 	memberTxnRecord, err := f.memTxnService.GetByFileAwardPointIDStatuses(ctx, int32(fap.ID), []int16{membertxn.StatusInit})
 	if err != nil {
 		logger.Errorf("GetByFileAwardPointIDStatuses got err: %v", err)
@@ -244,7 +244,7 @@ func (f FileProcessingJob) handleCaseProcessingAwardPoint(ctx context.Context, f
 // 1. Generate refID
 // 2. Call API grant point in loyalty core
 // 3. Update status member txn record
-func (f FileProcessingJob) grantPointForEachMemberTxn(ctx context.Context, fap *fileawardpoint.FileAwardPoint, record membertxn.MemberTxnDTO) (string, error) {
+func (f MainJob) grantPointForEachMemberTxn(ctx context.Context, fap *fileawardpoint.FileAwardPoint, record membertxn.MemberTxnDTO) (string, error) {
 	logger.Infof("Granting point for phone number %s", record.Phone)
 	// 1. Generate refID
 	refID := strings.ToUpper(utils.RandStringBytes(12))
