@@ -37,6 +37,11 @@ func (l *zapLogger) Infof(format string, args ...interface{}) {
 	l.sugaredLogger.Infof(format, args...)
 }
 
+// InfoT ... stands for Info Terminate, it same as Infof() but we use it when logic flow is going to terminate after logging
+func (l *zapLogger) InfoT(format string, args ...interface{}) {
+	l.sugaredLogger.Infof("-----> "+format+"\n", args...)
+}
+
 func (l *zapLogger) Info(msg string) {
 	l.sugaredLogger.Info(msg)
 }
@@ -51,6 +56,11 @@ func (l *zapLogger) Warn(msg string) {
 
 func (l *zapLogger) Errorf(format string, args ...interface{}) {
 	l.sugaredLogger.Errorf(format, args...)
+}
+
+// ErrorT ... stands for Error Terminate, it same as Errorf() but we use it when logic flow is going to terminate after logging
+func (l *zapLogger) ErrorT(format string, args ...interface{}) {
+	l.sugaredLogger.Errorf("-----> "+format+"\n", args...)
 }
 
 func (l *zapLogger) Error(msg string) {
@@ -71,7 +81,7 @@ func (l *zapLogger) Panicf(format string, args ...interface{}) {
 
 func (l *zapLogger) Panic(msg string) {
 	l.sugaredLogger.Panic(msg)
-	
+
 }
 
 func (l *zapLogger) WithFields(fields Fields) Logger {

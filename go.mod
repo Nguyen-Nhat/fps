@@ -9,6 +9,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/stretchr/testify v1.8.0
+	github.com/tidwall/gjson v1.14.4
 	github.com/urfave/cli/v2 v2.16.3
 	github.com/xo/dburl v0.12.4
 	github.com/xuri/excelize/v2 v2.6.1
@@ -30,6 +31,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
@@ -53,7 +56,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
-	github.com/mattn/go-sqlite3 v1.14.14 // indirect
+	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect

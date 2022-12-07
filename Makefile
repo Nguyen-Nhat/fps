@@ -4,10 +4,13 @@ test:
 run:
 	go run cmd/server/main.go start
 
+job-execute-file:
+	go run cmd/server/main.go jobs execute-file
+
 build:
 	go build -o bin/server cmd/server/main.go
 
-REPORTED_ISSUE_LINKS := "LOY-1225"
+REPORTED_ISSUE_LINKS := "LOY-1297"
 
 jira-test:
 	rm -f testrun.*

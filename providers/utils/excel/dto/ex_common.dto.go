@@ -32,7 +32,7 @@ type Constrains struct {
 type Converter[META any, OUT any] interface {
 	GetHeaders() []string
 	GetMetadata() *META
-	ToOutput(rowId int) OUT
+	ToOutput(rowId int) (OUT, error)
 }
 
 // Out put -------------------------------------------------------------------------------------------------------------
@@ -41,13 +41,6 @@ type Sheet[R any] struct {
 	DataIndexStart int
 	Data           []R
 	ErrorRows      []ErrorRow
-}
-
-type ExcelSheet[R any] struct {
-	DataIndexStart int
-	SuccessRows    []R
-	Rows           []R
-	ErrorRows      []R
 }
 
 type ErrorRow struct {

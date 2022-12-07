@@ -16,6 +16,7 @@ type (
 		AppendErrorAndUploadFileAwardPointResult([]dto.FileAwardPointResultRow, string) (string, error)
 		LoadFileAwardPoint(string) (*dto.Sheet[dto.FileAwardPointRow], error)
 		UploadFileAwardPointError([]dto.ErrorRow, string) (string, error)
+		UploadFileWithBytesData(*bytes.Buffer, string) (string, error)
 	}
 
 	// Service ...
@@ -125,6 +126,16 @@ func (s *Service) LoadFileAwardPoint(url string) (*dto.Sheet[dto.FileAwardPointR
 		dto.FileAwardPointRow,
 		dto.Converter[dto.FileAwardPointMetadata, dto.FileAwardPointRow],
 	](dataIndexStart, &fileAwardPointMT, sheetData)
+}
+
+func (s *Service) UploadFileWithBytesData(dataByteBuffer *bytes.Buffer, resultFileName string) (string, error) {
+	resultFileUrl, err := s.UploadFile(dataByteBuffer, resultFileName)
+	if err != nil {
+		logger.Errorf("Cannot upload file %v, got: %v", resultFileName, err)
+		return "", err
+	}
+
+	return resultFileUrl, nil
 }
 
 // Private method ------------------------------------------------------------------------------------------------------
