@@ -24,7 +24,7 @@ func toProcessHistoryFileFromEntity(fap *fileprocessing.ProcessingFile) Processi
 		FileDisplayName:   fap.DisplayName,
 		FileUrl:           fap.FileURL,
 		ResultFileUrl:     fap.ResultFileURL,
-		Status:            fap.Status,
+		Status:            mapStatus(fap.Status),
 		StatsTotalRow:     fap.StatsTotalRow,
 		StatsTotalSuccess: fap.StatsTotalSuccess,
 		CreatedAt:         fap.CreatedAt.UnixMilli(),

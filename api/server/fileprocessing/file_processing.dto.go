@@ -89,7 +89,7 @@ type ProcessingHistoryFile struct {
 	FileDisplayName   string `json:"fileDisplayName"`
 	FileUrl           string `json:"fileUrl"`
 	ResultFileUrl     string `json:"resultFileUrl"`
-	Status            int16  `json:"status"`
+	Status            string `json:"status"`
 	StatsTotalRow     int32  `json:"statsTotalRow"`
 	StatsTotalSuccess int32  `json:"statsTotalSuccess"`
 	CreatedAt         int64  `json:"createdAt"`
