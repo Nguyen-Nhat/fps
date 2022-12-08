@@ -3,11 +3,8 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"github.com/go-chi/render"
 	"net/http"
 )
 
@@ -21,7 +18,8 @@ func UserMW(next http.Handler) http.Handler {
 		logger.Infof("USER = %v", userRaw)
 		if len(userRaw) == 0 {
 			msg := fmt.Sprintf("Missing %v", userHeader)
-			_ = render.Render(w, r, error2.ErrRenderInvalidRequest(errors.New(msg)))
+			logger.Warn(msg)
+			//_ = render.Render(w, r, error2.ErrRenderInvalidRequest(errors.New(msg)))
 			return
 		}
 
