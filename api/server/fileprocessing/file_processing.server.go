@@ -3,6 +3,7 @@ package fileprocessing
 import (
 	"context"
 	"database/sql"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"net/http"
 
 	"fmt"
@@ -41,6 +42,8 @@ func (s *Server) GetFileProcessHistoryAPI() func(http.ResponseWriter, *http.Requ
 			return
 		}
 
+		logger.Infof("===== Response Get List Upload file: \n%v\n", utils.JsonString(resp))
+
 		render.Render(w, r, resp)
 	}
 }
@@ -62,6 +65,7 @@ func validateParameterAndSetDataValue(r *http.Request) (*fileprocessing.GetFileP
 	data.InitDefaultValue()
 
 	values := r.URL.Query()
+	logger.Infof("===== Request Get List Upload file: \n%+v\n", values)
 	for k, v := range values {
 		if len(v) > 1 {
 			return nil, fmt.Errorf("parameter cannot have multiple value")
@@ -119,6 +123,8 @@ func (s *Server) CreateProcessByFileAPI() func(http.ResponseWriter, *http.Reques
 			render.Render(w, r, commonError.ToErrorResponse(err))
 			return
 		}
+
+		logger.Infof("===== Response CreateProcessByFileAPI: \n%v\n", utils.JsonString(res))
 
 		// 3. Render response
 		render.Render(w, r, res)

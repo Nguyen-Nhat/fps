@@ -255,3 +255,13 @@ func urlDecoded(filePath string) string {
 	}
 	return result
 }
+
+func JsonString[T any](data T) string {
+	out, err := json.Marshal(data)
+	if err != nil {
+		logger.Errorf("Cannot marshal struct to string, err=%v", err)
+		return fmt.Sprintf("error: %v", err)
+	}
+
+	return string(out)
+}

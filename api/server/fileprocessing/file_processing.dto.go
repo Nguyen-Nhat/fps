@@ -3,6 +3,8 @@ package fileprocessing
 import (
 	"errors"
 	"fmt"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"net/http"
 	"time"
 )
@@ -20,6 +22,8 @@ type CreateFileProcessingRequest struct {
 }
 
 func (c *CreateFileProcessingRequest) Bind(r *http.Request) error {
+	logger.Infof("===== Request CreateFileProcessingRequest: \n%v\n", utils.JsonString(r))
+
 	// validate Id missing
 	if c.ClientID == 0 {
 		return ErrClientIDRequired
@@ -76,7 +80,7 @@ var (
 )
 
 type GetFileProcessHistoryData struct {
-	ProcessingFiles []ProcessingHistoryFile `json:"processingFile"`
+	ProcessingFiles []ProcessingHistoryFile `json:"processingFiles"`
 	Pagination      response.Pagination     `json:"pagination"`
 }
 
