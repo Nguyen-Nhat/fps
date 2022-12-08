@@ -98,9 +98,14 @@ func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, []string, error) {
 
 	logger.Infof("----- Statistic file %v: total=%v, totalSuccess=%v, totalFailed=%v", fileId, total, totalSuccess, totalFailed)
 
-	isSuccess := totalSuccess != 0 && total == totalSuccess+totalFailed
+	isFinished := isFinished(totalSuccess, totalFailed, total)
 
-	return isSuccess, totalSuccess, totalFailed, errorDisplays, nil
+	return isFinished, totalSuccess, totalFailed, errorDisplays, nil
+}
+
+func isFinished(totalSuccess int, totalFailed int, total int) bool {
+	isSuccess := !(totalSuccess == 0 && totalFailed == 0) && total == totalSuccess+totalFailed
+	return isSuccess
 }
 
 func NewService(repo Repo) *ServiceImpl {
