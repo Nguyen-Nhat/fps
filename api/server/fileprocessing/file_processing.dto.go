@@ -6,7 +6,6 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"net/http"
-	"time"
 )
 
 import "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
@@ -85,16 +84,16 @@ type GetFileProcessHistoryData struct {
 }
 
 type ProcessingHistoryFile struct {
-	ClientId          int32     `json:"clientId"`
-	ProcessingFileId  int       `json:"processingFileId"`
-	FileDisplayName   string    `json:"fileDisplayName"`
-	FileUrl           string    `json:"fileUrl"`
-	ResultFileUrl     string    `json:"resultFileUrl"`
-	Status            int16     `json:"status"`
-	StatsTotalRow     int32     `json:"statsTotalRow"`
-	StatsTotalSuccess int32     `json:"statsTotalSuccess"`
-	CreatedAt         time.Time `json:"createdAt"`
-	CreatedBy         string    `json:"createdBy"`
+	ClientId          int32  `json:"clientId"`
+	ProcessingFileId  int    `json:"processingFileId"`
+	FileDisplayName   string `json:"fileDisplayName"`
+	FileUrl           string `json:"fileUrl"`
+	ResultFileUrl     string `json:"resultFileUrl"`
+	Status            int16  `json:"status"`
+	StatsTotalRow     int32  `json:"statsTotalRow"`
+	StatsTotalSuccess int32  `json:"statsTotalSuccess"`
+	CreatedAt         int64  `json:"createdAt"`
+	CreatedBy         string `json:"createdBy"`
 }
 
 const (
