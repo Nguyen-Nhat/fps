@@ -81,7 +81,7 @@ type GetFileProcessHistoryData struct {
 }
 
 type ProcessingHistoryFile struct {
-	ClientId          int32     `json:"merchantId"`
+	ClientId          int32     `json:"clientId"`
 	ProcessingFileId  int       `json:"processingFileId"`
 	FileDisplayName   string    `json:"fileDisplayName"`
 	FileUrl           string    `json:"fileUrl"`
