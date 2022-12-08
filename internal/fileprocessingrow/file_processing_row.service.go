@@ -98,7 +98,7 @@ func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, []string, error) {
 
 	logger.Infof("----- Statistic file %v: total=%v, totalSuccess=%v, totalFailed=%v", fileId, total, totalSuccess, totalFailed)
 
-	isSuccess := total == totalSuccess+totalFailed
+	isSuccess := totalSuccess != 0 && total == totalSuccess+totalFailed
 
 	return isSuccess, totalSuccess, totalFailed, errorDisplays, nil
 }
