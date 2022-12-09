@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
+	"time"
 
 	entsql "entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
@@ -23,6 +24,7 @@ type (
 		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay) (*ProcessingFile, error)
 		UpdateStatusAndStatsAndResultFileUrl(context.Context, int, int16, int, string) (*ProcessingFile, error)
 		UpdateByExtractedData(ctx context.Context, id int, status int16, totalMapping int, statsTotalRow int) (*ProcessingFile, error)
+		PingDB(context.Context, int)
 	}
 
 	repoImpl struct {
@@ -117,6 +119,20 @@ func (r *repoImpl) UpdateByExtractedData(ctx context.Context, id int, status int
 	return &ProcessingFile{
 		ProcessingFile: *pf,
 	}, nil
+}
+
+func (r *repoImpl) PingDB(ctx context.Context, id int) {
+	before := time.Now()
+	_, _ = r.client.ProcessingFile.Query().Where(processingfile.ID(id)).Only(ctx)
+	after := time.Now() // will remove
+	sub := after.Sub(before)
+	subStr := ""
+	if sub > 10*time.Second {
+		subStr = "\t------> too long (>10s)"
+	} else if sub > 5*time.Second {
+		subStr = "\t---> too long (>5s)"
+	}
+	logger.Debugf("---------------> Ping DB ...... execute_time = %v%s", sub, subStr)
 }
 
 // private function ---------------------------------------------------------------------------------------------

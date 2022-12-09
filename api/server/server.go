@@ -1,9 +1,12 @@
 package server
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
-	fileprocessing "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
+	fileprocessing2 "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
+	"github.com/robfig/cron/v3"
 	"net/http"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
@@ -40,6 +43,7 @@ func NewServer(cfg config.Config, opts ...Option) (*Server, error) {
 		// config db connection
 		db.SetMaxOpenConns(25)
 		db.SetMaxIdleConns(25)
+		initJobPingDB(db)
 
 		if err != nil {
 			logger.Errorf("Fail to open db, got: %v", err)
@@ -95,4 +99,21 @@ func WithDB(db *sql.DB) Option {
 	return func(s *Server) {
 		s.db = db
 	}
+}
+
+// initJobAccessDB ... job access DB each 1 minutes, we use this job for checking DB avoid loose connection DB
+// ... will remove
+func initJobPingDB(db *sql.DB) {
+	fpRepo := fileprocessing2.NewRepo(db)
+
+	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
+
+	_, err := c.AddFunc("* * * * *", func() {
+		fpRepo.PingDB(context.Background(), 1)
+	})
+	if err != nil {
+		logger.Errorf("Init Job failed: %v", err)
+	}
+
+	c.Start()
 }
