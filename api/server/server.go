@@ -43,7 +43,11 @@ func NewServer(cfg config.Config, opts ...Option) (*Server, error) {
 		// config db connection
 		db.SetMaxOpenConns(25)
 		db.SetMaxIdleConns(25)
-		initJobPingDB(db)
+
+		debugDBConfig := cfg.Database.Debug
+		if debugDBConfig.Enable {
+			initJobPingDB(db, debugDBConfig)
+		}
 
 		if err != nil {
 			logger.Errorf("Fail to open db, got: %v", err)
@@ -103,17 +107,19 @@ func WithDB(db *sql.DB) Option {
 
 // initJobAccessDB ... job access DB each 1 minutes, we use this job for checking DB avoid loose connection DB
 // ... will remove
-func initJobPingDB(db *sql.DB) {
+func initJobPingDB(db *sql.DB, cfg config.DebugDBConfig) {
 	fpRepo := fileprocessing2.NewRepo(db)
 
 	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
 
-	_, err := c.AddFunc("* * * * *", func() {
+	jobName := "Job ping DB for debugging"
+	id, err := c.AddFunc(cfg.PingCron, func() {
 		fpRepo.PingDB(context.Background(), 1)
 	})
 	if err != nil {
-		logger.Errorf("Init Job failed: %v", err)
+		logger.Errorf("Init Job %v failed: %v", jobName, err)
 	}
+	logger.Infof("Init %v Success with cron=\"%v\", ID=%v", jobName, cfg.PingCron, id)
 
 	c.Start()
 }

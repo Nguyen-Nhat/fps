@@ -6,6 +6,7 @@ import (
 
 type DatabaseConfig struct {
 	MySQL MySqlDBConfig `mapstructure:"mysql"`
+	Debug DebugDBConfig `mapstructure:"debug"`
 }
 
 type MySqlDBConfig struct {
@@ -15,6 +16,11 @@ type MySqlDBConfig struct {
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
 	Options  string `mapstructure:"options"`
+}
+
+type DebugDBConfig struct {
+	Enable   bool   `mapstructure:"enable"`
+	PingCron string `mapstructure:"ping_cron"`
 }
 
 func (c *MySqlDBConfig) DatabaseURI() string {
