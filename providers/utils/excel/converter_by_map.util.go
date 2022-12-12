@@ -68,7 +68,6 @@ func readDataReflectMapping(metadata []dto.CellData[string], headerMap map[strin
 }
 
 func mappingHeader(columnsData []dto.CellData[string]) (map[string]int, error) {
-	totalHeaderInFile := len(columnsData)
 	var headerMapping = make(map[string]int)
 	for _, data := range columnsData {
 		columnName := data.ColumnName
@@ -78,9 +77,6 @@ func mappingHeader(columnsData []dto.CellData[string]) (map[string]int, error) {
 		}
 
 		columnIndex := int(strings.ToUpper(columnName)[0]) - int('A') // get first character then
-		if totalHeaderInFile < columnIndex+1 {
-			return nil, fmt.Errorf("not enough column in file")
-		}
 		headerMapping[columnName] = columnIndex
 
 	}
