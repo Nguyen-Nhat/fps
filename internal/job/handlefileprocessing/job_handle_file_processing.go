@@ -122,11 +122,10 @@ func (j *jobHandleProcessingFileImpl) handleFileInInitStatus(ctx context.Context
 
 	// ---> update status to failed if empty or error
 	if err != nil || len(sheetMappingResult.ErrorRows) > 0 {
-		var errMsg string
 		if err != nil {
 			logger.ErrorT("Cannot convert sheet %v from file url %v, got error %v", sheetMappingName, file.FileURL, err)
-			errMsg = err.Error()
 		} else {
+			var errMsg string
 			for _, errorRow := range sheetMappingResult.ErrorRows {
 				errMsg += fmt.Sprintf("row=%v, message=%v; ", errorRow.RowId, errorRow.Reason)
 			}

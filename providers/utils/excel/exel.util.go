@@ -81,7 +81,8 @@ func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName strin
 	// 3. Get column index
 	columnIndex, err := getColumnIndexInFile(exFile, sheetName, columnName)
 	if err != nil {
-		return nil, err
+		columnIndex = "A"
+		logger.Warnf("----> Force column %v is in `%v` column", columnName, columnIndex)
 	}
 
 	// 4. Update column data
