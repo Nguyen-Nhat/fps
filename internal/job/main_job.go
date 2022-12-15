@@ -1,6 +1,9 @@
 package job
 
 import (
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/handlefileprocessing"
 	"sync"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
@@ -47,6 +50,15 @@ func InitJob(cfg config.Config) {
 	// loyaltyClient
 	loyaltyClient := loyalty.NewClient(cfg.ProviderConfig.Loyalty)
 
+	// New job
+	// file processing
+	fpRepo := fileprocessing.NewRepo(db)
+	fpService := fileprocessing.NewService(fpRepo)
+
+	// file processing row
+	fprRepo := fileprocessingrow.NewRepo(db)
+	fprService := fileprocessingrow.NewService(fprRepo)
+
 	if mainJob == nil {
 		once.Do(func() {
 			mainJob = &MainJob{
@@ -64,4 +76,7 @@ func InitJob(cfg config.Config) {
 	// run job method
 	mainJob.StartGrantPointJob()
 	initJobUpdateStatusFAP(cfg.JobConfig.UpdateStatusFAPJobConfig, fapService, memberTxnService, loyaltyClient, fileService)
+
+	// New job method
+	handlefileprocessing.InitJobHandleProcessingFileAll(cfg.JobConfig.FileProcessingConfig, fpService, fprService, fileService)
 }

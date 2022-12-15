@@ -26,3 +26,6 @@ coverage:
 
 migrate:
 	go run cmd/migrate/main.go start
+
+jobs:
+	go run cmd/server/main.go jobs

@@ -4,6 +4,8 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/configs"
@@ -25,9 +27,6 @@ func main() {
 		Name:  "Loyalty File Processing Server",
 		Usage: "...",
 		Action: func(*cli.Context) error {
-			// Init Job
-			job.InitJob(cfg)
-
 			srv, err := server.NewServer(cfg)
 			if err != nil {
 				return err
@@ -36,17 +35,17 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			{
-				Name:  job.Name,
-				Usage: "File Processing Jobs",
-				Subcommands: []*cli.Command{
-					{
-						Name:  job.ExecuteFile,
-						Usage: "File Processing Jobs - Execute File",
-						Action: func(ctx *cli.Context) error {
-							job.InitJobExecuteFileThenRun(cfg)
-							return nil
-						},
-					},
+				Name:  "jobs",
+				Usage: "Loyalty File Processing Jobs",
+				Action: func(*cli.Context) error {
+					// Init Job
+					job.InitJob(cfg)
+
+					sig := make(chan os.Signal, 1)
+					signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+					endSignal := <-sig
+					logger.Infof("Job end due to signal: %s", endSignal.String())
+					return nil
 				},
 			},
 		},
