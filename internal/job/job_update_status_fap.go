@@ -67,7 +67,7 @@ func initJobUpdateStatusFAP(
 }
 
 func (j *updateStatusFAPJobImpl) InitCron() {
-	c := cron.New()
+	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
 	jobName := "Job Check Status of File Award Point"
 
 	// 2. Declare Job schedule
