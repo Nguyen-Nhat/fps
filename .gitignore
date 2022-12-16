@@ -17,3 +17,4 @@ tmp/
 /testrun.tmp.json
 /push-testcase.sh
 /loyalty-file-processing-coverage.cov
+/loyalty-file-processing-coverage.cov.tmp
