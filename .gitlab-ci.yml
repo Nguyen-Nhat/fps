@@ -5,3 +5,26 @@ include:
 
 variables:
   IMAGE_REPOSITORY: asia.gcr.io/teko-registry/loyalty-system/loyalty-file-processing
+
+# Unitest cases
+test:unitest:
+  stage: pretest
+  image: golang:1.19-buster
+  services:
+    - mysql:8.0
+  variables:
+    MYSQL_HOST: mysql
+    MYSQL_DATABASE: loyalty_file_process_service_test
+    MYSQL_ROOT_PASSWORD: 1
+    MYSQL_PORT: 3306
+    MYSQL_USERNAME: root
+    MYSQL_PASSWORD: 1
+    ENV: test
+    GOPRIVATE: git.teko.vn,go.tekoapis.com,rpc.tekoapis.com
+  before_script:
+    - go mod download
+    - cp config.tmp.yml config.yml
+  script:
+    - go test ./... -coverprofile=loyalty-file-processing-coverage.cov.tmp -coverpkg=./... -covermode count
+    - cat loyalty-file-processing-coverage.cov.tmp | grep -v -e"internal/ent" -e"/cmd" -e "/configs" > loyalty-file-processing-coverage.cov
+    - go tool cover -func=loyalty-file-processing-coverage.cov
