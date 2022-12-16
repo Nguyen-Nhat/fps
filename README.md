@@ -2,6 +2,16 @@
 
 File Processing Service for Loyalty.
 
+Guide line:
+1. Clone repository
+2. Duplicate file `config.tmp.yml` with new name is `config.yml`
+3. Run
+```
+go mod tidy
+```
+
+<details>
+
 ## Libraries
 - HTTP Server: [Chi Router](https://github.com/go-chi/chi)
 - ORM:[Entgo](https://entgo.io/)
@@ -170,3 +180,5 @@ Don't confuse the project level `/src` directory with the `/src` directory Go us
 ## Notes
 
 A more opinionated project template with sample/reusable configs, scripts and code is a WIP.
+
+</details>
