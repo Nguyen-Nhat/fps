@@ -27,9 +27,7 @@ type (
 )
 
 const (
-	errFileError         fileprocessing.ErrorDisplay = "Lỗi đọc file. File thiếu sheet hoặc do lỗi hệ thống."
-	errMappingSheetError fileprocessing.ErrorDisplay = "Lỗi đọc sheet `Mapping`. Mapping thiếu cột hoặc sai format."
-	errDataSheetNotMatch fileprocessing.ErrorDisplay = "Lỗi Mapping và Data không khớp nhau."
+	errFileError fileprocessing.ErrorDisplay = "File tải lên sai template"
 )
 
 var _ JobHandleProcessingFile = &jobHandleProcessingFileImpl{}
@@ -131,7 +129,7 @@ func (j *jobHandleProcessingFileImpl) handleFileInInitStatus(ctx context.Context
 			}
 			logger.ErrorT("Sheet %v from file url %v has error data, got error %v", sheetMappingName, file.FileURL, errMsg)
 		}
-		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errMappingSheetError)
+		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errFileError)
 		if updateStatusErr != nil {
 			logger.ErrorT("Cannot update %v to fail, got error %v", fileprocessing.Name(), err)
 			return file // return original file
@@ -147,7 +145,7 @@ func (j *jobHandleProcessingFileImpl) handleFileInInitStatus(ctx context.Context
 	sheetDataResult, err := excel.ConvertToStructByMap(dataIndexStartInDataSheet, metadata, sheetDataMap[sheetImportDataName])
 	if err != nil {
 		logger.ErrorT("Cannot convert sheet %v from file url %v, got error %v", sheetImportDataName, file.FileURL, err)
-		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errDataSheetNotMatch)
+		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errFileError)
 		if updateStatusErr != nil {
 			logger.ErrorT("Cannot update %v to fail, got error %v", fileprocessing.Name(), err)
 			return file // return original file
@@ -323,7 +321,7 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 		// 2. Create Result File if has error row
 		if totalFailed > 0 {
 			// 2.1 Inject Error Display to file
-			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, errorDisplays)
+			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, errorDisplays, true)
 			if err != nil {
 				logger.ErrorT("Update file with Error Display failed, err=%v", err)
 				return
