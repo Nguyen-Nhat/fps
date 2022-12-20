@@ -64,7 +64,7 @@ func LoadFileByUrl(fileURL string) (*excelize.File, error) {
 }
 
 func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName string, dataIndexStart int,
-	columnData []string) (*bytes.Buffer, error) {
+	columnData []string, allowRemoveRemainingSheet bool) (*bytes.Buffer, error) {
 	// 1. Load file
 	data, err := loadDataFromUrl(fileUrl)
 	if err != nil {
@@ -91,7 +91,17 @@ func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName strin
 		_ = exFile.SetCellValue(sheetName, axis, data)
 	}
 
-	// 5. Return bytes
+	// 5. Remove remaining sheet
+	if allowRemoveRemainingSheet {
+		sheets := exFile.GetSheetList()
+		for _, sheet := range sheets {
+			if sheet != sheetName {
+				exFile.DeleteSheet(sheet)
+			}
+		}
+	}
+
+	// 6. Return bytes
 	return exFile.WriteToBuffer()
 }
 
