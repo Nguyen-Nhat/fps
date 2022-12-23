@@ -328,7 +328,7 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 			}
 
 			// 2.2. Gen result file name then Upload to file service
-			fileName := utils.ExtractFileName(file.DisplayName)
+			fileName := utils.ExtractFileName(file.FileURL)
 			resultFileName := fileName.FullNameWithSuffix("_result")
 			res, err := j.fileService.UploadFileWithBytesData(fileDataBytes, resultFileName)
 			if err != nil {
