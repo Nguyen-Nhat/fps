@@ -9,20 +9,29 @@ import (
 )
 
 func ConvertToStructByMap(dataIndexStart int, metadata []dto.CellData[string], data [][]string) (*dto.Sheet[map[string]string], error) {
-	// Check empty
+	// 1. Check empty
 	totalRows := len(data)
 	logger.Infof("Total rows = %v\n", totalRows)
-	if totalRows < dataIndexStart {
+	if totalRows < dataIndexStart || dataIndexStart < 2 {
 		return nil, ErrEmptySheet
 	}
 
-	// Mapping Header with Column Index in file
+	// 2. Mapping Header with Column Index in file
 	headerMap, err := mappingHeader(metadata)
 	if err != nil {
 		return nil, err
 	}
 
-	// Explore each row data
+	// 3. Validate header -> if list column not contain header then return error
+	headerRow := data[0]
+	for columnName, columnIndex := range headerMap {
+		if columnIndex >= len(headerRow) || len(headerRow[columnIndex]) <= 0 {
+			logger.Errorf("column %v not contains header!!!", columnName)
+			return nil, fmt.Errorf("column %v not contains header", columnName)
+		}
+	}
+
+	// 4. Explore each row data
 	var dataRows []map[string]string
 	var errorRows []dto.ErrorRow
 	for rowId := dataIndexStart - 1; rowId < len(data); rowId++ { // each row
@@ -38,6 +47,7 @@ func ConvertToStructByMap(dataIndexStart int, metadata []dto.CellData[string], d
 		}
 	}
 
+	// 5. return
 	return &dto.Sheet[map[string]string]{
 		DataIndexStart: dataIndexStart,
 		Data:           dataRows,
@@ -67,6 +77,7 @@ func readDataReflectMapping(metadata []dto.CellData[string], headerMap map[strin
 	return nil, true
 }
 
+// mappingHeader ... return ( map[column]columnInd ). For example: map[A]=1, map[B]=2, ...
 func mappingHeader(columnsData []dto.CellData[string]) (map[string]int, error) {
 	var headerMapping = make(map[string]int)
 	for _, data := range columnsData {

@@ -47,9 +47,10 @@ func (j *JobHandleProcessingFileAll) initCron() {
 	jobName := "Job Handle ProcessingFile"
 
 	id, err := c.AddFunc(j.cfg.Schedule, func() {
+		logger.Infof("\n")
 		logger.Infof("========== Running %v: Start  ...", jobName)
 		j.start()
-		logger.Infof("========== Running %v: Finish ...", jobName)
+		logger.Infof("========== Running %v: Finish ...\n", jobName)
 
 	})
 	if err != nil {
