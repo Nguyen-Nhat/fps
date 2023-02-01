@@ -2,7 +2,6 @@ package taskprovider
 
 import (
 	"fmt"
-	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
@@ -22,7 +21,6 @@ type (
 
 	// Client ....
 	Client struct {
-		conf   config.LoyaltyConfig
 		client *http.Client
 	}
 )

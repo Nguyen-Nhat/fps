@@ -24,8 +24,6 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	FileAwardPoint    []ent.Hook
-	MemberTransaction []ent.Hook
 	ProcessingFile    []ent.Hook
 	ProcessingFileRow []ent.Hook
 	User              []ent.Hook

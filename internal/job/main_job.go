@@ -7,22 +7,16 @@ import (
 	"sync"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/membertxn"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/loyalty"
 	"github.com/xo/dburl"
 )
 
 var once sync.Once
 
 type MainJob struct {
-	fapService    fileawardpoint.Service
-	memTxnService membertxn.Service
-	cfg           config.JobConfig
-	fileService   fileservice.IService
-	loyalClient   loyalty.IClient
+	cfg         config.JobConfig
+	fileService fileservice.IService
 }
 
 var mainJob *MainJob
@@ -35,20 +29,9 @@ func InitJob(cfg config.Config) {
 	}
 	logger.Infof("Connected to db %v", cfg.Database.MySQL.DBName)
 
-	// file award point
-	fapRepo := fileawardpoint.NewRepo(db)
-	fapService := fileawardpoint.NewService(fapRepo)
-
-	// member transaction
-	mtRepo := membertxn.NewRepo(db)
-	memberTxnService := membertxn.NewService(mtRepo)
-
 	// file service
 	fileServiceClient := fileservice.NewClient(cfg.ProviderConfig.FileService)
 	fileService := fileservice.NewService(fileServiceClient)
-
-	// loyaltyClient
-	loyaltyClient := loyalty.NewClient(cfg.ProviderConfig.Loyalty)
 
 	// New job
 	// file processing
@@ -65,17 +48,10 @@ func InitJob(cfg config.Config) {
 				// config
 				cfg: cfg.JobConfig,
 				// services ...
-				fapService:    fapService,
-				memTxnService: memberTxnService,
-				fileService:   fileService,
-				loyalClient:   loyaltyClient,
+				fileService: fileService,
 			}
 		})
 	}
-
-	// run job method
-	mainJob.StartGrantPointJob()
-	initJobUpdateStatusFAP(cfg.JobConfig.UpdateStatusFAPJobConfig, fapService, memberTxnService, loyaltyClient, fileService)
 
 	// New job method
 	handlefileprocessing.InitJobHandleProcessingFileAll(cfg.JobConfig.FileProcessingConfig, fpService, fprService, fileService)
