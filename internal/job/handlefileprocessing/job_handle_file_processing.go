@@ -321,14 +321,14 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 		// 2. Create Result File if has error row
 		if totalFailed > 0 {
 			// 2.1 Inject Error Display to file
-			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, errorDisplays, true)
+			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, errorDisplays, false)
 			if err != nil {
 				logger.ErrorT("Update file with Error Display failed, err=%v", err)
 				return
 			}
 
 			// 2.2. Gen result file name then Upload to file service
-			fileName := utils.ExtractFileName(file.DisplayName)
+			fileName := utils.ExtractFileName(file.FileURL)
 			resultFileName := fileName.FullNameWithSuffix("_result")
 			res, err := j.fileService.UploadFileWithBytesData(fileDataBytes, resultFileName)
 			if err != nil {
