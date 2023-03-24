@@ -18,7 +18,7 @@ test:unitest:
     MYSQL_ROOT_PASSWORD: 1
     MYSQL_PORT: 3306
     MYSQL_USERNAME: root
-    MYSQL_PASSWORD: 1
+    MYSQL_PASSWORD: 1 # pragma: whitelist secret
     ENV: test
     GOPRIVATE: git.teko.vn,go.tekoapis.com,rpc.tekoapis.com
   before_script:

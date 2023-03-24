@@ -3,6 +3,7 @@ package fileprocessingrow
 import (
 	"context"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
 type (
@@ -22,19 +23,20 @@ type (
 
 var _ Service = &ServiceImpl{}
 
+func NewService(repo Repo) *ServiceImpl {
+	return &ServiceImpl{
+		repo: repo,
+	}
+}
+
 // SaveExtractedDataFromFile ...
 func (s *ServiceImpl) SaveExtractedDataFromFile(ctx context.Context, fileId int, request []CreateProcessingFileRowJob) error {
 	// 1. Clean all old data which relate to fileId
 	_ = s.repo.DeleteByFileId(ctx, int64(fileId))
 
-	// 2. Save data
-	pfrArr := toProcessingFileRowArr(request)
-	if _, err := s.repo.SaveAll(ctx, pfrArr, false); err != nil {
-		logger.Errorf("error when save all %v, got err %v", Name(), err)
-		return err
-	}
-	logger.Infof("Saved %v extracted data from fileId=%v", len(request), fileId)
-	return nil
+	// 2. Save by batch
+	saveListFileFunc := func(subReq []CreateProcessingFileRowJob) error { return saveListFile(ctx, subReq, s) }
+	return utils.BatchExecuting(500, request, saveListFileFunc)
 }
 
 func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileId int, status int16) (map[int32][]*ProcessingFileRow, error) {
@@ -103,13 +105,18 @@ func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, []string, error) {
 	return isFinished, totalSuccess, totalFailed, errorDisplays, nil
 }
 
+// private method ------------------------------------------------------------------------------------------------------
+
 func isFinished(totalSuccess int, totalFailed int, total int) bool {
 	isSuccess := !(totalSuccess == 0 && totalFailed == 0) && total == totalSuccess+totalFailed
 	return isSuccess
 }
 
-func NewService(repo Repo) *ServiceImpl {
-	return &ServiceImpl{
-		repo: repo,
+func saveListFile(ctx context.Context, subRequest []CreateProcessingFileRowJob, s *ServiceImpl) error {
+	pfrArr := toProcessingFileRowArr(subRequest)
+	if _, err := s.repo.SaveAll(ctx, pfrArr, false); err != nil {
+		logger.Errorf("error when save all %v, got err %v", Name(), err)
+		return err
 	}
+	return nil
 }
