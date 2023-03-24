@@ -265,3 +265,24 @@ func JsonString[T any](data T) string {
 
 	return string(out)
 }
+
+func BatchExecuting[T any](batchSize int, listData []T, execute func([]T) error) error {
+	for head := 0; head < len(listData); head += batchSize {
+		tail := head + batchSize
+		if tail > len(listData) {
+			tail = len(listData)
+		}
+
+		batch := listData[head:tail]
+
+		err := execute(batch)
+
+		if err != nil {
+			return err
+		}
+
+		logger.Infof("Execute %v item (%v -> %v)\n", len(batch), head, tail)
+	}
+
+	return nil
+}
