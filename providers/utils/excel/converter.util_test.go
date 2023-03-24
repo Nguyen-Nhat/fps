@@ -7,22 +7,31 @@ import (
 )
 
 func Test_readDataReflect(t *testing.T) {
-	metadata := dto.FileAwardPointMetadata{
-		Phone: dto.CellData[string]{
-			ColumnName: "Phone number (*)",
+	metadata := dto.SheetMappingMetadata{
+		TaskId: dto.CellData[int]{
+			ColumnName: "task_id",
 			Constrains: dto.Constrains{IsRequired: true},
 		},
-		Point: dto.CellData[int]{
-			ColumnName: "Points (*)",
+		Endpoint: dto.CellData[string]{
+			ColumnName: "endpoint",
 			Constrains: dto.Constrains{IsRequired: true},
 		},
-		Note: dto.CellData[string]{
-			ColumnName: "Note",
+		Header: dto.CellData[string]{
+			ColumnName: "header",
 			Constrains: dto.Constrains{IsRequired: false},
 		},
+		Request: dto.CellData[string]{
+			ColumnName: "request",
+			Constrains: dto.Constrains{IsRequired: true},
+		},
+		Response: dto.CellData[string]{
+			ColumnName: "response",
+			Constrains: dto.Constrains{IsRequired: true},
+		},
 	}
-	headerMap := map[string]int{"Phone number (*)": 0, "Points (*)": 1, "Note": 2}
-	rowData := []string{"0393227489", "1000", "Note...."}
+
+	headerMap := map[string]int{"task_id": 0, "endpoint": 1, "header": 2, "request": 3, "response": 4}
+	rowData := []string{"1", "https://a.com", "abc", "egh"}
 	b, c := readDataReflect(&metadata, headerMap, rowData)
 	fmt.Printf("Res: %v - %v", b, c)
 }

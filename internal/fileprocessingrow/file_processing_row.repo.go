@@ -36,7 +36,7 @@ const dbEngine = "mysql"
 var _ Repo = &repoImpl{} // only for mention that repoImpl implement Repo
 
 // NewRepo ...
-func NewRepo(db *dbsql.DB) *repoImpl {
+func NewRepo(db *dbsql.DB) Repo {
 	drv := sql.OpenDB(dbEngine, db)
 	client := ent.NewClient(ent.Driver(drv))
 	return &repoImpl{client: client, sqlDB: db}

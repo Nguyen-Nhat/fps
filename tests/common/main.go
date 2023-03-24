@@ -16,17 +16,9 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
-)
-
-type dbEngine string
-
-const (
-	mysqlDB dbEngine = "engineMysql"
-	// sqliteDB dbEngine = "engineSqlite"
 )
 
 func CreateEntClientFromDB(db *sql.DB) *ent.Client {
@@ -69,8 +61,6 @@ func PrepareDatabaseSqlite(ctx context.Context, t *testing.T) (*sql.DB, *ent.Cli
 func clearDataDbAndInsertMockData(ctx context.Context, db *sql.DB, entClient *ent.Client) {
 	// 3. Drop tables in DB
 	_, _ = db.ExecContext(ctx, "DROP TABLE users")
-	_, _ = db.ExecContext(ctx, "DROP TABLE file_award_point")
-	_, _ = db.ExecContext(ctx, "DROP TABLE member_transaction")
 	_, _ = db.ExecContext(ctx, "DROP TABLE processing_file")
 	_, _ = db.ExecContext(ctx, "DROP TABLE processing_file_row")
 
@@ -80,41 +70,11 @@ func clearDataDbAndInsertMockData(ctx context.Context, db *sql.DB, entClient *en
 	}
 
 	// 5. Mocking data to database
-	mockFileAwardPoint(ctx, entClient)
 	mockProcessingFile(ctx, entClient)
 	mockProcessingFileRow(ctx, entClient)
 	mockXXX(ctx, entClient) // will mock data for other models
 
 	fmt.Println() // new line in console => don't care about it
-}
-
-// getDatabase ... default is Sqlite
-func getDatabase(t *testing.T, engines ...dbEngine) *sql.DB {
-	var db *sql.DB
-	if len(engines) > 0 && engines[0] == mysqlDB {
-		dbConf := config.Load("../..").Database.MySQL
-		dbMysql, err := dburl.Open(dbConf.DatabaseURI()) // no handle error, if error test will be terminated
-		assert.NoError(t, err)
-		db = dbMysql
-	} else {
-		dbSqlite, err := sql.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
-		assert.NoError(t, err)
-		drv := entsql.OpenDB("sqlite3", db)
-		db = dbSqlite
-		// Migration schema
-		enttest.NewClient(t, enttest.WithOptions(ent.Driver(drv)))
-	}
-	return db
-}
-
-func mockFileAwardPoint(ctx context.Context, dbClient *ent.Client) {
-	logger.Infof("Mock File Award Point ...")
-	_, err := fileawardpoint.SaveAll(ctx, dbClient, fileAwardPoints, false)
-	if err != nil {
-		logger.Errorf("Mock File Award Point ... Failed: %v", err)
-		panic(err)
-	}
-	logger.Infof("Mock File Award Point ... Finished")
 }
 
 func mockProcessingFile(ctx context.Context, dbClient *ent.Client) {

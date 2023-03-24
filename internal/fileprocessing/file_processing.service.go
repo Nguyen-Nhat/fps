@@ -31,7 +31,7 @@ type (
 
 var _ Service = &ServiceImpl{}
 
-// CreateFileProcessing ... Create new file processing. If display name is not provided, it will be extract from file name
+// CreateFileProcessing ... Create new file processing. If display name is not provided, it will be extracted from file name
 func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileProcessingReqDTO) (*CreateFileProcessingResDTO, error) {
 
 	// 1. Preprocess data

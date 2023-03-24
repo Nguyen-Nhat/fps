@@ -5,11 +5,10 @@ import (
 	"database/sql"
 	"fmt"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
-	fileprocessing2 "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
+	fps "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"github.com/robfig/cron/v3"
 	"net/http"
 
-	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileawardpoint"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
@@ -75,15 +74,6 @@ func (s *Server) initRoutes() {
 	userRouter.Post("/", userServer.CreateUserAPI())
 	s.Router.Mount("/lfp/users", userRouter)
 
-	// 3. File Award Point API
-	fapServer := fileawardpoint.InitFileAwardPointServer(s.db)
-	fapRouter := chi.NewRouter()
-	fapRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
-	fapRouter.Post("/getListOrDetail", fapServer.GetDetailAPI())
-	fapRouter.Get("/getList", fapServer.GetListAPI())
-	fapRouter.Post("/create", fapServer.CreateFileAwardPointAPI())
-	s.Router.Mount("/lfp/v1/fileAwardPoint", fapRouter)
-
 	// 4. File Processing API
 	fpServer := fileprocessing.InitFileProcessingServer(s.db)
 	fpRouter := chi.NewRouter()
@@ -99,16 +89,10 @@ func (s *Server) Serve(cfg config.ServerListen) error {
 	return http.ListenAndServe(address, s.Router)
 }
 
-func WithDB(db *sql.DB) Option {
-	return func(s *Server) {
-		s.db = db
-	}
-}
-
 // initJobAccessDB ... job access DB each 1 minutes, we use this job for checking DB avoid loose connection DB
 // ... will remove
 func initJobPingDB(db *sql.DB, cfg config.DebugDBConfig) {
-	fpRepo := fileprocessing2.NewRepo(db)
+	fpRepo := fps.NewRepo(db)
 
 	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
 

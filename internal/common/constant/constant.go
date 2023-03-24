@@ -14,7 +14,6 @@ const (
 	ExcelMsgInvalidFormat       = "sai định dạng"
 	ExcelMsgMissOrInvalidFormat = "thiếu hoặc sai định dạng"
 	ExcelMsgRequired            = "không được bỏ trống"
-	ExcelMsgProcessing          = "đang xử lý"
 	ExcelMsgLength              = "đô dài phải"
 	ExcelMsgValue               = "giá trị phải"
 )
