@@ -81,6 +81,7 @@ func (s *Server) initRoutes() {
 	fpRouter.Get("/getListProcessFiles", fpServer.GetFileProcessHistoryAPI())
 	fpRouter.Post("/createProcessFile", fpServer.CreateProcessByFileAPI())
 	s.Router.Mount("/v1", fpRouter)
+	s.Router.Mount("/lfp/v1", fpRouter)
 }
 
 func (s *Server) Serve(cfg config.ServerListen) error {
