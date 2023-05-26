@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+	"time"
 )
 
 type ProcessingFileRow struct {
@@ -31,5 +32,8 @@ func (ProcessingFileRow) Fields() []ent.Field {
 		field.String("task_response_raw"),
 		field.Int16("status").Comment("Init=1; ; Failed=3; Success=4; Timeout=5"),
 		field.String("error_display"),
+		field.Int64("executed_time"),
+		field.Time("created_at").Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }

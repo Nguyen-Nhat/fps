@@ -157,8 +157,10 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetFileURL(fp.FileURL).
 		SetResultFileURL(fp.ResultFileURL).
 		SetStatus(fp.Status).
+		SetRequestParameters(fp.RequestParameters).
 		SetTotalMapping(fp.TotalMapping).
 		SetStatsTotalRow(fp.StatsTotalRow).
+		SetStatsTotalProcessed(fp.StatsTotalProcessed).
 		SetStatsTotalSuccess(fp.StatsTotalSuccess).
 		SetErrorDisplay(fp.ErrorDisplay).
 		SetCreatedBy(fp.CreatedBy)
@@ -203,7 +205,7 @@ func SaveAll(ctx context.Context, client *ent.Client, fpArr []ProcessingFile, ne
 	// 2. Create by bulk
 	fpSavedArr, err := client.ProcessingFile.CreateBulk(bulk...).Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save file award point to DB")
+		return nil, fmt.Errorf("failed to save %s to DB, error: %+v", Name(), err)
 	}
 
 	// 3. Check if you NOT need result => return empty

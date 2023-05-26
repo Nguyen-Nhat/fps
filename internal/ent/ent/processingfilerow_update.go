@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -115,6 +116,39 @@ func (pfru *ProcessingFileRowUpdate) SetErrorDisplay(s string) *ProcessingFileRo
 	return pfru
 }
 
+// SetExecutedTime sets the "executed_time" field.
+func (pfru *ProcessingFileRowUpdate) SetExecutedTime(i int64) *ProcessingFileRowUpdate {
+	pfru.mutation.ResetExecutedTime()
+	pfru.mutation.SetExecutedTime(i)
+	return pfru
+}
+
+// AddExecutedTime adds i to the "executed_time" field.
+func (pfru *ProcessingFileRowUpdate) AddExecutedTime(i int64) *ProcessingFileRowUpdate {
+	pfru.mutation.AddExecutedTime(i)
+	return pfru
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pfru *ProcessingFileRowUpdate) SetCreatedAt(t time.Time) *ProcessingFileRowUpdate {
+	pfru.mutation.SetCreatedAt(t)
+	return pfru
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pfru *ProcessingFileRowUpdate) SetNillableCreatedAt(t *time.Time) *ProcessingFileRowUpdate {
+	if t != nil {
+		pfru.SetCreatedAt(*t)
+	}
+	return pfru
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pfru *ProcessingFileRowUpdate) SetUpdatedAt(t time.Time) *ProcessingFileRowUpdate {
+	pfru.mutation.SetUpdatedAt(t)
+	return pfru
+}
+
 // Mutation returns the ProcessingFileRowMutation object of the builder.
 func (pfru *ProcessingFileRowUpdate) Mutation() *ProcessingFileRowMutation {
 	return pfru.mutation
@@ -126,6 +160,7 @@ func (pfru *ProcessingFileRowUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	pfru.defaults()
 	if len(pfru.hooks) == 0 {
 		affected, err = pfru.sqlSave(ctx)
 	} else {
@@ -171,6 +206,14 @@ func (pfru *ProcessingFileRowUpdate) Exec(ctx context.Context) error {
 func (pfru *ProcessingFileRowUpdate) ExecX(ctx context.Context) {
 	if err := pfru.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pfru *ProcessingFileRowUpdate) defaults() {
+	if _, ok := pfru.mutation.UpdatedAt(); !ok {
+		v := processingfilerow.UpdateDefaultUpdatedAt()
+		pfru.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -290,6 +333,34 @@ func (pfru *ProcessingFileRowUpdate) sqlSave(ctx context.Context) (n int, err er
 			Column: processingfilerow.FieldErrorDisplay,
 		})
 	}
+	if value, ok := pfru.mutation.ExecutedTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: processingfilerow.FieldExecutedTime,
+		})
+	}
+	if value, ok := pfru.mutation.AddedExecutedTime(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: processingfilerow.FieldExecutedTime,
+		})
+	}
+	if value, ok := pfru.mutation.CreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldCreatedAt,
+		})
+	}
+	if value, ok := pfru.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldUpdatedAt,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pfru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{processingfilerow.Label}
@@ -397,6 +468,39 @@ func (pfruo *ProcessingFileRowUpdateOne) SetErrorDisplay(s string) *ProcessingFi
 	return pfruo
 }
 
+// SetExecutedTime sets the "executed_time" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetExecutedTime(i int64) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.ResetExecutedTime()
+	pfruo.mutation.SetExecutedTime(i)
+	return pfruo
+}
+
+// AddExecutedTime adds i to the "executed_time" field.
+func (pfruo *ProcessingFileRowUpdateOne) AddExecutedTime(i int64) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.AddExecutedTime(i)
+	return pfruo
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetCreatedAt(t time.Time) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetCreatedAt(t)
+	return pfruo
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pfruo *ProcessingFileRowUpdateOne) SetNillableCreatedAt(t *time.Time) *ProcessingFileRowUpdateOne {
+	if t != nil {
+		pfruo.SetCreatedAt(*t)
+	}
+	return pfruo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetUpdatedAt(t time.Time) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetUpdatedAt(t)
+	return pfruo
+}
+
 // Mutation returns the ProcessingFileRowMutation object of the builder.
 func (pfruo *ProcessingFileRowUpdateOne) Mutation() *ProcessingFileRowMutation {
 	return pfruo.mutation
@@ -415,6 +519,7 @@ func (pfruo *ProcessingFileRowUpdateOne) Save(ctx context.Context) (*ProcessingF
 		err  error
 		node *ProcessingFileRow
 	)
+	pfruo.defaults()
 	if len(pfruo.hooks) == 0 {
 		node, err = pfruo.sqlSave(ctx)
 	} else {
@@ -466,6 +571,14 @@ func (pfruo *ProcessingFileRowUpdateOne) Exec(ctx context.Context) error {
 func (pfruo *ProcessingFileRowUpdateOne) ExecX(ctx context.Context) {
 	if err := pfruo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pfruo *ProcessingFileRowUpdateOne) defaults() {
+	if _, ok := pfruo.mutation.UpdatedAt(); !ok {
+		v := processingfilerow.UpdateDefaultUpdatedAt()
+		pfruo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -600,6 +713,34 @@ func (pfruo *ProcessingFileRowUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfilerow.FieldErrorDisplay,
+		})
+	}
+	if value, ok := pfruo.mutation.ExecutedTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: processingfilerow.FieldExecutedTime,
+		})
+	}
+	if value, ok := pfruo.mutation.AddedExecutedTime(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: processingfilerow.FieldExecutedTime,
+		})
+	}
+	if value, ok := pfruo.mutation.CreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldCreatedAt,
+		})
+	}
+	if value, ok := pfruo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldUpdatedAt,
 		})
 	}
 	_node = &ProcessingFileRow{config: pfruo.config}

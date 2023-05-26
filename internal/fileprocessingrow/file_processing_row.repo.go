@@ -167,7 +167,10 @@ func mapProcessingFileRow(client *ent.Client, fpr ProcessingFileRow) *ent.Proces
 		SetTaskRequestRaw(fpr.TaskRequestRaw).
 		SetTaskResponseRaw(fpr.TaskResponseRaw).
 		SetStatus(fpr.Status).
-		SetErrorDisplay(fpr.ErrorDisplay)
+		SetErrorDisplay(fpr.ErrorDisplay).
+		SetExecutedTime(fpr.ExecutedTime).
+		SetCreatedAt(fpr.CreatedAt).
+		SetUpdatedAt(fpr.UpdatedAt)
 }
 
 func mapEntArrToProcessingFileArr(arr ent.ProcessingFileRows) []*ProcessingFileRow {

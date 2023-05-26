@@ -63,6 +63,9 @@ func clearDataDbAndInsertMockData(ctx context.Context, db *sql.DB, entClient *en
 	_, _ = db.ExecContext(ctx, "DROP TABLE users")
 	_, _ = db.ExecContext(ctx, "DROP TABLE processing_file")
 	_, _ = db.ExecContext(ctx, "DROP TABLE processing_file_row")
+	_, _ = db.ExecContext(ctx, "DROP TABLE fps_client")
+	_, _ = db.ExecContext(ctx, "DROP TABLE config_mapping")
+	_, _ = db.ExecContext(ctx, "DROP TABLE config_task")
 
 	// 4. Migration DB Schema
 	if err := entClient.Schema.Create(ctx); err != nil {
