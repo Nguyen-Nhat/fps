@@ -26,10 +26,14 @@ type ProcessingFile struct {
 	ResultFileURL string `json:"result_file_url,omitempty"`
 	// Init=1; Processing=2; Failed=3; Finished=4
 	Status int16 `json:"status,omitempty"`
+	// Format JSON. For storing parameters of client
+	RequestParameters string `json:"request_parameters,omitempty"`
 	// TotalMapping holds the value of the "total_mapping" field.
 	TotalMapping int32 `json:"total_mapping,omitempty"`
 	// StatsTotalRow holds the value of the "stats_total_row" field.
 	StatsTotalRow int32 `json:"stats_total_row,omitempty"`
+	// StatsTotalProcessed holds the value of the "stats_total_processed" field.
+	StatsTotalProcessed int32 `json:"stats_total_processed,omitempty"`
 	// StatsTotalSuccess holds the value of the "stats_total_success" field.
 	StatsTotalSuccess int32 `json:"stats_total_success,omitempty"`
 	// ErrorDisplay holds the value of the "error_display" field.
@@ -47,9 +51,9 @@ func (*ProcessingFile) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalSuccess:
+		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalProcessed, processingfile.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
-		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
+		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldRequestParameters, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case processingfile.FieldCreatedAt, processingfile.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -104,6 +108,12 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				pf.Status = int16(value.Int64)
 			}
+		case processingfile.FieldRequestParameters:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field request_parameters", values[i])
+			} else if value.Valid {
+				pf.RequestParameters = value.String
+			}
 		case processingfile.FieldTotalMapping:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field total_mapping", values[i])
@@ -115,6 +125,12 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 				return fmt.Errorf("unexpected type %T for field stats_total_row", values[i])
 			} else if value.Valid {
 				pf.StatsTotalRow = int32(value.Int64)
+			}
+		case processingfile.FieldStatsTotalProcessed:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field stats_total_processed", values[i])
+			} else if value.Valid {
+				pf.StatsTotalProcessed = int32(value.Int64)
 			}
 		case processingfile.FieldStatsTotalSuccess:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -189,11 +205,17 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", pf.Status))
 	builder.WriteString(", ")
+	builder.WriteString("request_parameters=")
+	builder.WriteString(pf.RequestParameters)
+	builder.WriteString(", ")
 	builder.WriteString("total_mapping=")
 	builder.WriteString(fmt.Sprintf("%v", pf.TotalMapping))
 	builder.WriteString(", ")
 	builder.WriteString("stats_total_row=")
 	builder.WriteString(fmt.Sprintf("%v", pf.StatsTotalRow))
+	builder.WriteString(", ")
+	builder.WriteString("stats_total_processed=")
+	builder.WriteString(fmt.Sprintf("%v", pf.StatsTotalProcessed))
 	builder.WriteString(", ")
 	builder.WriteString("stats_total_success=")
 	builder.WriteString(fmt.Sprintf("%v", pf.StatsTotalSuccess))

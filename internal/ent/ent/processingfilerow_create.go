@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -79,6 +80,40 @@ func (pfrc *ProcessingFileRowCreate) SetErrorDisplay(s string) *ProcessingFileRo
 	return pfrc
 }
 
+// SetExecutedTime sets the "executed_time" field.
+func (pfrc *ProcessingFileRowCreate) SetExecutedTime(i int64) *ProcessingFileRowCreate {
+	pfrc.mutation.SetExecutedTime(i)
+	return pfrc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pfrc *ProcessingFileRowCreate) SetCreatedAt(t time.Time) *ProcessingFileRowCreate {
+	pfrc.mutation.SetCreatedAt(t)
+	return pfrc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pfrc *ProcessingFileRowCreate) SetNillableCreatedAt(t *time.Time) *ProcessingFileRowCreate {
+	if t != nil {
+		pfrc.SetCreatedAt(*t)
+	}
+	return pfrc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pfrc *ProcessingFileRowCreate) SetUpdatedAt(t time.Time) *ProcessingFileRowCreate {
+	pfrc.mutation.SetUpdatedAt(t)
+	return pfrc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pfrc *ProcessingFileRowCreate) SetNillableUpdatedAt(t *time.Time) *ProcessingFileRowCreate {
+	if t != nil {
+		pfrc.SetUpdatedAt(*t)
+	}
+	return pfrc
+}
+
 // Mutation returns the ProcessingFileRowMutation object of the builder.
 func (pfrc *ProcessingFileRowCreate) Mutation() *ProcessingFileRowMutation {
 	return pfrc.mutation
@@ -90,6 +125,7 @@ func (pfrc *ProcessingFileRowCreate) Save(ctx context.Context) (*ProcessingFileR
 		err  error
 		node *ProcessingFileRow
 	)
+	pfrc.defaults()
 	if len(pfrc.hooks) == 0 {
 		if err = pfrc.check(); err != nil {
 			return nil, err
@@ -153,6 +189,18 @@ func (pfrc *ProcessingFileRowCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pfrc *ProcessingFileRowCreate) defaults() {
+	if _, ok := pfrc.mutation.CreatedAt(); !ok {
+		v := processingfilerow.DefaultCreatedAt()
+		pfrc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pfrc.mutation.UpdatedAt(); !ok {
+		v := processingfilerow.DefaultUpdatedAt()
+		pfrc.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pfrc *ProcessingFileRowCreate) check() error {
 	if _, ok := pfrc.mutation.FileID(); !ok {
@@ -184,6 +232,15 @@ func (pfrc *ProcessingFileRowCreate) check() error {
 	}
 	if _, ok := pfrc.mutation.ErrorDisplay(); !ok {
 		return &ValidationError{Name: "error_display", err: errors.New(`ent: missing required field "ProcessingFileRow.error_display"`)}
+	}
+	if _, ok := pfrc.mutation.ExecutedTime(); !ok {
+		return &ValidationError{Name: "executed_time", err: errors.New(`ent: missing required field "ProcessingFileRow.executed_time"`)}
+	}
+	if _, ok := pfrc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProcessingFileRow.created_at"`)}
+	}
+	if _, ok := pfrc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "ProcessingFileRow.updated_at"`)}
 	}
 	return nil
 }
@@ -292,6 +349,30 @@ func (pfrc *ProcessingFileRowCreate) createSpec() (*ProcessingFileRow, *sqlgraph
 		})
 		_node.ErrorDisplay = value
 	}
+	if value, ok := pfrc.mutation.ExecutedTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: processingfilerow.FieldExecutedTime,
+		})
+		_node.ExecutedTime = value
+	}
+	if value, ok := pfrc.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := pfrc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
+	}
 	return _node, _spec
 }
 
@@ -309,6 +390,7 @@ func (pfrcb *ProcessingFileRowCreateBulk) Save(ctx context.Context) ([]*Processi
 	for i := range pfrcb.builders {
 		func(i int, root context.Context) {
 			builder := pfrcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ProcessingFileRowMutation)
 				if !ok {

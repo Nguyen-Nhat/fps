@@ -10,6 +10,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configtask"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fpsclient"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
@@ -33,6 +36,9 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
+		configmapping.Table:     configmapping.ValidColumn,
+		configtask.Table:        configtask.ValidColumn,
+		fpsclient.Table:         fpsclient.ValidColumn,
 		processingfile.Table:    processingfile.ValidColumn,
 		processingfilerow.Table: processingfilerow.ValidColumn,
 		user.Table:              user.ValidColumn,

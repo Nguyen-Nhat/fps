@@ -6,6 +6,15 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// ConfigMapping is the predicate function for configmapping builders.
+type ConfigMapping func(*sql.Selector)
+
+// ConfigTask is the predicate function for configtask builders.
+type ConfigTask func(*sql.Selector)
+
+// FpsClient is the predicate function for fpsclient builders.
+type FpsClient func(*sql.Selector)
+
 // ProcessingFile is the predicate function for processingfile builders.
 type ProcessingFile func(*sql.Selector)
 
