@@ -104,15 +104,8 @@ func (ctu *ConfigTaskUpdate) SetResponseSuccessCodeSchema(s string) *ConfigTaskU
 }
 
 // SetResponseMessageSchema sets the "response_message_schema" field.
-func (ctu *ConfigTaskUpdate) SetResponseMessageSchema(i int32) *ConfigTaskUpdate {
-	ctu.mutation.ResetResponseMessageSchema()
-	ctu.mutation.SetResponseMessageSchema(i)
-	return ctu
-}
-
-// AddResponseMessageSchema adds i to the "response_message_schema" field.
-func (ctu *ConfigTaskUpdate) AddResponseMessageSchema(i int32) *ConfigTaskUpdate {
-	ctu.mutation.AddResponseMessageSchema(i)
+func (ctu *ConfigTaskUpdate) SetResponseMessageSchema(s string) *ConfigTaskUpdate {
+	ctu.mutation.SetResponseMessageSchema(s)
 	return ctu
 }
 
@@ -355,14 +348,7 @@ func (ctu *ConfigTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ctu.mutation.ResponseMessageSchema(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
-			Value:  value,
-			Column: configtask.FieldResponseMessageSchema,
-		})
-	}
-	if value, ok := ctu.mutation.AddedResponseMessageSchema(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: configtask.FieldResponseMessageSchema,
 		})
@@ -483,15 +469,8 @@ func (ctuo *ConfigTaskUpdateOne) SetResponseSuccessCodeSchema(s string) *ConfigT
 }
 
 // SetResponseMessageSchema sets the "response_message_schema" field.
-func (ctuo *ConfigTaskUpdateOne) SetResponseMessageSchema(i int32) *ConfigTaskUpdateOne {
-	ctuo.mutation.ResetResponseMessageSchema()
-	ctuo.mutation.SetResponseMessageSchema(i)
-	return ctuo
-}
-
-// AddResponseMessageSchema adds i to the "response_message_schema" field.
-func (ctuo *ConfigTaskUpdateOne) AddResponseMessageSchema(i int32) *ConfigTaskUpdateOne {
-	ctuo.mutation.AddResponseMessageSchema(i)
+func (ctuo *ConfigTaskUpdateOne) SetResponseMessageSchema(s string) *ConfigTaskUpdateOne {
+	ctuo.mutation.SetResponseMessageSchema(s)
 	return ctuo
 }
 
@@ -764,14 +743,7 @@ func (ctuo *ConfigTaskUpdateOne) sqlSave(ctx context.Context) (_node *ConfigTask
 	}
 	if value, ok := ctuo.mutation.ResponseMessageSchema(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
-			Value:  value,
-			Column: configtask.FieldResponseMessageSchema,
-		})
-	}
-	if value, ok := ctuo.mutation.AddedResponseMessageSchema(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: configtask.FieldResponseMessageSchema,
 		})

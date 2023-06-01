@@ -27,7 +27,7 @@ type ProcessingFile struct {
 	// Init=1; Processing=2; Failed=3; Finished=4
 	Status int16 `json:"status,omitempty"`
 	// Format JSON. For storing parameters of client
-	RequestParameters string `json:"request_parameters,omitempty"`
+	FileParameters string `json:"file_parameters,omitempty"`
 	// TotalMapping holds the value of the "total_mapping" field.
 	TotalMapping int32 `json:"total_mapping,omitempty"`
 	// StatsTotalRow holds the value of the "stats_total_row" field.
@@ -53,7 +53,7 @@ func (*ProcessingFile) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalProcessed, processingfile.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
-		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldRequestParameters, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
+		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldFileParameters, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case processingfile.FieldCreatedAt, processingfile.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -108,11 +108,11 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				pf.Status = int16(value.Int64)
 			}
-		case processingfile.FieldRequestParameters:
+		case processingfile.FieldFileParameters:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field request_parameters", values[i])
+				return fmt.Errorf("unexpected type %T for field file_parameters", values[i])
 			} else if value.Valid {
-				pf.RequestParameters = value.String
+				pf.FileParameters = value.String
 			}
 		case processingfile.FieldTotalMapping:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -205,8 +205,8 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", pf.Status))
 	builder.WriteString(", ")
-	builder.WriteString("request_parameters=")
-	builder.WriteString(pf.RequestParameters)
+	builder.WriteString("file_parameters=")
+	builder.WriteString(pf.FileParameters)
 	builder.WriteString(", ")
 	builder.WriteString("total_mapping=")
 	builder.WriteString(fmt.Sprintf("%v", pf.TotalMapping))

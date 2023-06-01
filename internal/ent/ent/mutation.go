@@ -846,8 +846,7 @@ type ConfigTaskMutation struct {
 	response_success_http_status    *int32
 	addresponse_success_http_status *int32
 	response_success_code_schema    *string
-	response_message_schema         *int32
-	addresponse_message_schema      *int32
+	response_message_schema         *string
 	created_at                      *time.Time
 	created_by                      *string
 	updated_at                      *time.Time
@@ -1340,13 +1339,12 @@ func (m *ConfigTaskMutation) ResetResponseSuccessCodeSchema() {
 }
 
 // SetResponseMessageSchema sets the "response_message_schema" field.
-func (m *ConfigTaskMutation) SetResponseMessageSchema(i int32) {
-	m.response_message_schema = &i
-	m.addresponse_message_schema = nil
+func (m *ConfigTaskMutation) SetResponseMessageSchema(s string) {
+	m.response_message_schema = &s
 }
 
 // ResponseMessageSchema returns the value of the "response_message_schema" field in the mutation.
-func (m *ConfigTaskMutation) ResponseMessageSchema() (r int32, exists bool) {
+func (m *ConfigTaskMutation) ResponseMessageSchema() (r string, exists bool) {
 	v := m.response_message_schema
 	if v == nil {
 		return
@@ -1357,7 +1355,7 @@ func (m *ConfigTaskMutation) ResponseMessageSchema() (r int32, exists bool) {
 // OldResponseMessageSchema returns the old "response_message_schema" field's value of the ConfigTask entity.
 // If the ConfigTask object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ConfigTaskMutation) OldResponseMessageSchema(ctx context.Context) (v int32, err error) {
+func (m *ConfigTaskMutation) OldResponseMessageSchema(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldResponseMessageSchema is only allowed on UpdateOne operations")
 	}
@@ -1371,28 +1369,9 @@ func (m *ConfigTaskMutation) OldResponseMessageSchema(ctx context.Context) (v in
 	return oldValue.ResponseMessageSchema, nil
 }
 
-// AddResponseMessageSchema adds i to the "response_message_schema" field.
-func (m *ConfigTaskMutation) AddResponseMessageSchema(i int32) {
-	if m.addresponse_message_schema != nil {
-		*m.addresponse_message_schema += i
-	} else {
-		m.addresponse_message_schema = &i
-	}
-}
-
-// AddedResponseMessageSchema returns the value that was added to the "response_message_schema" field in this mutation.
-func (m *ConfigTaskMutation) AddedResponseMessageSchema() (r int32, exists bool) {
-	v := m.addresponse_message_schema
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ResetResponseMessageSchema resets all changes to the "response_message_schema" field.
 func (m *ConfigTaskMutation) ResetResponseMessageSchema() {
 	m.response_message_schema = nil
-	m.addresponse_message_schema = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1704,7 +1683,7 @@ func (m *ConfigTaskMutation) SetField(name string, value ent.Value) error {
 		m.SetResponseSuccessCodeSchema(v)
 		return nil
 	case configtask.FieldResponseMessageSchema:
-		v, ok := value.(int32)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1748,9 +1727,6 @@ func (m *ConfigTaskMutation) AddedFields() []string {
 	if m.addresponse_success_http_status != nil {
 		fields = append(fields, configtask.FieldResponseSuccessHTTPStatus)
 	}
-	if m.addresponse_message_schema != nil {
-		fields = append(fields, configtask.FieldResponseMessageSchema)
-	}
 	return fields
 }
 
@@ -1765,8 +1741,6 @@ func (m *ConfigTaskMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTaskIndex()
 	case configtask.FieldResponseSuccessHTTPStatus:
 		return m.AddedResponseSuccessHTTPStatus()
-	case configtask.FieldResponseMessageSchema:
-		return m.AddedResponseMessageSchema()
 	}
 	return nil, false
 }
@@ -1796,13 +1770,6 @@ func (m *ConfigTaskMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddResponseSuccessHTTPStatus(v)
-		return nil
-	case configtask.FieldResponseMessageSchema:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddResponseMessageSchema(v)
 		return nil
 	}
 	return fmt.Errorf("unknown ConfigTask numeric field %s", name)
@@ -2552,7 +2519,7 @@ type ProcessingFileMutation struct {
 	result_file_url          *string
 	status                   *int16
 	addstatus                *int16
-	request_parameters       *string
+	file_parameters          *string
 	total_mapping            *int32
 	addtotal_mapping         *int32
 	stats_total_row          *int32
@@ -2889,40 +2856,40 @@ func (m *ProcessingFileMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
-// SetRequestParameters sets the "request_parameters" field.
-func (m *ProcessingFileMutation) SetRequestParameters(s string) {
-	m.request_parameters = &s
+// SetFileParameters sets the "file_parameters" field.
+func (m *ProcessingFileMutation) SetFileParameters(s string) {
+	m.file_parameters = &s
 }
 
-// RequestParameters returns the value of the "request_parameters" field in the mutation.
-func (m *ProcessingFileMutation) RequestParameters() (r string, exists bool) {
-	v := m.request_parameters
+// FileParameters returns the value of the "file_parameters" field in the mutation.
+func (m *ProcessingFileMutation) FileParameters() (r string, exists bool) {
+	v := m.file_parameters
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldRequestParameters returns the old "request_parameters" field's value of the ProcessingFile entity.
+// OldFileParameters returns the old "file_parameters" field's value of the ProcessingFile entity.
 // If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProcessingFileMutation) OldRequestParameters(ctx context.Context) (v string, err error) {
+func (m *ProcessingFileMutation) OldFileParameters(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRequestParameters is only allowed on UpdateOne operations")
+		return v, errors.New("OldFileParameters is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRequestParameters requires an ID field in the mutation")
+		return v, errors.New("OldFileParameters requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRequestParameters: %w", err)
+		return v, fmt.Errorf("querying old value for OldFileParameters: %w", err)
 	}
-	return oldValue.RequestParameters, nil
+	return oldValue.FileParameters, nil
 }
 
-// ResetRequestParameters resets all changes to the "request_parameters" field.
-func (m *ProcessingFileMutation) ResetRequestParameters() {
-	m.request_parameters = nil
+// ResetFileParameters resets all changes to the "file_parameters" field.
+func (m *ProcessingFileMutation) ResetFileParameters() {
+	m.file_parameters = nil
 }
 
 // SetTotalMapping sets the "total_mapping" field.
@@ -3328,8 +3295,8 @@ func (m *ProcessingFileMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, processingfile.FieldStatus)
 	}
-	if m.request_parameters != nil {
-		fields = append(fields, processingfile.FieldRequestParameters)
+	if m.file_parameters != nil {
+		fields = append(fields, processingfile.FieldFileParameters)
 	}
 	if m.total_mapping != nil {
 		fields = append(fields, processingfile.FieldTotalMapping)
@@ -3373,8 +3340,8 @@ func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
 		return m.ResultFileURL()
 	case processingfile.FieldStatus:
 		return m.Status()
-	case processingfile.FieldRequestParameters:
-		return m.RequestParameters()
+	case processingfile.FieldFileParameters:
+		return m.FileParameters()
 	case processingfile.FieldTotalMapping:
 		return m.TotalMapping()
 	case processingfile.FieldStatsTotalRow:
@@ -3410,8 +3377,8 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldResultFileURL(ctx)
 	case processingfile.FieldStatus:
 		return m.OldStatus(ctx)
-	case processingfile.FieldRequestParameters:
-		return m.OldRequestParameters(ctx)
+	case processingfile.FieldFileParameters:
+		return m.OldFileParameters(ctx)
 	case processingfile.FieldTotalMapping:
 		return m.OldTotalMapping(ctx)
 	case processingfile.FieldStatsTotalRow:
@@ -3472,12 +3439,12 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
-	case processingfile.FieldRequestParameters:
+	case processingfile.FieldFileParameters:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetRequestParameters(v)
+		m.SetFileParameters(v)
 		return nil
 	case processingfile.FieldTotalMapping:
 		v, ok := value.(int32)
@@ -3674,8 +3641,8 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 	case processingfile.FieldStatus:
 		m.ResetStatus()
 		return nil
-	case processingfile.FieldRequestParameters:
-		m.ResetRequestParameters()
+	case processingfile.FieldFileParameters:
+		m.ResetFileParameters()
 		return nil
 	case processingfile.FieldTotalMapping:
 		m.ResetTotalMapping()

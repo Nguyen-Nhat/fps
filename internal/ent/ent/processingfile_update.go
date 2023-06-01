@@ -72,9 +72,9 @@ func (pfu *ProcessingFileUpdate) AddStatus(i int16) *ProcessingFileUpdate {
 	return pfu
 }
 
-// SetRequestParameters sets the "request_parameters" field.
-func (pfu *ProcessingFileUpdate) SetRequestParameters(s string) *ProcessingFileUpdate {
-	pfu.mutation.SetRequestParameters(s)
+// SetFileParameters sets the "file_parameters" field.
+func (pfu *ProcessingFileUpdate) SetFileParameters(s string) *ProcessingFileUpdate {
+	pfu.mutation.SetFileParameters(s)
 	return pfu
 }
 
@@ -355,11 +355,11 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldStatus,
 		})
 	}
-	if value, ok := pfu.mutation.RequestParameters(); ok {
+	if value, ok := pfu.mutation.FileParameters(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: processingfile.FieldRequestParameters,
+			Column: processingfile.FieldFileParameters,
 		})
 	}
 	if value, ok := pfu.mutation.TotalMapping(); ok {
@@ -509,9 +509,9 @@ func (pfuo *ProcessingFileUpdateOne) AddStatus(i int16) *ProcessingFileUpdateOne
 	return pfuo
 }
 
-// SetRequestParameters sets the "request_parameters" field.
-func (pfuo *ProcessingFileUpdateOne) SetRequestParameters(s string) *ProcessingFileUpdateOne {
-	pfuo.mutation.SetRequestParameters(s)
+// SetFileParameters sets the "file_parameters" field.
+func (pfuo *ProcessingFileUpdateOne) SetFileParameters(s string) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetFileParameters(s)
 	return pfuo
 }
 
@@ -822,11 +822,11 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Column: processingfile.FieldStatus,
 		})
 	}
-	if value, ok := pfuo.mutation.RequestParameters(); ok {
+	if value, ok := pfuo.mutation.FileParameters(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: processingfile.FieldRequestParameters,
+			Column: processingfile.FieldFileParameters,
 		})
 	}
 	if value, ok := pfuo.mutation.TotalMapping(); ok {

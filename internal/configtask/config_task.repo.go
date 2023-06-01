@@ -1,4 +1,4 @@
-package configmapping
+package configtask
 
 import (
 	dbsql "database/sql"

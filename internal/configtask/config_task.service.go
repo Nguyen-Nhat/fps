@@ -1,4 +1,4 @@
-package configmapping
+package configtask
 
 type (
 	Service interface {

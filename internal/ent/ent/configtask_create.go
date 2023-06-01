@@ -75,8 +75,8 @@ func (ctc *ConfigTaskCreate) SetResponseSuccessCodeSchema(s string) *ConfigTaskC
 }
 
 // SetResponseMessageSchema sets the "response_message_schema" field.
-func (ctc *ConfigTaskCreate) SetResponseMessageSchema(i int32) *ConfigTaskCreate {
-	ctc.mutation.SetResponseMessageSchema(i)
+func (ctc *ConfigTaskCreate) SetResponseMessageSchema(s string) *ConfigTaskCreate {
+	ctc.mutation.SetResponseMessageSchema(s)
 	return ctc
 }
 
@@ -373,7 +373,7 @@ func (ctc *ConfigTaskCreate) createSpec() (*ConfigTask, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := ctc.mutation.ResponseMessageSchema(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: configtask.FieldResponseMessageSchema,
 		})

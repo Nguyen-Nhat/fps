@@ -35,7 +35,7 @@ type ConfigTask struct {
 	// Format JSON, contains path and values
 	ResponseSuccessCodeSchema string `json:"response_success_code_schema,omitempty"`
 	// Format JSON, contains path
-	ResponseMessageSchema int32 `json:"response_message_schema,omitempty"`
+	ResponseMessageSchema string `json:"response_message_schema,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -49,9 +49,9 @@ func (*ConfigTask) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case configtask.FieldID, configtask.FieldConfigMappingID, configtask.FieldTaskIndex, configtask.FieldResponseSuccessHTTPStatus, configtask.FieldResponseMessageSchema:
+		case configtask.FieldID, configtask.FieldConfigMappingID, configtask.FieldTaskIndex, configtask.FieldResponseSuccessHTTPStatus:
 			values[i] = new(sql.NullInt64)
-		case configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldCreatedBy:
+		case configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configtask.FieldCreatedAt, configtask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -131,10 +131,10 @@ func (ct *ConfigTask) assignValues(columns []string, values []interface{}) error
 				ct.ResponseSuccessCodeSchema = value.String
 			}
 		case configtask.FieldResponseMessageSchema:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field response_message_schema", values[i])
 			} else if value.Valid {
-				ct.ResponseMessageSchema = int32(value.Int64)
+				ct.ResponseMessageSchema = value.String
 			}
 		case configtask.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -210,7 +210,7 @@ func (ct *ConfigTask) String() string {
 	builder.WriteString(ct.ResponseSuccessCodeSchema)
 	builder.WriteString(", ")
 	builder.WriteString("response_message_schema=")
-	builder.WriteString(fmt.Sprintf("%v", ct.ResponseMessageSchema))
+	builder.WriteString(ct.ResponseMessageSchema)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ct.CreatedAt.Format(time.ANSIC))

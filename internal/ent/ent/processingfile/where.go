@@ -115,10 +115,10 @@ func Status(v int16) predicate.ProcessingFile {
 	})
 }
 
-// RequestParameters applies equality check predicate on the "request_parameters" field. It's identical to RequestParametersEQ.
-func RequestParameters(v string) predicate.ProcessingFile {
+// FileParameters applies equality check predicate on the "file_parameters" field. It's identical to FileParametersEQ.
+func FileParameters(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRequestParameters), v))
+		s.Where(sql.EQ(s.C(FieldFileParameters), v))
 	})
 }
 
@@ -603,102 +603,102 @@ func StatusLTE(v int16) predicate.ProcessingFile {
 	})
 }
 
-// RequestParametersEQ applies the EQ predicate on the "request_parameters" field.
-func RequestParametersEQ(v string) predicate.ProcessingFile {
+// FileParametersEQ applies the EQ predicate on the "file_parameters" field.
+func FileParametersEQ(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRequestParameters), v))
+		s.Where(sql.EQ(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersNEQ applies the NEQ predicate on the "request_parameters" field.
-func RequestParametersNEQ(v string) predicate.ProcessingFile {
+// FileParametersNEQ applies the NEQ predicate on the "file_parameters" field.
+func FileParametersNEQ(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRequestParameters), v))
+		s.Where(sql.NEQ(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersIn applies the In predicate on the "request_parameters" field.
-func RequestParametersIn(vs ...string) predicate.ProcessingFile {
+// FileParametersIn applies the In predicate on the "file_parameters" field.
+func FileParametersIn(vs ...string) predicate.ProcessingFile {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRequestParameters), v...))
+		s.Where(sql.In(s.C(FieldFileParameters), v...))
 	})
 }
 
-// RequestParametersNotIn applies the NotIn predicate on the "request_parameters" field.
-func RequestParametersNotIn(vs ...string) predicate.ProcessingFile {
+// FileParametersNotIn applies the NotIn predicate on the "file_parameters" field.
+func FileParametersNotIn(vs ...string) predicate.ProcessingFile {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRequestParameters), v...))
+		s.Where(sql.NotIn(s.C(FieldFileParameters), v...))
 	})
 }
 
-// RequestParametersGT applies the GT predicate on the "request_parameters" field.
-func RequestParametersGT(v string) predicate.ProcessingFile {
+// FileParametersGT applies the GT predicate on the "file_parameters" field.
+func FileParametersGT(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRequestParameters), v))
+		s.Where(sql.GT(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersGTE applies the GTE predicate on the "request_parameters" field.
-func RequestParametersGTE(v string) predicate.ProcessingFile {
+// FileParametersGTE applies the GTE predicate on the "file_parameters" field.
+func FileParametersGTE(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRequestParameters), v))
+		s.Where(sql.GTE(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersLT applies the LT predicate on the "request_parameters" field.
-func RequestParametersLT(v string) predicate.ProcessingFile {
+// FileParametersLT applies the LT predicate on the "file_parameters" field.
+func FileParametersLT(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRequestParameters), v))
+		s.Where(sql.LT(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersLTE applies the LTE predicate on the "request_parameters" field.
-func RequestParametersLTE(v string) predicate.ProcessingFile {
+// FileParametersLTE applies the LTE predicate on the "file_parameters" field.
+func FileParametersLTE(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRequestParameters), v))
+		s.Where(sql.LTE(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersContains applies the Contains predicate on the "request_parameters" field.
-func RequestParametersContains(v string) predicate.ProcessingFile {
+// FileParametersContains applies the Contains predicate on the "file_parameters" field.
+func FileParametersContains(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRequestParameters), v))
+		s.Where(sql.Contains(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersHasPrefix applies the HasPrefix predicate on the "request_parameters" field.
-func RequestParametersHasPrefix(v string) predicate.ProcessingFile {
+// FileParametersHasPrefix applies the HasPrefix predicate on the "file_parameters" field.
+func FileParametersHasPrefix(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRequestParameters), v))
+		s.Where(sql.HasPrefix(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersHasSuffix applies the HasSuffix predicate on the "request_parameters" field.
-func RequestParametersHasSuffix(v string) predicate.ProcessingFile {
+// FileParametersHasSuffix applies the HasSuffix predicate on the "file_parameters" field.
+func FileParametersHasSuffix(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRequestParameters), v))
+		s.Where(sql.HasSuffix(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersEqualFold applies the EqualFold predicate on the "request_parameters" field.
-func RequestParametersEqualFold(v string) predicate.ProcessingFile {
+// FileParametersEqualFold applies the EqualFold predicate on the "file_parameters" field.
+func FileParametersEqualFold(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRequestParameters), v))
+		s.Where(sql.EqualFold(s.C(FieldFileParameters), v))
 	})
 }
 
-// RequestParametersContainsFold applies the ContainsFold predicate on the "request_parameters" field.
-func RequestParametersContainsFold(v string) predicate.ProcessingFile {
+// FileParametersContainsFold applies the ContainsFold predicate on the "file_parameters" field.
+func FileParametersContainsFold(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRequestParameters), v))
+		s.Where(sql.ContainsFold(s.C(FieldFileParameters), v))
 	})
 }
 

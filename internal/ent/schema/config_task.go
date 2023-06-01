@@ -32,7 +32,7 @@ func (ConfigTask) Fields() []ent.Field {
 		field.String("request_body").NotEmpty().Comment("Format JSON"),
 		field.Int32("response_success_http_status").Comment("For example: http 200"),
 		field.String("response_success_code_schema").Comment("Format JSON, contains path and values"),
-		field.Int32("response_message_schema").Comment("Format JSON, contains path"),
+		field.String("response_message_schema").Comment("Format JSON, contains path"),
 		// default fields
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),

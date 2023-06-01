@@ -50,9 +50,9 @@ func (pfc *ProcessingFileCreate) SetStatus(i int16) *ProcessingFileCreate {
 	return pfc
 }
 
-// SetRequestParameters sets the "request_parameters" field.
-func (pfc *ProcessingFileCreate) SetRequestParameters(s string) *ProcessingFileCreate {
-	pfc.mutation.SetRequestParameters(s)
+// SetFileParameters sets the "file_parameters" field.
+func (pfc *ProcessingFileCreate) SetFileParameters(s string) *ProcessingFileCreate {
+	pfc.mutation.SetFileParameters(s)
 	return pfc
 }
 
@@ -282,8 +282,8 @@ func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "ProcessingFile.status"`)}
 	}
-	if _, ok := pfc.mutation.RequestParameters(); !ok {
-		return &ValidationError{Name: "request_parameters", err: errors.New(`ent: missing required field "ProcessingFile.request_parameters"`)}
+	if _, ok := pfc.mutation.FileParameters(); !ok {
+		return &ValidationError{Name: "file_parameters", err: errors.New(`ent: missing required field "ProcessingFile.file_parameters"`)}
 	}
 	if _, ok := pfc.mutation.TotalMapping(); !ok {
 		return &ValidationError{Name: "total_mapping", err: errors.New(`ent: missing required field "ProcessingFile.total_mapping"`)}
@@ -381,13 +381,13 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 		})
 		_node.Status = value
 	}
-	if value, ok := pfc.mutation.RequestParameters(); ok {
+	if value, ok := pfc.mutation.FileParameters(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: processingfile.FieldRequestParameters,
+			Column: processingfile.FieldFileParameters,
 		})
-		_node.RequestParameters = value
+		_node.FileParameters = value
 	}
 	if value, ok := pfc.mutation.TotalMapping(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

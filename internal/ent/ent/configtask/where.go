@@ -144,7 +144,7 @@ func ResponseSuccessCodeSchema(v string) predicate.ConfigTask {
 }
 
 // ResponseMessageSchema applies equality check predicate on the "response_message_schema" field. It's identical to ResponseMessageSchemaEQ.
-func ResponseMessageSchema(v int32) predicate.ConfigTask {
+func ResponseMessageSchema(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldResponseMessageSchema), v))
 	})
@@ -958,21 +958,21 @@ func ResponseSuccessCodeSchemaContainsFold(v string) predicate.ConfigTask {
 }
 
 // ResponseMessageSchemaEQ applies the EQ predicate on the "response_message_schema" field.
-func ResponseMessageSchemaEQ(v int32) predicate.ConfigTask {
+func ResponseMessageSchemaEQ(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldResponseMessageSchema), v))
 	})
 }
 
 // ResponseMessageSchemaNEQ applies the NEQ predicate on the "response_message_schema" field.
-func ResponseMessageSchemaNEQ(v int32) predicate.ConfigTask {
+func ResponseMessageSchemaNEQ(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldResponseMessageSchema), v))
 	})
 }
 
 // ResponseMessageSchemaIn applies the In predicate on the "response_message_schema" field.
-func ResponseMessageSchemaIn(vs ...int32) predicate.ConfigTask {
+func ResponseMessageSchemaIn(vs ...string) predicate.ConfigTask {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -983,7 +983,7 @@ func ResponseMessageSchemaIn(vs ...int32) predicate.ConfigTask {
 }
 
 // ResponseMessageSchemaNotIn applies the NotIn predicate on the "response_message_schema" field.
-func ResponseMessageSchemaNotIn(vs ...int32) predicate.ConfigTask {
+func ResponseMessageSchemaNotIn(vs ...string) predicate.ConfigTask {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -994,30 +994,65 @@ func ResponseMessageSchemaNotIn(vs ...int32) predicate.ConfigTask {
 }
 
 // ResponseMessageSchemaGT applies the GT predicate on the "response_message_schema" field.
-func ResponseMessageSchemaGT(v int32) predicate.ConfigTask {
+func ResponseMessageSchemaGT(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldResponseMessageSchema), v))
 	})
 }
 
 // ResponseMessageSchemaGTE applies the GTE predicate on the "response_message_schema" field.
-func ResponseMessageSchemaGTE(v int32) predicate.ConfigTask {
+func ResponseMessageSchemaGTE(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldResponseMessageSchema), v))
 	})
 }
 
 // ResponseMessageSchemaLT applies the LT predicate on the "response_message_schema" field.
-func ResponseMessageSchemaLT(v int32) predicate.ConfigTask {
+func ResponseMessageSchemaLT(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldResponseMessageSchema), v))
 	})
 }
 
 // ResponseMessageSchemaLTE applies the LTE predicate on the "response_message_schema" field.
-func ResponseMessageSchemaLTE(v int32) predicate.ConfigTask {
+func ResponseMessageSchemaLTE(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldResponseMessageSchema), v))
+	})
+}
+
+// ResponseMessageSchemaContains applies the Contains predicate on the "response_message_schema" field.
+func ResponseMessageSchemaContains(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldResponseMessageSchema), v))
+	})
+}
+
+// ResponseMessageSchemaHasPrefix applies the HasPrefix predicate on the "response_message_schema" field.
+func ResponseMessageSchemaHasPrefix(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldResponseMessageSchema), v))
+	})
+}
+
+// ResponseMessageSchemaHasSuffix applies the HasSuffix predicate on the "response_message_schema" field.
+func ResponseMessageSchemaHasSuffix(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldResponseMessageSchema), v))
+	})
+}
+
+// ResponseMessageSchemaEqualFold applies the EqualFold predicate on the "response_message_schema" field.
+func ResponseMessageSchemaEqualFold(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldResponseMessageSchema), v))
+	})
+}
+
+// ResponseMessageSchemaContainsFold applies the ContainsFold predicate on the "response_message_schema" field.
+func ResponseMessageSchemaContainsFold(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldResponseMessageSchema), v))
 	})
 }
 

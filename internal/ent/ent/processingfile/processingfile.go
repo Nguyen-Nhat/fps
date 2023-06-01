@@ -21,8 +21,8 @@ const (
 	FieldResultFileURL = "result_file_url"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldRequestParameters holds the string denoting the request_parameters field in the database.
-	FieldRequestParameters = "request_parameters"
+	// FieldFileParameters holds the string denoting the file_parameters field in the database.
+	FieldFileParameters = "file_parameters"
 	// FieldTotalMapping holds the string denoting the total_mapping field in the database.
 	FieldTotalMapping = "total_mapping"
 	// FieldStatsTotalRow holds the string denoting the stats_total_row field in the database.
@@ -51,7 +51,7 @@ var Columns = []string{
 	FieldFileURL,
 	FieldResultFileURL,
 	FieldStatus,
-	FieldRequestParameters,
+	FieldFileParameters,
 	FieldTotalMapping,
 	FieldStatsTotalRow,
 	FieldStatsTotalProcessed,
