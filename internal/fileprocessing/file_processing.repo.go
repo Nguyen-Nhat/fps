@@ -157,7 +157,7 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetFileURL(fp.FileURL).
 		SetResultFileURL(fp.ResultFileURL).
 		SetStatus(fp.Status).
-		SetRequestParameters(fp.RequestParameters).
+		SetFileParameters(fp.FileParameters).
 		SetTotalMapping(fp.TotalMapping).
 		SetStatsTotalRow(fp.StatsTotalRow).
 		SetStatsTotalProcessed(fp.StatsTotalProcessed).
