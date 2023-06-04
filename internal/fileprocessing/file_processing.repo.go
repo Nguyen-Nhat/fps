@@ -3,14 +3,14 @@ package fileprocessing
 import (
 	"context"
 	"database/sql"
+	entsql "entgo.io/ent/dialect/sql"
 	"errors"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"time"
 
-	entsql "entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
@@ -21,7 +21,7 @@ type (
 		FindByID(context.Context, int) (*ProcessingFile, error)
 		FindByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
 		UpdateStatusOne(context.Context, int, int16) (*ProcessingFile, error)
-		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay) (*ProcessingFile, error)
+		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay, *string) (*ProcessingFile, error)
 		UpdateStatusAndStatsAndResultFileUrl(context.Context, int, int16, int, string) (*ProcessingFile, error)
 		UpdateByExtractedData(ctx context.Context, id int, status int16, totalMapping int, statsTotalRow int) (*ProcessingFile, error)
 		PingDB(context.Context, int)
@@ -61,7 +61,7 @@ func (r *repoImpl) FindByStatuses(ctx context.Context, statuses []int16) ([]*Pro
 	pfs, err := r.client.ProcessingFile.Query().Where(processingfile.StatusIn(statuses...)).All(ctx)
 
 	if err != nil {
-		logger.Errorf("fail to get file award point by status with status %#v", statuses)
+		logger.Errorf("fail to get file award point by status with status %#v, err = %v", statuses, err)
 		return nil, errors.New("fail to get file award point by status")
 	}
 
@@ -78,14 +78,20 @@ func (r *repoImpl) UpdateStatusOne(ctx context.Context, id int, status int16) (*
 	}, nil
 }
 
-func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, status int16, errorDisplay ErrorDisplay) (*ProcessingFile, error) {
-	fap, err := r.client.ProcessingFile.UpdateOneID(id).
+func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, status int16, errorDisplay ErrorDisplay, resultFileURL *string) (*ProcessingFile, error) {
+	updateOps := r.client.ProcessingFile.UpdateOneID(id).
 		SetStatus(status).
-		SetErrorDisplay(string(errorDisplay)).
-		Save(ctx)
+		SetErrorDisplay(string(errorDisplay))
+
+	if resultFileURL != nil {
+		updateOps.SetResultFileURL(*resultFileURL)
+	}
+
+	fap, err := updateOps.Save(ctx)
 	if err != nil {
 		return nil, err
 	}
+
 	return &ProcessingFile{
 		ProcessingFile: *fap,
 	}, nil

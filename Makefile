@@ -26,3 +26,6 @@ migrate:
 
 jobs:
 	go run cmd/server/main.go jobs
+
+jobs-process-file-flatten:
+	go run cmd/server/main.go jobs process-file flatten
