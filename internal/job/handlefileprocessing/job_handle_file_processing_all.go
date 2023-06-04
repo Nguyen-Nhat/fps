@@ -2,13 +2,14 @@ package handlefileprocessing
 
 import (
 	"context"
+	"github.com/robfig/cron/v3"
+	"sync"
+
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
-	"github.com/robfig/cron/v3"
-	"sync"
 )
 
 type JobHandleProcessingFileAll struct {
@@ -72,7 +73,7 @@ func (j *JobHandleProcessingFileAll) start() {
 	ctx := context.Background()
 
 	// I. Get all ProcessingFile in DB
-	processingFiles, err := j.fpService.GetListFileAwardPointByStatuses(ctx, []int16{fileprocessing.StatusInit, fileprocessing.StatusProcessing})
+	processingFiles, err := j.fpService.GetListFileByStatuses(ctx, []int16{fileprocessing.StatusInit, fileprocessing.StatusProcessing})
 	if err != nil {
 		logger.Errorf("===== Cannot get list Processing File, got: %v", err)
 		return

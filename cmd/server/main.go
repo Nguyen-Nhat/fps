@@ -1,16 +1,14 @@
 package main
 
 import (
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -34,20 +32,7 @@ func main() {
 			return srv.Serve(cfg.Server.HTTP)
 		},
 		Commands: []*cli.Command{
-			{
-				Name:  "jobs",
-				Usage: "Loyalty File Processing Jobs",
-				Action: func(*cli.Context) error {
-					// Init Job
-					job.InitJob(cfg)
-
-					sig := make(chan os.Signal, 1)
-					signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
-					endSignal := <-sig
-					logger.Infof("Job end due to signal: %s", endSignal.String())
-					return nil
-				},
-			},
+			job.Command(cfg),
 		},
 	}
 
