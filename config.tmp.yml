@@ -31,9 +31,9 @@ job:
     schedule: '*/3 * * * *' # every 3 minutes
   flatten:
     schedule: '*/3 * * * *' # every 3 minutes
-  executeTask:
+  execute_task:
     schedule: '*/3 * * * *' # every 3 minutes
-  updateStatus:
+  update_status:
     schedule: '*/3 * * * *' # every 3 minutes
 
 provider_config:

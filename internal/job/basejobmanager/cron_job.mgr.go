@@ -34,7 +34,7 @@ func InitCron(jobMgr CronJobManager) *cron.Cron {
 		logger.Errorf("Init %s failed: %v", jobName, err)
 	}
 
-	logger.Infof("Init %s success: ID = %v", jobName, id)
+	logger.Infof("Init %s success: ID = %v, cron = %+v", jobName, id, jobMgr.GetSchedulerConfig())
 
 	return cronExecuteTask
 }
