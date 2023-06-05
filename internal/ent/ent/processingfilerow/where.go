@@ -122,6 +122,13 @@ func TaskDependsOn(v string) predicate.ProcessingFileRow {
 	})
 }
 
+// TaskRequestCurl applies equality check predicate on the "task_request_curl" field. It's identical to TaskRequestCurlEQ.
+func TaskRequestCurl(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
 // TaskRequestRaw applies equality check predicate on the "task_request_raw" field. It's identical to TaskRequestRawEQ.
 func TaskRequestRaw(v string) predicate.ProcessingFileRow {
 	return predicate.ProcessingFileRow(func(s *sql.Selector) {
@@ -657,6 +664,105 @@ func TaskDependsOnEqualFold(v string) predicate.ProcessingFileRow {
 func TaskDependsOnContainsFold(v string) predicate.ProcessingFileRow {
 	return predicate.ProcessingFileRow(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTaskDependsOn), v))
+	})
+}
+
+// TaskRequestCurlEQ applies the EQ predicate on the "task_request_curl" field.
+func TaskRequestCurlEQ(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlNEQ applies the NEQ predicate on the "task_request_curl" field.
+func TaskRequestCurlNEQ(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlIn applies the In predicate on the "task_request_curl" field.
+func TaskRequestCurlIn(vs ...string) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldTaskRequestCurl), v...))
+	})
+}
+
+// TaskRequestCurlNotIn applies the NotIn predicate on the "task_request_curl" field.
+func TaskRequestCurlNotIn(vs ...string) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldTaskRequestCurl), v...))
+	})
+}
+
+// TaskRequestCurlGT applies the GT predicate on the "task_request_curl" field.
+func TaskRequestCurlGT(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlGTE applies the GTE predicate on the "task_request_curl" field.
+func TaskRequestCurlGTE(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlLT applies the LT predicate on the "task_request_curl" field.
+func TaskRequestCurlLT(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlLTE applies the LTE predicate on the "task_request_curl" field.
+func TaskRequestCurlLTE(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlContains applies the Contains predicate on the "task_request_curl" field.
+func TaskRequestCurlContains(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlHasPrefix applies the HasPrefix predicate on the "task_request_curl" field.
+func TaskRequestCurlHasPrefix(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlHasSuffix applies the HasSuffix predicate on the "task_request_curl" field.
+func TaskRequestCurlHasSuffix(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlEqualFold applies the EqualFold predicate on the "task_request_curl" field.
+func TaskRequestCurlEqualFold(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTaskRequestCurl), v))
+	})
+}
+
+// TaskRequestCurlContainsFold applies the ContainsFold predicate on the "task_request_curl" field.
+func TaskRequestCurlContainsFold(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTaskRequestCurl), v))
 	})
 }
 

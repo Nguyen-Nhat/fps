@@ -2,6 +2,7 @@ package flatten
 
 import (
 	"context"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"github.com/robfig/cron/v3"
 	"sync"
 
@@ -14,9 +15,10 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 )
 
-// JobFlattenManager ...
-type JobFlattenManager struct {
-	cfg config.SchedulerConfig
+// jobFlattenManager ...
+type jobFlattenManager struct {
+	cfg     config.SchedulerConfig
+	cronJob *cron.Cron
 	// services
 	fpService   fileprocessing.Service
 	fprService  fileprocessingrow.Service
@@ -26,7 +28,7 @@ type JobFlattenManager struct {
 	cfgTaskService    configtask.Service
 }
 
-var jobFlattenMgr *JobFlattenManager
+var jobFlattenMgr *jobFlattenManager
 var once sync.Once
 
 // NewJobFlattenManager ...
@@ -37,10 +39,10 @@ func NewJobFlattenManager(
 	fileService fileservice.IService,
 	cfgMappingService configmapping.Service,
 	cfgTaskService configtask.Service,
-) *JobFlattenManager {
+) basejobmanager.CronJobManager {
 	if jobFlattenMgr == nil {
 		once.Do(func() {
-			jobFlattenMgr = &JobFlattenManager{
+			jobFlattenMgr = &jobFlattenManager{
 				cfg:               cfg,
 				fpService:         fpService,
 				fprService:        fprService,
@@ -48,17 +50,31 @@ func NewJobFlattenManager(
 				cfgMappingService: cfgMappingService,
 				cfgTaskService:    cfgTaskService,
 			}
-			jobFlattenMgr.initCron()
 		})
 	}
+
+	basejobmanager.InitCron(jobFlattenMgr)
+
 	return jobFlattenMgr
+}
+
+func (mgr *jobFlattenManager) Start() {
+	mgr.cronJob.Start()
+}
+
+func (mgr *jobFlattenManager) GetJobName() string {
+	return "Job Flatten ProcessingFile"
+}
+
+func (mgr *jobFlattenManager) GetSchedulerConfig() config.SchedulerConfig {
+	return mgr.cfg
 }
 
 // Execute ...
 // Logic:
 //  1. Fetch all file that have status = INIT
 //  2. Flattening each file
-func (mgr *JobFlattenManager) Execute() {
+func (mgr *jobFlattenManager) Execute() {
 	// 1. Fetch all file that have status = INIT
 	ctx := context.Background()
 	fpList, err := mgr.fpService.GetListFileByStatuses(ctx, []int16{fileprocessing.StatusInit})
@@ -74,28 +90,9 @@ func (mgr *JobFlattenManager) Execute() {
 	}
 
 	// 3. Flattening each file
-	jobFlatten := newJobFlatten(mgr.cfg, mgr.fpService, mgr.fprService, mgr.fileService, mgr.cfgMappingService, mgr.cfgTaskService)
-	for _, fp := range fpList { // todo: can use multi thread for improving performance
+	jobFlatten := newJobFlatten(mgr.fpService, mgr.fprService, mgr.fileService, mgr.cfgMappingService, mgr.cfgTaskService)
+	// todo: can use multi thread for improving performance
+	for _, fp := range fpList {
 		jobFlatten.Flatten(ctx, *fp)
 	}
-}
-
-func (mgr *JobFlattenManager) initCron() {
-	cronFlatten := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
-
-	jobName := "Job Flatten ProcessingFile"
-
-	id, err := cronFlatten.AddFunc(mgr.cfg.Schedule, func() {
-		logger.Infof("\n")
-		logger.Infof("========== Running %v: Start  ...", jobName)
-		mgr.Execute()
-		logger.Infof("========== Running %v: Finish ...\n", jobName)
-	})
-	if err != nil {
-		logger.Errorf("Init Job failed: %v", err)
-	}
-
-	logger.Infof("Init Job success: ID = %v", id)
-
-	cronFlatten.Start()
 }

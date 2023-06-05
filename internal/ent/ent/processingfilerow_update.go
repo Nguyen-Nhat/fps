@@ -85,6 +85,12 @@ func (pfru *ProcessingFileRowUpdate) SetTaskDependsOn(s string) *ProcessingFileR
 	return pfru
 }
 
+// SetTaskRequestCurl sets the "task_request_curl" field.
+func (pfru *ProcessingFileRowUpdate) SetTaskRequestCurl(s string) *ProcessingFileRowUpdate {
+	pfru.mutation.SetTaskRequestCurl(s)
+	return pfru
+}
+
 // SetTaskRequestRaw sets the "task_request_raw" field.
 func (pfru *ProcessingFileRowUpdate) SetTaskRequestRaw(s string) *ProcessingFileRowUpdate {
 	pfru.mutation.SetTaskRequestRaw(s)
@@ -298,6 +304,13 @@ func (pfru *ProcessingFileRowUpdate) sqlSave(ctx context.Context) (n int, err er
 			Column: processingfilerow.FieldTaskDependsOn,
 		})
 	}
+	if value, ok := pfru.mutation.TaskRequestCurl(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldTaskRequestCurl,
+		})
+	}
 	if value, ok := pfru.mutation.TaskRequestRaw(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -434,6 +447,12 @@ func (pfruo *ProcessingFileRowUpdateOne) SetTaskMapping(s string) *ProcessingFil
 // SetTaskDependsOn sets the "task_depends_on" field.
 func (pfruo *ProcessingFileRowUpdateOne) SetTaskDependsOn(s string) *ProcessingFileRowUpdateOne {
 	pfruo.mutation.SetTaskDependsOn(s)
+	return pfruo
+}
+
+// SetTaskRequestCurl sets the "task_request_curl" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetTaskRequestCurl(s string) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetTaskRequestCurl(s)
 	return pfruo
 }
 
@@ -678,6 +697,13 @@ func (pfruo *ProcessingFileRowUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfilerow.FieldTaskDependsOn,
+		})
+	}
+	if value, ok := pfruo.mutation.TaskRequestCurl(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldTaskRequestCurl,
 		})
 	}
 	if value, ok := pfruo.mutation.TaskRequestRaw(); ok {

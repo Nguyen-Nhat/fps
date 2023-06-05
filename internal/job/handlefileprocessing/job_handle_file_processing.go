@@ -276,7 +276,7 @@ func (j *jobHandleProcessingFileImpl) handleFileInProcessingStatus(ctx context.C
 
 }
 
-func toResponseResult(requestBody map[string]string, responseBody string, messageRes string, isSuccess bool) fileprocessingrow.UpdateAfterExecutingByJob {
+func toResponseResult(requestBody map[string]interface{}, responseBody string, messageRes string, isSuccess bool) fileprocessingrow.UpdateAfterExecutingByJob {
 	// 1. Common value
 	reqByte, _ := json.Marshal(requestBody)
 	updateRequest := fileprocessingrow.UpdateAfterExecutingByJob{

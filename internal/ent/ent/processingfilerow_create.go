@@ -56,6 +56,12 @@ func (pfrc *ProcessingFileRowCreate) SetTaskDependsOn(s string) *ProcessingFileR
 	return pfrc
 }
 
+// SetTaskRequestCurl sets the "task_request_curl" field.
+func (pfrc *ProcessingFileRowCreate) SetTaskRequestCurl(s string) *ProcessingFileRowCreate {
+	pfrc.mutation.SetTaskRequestCurl(s)
+	return pfrc
+}
+
 // SetTaskRequestRaw sets the "task_request_raw" field.
 func (pfrc *ProcessingFileRowCreate) SetTaskRequestRaw(s string) *ProcessingFileRowCreate {
 	pfrc.mutation.SetTaskRequestRaw(s)
@@ -221,6 +227,9 @@ func (pfrc *ProcessingFileRowCreate) check() error {
 	if _, ok := pfrc.mutation.TaskDependsOn(); !ok {
 		return &ValidationError{Name: "task_depends_on", err: errors.New(`ent: missing required field "ProcessingFileRow.task_depends_on"`)}
 	}
+	if _, ok := pfrc.mutation.TaskRequestCurl(); !ok {
+		return &ValidationError{Name: "task_request_curl", err: errors.New(`ent: missing required field "ProcessingFileRow.task_request_curl"`)}
+	}
 	if _, ok := pfrc.mutation.TaskRequestRaw(); !ok {
 		return &ValidationError{Name: "task_request_raw", err: errors.New(`ent: missing required field "ProcessingFileRow.task_request_raw"`)}
 	}
@@ -316,6 +325,14 @@ func (pfrc *ProcessingFileRowCreate) createSpec() (*ProcessingFileRow, *sqlgraph
 			Column: processingfilerow.FieldTaskDependsOn,
 		})
 		_node.TaskDependsOn = value
+	}
+	if value, ok := pfrc.mutation.TaskRequestCurl(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldTaskRequestCurl,
+		})
+		_node.TaskRequestCurl = value
 	}
 	if value, ok := pfrc.mutation.TaskRequestRaw(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -99,6 +99,7 @@ var (
 		{Name: "task_index", Type: field.TypeInt32},
 		{Name: "task_mapping", Type: field.TypeString, Size: 2147483647},
 		{Name: "task_depends_on", Type: field.TypeString},
+		{Name: "task_request_curl", Type: field.TypeString, Size: 2147483647},
 		{Name: "task_request_raw", Type: field.TypeString, Size: 2147483647},
 		{Name: "task_response_raw", Type: field.TypeString, Size: 2147483647},
 		{Name: "status", Type: field.TypeInt16},

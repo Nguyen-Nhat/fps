@@ -3735,6 +3735,7 @@ type ProcessingFileRowMutation struct {
 	addtask_index     *int32
 	task_mapping      *string
 	task_depends_on   *string
+	task_request_curl *string
 	task_request_raw  *string
 	task_response_raw *string
 	status            *int16
@@ -4124,6 +4125,42 @@ func (m *ProcessingFileRowMutation) ResetTaskDependsOn() {
 	m.task_depends_on = nil
 }
 
+// SetTaskRequestCurl sets the "task_request_curl" field.
+func (m *ProcessingFileRowMutation) SetTaskRequestCurl(s string) {
+	m.task_request_curl = &s
+}
+
+// TaskRequestCurl returns the value of the "task_request_curl" field in the mutation.
+func (m *ProcessingFileRowMutation) TaskRequestCurl() (r string, exists bool) {
+	v := m.task_request_curl
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskRequestCurl returns the old "task_request_curl" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldTaskRequestCurl(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskRequestCurl is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskRequestCurl requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskRequestCurl: %w", err)
+	}
+	return oldValue.TaskRequestCurl, nil
+}
+
+// ResetTaskRequestCurl resets all changes to the "task_request_curl" field.
+func (m *ProcessingFileRowMutation) ResetTaskRequestCurl() {
+	m.task_request_curl = nil
+}
+
 // SetTaskRequestRaw sets the "task_request_raw" field.
 func (m *ProcessingFileRowMutation) SetTaskRequestRaw(s string) {
 	m.task_request_raw = &s
@@ -4435,7 +4472,7 @@ func (m *ProcessingFileRowMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileRowMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.file_id != nil {
 		fields = append(fields, processingfilerow.FieldFileID)
 	}
@@ -4453,6 +4490,9 @@ func (m *ProcessingFileRowMutation) Fields() []string {
 	}
 	if m.task_depends_on != nil {
 		fields = append(fields, processingfilerow.FieldTaskDependsOn)
+	}
+	if m.task_request_curl != nil {
+		fields = append(fields, processingfilerow.FieldTaskRequestCurl)
 	}
 	if m.task_request_raw != nil {
 		fields = append(fields, processingfilerow.FieldTaskRequestRaw)
@@ -4495,6 +4535,8 @@ func (m *ProcessingFileRowMutation) Field(name string) (ent.Value, bool) {
 		return m.TaskMapping()
 	case processingfilerow.FieldTaskDependsOn:
 		return m.TaskDependsOn()
+	case processingfilerow.FieldTaskRequestCurl:
+		return m.TaskRequestCurl()
 	case processingfilerow.FieldTaskRequestRaw:
 		return m.TaskRequestRaw()
 	case processingfilerow.FieldTaskResponseRaw:
@@ -4530,6 +4572,8 @@ func (m *ProcessingFileRowMutation) OldField(ctx context.Context, name string) (
 		return m.OldTaskMapping(ctx)
 	case processingfilerow.FieldTaskDependsOn:
 		return m.OldTaskDependsOn(ctx)
+	case processingfilerow.FieldTaskRequestCurl:
+		return m.OldTaskRequestCurl(ctx)
 	case processingfilerow.FieldTaskRequestRaw:
 		return m.OldTaskRequestRaw(ctx)
 	case processingfilerow.FieldTaskResponseRaw:
@@ -4594,6 +4638,13 @@ func (m *ProcessingFileRowMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTaskDependsOn(v)
+		return nil
+	case processingfilerow.FieldTaskRequestCurl:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskRequestCurl(v)
 		return nil
 	case processingfilerow.FieldTaskRequestRaw:
 		v, ok := value.(string)
@@ -4773,6 +4824,9 @@ func (m *ProcessingFileRowMutation) ResetField(name string) error {
 		return nil
 	case processingfilerow.FieldTaskDependsOn:
 		m.ResetTaskDependsOn()
+		return nil
+	case processingfilerow.FieldTaskRequestCurl:
+		m.ResetTaskRequestCurl()
 		return nil
 	case processingfilerow.FieldTaskRequestRaw:
 		m.ResetTaskRequestRaw()

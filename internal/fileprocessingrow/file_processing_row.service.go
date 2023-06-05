@@ -67,7 +67,7 @@ func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileId i
 func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	request UpdateAfterExecutingByJob) (*ProcessingFileRow, error) {
 	logger.Infof("Prepare update %v with request=%+v", Name(), request)
-	pfr, err := s.repo.UpdateByJob(ctx, id, request.RequestRaw, request.ResponseRaw, request.Status, request.ErrorDisplay)
+	pfr, err := s.repo.UpdateByJob(ctx, id, request.RequestCurl, request.RequestRaw, request.ResponseRaw, request.Status, request.ErrorDisplay)
 	if err != nil {
 		logger.Errorf("Failed to update %v, error=%v", Name(), err)
 		return nil, err

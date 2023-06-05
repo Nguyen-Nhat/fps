@@ -62,7 +62,8 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 
 	// 1. Get value for each RequestField in each Task
 	var tasksUpdated []configloader.ConfigTaskMD
-	for _, task := range configMapping.Tasks {
+	for _, orgTask := range configMapping.Tasks {
+		task := orgTask.Clone()
 		// 1.1. RequestField in Request Params
 		for fieldName, reqField := range task.RequestParamsMap {
 			// 1.1.1. Get value in String type
@@ -71,14 +72,16 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			case configloader.ValueDependsOnExcel:
 				cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(rowID, rowData, reqField)
 				if len(errorRowsExel) == 0 {
-					errorRows = append(errorRows, errorRowsExel...)
 					valueStr = cellValue
+				} else {
+					errorRows = append(errorRows, errorRowsExel...)
 				}
 			case configloader.ValueDependsOnParam:
 				paramValue, errorRowsParams := validateAndGetValueForFieldParam(rowID, reqField, configMapping.FileParameters)
 				if len(errorRowsParams) == 0 {
-					errorRows = append(errorRows, errorRowsParams...)
 					valueStr = paramValue
+				} else {
+					errorRows = append(errorRows, errorRowsParams...)
 				}
 			case configloader.ValueDependsOnNone:
 				valueStr = reqField.Value

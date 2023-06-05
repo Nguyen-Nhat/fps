@@ -211,7 +211,7 @@ func toResponseMD(task configtask.ConfigTask) (ResponseMD, error) {
 
 	// 3. Response
 	responseMD := ResponseMD{
-		HttpStatusSuccess: task.ResponseSuccessHTTPStatus,
+		HttpStatusSuccess: &task.ResponseSuccessHTTPStatus,
 		Code:              responseCode,
 		Message:           responseMsg,
 	}

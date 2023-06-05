@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
@@ -16,8 +15,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 )
 
-type JobFlatten struct {
-	cfg config.SchedulerConfig
+type jobFlatten struct {
 	// services
 	fpService   fileprocessing.Service
 	fprService  fileprocessingrow.Service
@@ -28,15 +26,13 @@ type JobFlatten struct {
 }
 
 func newJobFlatten(
-	cfg config.SchedulerConfig,
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
 	fileService fileservice.IService,
 	cfgMappingService configmapping.Service,
 	cfgTaskService configtask.Service,
-) *JobFlatten {
-	return &JobFlatten{
-		cfg:               cfg,
+) *jobFlatten {
+	return &jobFlatten{
 		fpService:         fpService,
 		fprService:        fprService,
 		fileService:       fileService,
@@ -62,7 +58,7 @@ func newJobFlatten(
 //     -> if error 	==> terminate, remaining rows will be executed at next run cycle
 //
 //  6. Update processing_file: status=Processing, total_mapping, stats_total_row
-func (job *JobFlatten) Flatten(ctx context.Context, file fileprocessing.ProcessingFile) {
+func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.ProcessingFile) {
 	logger.Infof("----- Start flattening ProcessingFile with ID = %v \nFile = %+v", file.ID, file)
 
 	// 1. Check status
@@ -125,7 +121,7 @@ func (job *JobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 // ---------------------------------------------------------------------------------------------------------------------
 
 // updateFileProcessingToFailed ...
-func (job *JobFlatten) updateFileProcessingToFailed(ctx context.Context, file fileprocessing.ProcessingFile, errMsg fileprocessing.ErrorDisplay, resultFileURL *string) {
+func (job *jobFlatten) updateFileProcessingToFailed(ctx context.Context, file fileprocessing.ProcessingFile, errMsg fileprocessing.ErrorDisplay, resultFileURL *string) {
 	_, updateStatusErr := job.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errMsg, resultFileURL)
 	if updateStatusErr != nil {
 		logger.ErrorT("Cannot update %v to fail, got error %v", fileprocessing.Name(), updateStatusErr)
@@ -133,7 +129,7 @@ func (job *JobFlatten) updateFileProcessingToFailed(ctx context.Context, file fi
 }
 
 // updateFileResult ...
-func (job *JobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD, fileURL string, errorRows []ErrorRow) string {
+func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD, fileURL string, errorRows []ErrorRow) string {
 	// 1. Convert errorRows to errorDisplays
 	errorDisplays := make(map[int]string)
 	for _, errorRow := range errorRows {
@@ -164,7 +160,7 @@ func (job *JobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 	return resultFileUrl
 }
 
-func (job *JobFlatten) extractDataAndUpdateFileStatusInDB(ctx context.Context, fileId int,
+func (job *jobFlatten) extractDataAndUpdateFileStatusInDB(ctx context.Context, fileId int,
 	configMappingMDs []configloader.ConfigMappingMD) error {
 	// 1. Add extracted data to ProcessingFileRow
 	var pfrCreateList []fileprocessingrow.CreateProcessingFileRowJob

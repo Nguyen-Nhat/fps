@@ -1,5 +1,7 @@
 package configloader
 
+import "git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
+
 // ConfigMappingMD ...
 type ConfigMappingMD struct {
 	// metadata get from file processing
@@ -63,7 +65,7 @@ type RequestFieldMDChild struct {
 
 // ResponseMD ...
 type ResponseMD struct {
-	HttpStatusSuccess int32
+	HttpStatusSuccess *int32
 	Code              ResponseCode
 	Message           ResponseMsg
 }
@@ -79,4 +81,24 @@ type ResponseCode struct {
 // ResponseMsg ...
 type ResponseMsg struct {
 	Path string `json:"path"`
+}
+
+func (ct *ConfigTaskMD) Clone() ConfigTaskMD {
+	return ConfigTaskMD{
+		TaskIndex: ct.TaskIndex,
+		// Request
+		Endpoint:         ct.Endpoint,
+		Method:           ct.Method,
+		Header:           utils.CloneMap(ct.Header),
+		RequestParamsMap: utils.CloneMap(ct.RequestParamsMap),
+		RequestBodyMap:   utils.CloneMap(ct.RequestBodyMap),
+		// Request that filled converted field's value
+		RequestParams: utils.CloneMap(ct.RequestParams),
+		RequestBody:   utils.CloneMap(ct.RequestBody),
+		// Response
+		Response: ct.Response,
+		// Row data in importing file -> is injected in validation phase
+		ImportRowData:  ct.ImportRowData,
+		ImportRowIndex: ct.ImportRowIndex,
+	}
 }
