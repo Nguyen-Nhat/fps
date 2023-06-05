@@ -88,13 +88,13 @@ func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, map[int]string, er
 	totalSuccess := 0
 	totalFailed := 0
 	errorDisplays := make(map[int]string)
-	for rowIndex, stats := range statistics {
+	for _, stats := range statistics {
 		if stats.IsSuccessAll() {
 			totalSuccess++
 		} else if stats.IsContainsFailed() {
 			totalFailed++
 			errorDisplay := stats.GetErrorDisplay()
-			errorDisplays[rowIndex] = errorDisplay
+			errorDisplays[stats.RowIndex] = errorDisplay
 		}
 	}
 

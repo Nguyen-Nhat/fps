@@ -1,7 +1,6 @@
 package job
 
 import (
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executetask"
 	"github.com/urfave/cli/v2"
 	"github.com/xo/dburl"
 	"os"
@@ -13,8 +12,10 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executetask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/flatten"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/handlefileprocessing"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/updatestatus"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 )
@@ -85,6 +86,19 @@ func Command(cfg config.Config) *cli.Command {
 						Action: func(*cli.Context) error {
 							job := executetask.NewJobExecuteTaskManager(cfg.JobConfig.FlattenConfig,
 								fpService, fprService)
+							job.Start()
+
+							waitForKillingSign()
+							return nil
+						},
+					},
+					{
+						Name:  "update-status",
+						Usage: "update status for file processing",
+						Action: func(*cli.Context) error {
+							job := updatestatus.NewJobUpdateStatusManager(cfg.JobConfig.FlattenConfig,
+								fpService, fprService, fileService,
+								cmService)
 							job.Start()
 
 							waitForKillingSign()
