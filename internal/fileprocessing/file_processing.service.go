@@ -2,7 +2,6 @@ package fileprocessing
 
 import (
 	"context"
-
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
@@ -15,6 +14,7 @@ import (
 type (
 	Service interface {
 		CreateFileProcessing(ctx context.Context, req *CreateFileProcessingReqDTO) (*CreateFileProcessingResDTO, error)
+		GetFileProcessHistory(ctx context.Context, req *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error)
 
 		FindById(context.Context, int) (*ProcessingFile, error)
 		GetListFileAwardPointByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
@@ -30,6 +30,12 @@ type (
 )
 
 var _ Service = &ServiceImpl{}
+
+func NewService(repo Repo) Service {
+	return &ServiceImpl{
+		repo: repo,
+	}
+}
 
 // CreateFileProcessing ... Create new file processing. If display name is not provided, it will be extracted from file name
 func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileProcessingReqDTO) (*CreateFileProcessingResDTO, error) {
@@ -104,12 +110,6 @@ func (s *ServiceImpl) UpdateToProcessingStatusWithExtractedData(ctx context.Cont
 		logger.Errorf("Update %v failed, got err %v", Name(), err)
 	}
 	return fp, nil
-}
-
-func NewService(repo Repo) *ServiceImpl {
-	return &ServiceImpl{
-		repo: repo,
-	}
 }
 
 func (s *ServiceImpl) GetFileProcessHistory(ctx context.Context, req *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error) {

@@ -17,3 +17,7 @@ const (
 	ExcelMsgLength              = "đô dài phải"
 	ExcelMsgValue               = "giá trị phải"
 )
+
+const (
+	EmptyString = ""
+)

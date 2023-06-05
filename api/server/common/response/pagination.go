@@ -9,11 +9,11 @@ type Pagination struct {
 	TotalPage   int `json:"totalPage"`
 }
 
-func GetPagination(total int, page int, size int) *Pagination {
+func GetPagination(total int, page int, pageSize int) *Pagination {
 	return &Pagination{
 		CurrentPage: page,
-		PageSize:    size,
+		PageSize:    pageSize,
 		TotalItems:  total,
-		TotalPage:   int(math.Ceil(float64(total) / float64(size))),
+		TotalPage:   int(math.Ceil(float64(total) / float64(pageSize))),
 	}
 }

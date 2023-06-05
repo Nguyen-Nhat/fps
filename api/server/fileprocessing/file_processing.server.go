@@ -3,17 +3,13 @@ package fileprocessing
 import (
 	"context"
 	"database/sql"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
-	"net/http"
-
-	"fmt"
 	commonError "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"github.com/go-chi/render"
-	"strconv"
+	"net/http"
 )
 
 type (
@@ -24,88 +20,70 @@ type (
 
 	// Server ...
 	Server struct {
-		service *fileprocessing.ServiceImpl
+		service fileprocessing.Service
 	}
 )
 
-func (s *Server) GetFileProcessHistoryAPI() func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		data, err := validateParameterAndSetDataValue(r)
-		if err != nil {
-			render.Render(w, r, commonError.ErrRenderInvalidRequest(err))
-			return
-		}
+// *Server implements IServer
+var _ IServer = &Server{}
 
-		resp, err := s.GetFileProcessHistory(r.Context(), data)
-		if err != nil {
-			render.Render(w, r, commonError.ToErrorResponse(err))
-			return
-		}
-
-		logger.Infof("===== Response Get List Upload file: \n%v\n", utils.JsonString(resp))
-
-		render.Render(w, r, resp)
+// InitFileProcessingServer ...
+func InitFileProcessingServer(db *sql.DB) *Server {
+	repo := fileprocessing.NewRepo(db)
+	service := fileprocessing.NewService(repo)
+	return &Server{
+		service: service,
 	}
 }
 
-func (s *Server) GetFileProcessHistory(ctx context.Context, req *fileprocessing.GetFileProcessHistoryDTO) (*res.BaseResponse[GetFileProcessHistoryData], error) {
-	fps, pagination, err := s.service.GetFileProcessHistory(ctx, req)
+func (s *Server) GetFileProcessHistoryAPI() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 1.Bind data & validate input
+		data := &GetFileProcessHistoryRequest{}
+		if err := bindAndValidateRequestParams(r, data); err != nil {
+			logger.Errorf("===== GetFileProcessHistoryAPI: Bind data and validate input error: %+v", err.Error())
+			_ = render.Render(w, r, commonError.ErrRenderInvalidRequest(err))
+			return
+		}
+
+		// 2. Handle request
+		resp, err := s.GetFileProcessHistory(r.Context(), data)
+		if err != nil {
+			logger.Errorf("===== GetFileProcessHistoryAPI handler error: %+v", err.Error())
+			_ = render.Render(w, r, commonError.ToErrorResponse(err))
+			return
+		}
+
+		// 3. Render response
+		logger.Infof("===== Response Get List Upload file: \n%v\n", utils.JsonString(resp))
+		err = render.Render(w, r, resp)
+		if err != nil {
+			logger.Errorf("===== GetFileProcessHistoryAPI render response error: %+v", err.Error())
+			_ = render.Render(w, r, commonError.ToErrorResponse(err))
+			return
+		}
+	}
+}
+
+func (s *Server) GetFileProcessHistory(ctx context.Context, req *GetFileProcessHistoryRequest) (*res.BaseResponse[GetFileProcessHistoryData], error) {
+	// 1. Map the request to internal DTO
+	input := &fileprocessing.GetFileProcessHistoryDTO{
+		ClientID:  req.ClientID,
+		CreatedBy: req.CreatedBy,
+		Page:      req.Page,
+		PageSize:  req.PageSize,
+	}
+
+	// 2. Handle request
+	fps, pagination, err := s.service.GetFileProcessHistory(ctx, input)
 	if err != nil {
 		logger.Infof("Error in GetFileProcessHistory Internal")
 		return nil, err
 	}
-
+	// 3. Return
 	resp := fromInternalToGetFileHistoryData(fps, pagination)
 	resp2 := res.ToResponse(resp)
 	return resp2, nil
-}
-
-func validateParameterAndSetDataValue(r *http.Request) (*fileprocessing.GetFileProcessHistoryDTO, error) {
-	data := &fileprocessing.GetFileProcessHistoryDTO{}
-	data.InitDefaultValue()
-
-	values := r.URL.Query()
-	logger.Infof("===== Request Get List Upload file: \n%+v\n", values)
-	for k, v := range values {
-		if len(v) > 1 {
-			return nil, fmt.Errorf("parameter cannot have multiple value")
-		}
-
-		switch k {
-		case "clientId":
-			val, err := strconv.Atoi(v[0])
-			if err != nil {
-				return nil, fmt.Errorf("invalid clientId parameter")
-			}
-			data.ClientId = int32(val)
-		case "page":
-			val, err := strconv.Atoi(v[0])
-			if err != nil {
-				return nil, fmt.Errorf("invalid page parameter")
-			}
-			if val == 0 || val > constant.PaginationMaxPage {
-				return nil, fmt.Errorf("page out of range")
-			}
-			data.Page = val
-		case "size":
-			val, err := strconv.Atoi(v[0])
-			if err != nil {
-				return nil, fmt.Errorf("invalid size parameter")
-			}
-			if val == 0 || val > constant.PaginationMaxSize {
-				return nil, fmt.Errorf("size out of range")
-			}
-			data.Size = val
-		default:
-
-		}
-	}
-
-	if data.ClientId == 0 {
-		return nil, fmt.Errorf("missing clientId")
-	}
-
-	return data, nil
 }
 
 func (s *Server) CreateProcessByFileAPI() func(http.ResponseWriter, *http.Request) {
@@ -152,15 +130,4 @@ func (s *Server) CreateProcessingFile(ctx context.Context, request *CreateFilePr
 	}
 	resp2 := res.ToResponse(resp)
 	return resp2, nil
-}
-
-var _ IServer = &Server{}
-
-// InitFileProcessingServer ...
-func InitFileProcessingServer(db *sql.DB) *Server {
-	repo := fileprocessing.NewRepo(db)
-	service := fileprocessing.NewService(repo)
-	return &Server{
-		service: service,
-	}
 }
