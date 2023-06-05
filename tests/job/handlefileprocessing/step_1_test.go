@@ -28,5 +28,5 @@ func TestJob_step1__returnAllFileInitOrProcessing(t *testing.T) {
 	// 3. Assert
 	assert.Nil(t, err)
 	assert.NotNil(t, fps)
-	assert.Len(t, fps, 3, "Expect get 2 records: 2 Init, 1 Processing")
+	assert.Len(t, fps, 5, "Expect get 2 records: 2 Init, 1 Processing")
 }

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -175,16 +176,20 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 // Implementation function ---------------------------------------------------------------------------------------------
 
 func (r *repoImpl) FindByClientIdAndPagination(ctx context.Context, dto *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error) {
-	query := r.client.ProcessingFile.Query().Where(processingfile.ClientID(dto.ClientId))
+	query := r.client.ProcessingFile.Query().Where(processingfile.ClientID(dto.ClientID))
+
+	if dto.CreatedBy != constant.EmptyString {
+		query = query.Where(processingfile.CreatedBy(dto.CreatedBy))
+	}
 
 	total, err := query.Count(ctx)
 	if err != nil {
 		logger.Errorf(err.Error())
 		return nil, nil, fmt.Errorf("failed to count from db while querying all processing file")
 	}
-	pagination := response.GetPagination(total, dto.Page, dto.Size)
+	pagination := response.GetPagination(total, dto.Page, dto.PageSize)
 
-	fps, err := query.Limit(dto.Size).Offset((dto.Page - 1) * dto.Size).Order(ent.Desc(processingfile.FieldCreatedAt)).All(ctx)
+	fps, err := query.Limit(dto.PageSize).Offset((dto.Page - 1) * dto.PageSize).Order(ent.Desc(processingfile.FieldCreatedAt)).All(ctx)
 	if err != nil {
 		logger.Errorf(err.Error())
 		return nil, nil, fmt.Errorf("failed querying all processing file")
