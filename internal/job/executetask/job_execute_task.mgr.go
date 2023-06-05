@@ -40,7 +40,7 @@ func NewJobExecuteTaskManager(
 		})
 	}
 
-	basejobmanager.InitCron(jobExecuteTaskMgr)
+	jobExecuteTaskMgr.cronJob = basejobmanager.InitCron(jobExecuteTaskMgr)
 
 	return jobExecuteTaskMgr
 }

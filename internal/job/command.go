@@ -84,7 +84,7 @@ func Command(cfg config.Config) *cli.Command {
 						Name:  "execute-task",
 						Usage: "execute task for file processing",
 						Action: func(*cli.Context) error {
-							job := executetask.NewJobExecuteTaskManager(cfg.JobConfig.FlattenConfig,
+							job := executetask.NewJobExecuteTaskManager(cfg.JobConfig.ExecuteTaskConfig,
 								fpService, fprService)
 							job.Start()
 
@@ -96,7 +96,7 @@ func Command(cfg config.Config) *cli.Command {
 						Name:  "update-status",
 						Usage: "update status for file processing",
 						Action: func(*cli.Context) error {
-							job := updatestatus.NewJobUpdateStatusManager(cfg.JobConfig.FlattenConfig,
+							job := updatestatus.NewJobUpdateStatusManager(cfg.JobConfig.UpdateStatusConfig,
 								fpService, fprService, fileService,
 								cmService)
 							job.Start()

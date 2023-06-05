@@ -49,7 +49,7 @@ func NewJobUpdateStatusManager(
 		})
 	}
 
-	basejobmanager.InitCron(jobUpdateStatusMgr)
+	jobUpdateStatusMgr.cronJob = basejobmanager.InitCron(jobUpdateStatusMgr)
 
 	return jobUpdateStatusMgr
 }

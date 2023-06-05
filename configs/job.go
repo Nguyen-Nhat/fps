@@ -4,6 +4,8 @@ package config
 type JobConfig struct {
 	FileProcessingConfig FileProcessingConfig `mapstructure:"file_processing"`
 	FlattenConfig        SchedulerConfig      `mapstructure:"flatten"`
+	ExecuteTaskConfig    SchedulerConfig      `mapstructure:"executeTask"`
+	UpdateStatusConfig   SchedulerConfig      `mapstructure:"updateStatus"`
 }
 
 // FileProcessingConfig ...

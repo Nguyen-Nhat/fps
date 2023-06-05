@@ -53,7 +53,7 @@ func NewJobFlattenManager(
 		})
 	}
 
-	basejobmanager.InitCron(jobFlattenMgr)
+	jobFlattenMgr.cronJob = basejobmanager.InitCron(jobFlattenMgr)
 
 	return jobFlattenMgr
 }
