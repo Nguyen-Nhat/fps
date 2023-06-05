@@ -1,6 +1,7 @@
 package job
 
 import (
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executetask"
 	"github.com/urfave/cli/v2"
 	"github.com/xo/dburl"
 	"os"
@@ -69,9 +70,22 @@ func Command(cfg config.Config) *cli.Command {
 						Name:  "flatten",
 						Usage: "flatten data in file processing",
 						Action: func(*cli.Context) error {
-							flatten.NewJobFlattenManager(cfg.JobConfig.FlattenConfig,
+							job := flatten.NewJobFlattenManager(cfg.JobConfig.FlattenConfig,
 								fpService, fprService, fileService,
 								cmService, ctService)
+							job.Start()
+
+							waitForKillingSign()
+							return nil
+						},
+					},
+					{
+						Name:  "execute-task",
+						Usage: "execute task for file processing",
+						Action: func(*cli.Context) error {
+							job := executetask.NewJobExecuteTaskManager(cfg.JobConfig.FlattenConfig,
+								fpService, fprService)
+							job.Start()
 
 							waitForKillingSign()
 							return nil

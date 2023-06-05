@@ -23,6 +23,8 @@ const (
 	FieldTaskMapping = "task_mapping"
 	// FieldTaskDependsOn holds the string denoting the task_depends_on field in the database.
 	FieldTaskDependsOn = "task_depends_on"
+	// FieldTaskRequestCurl holds the string denoting the task_request_curl field in the database.
+	FieldTaskRequestCurl = "task_request_curl"
 	// FieldTaskRequestRaw holds the string denoting the task_request_raw field in the database.
 	FieldTaskRequestRaw = "task_request_raw"
 	// FieldTaskResponseRaw holds the string denoting the task_response_raw field in the database.
@@ -50,6 +52,7 @@ var Columns = []string{
 	FieldTaskIndex,
 	FieldTaskMapping,
 	FieldTaskDependsOn,
+	FieldTaskRequestCurl,
 	FieldTaskRequestRaw,
 	FieldTaskResponseRaw,
 	FieldStatus,
