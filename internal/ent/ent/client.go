@@ -10,6 +10,9 @@ import (
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/migrate"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configtask"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fpsclient"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
@@ -23,6 +26,12 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// ConfigMapping is the client for interacting with the ConfigMapping builders.
+	ConfigMapping *ConfigMappingClient
+	// ConfigTask is the client for interacting with the ConfigTask builders.
+	ConfigTask *ConfigTaskClient
+	// FpsClient is the client for interacting with the FpsClient builders.
+	FpsClient *FpsClientClient
 	// ProcessingFile is the client for interacting with the ProcessingFile builders.
 	ProcessingFile *ProcessingFileClient
 	// ProcessingFileRow is the client for interacting with the ProcessingFileRow builders.
@@ -42,6 +51,9 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.ConfigMapping = NewConfigMappingClient(c.config)
+	c.ConfigTask = NewConfigTaskClient(c.config)
+	c.FpsClient = NewFpsClientClient(c.config)
 	c.ProcessingFile = NewProcessingFileClient(c.config)
 	c.ProcessingFileRow = NewProcessingFileRowClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -78,6 +90,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:               ctx,
 		config:            cfg,
+		ConfigMapping:     NewConfigMappingClient(cfg),
+		ConfigTask:        NewConfigTaskClient(cfg),
+		FpsClient:         NewFpsClientClient(cfg),
 		ProcessingFile:    NewProcessingFileClient(cfg),
 		ProcessingFileRow: NewProcessingFileRowClient(cfg),
 		User:              NewUserClient(cfg),
@@ -100,6 +115,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:               ctx,
 		config:            cfg,
+		ConfigMapping:     NewConfigMappingClient(cfg),
+		ConfigTask:        NewConfigTaskClient(cfg),
+		FpsClient:         NewFpsClientClient(cfg),
 		ProcessingFile:    NewProcessingFileClient(cfg),
 		ProcessingFileRow: NewProcessingFileRowClient(cfg),
 		User:              NewUserClient(cfg),
@@ -109,7 +127,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		ProcessingFile.
+//		ConfigMapping.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -131,9 +149,282 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.ConfigMapping.Use(hooks...)
+	c.ConfigTask.Use(hooks...)
+	c.FpsClient.Use(hooks...)
 	c.ProcessingFile.Use(hooks...)
 	c.ProcessingFileRow.Use(hooks...)
 	c.User.Use(hooks...)
+}
+
+// ConfigMappingClient is a client for the ConfigMapping schema.
+type ConfigMappingClient struct {
+	config
+}
+
+// NewConfigMappingClient returns a client for the ConfigMapping from the given config.
+func NewConfigMappingClient(c config) *ConfigMappingClient {
+	return &ConfigMappingClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `configmapping.Hooks(f(g(h())))`.
+func (c *ConfigMappingClient) Use(hooks ...Hook) {
+	c.hooks.ConfigMapping = append(c.hooks.ConfigMapping, hooks...)
+}
+
+// Create returns a builder for creating a ConfigMapping entity.
+func (c *ConfigMappingClient) Create() *ConfigMappingCreate {
+	mutation := newConfigMappingMutation(c.config, OpCreate)
+	return &ConfigMappingCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ConfigMapping entities.
+func (c *ConfigMappingClient) CreateBulk(builders ...*ConfigMappingCreate) *ConfigMappingCreateBulk {
+	return &ConfigMappingCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ConfigMapping.
+func (c *ConfigMappingClient) Update() *ConfigMappingUpdate {
+	mutation := newConfigMappingMutation(c.config, OpUpdate)
+	return &ConfigMappingUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ConfigMappingClient) UpdateOne(cm *ConfigMapping) *ConfigMappingUpdateOne {
+	mutation := newConfigMappingMutation(c.config, OpUpdateOne, withConfigMapping(cm))
+	return &ConfigMappingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ConfigMappingClient) UpdateOneID(id int) *ConfigMappingUpdateOne {
+	mutation := newConfigMappingMutation(c.config, OpUpdateOne, withConfigMappingID(id))
+	return &ConfigMappingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ConfigMapping.
+func (c *ConfigMappingClient) Delete() *ConfigMappingDelete {
+	mutation := newConfigMappingMutation(c.config, OpDelete)
+	return &ConfigMappingDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ConfigMappingClient) DeleteOne(cm *ConfigMapping) *ConfigMappingDeleteOne {
+	return c.DeleteOneID(cm.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *ConfigMappingClient) DeleteOneID(id int) *ConfigMappingDeleteOne {
+	builder := c.Delete().Where(configmapping.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ConfigMappingDeleteOne{builder}
+}
+
+// Query returns a query builder for ConfigMapping.
+func (c *ConfigMappingClient) Query() *ConfigMappingQuery {
+	return &ConfigMappingQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ConfigMapping entity by its id.
+func (c *ConfigMappingClient) Get(ctx context.Context, id int) (*ConfigMapping, error) {
+	return c.Query().Where(configmapping.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ConfigMappingClient) GetX(ctx context.Context, id int) *ConfigMapping {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ConfigMappingClient) Hooks() []Hook {
+	return c.hooks.ConfigMapping
+}
+
+// ConfigTaskClient is a client for the ConfigTask schema.
+type ConfigTaskClient struct {
+	config
+}
+
+// NewConfigTaskClient returns a client for the ConfigTask from the given config.
+func NewConfigTaskClient(c config) *ConfigTaskClient {
+	return &ConfigTaskClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `configtask.Hooks(f(g(h())))`.
+func (c *ConfigTaskClient) Use(hooks ...Hook) {
+	c.hooks.ConfigTask = append(c.hooks.ConfigTask, hooks...)
+}
+
+// Create returns a builder for creating a ConfigTask entity.
+func (c *ConfigTaskClient) Create() *ConfigTaskCreate {
+	mutation := newConfigTaskMutation(c.config, OpCreate)
+	return &ConfigTaskCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ConfigTask entities.
+func (c *ConfigTaskClient) CreateBulk(builders ...*ConfigTaskCreate) *ConfigTaskCreateBulk {
+	return &ConfigTaskCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ConfigTask.
+func (c *ConfigTaskClient) Update() *ConfigTaskUpdate {
+	mutation := newConfigTaskMutation(c.config, OpUpdate)
+	return &ConfigTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ConfigTaskClient) UpdateOne(ct *ConfigTask) *ConfigTaskUpdateOne {
+	mutation := newConfigTaskMutation(c.config, OpUpdateOne, withConfigTask(ct))
+	return &ConfigTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ConfigTaskClient) UpdateOneID(id int) *ConfigTaskUpdateOne {
+	mutation := newConfigTaskMutation(c.config, OpUpdateOne, withConfigTaskID(id))
+	return &ConfigTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ConfigTask.
+func (c *ConfigTaskClient) Delete() *ConfigTaskDelete {
+	mutation := newConfigTaskMutation(c.config, OpDelete)
+	return &ConfigTaskDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ConfigTaskClient) DeleteOne(ct *ConfigTask) *ConfigTaskDeleteOne {
+	return c.DeleteOneID(ct.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *ConfigTaskClient) DeleteOneID(id int) *ConfigTaskDeleteOne {
+	builder := c.Delete().Where(configtask.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ConfigTaskDeleteOne{builder}
+}
+
+// Query returns a query builder for ConfigTask.
+func (c *ConfigTaskClient) Query() *ConfigTaskQuery {
+	return &ConfigTaskQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ConfigTask entity by its id.
+func (c *ConfigTaskClient) Get(ctx context.Context, id int) (*ConfigTask, error) {
+	return c.Query().Where(configtask.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ConfigTaskClient) GetX(ctx context.Context, id int) *ConfigTask {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ConfigTaskClient) Hooks() []Hook {
+	return c.hooks.ConfigTask
+}
+
+// FpsClientClient is a client for the FpsClient schema.
+type FpsClientClient struct {
+	config
+}
+
+// NewFpsClientClient returns a client for the FpsClient from the given config.
+func NewFpsClientClient(c config) *FpsClientClient {
+	return &FpsClientClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `fpsclient.Hooks(f(g(h())))`.
+func (c *FpsClientClient) Use(hooks ...Hook) {
+	c.hooks.FpsClient = append(c.hooks.FpsClient, hooks...)
+}
+
+// Create returns a builder for creating a FpsClient entity.
+func (c *FpsClientClient) Create() *FpsClientCreate {
+	mutation := newFpsClientMutation(c.config, OpCreate)
+	return &FpsClientCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FpsClient entities.
+func (c *FpsClientClient) CreateBulk(builders ...*FpsClientCreate) *FpsClientCreateBulk {
+	return &FpsClientCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FpsClient.
+func (c *FpsClientClient) Update() *FpsClientUpdate {
+	mutation := newFpsClientMutation(c.config, OpUpdate)
+	return &FpsClientUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FpsClientClient) UpdateOne(fc *FpsClient) *FpsClientUpdateOne {
+	mutation := newFpsClientMutation(c.config, OpUpdateOne, withFpsClient(fc))
+	return &FpsClientUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FpsClientClient) UpdateOneID(id int) *FpsClientUpdateOne {
+	mutation := newFpsClientMutation(c.config, OpUpdateOne, withFpsClientID(id))
+	return &FpsClientUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FpsClient.
+func (c *FpsClientClient) Delete() *FpsClientDelete {
+	mutation := newFpsClientMutation(c.config, OpDelete)
+	return &FpsClientDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FpsClientClient) DeleteOne(fc *FpsClient) *FpsClientDeleteOne {
+	return c.DeleteOneID(fc.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *FpsClientClient) DeleteOneID(id int) *FpsClientDeleteOne {
+	builder := c.Delete().Where(fpsclient.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FpsClientDeleteOne{builder}
+}
+
+// Query returns a query builder for FpsClient.
+func (c *FpsClientClient) Query() *FpsClientQuery {
+	return &FpsClientQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a FpsClient entity by its id.
+func (c *FpsClientClient) Get(ctx context.Context, id int) (*FpsClient, error) {
+	return c.Query().Where(fpsclient.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FpsClientClient) GetX(ctx context.Context, id int) *FpsClient {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *FpsClientClient) Hooks() []Hook {
+	return c.hooks.FpsClient
 }
 
 // ProcessingFileClient is a client for the ProcessingFile schema.

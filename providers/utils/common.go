@@ -6,15 +6,17 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"io"
 	"log"
 	mr "math/rand"
 	"mime/multipart"
+	"moul.io/http2curl"
 	"net/http"
 	"net/textproto"
 	"net/url"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 // Type ----------------------------------------------------------------------------------------------------------------
@@ -99,12 +101,14 @@ func SendHTTPRequest[REQ any, RES any](
 	return &respBodyObj, nil
 }
 
-// SendHTTPRequestRaw ... return (httpStatusCode, responseBody, error)
+// SendHTTPRequestRaw ... return (httpStatusCode, responseBody, curlCommand, error)
 func SendHTTPRequestRaw(
 	client *http.Client,
 	method, url string,
-	header map[string]string, requestBody map[string]string,
-) (int, string, error) {
+	header map[string]string,
+	requestParams map[string]interface{},
+	requestBody map[string]interface{},
+) (int, string, string, error) {
 	// 1. Build body
 	var bodyIO *bytes.Buffer
 	if requestBody == nil {
@@ -117,7 +121,7 @@ func SendHTTPRequestRaw(
 	// 2. Build request
 	req, err := http.NewRequest(method, url, bodyIO)
 	if err != nil {
-		return 0, "", err
+		return 0, "", "", err
 	}
 
 	// 3. Set Header
@@ -127,24 +131,35 @@ func SendHTTPRequestRaw(
 		}
 	}
 
-	// 4. Send request
+	// 4. Set request params
+	if len(requestParams) > 0 {
+		query := req.URL.Query()
+		for paramField, paramValue := range requestParams {
+			query.Add(paramField, fmt.Sprintf("%s", paramValue))
+		}
+		req.URL.RawQuery = query.Encode()
+	}
+
+	// 5. Send request
+	curl := getCurlCommand(req)
+
 	resp, err := client.Do(req)
 	if err != nil {
 		logger.Errorf("===== http: send request error: %+v\n", err.Error())
-		return 0, "", err
+		return 0, "", curl, err
 	}
 
-	// 5. Ready response body
+	// 6. Ready response body
 	defer func() {
 		_ = resp.Body.Close()
 	}()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		logger.Errorf("===== http: ready response body error: %+v\n", err.Error())
-		return resp.StatusCode, "", err
+		return resp.StatusCode, "", curl, err
 	}
 
-	return resp.StatusCode, string(respBody), nil
+	return resp.StatusCode, string(respBody), curl, nil
 }
 
 func UploadFile[RES any](client *http.Client, urlPath string, content FileContent) (*RES, error) {
@@ -285,4 +300,25 @@ func BatchExecuting[T any](batchSize int, listData []T, execute func([]T) error)
 	}
 
 	return nil
+}
+
+func getCurlCommand(req *http.Request) string {
+	curlCommand, err := http2curl.GetCurlCommand(req)
+	if err != nil {
+		return err.Error()
+	}
+
+	return curlCommand.String()
+}
+
+func CloneMap[D any](root map[string]D) map[string]D {
+	targetMap := make(map[string]D)
+	for key, value := range root {
+		targetMap[key] = value
+	}
+	return targetMap
+}
+
+func CloneArray[D any](root []D) []D {
+	return append([]D{}, root...)
 }

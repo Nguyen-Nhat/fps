@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
@@ -27,6 +28,8 @@ type ProcessingFileRow struct {
 	TaskMapping string `json:"task_mapping,omitempty"`
 	// TaskDependsOn holds the value of the "task_depends_on" field.
 	TaskDependsOn string `json:"task_depends_on,omitempty"`
+	// TaskRequestCurl holds the value of the "task_request_curl" field.
+	TaskRequestCurl string `json:"task_request_curl,omitempty"`
 	// TaskRequestRaw holds the value of the "task_request_raw" field.
 	TaskRequestRaw string `json:"task_request_raw,omitempty"`
 	// TaskResponseRaw holds the value of the "task_response_raw" field.
@@ -35,6 +38,12 @@ type ProcessingFileRow struct {
 	Status int16 `json:"status,omitempty"`
 	// ErrorDisplay holds the value of the "error_display" field.
 	ErrorDisplay string `json:"error_display,omitempty"`
+	// ExecutedTime holds the value of the "executed_time" field.
+	ExecutedTime int64 `json:"executed_time,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -42,10 +51,12 @@ func (*ProcessingFileRow) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case processingfilerow.FieldID, processingfilerow.FieldFileID, processingfilerow.FieldRowIndex, processingfilerow.FieldTaskIndex, processingfilerow.FieldStatus:
+		case processingfilerow.FieldID, processingfilerow.FieldFileID, processingfilerow.FieldRowIndex, processingfilerow.FieldTaskIndex, processingfilerow.FieldStatus, processingfilerow.FieldExecutedTime:
 			values[i] = new(sql.NullInt64)
-		case processingfilerow.FieldRowDataRaw, processingfilerow.FieldTaskMapping, processingfilerow.FieldTaskDependsOn, processingfilerow.FieldTaskRequestRaw, processingfilerow.FieldTaskResponseRaw, processingfilerow.FieldErrorDisplay:
+		case processingfilerow.FieldRowDataRaw, processingfilerow.FieldTaskMapping, processingfilerow.FieldTaskDependsOn, processingfilerow.FieldTaskRequestCurl, processingfilerow.FieldTaskRequestRaw, processingfilerow.FieldTaskResponseRaw, processingfilerow.FieldErrorDisplay:
 			values[i] = new(sql.NullString)
+		case processingfilerow.FieldCreatedAt, processingfilerow.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type ProcessingFileRow", columns[i])
 		}
@@ -103,6 +114,12 @@ func (pfr *ProcessingFileRow) assignValues(columns []string, values []interface{
 			} else if value.Valid {
 				pfr.TaskDependsOn = value.String
 			}
+		case processingfilerow.FieldTaskRequestCurl:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field task_request_curl", values[i])
+			} else if value.Valid {
+				pfr.TaskRequestCurl = value.String
+			}
 		case processingfilerow.FieldTaskRequestRaw:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field task_request_raw", values[i])
@@ -126,6 +143,24 @@ func (pfr *ProcessingFileRow) assignValues(columns []string, values []interface{
 				return fmt.Errorf("unexpected type %T for field error_display", values[i])
 			} else if value.Valid {
 				pfr.ErrorDisplay = value.String
+			}
+		case processingfilerow.FieldExecutedTime:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field executed_time", values[i])
+			} else if value.Valid {
+				pfr.ExecutedTime = value.Int64
+			}
+		case processingfilerow.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				pfr.CreatedAt = value.Time
+			}
+		case processingfilerow.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				pfr.UpdatedAt = value.Time
 			}
 		}
 	}
@@ -173,6 +208,9 @@ func (pfr *ProcessingFileRow) String() string {
 	builder.WriteString("task_depends_on=")
 	builder.WriteString(pfr.TaskDependsOn)
 	builder.WriteString(", ")
+	builder.WriteString("task_request_curl=")
+	builder.WriteString(pfr.TaskRequestCurl)
+	builder.WriteString(", ")
 	builder.WriteString("task_request_raw=")
 	builder.WriteString(pfr.TaskRequestRaw)
 	builder.WriteString(", ")
@@ -184,6 +222,15 @@ func (pfr *ProcessingFileRow) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("error_display=")
 	builder.WriteString(pfr.ErrorDisplay)
+	builder.WriteString(", ")
+	builder.WriteString("executed_time=")
+	builder.WriteString(fmt.Sprintf("%v", pfr.ExecutedTime))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(pfr.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(pfr.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -72,10 +72,24 @@ func (pfu *ProcessingFileUpdate) AddStatus(i int16) *ProcessingFileUpdate {
 	return pfu
 }
 
+// SetFileParameters sets the "file_parameters" field.
+func (pfu *ProcessingFileUpdate) SetFileParameters(s string) *ProcessingFileUpdate {
+	pfu.mutation.SetFileParameters(s)
+	return pfu
+}
+
 // SetTotalMapping sets the "total_mapping" field.
 func (pfu *ProcessingFileUpdate) SetTotalMapping(i int32) *ProcessingFileUpdate {
 	pfu.mutation.ResetTotalMapping()
 	pfu.mutation.SetTotalMapping(i)
+	return pfu
+}
+
+// SetNillableTotalMapping sets the "total_mapping" field if the given value is not nil.
+func (pfu *ProcessingFileUpdate) SetNillableTotalMapping(i *int32) *ProcessingFileUpdate {
+	if i != nil {
+		pfu.SetTotalMapping(*i)
+	}
 	return pfu
 }
 
@@ -92,9 +106,38 @@ func (pfu *ProcessingFileUpdate) SetStatsTotalRow(i int32) *ProcessingFileUpdate
 	return pfu
 }
 
+// SetNillableStatsTotalRow sets the "stats_total_row" field if the given value is not nil.
+func (pfu *ProcessingFileUpdate) SetNillableStatsTotalRow(i *int32) *ProcessingFileUpdate {
+	if i != nil {
+		pfu.SetStatsTotalRow(*i)
+	}
+	return pfu
+}
+
 // AddStatsTotalRow adds i to the "stats_total_row" field.
 func (pfu *ProcessingFileUpdate) AddStatsTotalRow(i int32) *ProcessingFileUpdate {
 	pfu.mutation.AddStatsTotalRow(i)
+	return pfu
+}
+
+// SetStatsTotalProcessed sets the "stats_total_processed" field.
+func (pfu *ProcessingFileUpdate) SetStatsTotalProcessed(i int32) *ProcessingFileUpdate {
+	pfu.mutation.ResetStatsTotalProcessed()
+	pfu.mutation.SetStatsTotalProcessed(i)
+	return pfu
+}
+
+// SetNillableStatsTotalProcessed sets the "stats_total_processed" field if the given value is not nil.
+func (pfu *ProcessingFileUpdate) SetNillableStatsTotalProcessed(i *int32) *ProcessingFileUpdate {
+	if i != nil {
+		pfu.SetStatsTotalProcessed(*i)
+	}
+	return pfu
+}
+
+// AddStatsTotalProcessed adds i to the "stats_total_processed" field.
+func (pfu *ProcessingFileUpdate) AddStatsTotalProcessed(i int32) *ProcessingFileUpdate {
+	pfu.mutation.AddStatsTotalProcessed(i)
 	return pfu
 }
 
@@ -102,6 +145,14 @@ func (pfu *ProcessingFileUpdate) AddStatsTotalRow(i int32) *ProcessingFileUpdate
 func (pfu *ProcessingFileUpdate) SetStatsTotalSuccess(i int32) *ProcessingFileUpdate {
 	pfu.mutation.ResetStatsTotalSuccess()
 	pfu.mutation.SetStatsTotalSuccess(i)
+	return pfu
+}
+
+// SetNillableStatsTotalSuccess sets the "stats_total_success" field if the given value is not nil.
+func (pfu *ProcessingFileUpdate) SetNillableStatsTotalSuccess(i *int32) *ProcessingFileUpdate {
+	if i != nil {
+		pfu.SetStatsTotalSuccess(*i)
+	}
 	return pfu
 }
 
@@ -304,6 +355,13 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldStatus,
 		})
 	}
+	if value, ok := pfu.mutation.FileParameters(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldFileParameters,
+		})
+	}
 	if value, ok := pfu.mutation.TotalMapping(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
@@ -330,6 +388,20 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: processingfile.FieldStatsTotalRow,
+		})
+	}
+	if value, ok := pfu.mutation.StatsTotalProcessed(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldStatsTotalProcessed,
+		})
+	}
+	if value, ok := pfu.mutation.AddedStatsTotalProcessed(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldStatsTotalProcessed,
 		})
 	}
 	if value, ok := pfu.mutation.StatsTotalSuccess(); ok {
@@ -437,10 +509,24 @@ func (pfuo *ProcessingFileUpdateOne) AddStatus(i int16) *ProcessingFileUpdateOne
 	return pfuo
 }
 
+// SetFileParameters sets the "file_parameters" field.
+func (pfuo *ProcessingFileUpdateOne) SetFileParameters(s string) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetFileParameters(s)
+	return pfuo
+}
+
 // SetTotalMapping sets the "total_mapping" field.
 func (pfuo *ProcessingFileUpdateOne) SetTotalMapping(i int32) *ProcessingFileUpdateOne {
 	pfuo.mutation.ResetTotalMapping()
 	pfuo.mutation.SetTotalMapping(i)
+	return pfuo
+}
+
+// SetNillableTotalMapping sets the "total_mapping" field if the given value is not nil.
+func (pfuo *ProcessingFileUpdateOne) SetNillableTotalMapping(i *int32) *ProcessingFileUpdateOne {
+	if i != nil {
+		pfuo.SetTotalMapping(*i)
+	}
 	return pfuo
 }
 
@@ -457,9 +543,38 @@ func (pfuo *ProcessingFileUpdateOne) SetStatsTotalRow(i int32) *ProcessingFileUp
 	return pfuo
 }
 
+// SetNillableStatsTotalRow sets the "stats_total_row" field if the given value is not nil.
+func (pfuo *ProcessingFileUpdateOne) SetNillableStatsTotalRow(i *int32) *ProcessingFileUpdateOne {
+	if i != nil {
+		pfuo.SetStatsTotalRow(*i)
+	}
+	return pfuo
+}
+
 // AddStatsTotalRow adds i to the "stats_total_row" field.
 func (pfuo *ProcessingFileUpdateOne) AddStatsTotalRow(i int32) *ProcessingFileUpdateOne {
 	pfuo.mutation.AddStatsTotalRow(i)
+	return pfuo
+}
+
+// SetStatsTotalProcessed sets the "stats_total_processed" field.
+func (pfuo *ProcessingFileUpdateOne) SetStatsTotalProcessed(i int32) *ProcessingFileUpdateOne {
+	pfuo.mutation.ResetStatsTotalProcessed()
+	pfuo.mutation.SetStatsTotalProcessed(i)
+	return pfuo
+}
+
+// SetNillableStatsTotalProcessed sets the "stats_total_processed" field if the given value is not nil.
+func (pfuo *ProcessingFileUpdateOne) SetNillableStatsTotalProcessed(i *int32) *ProcessingFileUpdateOne {
+	if i != nil {
+		pfuo.SetStatsTotalProcessed(*i)
+	}
+	return pfuo
+}
+
+// AddStatsTotalProcessed adds i to the "stats_total_processed" field.
+func (pfuo *ProcessingFileUpdateOne) AddStatsTotalProcessed(i int32) *ProcessingFileUpdateOne {
+	pfuo.mutation.AddStatsTotalProcessed(i)
 	return pfuo
 }
 
@@ -467,6 +582,14 @@ func (pfuo *ProcessingFileUpdateOne) AddStatsTotalRow(i int32) *ProcessingFileUp
 func (pfuo *ProcessingFileUpdateOne) SetStatsTotalSuccess(i int32) *ProcessingFileUpdateOne {
 	pfuo.mutation.ResetStatsTotalSuccess()
 	pfuo.mutation.SetStatsTotalSuccess(i)
+	return pfuo
+}
+
+// SetNillableStatsTotalSuccess sets the "stats_total_success" field if the given value is not nil.
+func (pfuo *ProcessingFileUpdateOne) SetNillableStatsTotalSuccess(i *int32) *ProcessingFileUpdateOne {
+	if i != nil {
+		pfuo.SetStatsTotalSuccess(*i)
+	}
 	return pfuo
 }
 
@@ -699,6 +822,13 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Column: processingfile.FieldStatus,
 		})
 	}
+	if value, ok := pfuo.mutation.FileParameters(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldFileParameters,
+		})
+	}
 	if value, ok := pfuo.mutation.TotalMapping(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
@@ -725,6 +855,20 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: processingfile.FieldStatsTotalRow,
+		})
+	}
+	if value, ok := pfuo.mutation.StatsTotalProcessed(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldStatsTotalProcessed,
+		})
+	}
+	if value, ok := pfuo.mutation.AddedStatsTotalProcessed(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldStatsTotalProcessed,
 		})
 	}
 	if value, ok := pfuo.mutation.StatsTotalSuccess(); ok {

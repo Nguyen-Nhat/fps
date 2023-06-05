@@ -2,10 +2,11 @@ package handlefileprocessing
 
 import (
 	"context"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/tests/common"
 	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tests/common"
 )
 
 func TestJob_step1__returnAllFileInitOrProcessing(t *testing.T) {
@@ -22,7 +23,7 @@ func TestJob_step1__returnAllFileInitOrProcessing(t *testing.T) {
 	fpService := fileprocessing.NewService(fpRepo)
 
 	// 2. Call method that need to test
-	fps, err := fpService.GetListFileAwardPointByStatuses(ctx, []int16{fileprocessing.StatusInit, fileprocessing.StatusProcessing})
+	fps, err := fpService.GetListFileByStatuses(ctx, []int16{fileprocessing.StatusInit, fileprocessing.StatusProcessing})
 
 	// 3. Assert
 	assert.Nil(t, err)

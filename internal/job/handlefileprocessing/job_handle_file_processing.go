@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -102,7 +103,7 @@ func (j *jobHandleProcessingFileImpl) handleFileInInitStatus(ctx context.Context
 	if err != nil {
 		logger.ErrorT("Cannot get data from file url %v, got error %v", file.FileURL, err)
 
-		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errFileError)
+		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errFileError, nil)
 		if updateStatusErr != nil {
 			logger.ErrorT("Cannot update %v to fail, got error %v", fileprocessing.Name(), err)
 			return file // return original file
@@ -129,7 +130,7 @@ func (j *jobHandleProcessingFileImpl) handleFileInInitStatus(ctx context.Context
 			}
 			logger.ErrorT("Sheet %v from file url %v has error data, got error %v", sheetMappingName, file.FileURL, errMsg)
 		}
-		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errFileError)
+		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errFileError, nil)
 		if updateStatusErr != nil {
 			logger.ErrorT("Cannot update %v to fail, got error %v", fileprocessing.Name(), err)
 			return file // return original file
@@ -145,7 +146,7 @@ func (j *jobHandleProcessingFileImpl) handleFileInInitStatus(ctx context.Context
 	sheetDataResult, err := excel.ConvertToStructByMap(dataIndexStartInDataSheet, metadata, sheetDataMap[sheetImportDataName])
 	if err != nil {
 		logger.ErrorT("Cannot convert sheet %v from file url %v, got error %v", sheetImportDataName, file.FileURL, err)
-		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errFileError)
+		fpUpdated, updateStatusErr := j.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errFileError, nil)
 		if updateStatusErr != nil {
 			logger.ErrorT("Cannot update %v to fail, got error %v", fileprocessing.Name(), err)
 			return file // return original file
@@ -275,7 +276,7 @@ func (j *jobHandleProcessingFileImpl) handleFileInProcessingStatus(ctx context.C
 
 }
 
-func toResponseResult(requestBody map[string]string, responseBody string, messageRes string, isSuccess bool) fileprocessingrow.UpdateAfterExecutingByJob {
+func toResponseResult(requestBody map[string]interface{}, responseBody string, messageRes string, isSuccess bool) fileprocessingrow.UpdateAfterExecutingByJob {
 	// 1. Common value
 	reqByte, _ := json.Marshal(requestBody)
 	updateRequest := fileprocessingrow.UpdateAfterExecutingByJob{

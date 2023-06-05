@@ -6,12 +6,13 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"errors"
 	"fmt"
+	"time"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"time"
 )
 
 type (
@@ -21,7 +22,7 @@ type (
 		FindByID(context.Context, int) (*ProcessingFile, error)
 		FindByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
 		UpdateStatusOne(context.Context, int, int16) (*ProcessingFile, error)
-		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay) (*ProcessingFile, error)
+		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay, *string) (*ProcessingFile, error)
 		UpdateStatusAndStatsAndResultFileUrl(context.Context, int, int16, int, string) (*ProcessingFile, error)
 		UpdateByExtractedData(ctx context.Context, id int, status int16, totalMapping int, statsTotalRow int) (*ProcessingFile, error)
 		PingDB(context.Context, int)
@@ -61,7 +62,7 @@ func (r *repoImpl) FindByStatuses(ctx context.Context, statuses []int16) ([]*Pro
 	pfs, err := r.client.ProcessingFile.Query().Where(processingfile.StatusIn(statuses...)).All(ctx)
 
 	if err != nil {
-		logger.Errorf("fail to get file award point by status with status %#v", statuses)
+		logger.Errorf("fail to get file award point by status with status %#v, err = %v", statuses, err)
 		return nil, errors.New("fail to get file award point by status")
 	}
 
@@ -78,14 +79,20 @@ func (r *repoImpl) UpdateStatusOne(ctx context.Context, id int, status int16) (*
 	}, nil
 }
 
-func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, status int16, errorDisplay ErrorDisplay) (*ProcessingFile, error) {
-	fap, err := r.client.ProcessingFile.UpdateOneID(id).
+func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, status int16, errorDisplay ErrorDisplay, resultFileURL *string) (*ProcessingFile, error) {
+	updateOps := r.client.ProcessingFile.UpdateOneID(id).
 		SetStatus(status).
-		SetErrorDisplay(string(errorDisplay)).
-		Save(ctx)
+		SetErrorDisplay(string(errorDisplay))
+
+	if resultFileURL != nil {
+		updateOps.SetResultFileURL(*resultFileURL)
+	}
+
+	fap, err := updateOps.Save(ctx)
 	if err != nil {
 		return nil, err
 	}
+
 	return &ProcessingFile{
 		ProcessingFile: *fap,
 	}, nil
@@ -157,8 +164,10 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetFileURL(fp.FileURL).
 		SetResultFileURL(fp.ResultFileURL).
 		SetStatus(fp.Status).
+		SetFileParameters(fp.FileParameters).
 		SetTotalMapping(fp.TotalMapping).
 		SetStatsTotalRow(fp.StatsTotalRow).
+		SetStatsTotalProcessed(fp.StatsTotalProcessed).
 		SetStatsTotalSuccess(fp.StatsTotalSuccess).
 		SetErrorDisplay(fp.ErrorDisplay).
 		SetCreatedBy(fp.CreatedBy)
@@ -207,7 +216,7 @@ func SaveAll(ctx context.Context, client *ent.Client, fpArr []ProcessingFile, ne
 	// 2. Create by bulk
 	fpSavedArr, err := client.ProcessingFile.CreateBulk(bulk...).Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save file award point to DB")
+		return nil, fmt.Errorf("failed to save %s to DB, error: %+v", Name(), err)
 	}
 
 	// 3. Check if you NOT need result => return empty

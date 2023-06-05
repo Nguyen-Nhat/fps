@@ -115,6 +115,13 @@ func Status(v int16) predicate.ProcessingFile {
 	})
 }
 
+// FileParameters applies equality check predicate on the "file_parameters" field. It's identical to FileParametersEQ.
+func FileParameters(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFileParameters), v))
+	})
+}
+
 // TotalMapping applies equality check predicate on the "total_mapping" field. It's identical to TotalMappingEQ.
 func TotalMapping(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -126,6 +133,13 @@ func TotalMapping(v int32) predicate.ProcessingFile {
 func StatsTotalRow(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStatsTotalRow), v))
+	})
+}
+
+// StatsTotalProcessed applies equality check predicate on the "stats_total_processed" field. It's identical to StatsTotalProcessedEQ.
+func StatsTotalProcessed(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatsTotalProcessed), v))
 	})
 }
 
@@ -589,6 +603,105 @@ func StatusLTE(v int16) predicate.ProcessingFile {
 	})
 }
 
+// FileParametersEQ applies the EQ predicate on the "file_parameters" field.
+func FileParametersEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersNEQ applies the NEQ predicate on the "file_parameters" field.
+func FileParametersNEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersIn applies the In predicate on the "file_parameters" field.
+func FileParametersIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldFileParameters), v...))
+	})
+}
+
+// FileParametersNotIn applies the NotIn predicate on the "file_parameters" field.
+func FileParametersNotIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldFileParameters), v...))
+	})
+}
+
+// FileParametersGT applies the GT predicate on the "file_parameters" field.
+func FileParametersGT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersGTE applies the GTE predicate on the "file_parameters" field.
+func FileParametersGTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersLT applies the LT predicate on the "file_parameters" field.
+func FileParametersLT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersLTE applies the LTE predicate on the "file_parameters" field.
+func FileParametersLTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersContains applies the Contains predicate on the "file_parameters" field.
+func FileParametersContains(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersHasPrefix applies the HasPrefix predicate on the "file_parameters" field.
+func FileParametersHasPrefix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersHasSuffix applies the HasSuffix predicate on the "file_parameters" field.
+func FileParametersHasSuffix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersEqualFold applies the EqualFold predicate on the "file_parameters" field.
+func FileParametersEqualFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldFileParameters), v))
+	})
+}
+
+// FileParametersContainsFold applies the ContainsFold predicate on the "file_parameters" field.
+func FileParametersContainsFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldFileParameters), v))
+	})
+}
+
 // TotalMappingEQ applies the EQ predicate on the "total_mapping" field.
 func TotalMappingEQ(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -714,6 +827,70 @@ func StatsTotalRowLT(v int32) predicate.ProcessingFile {
 func StatsTotalRowLTE(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatsTotalRow), v))
+	})
+}
+
+// StatsTotalProcessedEQ applies the EQ predicate on the "stats_total_processed" field.
+func StatsTotalProcessedEQ(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatsTotalProcessed), v))
+	})
+}
+
+// StatsTotalProcessedNEQ applies the NEQ predicate on the "stats_total_processed" field.
+func StatsTotalProcessedNEQ(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStatsTotalProcessed), v))
+	})
+}
+
+// StatsTotalProcessedIn applies the In predicate on the "stats_total_processed" field.
+func StatsTotalProcessedIn(vs ...int32) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldStatsTotalProcessed), v...))
+	})
+}
+
+// StatsTotalProcessedNotIn applies the NotIn predicate on the "stats_total_processed" field.
+func StatsTotalProcessedNotIn(vs ...int32) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldStatsTotalProcessed), v...))
+	})
+}
+
+// StatsTotalProcessedGT applies the GT predicate on the "stats_total_processed" field.
+func StatsTotalProcessedGT(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldStatsTotalProcessed), v))
+	})
+}
+
+// StatsTotalProcessedGTE applies the GTE predicate on the "stats_total_processed" field.
+func StatsTotalProcessedGTE(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldStatsTotalProcessed), v))
+	})
+}
+
+// StatsTotalProcessedLT applies the LT predicate on the "stats_total_processed" field.
+func StatsTotalProcessedLT(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldStatsTotalProcessed), v))
+	})
+}
+
+// StatsTotalProcessedLTE applies the LTE predicate on the "stats_total_processed" field.
+func StatsTotalProcessedLTE(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldStatsTotalProcessed), v))
 	})
 }
 

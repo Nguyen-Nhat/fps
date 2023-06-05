@@ -16,7 +16,7 @@ import (
 type (
 	// IClient ...
 	IClient interface {
-		Execute(dataRaw string, taskMappingStr string, previousResponse map[int32]string) (map[string]string, string, bool, string)
+		Execute(dataRaw string, taskMappingStr string, previousResponse map[int32]string) (map[string]interface{}, string, bool, string)
 	}
 
 	// Client ....
@@ -36,7 +36,7 @@ func NewClient() *Client {
 	}
 }
 
-func (c *Client) Execute(dataRaw string, taskMappingStr string, previousResponse map[int32]string) (map[string]string, string, bool, string) {
+func (c *Client) Execute(dataRaw string, taskMappingStr string, previousResponse map[int32]string) (map[string]interface{}, string, bool, string) {
 	// 1. Load Data and Mapping
 	taskMapping, dataMap, err := convertDataAndMappingFromRawData(dataRaw, taskMappingStr)
 	if err != nil {
@@ -52,7 +52,7 @@ func (c *Client) Execute(dataRaw string, taskMappingStr string, previousResponse
 	// 3. Request
 	reqHeader["Content-Type"] = "application/json"
 	logger.Infof("Prepare call %v with header=%v, requestBody=%v", reqEndPoint, reqHeader, requestBody)
-	httpStatus, responseBody, err := utils.SendHTTPRequestRaw(c.client, http.MethodPost, reqEndPoint, reqHeader, requestBody)
+	httpStatus, responseBody, _, err := utils.SendHTTPRequestRaw(c.client, http.MethodPost, reqEndPoint, reqHeader, nil, requestBody)
 	if err != nil {
 		logger.Errorf("failed to call %v, got error=%v", reqEndPoint, err)
 		responseBody = fmt.Sprintf("httpStatus=%v, responseBody=%v, error=%v", httpStatus, responseBody, err)
@@ -88,8 +88,8 @@ func convertDataAndMappingFromRawData(dataRaw string, taskMappingStr string) (*d
 
 // buildRequestForTask ... return (reqHeader, reqEndPoint, requestBody, error)
 func buildRequestForTask(taskMapping *dto.MappingRow, dataMap map[string]string, previousResponses map[int32]string) (
-	map[string]string, string, map[string]string, error) {
-	requestBody := make(map[string]string)
+	map[string]string, string, map[string]interface{}, error) {
+	requestBody := make(map[string]interface{})
 	for _, reqMapping := range taskMapping.Request {
 		if reqMapping.IsMappingExcel {
 			reqMapping.Value = dataMap[reqMapping.MappingKey]

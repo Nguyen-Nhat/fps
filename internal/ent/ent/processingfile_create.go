@@ -50,9 +50,23 @@ func (pfc *ProcessingFileCreate) SetStatus(i int16) *ProcessingFileCreate {
 	return pfc
 }
 
+// SetFileParameters sets the "file_parameters" field.
+func (pfc *ProcessingFileCreate) SetFileParameters(s string) *ProcessingFileCreate {
+	pfc.mutation.SetFileParameters(s)
+	return pfc
+}
+
 // SetTotalMapping sets the "total_mapping" field.
 func (pfc *ProcessingFileCreate) SetTotalMapping(i int32) *ProcessingFileCreate {
 	pfc.mutation.SetTotalMapping(i)
+	return pfc
+}
+
+// SetNillableTotalMapping sets the "total_mapping" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableTotalMapping(i *int32) *ProcessingFileCreate {
+	if i != nil {
+		pfc.SetTotalMapping(*i)
+	}
 	return pfc
 }
 
@@ -62,9 +76,39 @@ func (pfc *ProcessingFileCreate) SetStatsTotalRow(i int32) *ProcessingFileCreate
 	return pfc
 }
 
+// SetNillableStatsTotalRow sets the "stats_total_row" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableStatsTotalRow(i *int32) *ProcessingFileCreate {
+	if i != nil {
+		pfc.SetStatsTotalRow(*i)
+	}
+	return pfc
+}
+
+// SetStatsTotalProcessed sets the "stats_total_processed" field.
+func (pfc *ProcessingFileCreate) SetStatsTotalProcessed(i int32) *ProcessingFileCreate {
+	pfc.mutation.SetStatsTotalProcessed(i)
+	return pfc
+}
+
+// SetNillableStatsTotalProcessed sets the "stats_total_processed" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableStatsTotalProcessed(i *int32) *ProcessingFileCreate {
+	if i != nil {
+		pfc.SetStatsTotalProcessed(*i)
+	}
+	return pfc
+}
+
 // SetStatsTotalSuccess sets the "stats_total_success" field.
 func (pfc *ProcessingFileCreate) SetStatsTotalSuccess(i int32) *ProcessingFileCreate {
 	pfc.mutation.SetStatsTotalSuccess(i)
+	return pfc
+}
+
+// SetNillableStatsTotalSuccess sets the "stats_total_success" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableStatsTotalSuccess(i *int32) *ProcessingFileCreate {
+	if i != nil {
+		pfc.SetStatsTotalSuccess(*i)
+	}
 	return pfc
 }
 
@@ -185,6 +229,22 @@ func (pfc *ProcessingFileCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (pfc *ProcessingFileCreate) defaults() {
+	if _, ok := pfc.mutation.TotalMapping(); !ok {
+		v := processingfile.DefaultTotalMapping
+		pfc.mutation.SetTotalMapping(v)
+	}
+	if _, ok := pfc.mutation.StatsTotalRow(); !ok {
+		v := processingfile.DefaultStatsTotalRow
+		pfc.mutation.SetStatsTotalRow(v)
+	}
+	if _, ok := pfc.mutation.StatsTotalProcessed(); !ok {
+		v := processingfile.DefaultStatsTotalProcessed
+		pfc.mutation.SetStatsTotalProcessed(v)
+	}
+	if _, ok := pfc.mutation.StatsTotalSuccess(); !ok {
+		v := processingfile.DefaultStatsTotalSuccess
+		pfc.mutation.SetStatsTotalSuccess(v)
+	}
 	if _, ok := pfc.mutation.CreatedAt(); !ok {
 		v := processingfile.DefaultCreatedAt()
 		pfc.mutation.SetCreatedAt(v)
@@ -222,11 +282,17 @@ func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "ProcessingFile.status"`)}
 	}
+	if _, ok := pfc.mutation.FileParameters(); !ok {
+		return &ValidationError{Name: "file_parameters", err: errors.New(`ent: missing required field "ProcessingFile.file_parameters"`)}
+	}
 	if _, ok := pfc.mutation.TotalMapping(); !ok {
 		return &ValidationError{Name: "total_mapping", err: errors.New(`ent: missing required field "ProcessingFile.total_mapping"`)}
 	}
 	if _, ok := pfc.mutation.StatsTotalRow(); !ok {
 		return &ValidationError{Name: "stats_total_row", err: errors.New(`ent: missing required field "ProcessingFile.stats_total_row"`)}
+	}
+	if _, ok := pfc.mutation.StatsTotalProcessed(); !ok {
+		return &ValidationError{Name: "stats_total_processed", err: errors.New(`ent: missing required field "ProcessingFile.stats_total_processed"`)}
 	}
 	if _, ok := pfc.mutation.StatsTotalSuccess(); !ok {
 		return &ValidationError{Name: "stats_total_success", err: errors.New(`ent: missing required field "ProcessingFile.stats_total_success"`)}
@@ -315,6 +381,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 		})
 		_node.Status = value
 	}
+	if value, ok := pfc.mutation.FileParameters(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldFileParameters,
+		})
+		_node.FileParameters = value
+	}
 	if value, ok := pfc.mutation.TotalMapping(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
@@ -330,6 +404,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 			Column: processingfile.FieldStatsTotalRow,
 		})
 		_node.StatsTotalRow = value
+	}
+	if value, ok := pfc.mutation.StatsTotalProcessed(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldStatsTotalProcessed,
+		})
+		_node.StatsTotalProcessed = value
 	}
 	if value, ok := pfc.mutation.StatsTotalSuccess(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

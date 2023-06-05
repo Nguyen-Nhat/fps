@@ -2,6 +2,10 @@
 
 package processingfilerow
 
+import (
+	"time"
+)
+
 const (
 	// Label holds the string label denoting the processingfilerow type in the database.
 	Label = "processing_file_row"
@@ -19,6 +23,8 @@ const (
 	FieldTaskMapping = "task_mapping"
 	// FieldTaskDependsOn holds the string denoting the task_depends_on field in the database.
 	FieldTaskDependsOn = "task_depends_on"
+	// FieldTaskRequestCurl holds the string denoting the task_request_curl field in the database.
+	FieldTaskRequestCurl = "task_request_curl"
 	// FieldTaskRequestRaw holds the string denoting the task_request_raw field in the database.
 	FieldTaskRequestRaw = "task_request_raw"
 	// FieldTaskResponseRaw holds the string denoting the task_response_raw field in the database.
@@ -27,6 +33,12 @@ const (
 	FieldStatus = "status"
 	// FieldErrorDisplay holds the string denoting the error_display field in the database.
 	FieldErrorDisplay = "error_display"
+	// FieldExecutedTime holds the string denoting the executed_time field in the database.
+	FieldExecutedTime = "executed_time"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// Table holds the table name of the processingfilerow in the database.
 	Table = "processing_file_row"
 )
@@ -40,10 +52,14 @@ var Columns = []string{
 	FieldTaskIndex,
 	FieldTaskMapping,
 	FieldTaskDependsOn,
+	FieldTaskRequestCurl,
 	FieldTaskRequestRaw,
 	FieldTaskResponseRaw,
 	FieldStatus,
 	FieldErrorDisplay,
+	FieldExecutedTime,
+	FieldCreatedAt,
+	FieldUpdatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -55,3 +71,12 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
+)

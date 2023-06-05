@@ -17,7 +17,7 @@ type (
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
 		FindByFileIdAndStatusesForJob(context.Context, int, int16) ([]*ProcessingFileRow, error)
-		UpdateByJob(context.Context, int, string, string, int16, string) (*ProcessingFileRow, error)
+		UpdateByJob(context.Context, int, string, string, string, int16, string) (*ProcessingFileRow, error)
 		DeleteByFileId(context.Context, int64) error
 
 		// Custom query ------
@@ -88,10 +88,11 @@ func (r *repoImpl) FindByFileIdAndStatusesForJob(ctx context.Context, fileId int
 	return mapEntArrToProcessingFileArr(pfs), nil
 }
 
-func (r *repoImpl) UpdateByJob(ctx context.Context, id int, requestRaw string, responseRaw string,
+func (r *repoImpl) UpdateByJob(ctx context.Context, id int, requestCurl string, requestRaw string, responseRaw string,
 	status int16, errorDisplay string) (*ProcessingFileRow, error) {
 	fpr, err := r.client.ProcessingFileRow.UpdateOneID(id).
 		SetStatus(status).
+		SetTaskRequestCurl(requestCurl).
 		SetTaskRequestRaw(requestRaw).
 		SetTaskResponseRaw(responseRaw).
 		SetErrorDisplay(errorDisplay).
@@ -164,10 +165,14 @@ func mapProcessingFileRow(client *ent.Client, fpr ProcessingFileRow) *ent.Proces
 		SetTaskIndex(fpr.TaskIndex).
 		SetTaskMapping(fpr.TaskMapping).
 		SetTaskDependsOn(fpr.TaskDependsOn).
+		SetTaskRequestCurl(fpr.TaskRequestCurl).
 		SetTaskRequestRaw(fpr.TaskRequestRaw).
 		SetTaskResponseRaw(fpr.TaskResponseRaw).
 		SetStatus(fpr.Status).
-		SetErrorDisplay(fpr.ErrorDisplay)
+		SetErrorDisplay(fpr.ErrorDisplay).
+		SetExecutedTime(fpr.ExecutedTime).
+		SetCreatedAt(fpr.CreatedAt).
+		SetUpdatedAt(fpr.UpdatedAt)
 }
 
 func mapEntArrToProcessingFileArr(arr ent.ProcessingFileRows) []*ProcessingFileRow {

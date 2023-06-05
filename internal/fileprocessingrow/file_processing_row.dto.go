@@ -9,6 +9,7 @@ type CreateProcessingFileRowJob struct {
 }
 
 type UpdateAfterExecutingByJob struct {
+	RequestCurl  string
 	RequestRaw   string
 	ResponseRaw  string
 	Status       int16

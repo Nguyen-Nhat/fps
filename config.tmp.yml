@@ -29,6 +29,12 @@ job:
     max_checking_time: 60 # unit is minutes
   file_processing:
     schedule: '*/3 * * * *' # every 3 minutes
+  flatten:
+    schedule: '*/3 * * * *' # every 3 minutes
+  executeTask:
+    schedule: '*/3 * * * *' # every 3 minutes
+  updateStatus:
+    schedule: '*/3 * * * *' # every 3 minutes
 
 provider_config:
   loyalty:

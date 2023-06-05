@@ -9,6 +9,45 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 )
 
+// The ConfigMappingFunc type is an adapter to allow the use of ordinary
+// function as ConfigMapping mutator.
+type ConfigMappingFunc func(context.Context, *ent.ConfigMappingMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConfigMappingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ConfigMappingMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConfigMappingMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The ConfigTaskFunc type is an adapter to allow the use of ordinary
+// function as ConfigTask mutator.
+type ConfigTaskFunc func(context.Context, *ent.ConfigTaskMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConfigTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ConfigTaskMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConfigTaskMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The FpsClientFunc type is an adapter to allow the use of ordinary
+// function as FpsClient mutator.
+type FpsClientFunc func(context.Context, *ent.FpsClientMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FpsClientFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.FpsClientMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FpsClientMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ProcessingFileFunc type is an adapter to allow the use of ordinary
 // function as ProcessingFile mutator.
 type ProcessingFileFunc func(context.Context, *ent.ProcessingFileMutation) (ent.Value, error)

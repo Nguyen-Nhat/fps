@@ -17,9 +17,9 @@ type (
 		GetFileProcessHistory(ctx context.Context, req *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error)
 
 		FindById(context.Context, int) (*ProcessingFile, error)
-		GetListFileAwardPointByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
+		GetListFileByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
 
-		UpdateToFailedStatusWithErrorMessage(context.Context, int, ErrorDisplay) (*ProcessingFile, error)
+		UpdateToFailedStatusWithErrorMessage(context.Context, int, ErrorDisplay, *string) (*ProcessingFile, error)
 		UpdateToProcessingStatusWithExtractedData(context.Context, int, int, int) (*ProcessingFile, error)
 		UpdateStatusWithStatistics(context.Context, int, int16, int, string) (*ProcessingFile, error)
 	}
@@ -77,7 +77,7 @@ func (s *ServiceImpl) FindById(ctx context.Context, id int) (*ProcessingFile, er
 	return pfs, nil
 }
 
-func (s *ServiceImpl) GetListFileAwardPointByStatuses(ctx context.Context, statuses []int16) ([]*ProcessingFile, error) {
+func (s *ServiceImpl) GetListFileByStatuses(ctx context.Context, statuses []int16) ([]*ProcessingFile, error) {
 	pfs, err := s.repo.FindByStatuses(ctx, statuses)
 	if err != nil {
 		return nil, err
@@ -86,8 +86,8 @@ func (s *ServiceImpl) GetListFileAwardPointByStatuses(ctx context.Context, statu
 	return pfs, nil
 }
 
-func (s *ServiceImpl) UpdateToFailedStatusWithErrorMessage(ctx context.Context, id int, errorMessage ErrorDisplay) (*ProcessingFile, error) {
-	pf, err := s.repo.UpdateStatusAndErrorDisplay(ctx, id, StatusFailed, errorMessage)
+func (s *ServiceImpl) UpdateToFailedStatusWithErrorMessage(ctx context.Context, id int, errorMessage ErrorDisplay, resultFileURL *string) (*ProcessingFile, error) {
+	pf, err := s.repo.UpdateStatusAndErrorDisplay(ctx, id, StatusFailed, errorMessage, resultFileURL)
 	if err != nil {
 		return nil, err
 	}

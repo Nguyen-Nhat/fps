@@ -5,7 +5,11 @@ package ent
 import (
 	"time"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configtask"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fpsclient"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/schema"
 )
@@ -14,6 +18,110 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	configmappingFields := schema.ConfigMapping{}.Fields()
+	_ = configmappingFields
+	// configmappingDescClientID is the schema descriptor for client_id field.
+	configmappingDescClientID := configmappingFields[0].Descriptor()
+	// configmapping.ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
+	configmapping.ClientIDValidator = configmappingDescClientID.Validators[0].(func(int32) error)
+	// configmappingDescTotalTasks is the schema descriptor for total_tasks field.
+	configmappingDescTotalTasks := configmappingFields[1].Descriptor()
+	// configmapping.DefaultTotalTasks holds the default value on creation for the total_tasks field.
+	configmapping.DefaultTotalTasks = configmappingDescTotalTasks.Default.(int32)
+	// configmappingDescDataStartAtRow is the schema descriptor for data_start_at_row field.
+	configmappingDescDataStartAtRow := configmappingFields[2].Descriptor()
+	// configmapping.DefaultDataStartAtRow holds the default value on creation for the data_start_at_row field.
+	configmapping.DefaultDataStartAtRow = configmappingDescDataStartAtRow.Default.(int32)
+	// configmapping.DataStartAtRowValidator is a validator for the "data_start_at_row" field. It is called by the builders before save.
+	configmapping.DataStartAtRowValidator = func() func(int32) error {
+		validators := configmappingDescDataStartAtRow.Validators
+		fns := [...]func(int32) error{
+			validators[0].(func(int32) error),
+			validators[1].(func(int32) error),
+		}
+		return func(data_start_at_row int32) error {
+			for _, fn := range fns {
+				if err := fn(data_start_at_row); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// configmappingDescCreatedAt is the schema descriptor for created_at field.
+	configmappingDescCreatedAt := configmappingFields[5].Descriptor()
+	// configmapping.DefaultCreatedAt holds the default value on creation for the created_at field.
+	configmapping.DefaultCreatedAt = configmappingDescCreatedAt.Default.(func() time.Time)
+	// configmappingDescCreatedBy is the schema descriptor for created_by field.
+	configmappingDescCreatedBy := configmappingFields[6].Descriptor()
+	// configmapping.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	configmapping.CreatedByValidator = configmappingDescCreatedBy.Validators[0].(func(string) error)
+	// configmappingDescUpdatedAt is the schema descriptor for updated_at field.
+	configmappingDescUpdatedAt := configmappingFields[7].Descriptor()
+	// configmapping.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	configmapping.DefaultUpdatedAt = configmappingDescUpdatedAt.Default.(func() time.Time)
+	// configmapping.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	configmapping.UpdateDefaultUpdatedAt = configmappingDescUpdatedAt.UpdateDefault.(func() time.Time)
+	configtaskFields := schema.ConfigTask{}.Fields()
+	_ = configtaskFields
+	// configtaskDescConfigMappingID is the schema descriptor for config_mapping_id field.
+	configtaskDescConfigMappingID := configtaskFields[0].Descriptor()
+	// configtask.ConfigMappingIDValidator is a validator for the "config_mapping_id" field. It is called by the builders before save.
+	configtask.ConfigMappingIDValidator = configtaskDescConfigMappingID.Validators[0].(func(int32) error)
+	// configtaskDescEndPoint is the schema descriptor for end_point field.
+	configtaskDescEndPoint := configtaskFields[2].Descriptor()
+	// configtask.EndPointValidator is a validator for the "end_point" field. It is called by the builders before save.
+	configtask.EndPointValidator = configtaskDescEndPoint.Validators[0].(func(string) error)
+	// configtaskDescMethod is the schema descriptor for method field.
+	configtaskDescMethod := configtaskFields[3].Descriptor()
+	// configtask.MethodValidator is a validator for the "method" field. It is called by the builders before save.
+	configtask.MethodValidator = configtaskDescMethod.Validators[0].(func(string) error)
+	// configtaskDescRequestParams is the schema descriptor for request_params field.
+	configtaskDescRequestParams := configtaskFields[5].Descriptor()
+	// configtask.RequestParamsValidator is a validator for the "request_params" field. It is called by the builders before save.
+	configtask.RequestParamsValidator = configtaskDescRequestParams.Validators[0].(func(string) error)
+	// configtaskDescRequestBody is the schema descriptor for request_body field.
+	configtaskDescRequestBody := configtaskFields[6].Descriptor()
+	// configtask.RequestBodyValidator is a validator for the "request_body" field. It is called by the builders before save.
+	configtask.RequestBodyValidator = configtaskDescRequestBody.Validators[0].(func(string) error)
+	// configtaskDescCreatedAt is the schema descriptor for created_at field.
+	configtaskDescCreatedAt := configtaskFields[10].Descriptor()
+	// configtask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	configtask.DefaultCreatedAt = configtaskDescCreatedAt.Default.(func() time.Time)
+	// configtaskDescCreatedBy is the schema descriptor for created_by field.
+	configtaskDescCreatedBy := configtaskFields[11].Descriptor()
+	// configtask.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	configtask.CreatedByValidator = configtaskDescCreatedBy.Validators[0].(func(string) error)
+	// configtaskDescUpdatedAt is the schema descriptor for updated_at field.
+	configtaskDescUpdatedAt := configtaskFields[12].Descriptor()
+	// configtask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	configtask.DefaultUpdatedAt = configtaskDescUpdatedAt.Default.(func() time.Time)
+	// configtask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	configtask.UpdateDefaultUpdatedAt = configtaskDescUpdatedAt.UpdateDefault.(func() time.Time)
+	fpsclientFields := schema.FpsClient{}.Fields()
+	_ = fpsclientFields
+	// fpsclientDescName is the schema descriptor for name field.
+	fpsclientDescName := fpsclientFields[1].Descriptor()
+	// fpsclient.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	fpsclient.NameValidator = fpsclientDescName.Validators[0].(func(string) error)
+	// fpsclientDescDescription is the schema descriptor for description field.
+	fpsclientDescDescription := fpsclientFields[2].Descriptor()
+	// fpsclient.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	fpsclient.DescriptionValidator = fpsclientDescDescription.Validators[0].(func(string) error)
+	// fpsclientDescCreatedAt is the schema descriptor for created_at field.
+	fpsclientDescCreatedAt := fpsclientFields[3].Descriptor()
+	// fpsclient.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fpsclient.DefaultCreatedAt = fpsclientDescCreatedAt.Default.(func() time.Time)
+	// fpsclientDescCreatedBy is the schema descriptor for created_by field.
+	fpsclientDescCreatedBy := fpsclientFields[4].Descriptor()
+	// fpsclient.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	fpsclient.CreatedByValidator = fpsclientDescCreatedBy.Validators[0].(func(string) error)
+	// fpsclientDescUpdatedAt is the schema descriptor for updated_at field.
+	fpsclientDescUpdatedAt := fpsclientFields[5].Descriptor()
+	// fpsclient.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fpsclient.DefaultUpdatedAt = fpsclientDescUpdatedAt.Default.(func() time.Time)
+	// fpsclient.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	fpsclient.UpdateDefaultUpdatedAt = fpsclientDescUpdatedAt.UpdateDefault.(func() time.Time)
 	processingfileFields := schema.ProcessingFile{}.Fields()
 	_ = processingfileFields
 	// processingfileDescDisplayName is the schema descriptor for display_name field.
@@ -24,20 +132,48 @@ func init() {
 	processingfileDescFileURL := processingfileFields[2].Descriptor()
 	// processingfile.FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
 	processingfile.FileURLValidator = processingfileDescFileURL.Validators[0].(func(string) error)
+	// processingfileDescTotalMapping is the schema descriptor for total_mapping field.
+	processingfileDescTotalMapping := processingfileFields[6].Descriptor()
+	// processingfile.DefaultTotalMapping holds the default value on creation for the total_mapping field.
+	processingfile.DefaultTotalMapping = processingfileDescTotalMapping.Default.(int32)
+	// processingfileDescStatsTotalRow is the schema descriptor for stats_total_row field.
+	processingfileDescStatsTotalRow := processingfileFields[7].Descriptor()
+	// processingfile.DefaultStatsTotalRow holds the default value on creation for the stats_total_row field.
+	processingfile.DefaultStatsTotalRow = processingfileDescStatsTotalRow.Default.(int32)
+	// processingfileDescStatsTotalProcessed is the schema descriptor for stats_total_processed field.
+	processingfileDescStatsTotalProcessed := processingfileFields[8].Descriptor()
+	// processingfile.DefaultStatsTotalProcessed holds the default value on creation for the stats_total_processed field.
+	processingfile.DefaultStatsTotalProcessed = processingfileDescStatsTotalProcessed.Default.(int32)
+	// processingfileDescStatsTotalSuccess is the schema descriptor for stats_total_success field.
+	processingfileDescStatsTotalSuccess := processingfileFields[9].Descriptor()
+	// processingfile.DefaultStatsTotalSuccess holds the default value on creation for the stats_total_success field.
+	processingfile.DefaultStatsTotalSuccess = processingfileDescStatsTotalSuccess.Default.(int32)
 	// processingfileDescCreatedAt is the schema descriptor for created_at field.
-	processingfileDescCreatedAt := processingfileFields[9].Descriptor()
+	processingfileDescCreatedAt := processingfileFields[11].Descriptor()
 	// processingfile.DefaultCreatedAt holds the default value on creation for the created_at field.
 	processingfile.DefaultCreatedAt = processingfileDescCreatedAt.Default.(func() time.Time)
 	// processingfileDescCreatedBy is the schema descriptor for created_by field.
-	processingfileDescCreatedBy := processingfileFields[10].Descriptor()
+	processingfileDescCreatedBy := processingfileFields[12].Descriptor()
 	// processingfile.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	processingfile.CreatedByValidator = processingfileDescCreatedBy.Validators[0].(func(string) error)
 	// processingfileDescUpdatedAt is the schema descriptor for updated_at field.
-	processingfileDescUpdatedAt := processingfileFields[11].Descriptor()
+	processingfileDescUpdatedAt := processingfileFields[13].Descriptor()
 	// processingfile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	processingfile.DefaultUpdatedAt = processingfileDescUpdatedAt.Default.(func() time.Time)
 	// processingfile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	processingfile.UpdateDefaultUpdatedAt = processingfileDescUpdatedAt.UpdateDefault.(func() time.Time)
+	processingfilerowFields := schema.ProcessingFileRow{}.Fields()
+	_ = processingfilerowFields
+	// processingfilerowDescCreatedAt is the schema descriptor for created_at field.
+	processingfilerowDescCreatedAt := processingfilerowFields[12].Descriptor()
+	// processingfilerow.DefaultCreatedAt holds the default value on creation for the created_at field.
+	processingfilerow.DefaultCreatedAt = processingfilerowDescCreatedAt.Default.(func() time.Time)
+	// processingfilerowDescUpdatedAt is the schema descriptor for updated_at field.
+	processingfilerowDescUpdatedAt := processingfilerowFields[13].Descriptor()
+	// processingfilerow.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	processingfilerow.DefaultUpdatedAt = processingfilerowDescUpdatedAt.Default.(func() time.Time)
+	// processingfilerow.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	processingfilerow.UpdateDefaultUpdatedAt = processingfilerowDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

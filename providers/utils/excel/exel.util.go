@@ -3,12 +3,15 @@ package excel
 import (
 	"bytes"
 	"fmt"
+	"github.com/xuri/excelize/v2"
 	"io"
 	"net/http"
+	"strings"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"github.com/xuri/excelize/v2"
 )
+
+const prefixMappingRequest = "$"
 
 func LoadExcelByUrl(fileURL string) ([][]string, error) {
 	sheetMap, err := LoadSheetsInExcelByUrl(fileURL, []string{})
@@ -63,8 +66,10 @@ func LoadFileByUrl(fileURL string) (*excelize.File, error) {
 	return excelize.OpenReader(bytes.NewReader(data))
 }
 
+// UpdateDataInColumnOfFile ...
+// sheetName = ” => use first sheet instead of sheetName
 func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName string, dataIndexStart int,
-	columnData []string, allowRemoveRemainingSheet bool) (*bytes.Buffer, error) {
+	columnData map[int]string, allowRemoveRemainingSheet bool) (*bytes.Buffer, error) {
 	// 1. Load file
 	data, err := loadDataFromUrl(fileUrl)
 	if err != nil {
@@ -74,21 +79,33 @@ func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName strin
 	// 2. Load excel
 	exFile, err := excelize.OpenReader(bytes.NewReader(data))
 	if err != nil {
-		logger.ErrorT("Failed to load file by url %v", sheetName, fileUrl)
+		logger.ErrorT("Failed to load file by url %v", fileUrl)
 		return nil, err
+	}
+	// -> Get first sheet if sheetName no data
+	if len(sheetName) == 0 {
+		sheetName = exFile.GetSheetName(0)
 	}
 
 	// 3. Get column index
-	columnIndex, err := getColumnIndexInFile(exFile, sheetName, columnName)
-	if err != nil {
-		columnIndex = "A"
-		logger.Warnf("----> Force column %v is in `%v` column", columnName, columnIndex)
+	var columnIndex string
+	if isColumnIndex(columnName) {
+		columnIndex = columnName[1:]
+	} else {
+		columnIndex, err = getColumnIndexInFile(exFile, sheetName, columnName)
+		if err != nil {
+			columnIndex = "A"
+			logger.Warnf("----> Force column %v is in `%v` column", columnName, columnIndex)
+		}
 	}
 
 	// 4. Update column data
-	for i, data := range columnData {
-		axis := fmt.Sprintf("%v%v", columnIndex, dataIndexStart+i)
-		_ = exFile.SetCellValue(sheetName, axis, data)
+	for rowID, data := range columnData {
+		axis := fmt.Sprintf("%v%v", columnIndex, dataIndexStart+rowID-1)
+		err := exFile.SetCellValue(sheetName, axis, data)
+		if err != nil {
+			logger.Errorf("error when set value for cell %+v in sheet %+v, value = %+v", axis, sheetName, data)
+		}
 	}
 
 	// 5. Remove remaining sheet
@@ -149,6 +166,13 @@ func loadDataFromUrl(url string) ([]byte, error) {
 	return io.ReadAll(r.Body)
 }
 
+// isColumnIndex ... return TRUE if columnName start with `$` and only support column index from A-Z
+// Eg: $A, $D, ... -> TRUE
+func isColumnIndex(columnName string) bool {
+	return len(columnName) == 2 && strings.HasPrefix(columnName, prefixMappingRequest)
+}
+
+// getColumnIndexInFile ... return the position of column by name
 func getColumnIndexInFile(exFile *excelize.File, sheetName string, columnName string) (string, error) {
 	// 1. Get data in Sheet
 	sheetData, err := exFile.GetRows(sheetName)

@@ -2,6 +2,7 @@ package fileprocessingrow
 
 import (
 	"context"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
@@ -13,7 +14,7 @@ type (
 
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
 
-		Statistics(int) (bool, int, int, []string, error)
+		Statistics(int) (bool, int, int, map[int]string, error)
 	}
 
 	ServiceImpl struct {
@@ -66,7 +67,7 @@ func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileId i
 func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	request UpdateAfterExecutingByJob) (*ProcessingFileRow, error) {
 	logger.Infof("Prepare update %v with request=%+v", Name(), request)
-	pfr, err := s.repo.UpdateByJob(ctx, id, request.RequestRaw, request.ResponseRaw, request.Status, request.ErrorDisplay)
+	pfr, err := s.repo.UpdateByJob(ctx, id, request.RequestCurl, request.RequestRaw, request.ResponseRaw, request.Status, request.ErrorDisplay)
 	if err != nil {
 		logger.Errorf("Failed to update %v, error=%v", Name(), err)
 		return nil, err
@@ -76,7 +77,7 @@ func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 }
 
 // Statistics ... return (isFinished, totalSuccess, totalFailed, errorDisplays, error)
-func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, []string, error) {
+func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, map[int]string, error) {
 	statistics, err := s.repo.Statistics(int64(fileId))
 	if err != nil {
 		logger.Errorf("Error when get Statistics, err = %v", err)
@@ -86,15 +87,14 @@ func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, []string, error) {
 	total := len(statistics)
 	totalSuccess := 0
 	totalFailed := 0
-	var errorDisplays []string
+	errorDisplays := make(map[int]string)
 	for _, stats := range statistics {
 		if stats.IsSuccessAll() {
 			totalSuccess++
-			errorDisplays = append(errorDisplays, "")
 		} else if stats.IsContainsFailed() {
 			totalFailed++
 			errorDisplay := stats.GetErrorDisplay()
-			errorDisplays = append(errorDisplays, errorDisplay)
+			errorDisplays[stats.RowIndex] = errorDisplay
 		}
 	}
 

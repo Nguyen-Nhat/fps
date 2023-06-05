@@ -21,10 +21,14 @@ const (
 	FieldResultFileURL = "result_file_url"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldFileParameters holds the string denoting the file_parameters field in the database.
+	FieldFileParameters = "file_parameters"
 	// FieldTotalMapping holds the string denoting the total_mapping field in the database.
 	FieldTotalMapping = "total_mapping"
 	// FieldStatsTotalRow holds the string denoting the stats_total_row field in the database.
 	FieldStatsTotalRow = "stats_total_row"
+	// FieldStatsTotalProcessed holds the string denoting the stats_total_processed field in the database.
+	FieldStatsTotalProcessed = "stats_total_processed"
 	// FieldStatsTotalSuccess holds the string denoting the stats_total_success field in the database.
 	FieldStatsTotalSuccess = "stats_total_success"
 	// FieldErrorDisplay holds the string denoting the error_display field in the database.
@@ -47,8 +51,10 @@ var Columns = []string{
 	FieldFileURL,
 	FieldResultFileURL,
 	FieldStatus,
+	FieldFileParameters,
 	FieldTotalMapping,
 	FieldStatsTotalRow,
+	FieldStatsTotalProcessed,
 	FieldStatsTotalSuccess,
 	FieldErrorDisplay,
 	FieldCreatedAt,
@@ -71,6 +77,14 @@ var (
 	DisplayNameValidator func(string) error
 	// FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
 	FileURLValidator func(string) error
+	// DefaultTotalMapping holds the default value on creation for the "total_mapping" field.
+	DefaultTotalMapping int32
+	// DefaultStatsTotalRow holds the default value on creation for the "stats_total_row" field.
+	DefaultStatsTotalRow int32
+	// DefaultStatsTotalProcessed holds the default value on creation for the "stats_total_processed" field.
+	DefaultStatsTotalProcessed int32
+	// DefaultStatsTotalSuccess holds the default value on creation for the "stats_total_success" field.
+	DefaultStatsTotalSuccess int32
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.

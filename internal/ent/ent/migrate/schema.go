@@ -9,6 +9,63 @@ import (
 )
 
 var (
+	// ConfigMappingColumns holds the columns for the "config_mapping" table.
+	ConfigMappingColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "client_id", Type: field.TypeInt32},
+		{Name: "total_tasks", Type: field.TypeInt32, Default: 0},
+		{Name: "data_start_at_row", Type: field.TypeInt32, Default: 0},
+		{Name: "require_column_index", Type: field.TypeString},
+		{Name: "error_column_index", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeString},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ConfigMappingTable holds the schema information for the "config_mapping" table.
+	ConfigMappingTable = &schema.Table{
+		Name:       "config_mapping",
+		Columns:    ConfigMappingColumns,
+		PrimaryKey: []*schema.Column{ConfigMappingColumns[0]},
+	}
+	// ConfigTaskColumns holds the columns for the "config_task" table.
+	ConfigTaskColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "config_mapping_id", Type: field.TypeInt32},
+		{Name: "task_index", Type: field.TypeInt32},
+		{Name: "end_point", Type: field.TypeString},
+		{Name: "method", Type: field.TypeString},
+		{Name: "header", Type: field.TypeString, Size: 2147483647},
+		{Name: "request_params", Type: field.TypeString, Size: 2147483647},
+		{Name: "request_body", Type: field.TypeString, Size: 2147483647},
+		{Name: "response_success_http_status", Type: field.TypeInt32},
+		{Name: "response_success_code_schema", Type: field.TypeString},
+		{Name: "response_message_schema", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeString},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ConfigTaskTable holds the schema information for the "config_task" table.
+	ConfigTaskTable = &schema.Table{
+		Name:       "config_task",
+		Columns:    ConfigTaskColumns,
+		PrimaryKey: []*schema.Column{ConfigTaskColumns[0]},
+	}
+	// FpsClientColumns holds the columns for the "fps_client" table.
+	FpsClientColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "client_id", Type: field.TypeInt32},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeString},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// FpsClientTable holds the schema information for the "fps_client" table.
+	FpsClientTable = &schema.Table{
+		Name:       "fps_client",
+		Columns:    FpsClientColumns,
+		PrimaryKey: []*schema.Column{FpsClientColumns[0]},
+	}
 	// ProcessingFileColumns holds the columns for the "processing_file" table.
 	ProcessingFileColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -17,9 +74,11 @@ var (
 		{Name: "file_url", Type: field.TypeString},
 		{Name: "result_file_url", Type: field.TypeString},
 		{Name: "status", Type: field.TypeInt16},
-		{Name: "total_mapping", Type: field.TypeInt32},
-		{Name: "stats_total_row", Type: field.TypeInt32},
-		{Name: "stats_total_success", Type: field.TypeInt32},
+		{Name: "file_parameters", Type: field.TypeString, Size: 2147483647},
+		{Name: "total_mapping", Type: field.TypeInt32, Default: 0},
+		{Name: "stats_total_row", Type: field.TypeInt32, Default: 0},
+		{Name: "stats_total_processed", Type: field.TypeInt32, Default: 0},
+		{Name: "stats_total_success", Type: field.TypeInt32, Default: 0},
 		{Name: "error_display", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString},
@@ -36,14 +95,18 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "file_id", Type: field.TypeInt64},
 		{Name: "row_index", Type: field.TypeInt32},
-		{Name: "row_data_raw", Type: field.TypeString},
+		{Name: "row_data_raw", Type: field.TypeString, Size: 2147483647},
 		{Name: "task_index", Type: field.TypeInt32},
-		{Name: "task_mapping", Type: field.TypeString},
+		{Name: "task_mapping", Type: field.TypeString, Size: 2147483647},
 		{Name: "task_depends_on", Type: field.TypeString},
-		{Name: "task_request_raw", Type: field.TypeString},
-		{Name: "task_response_raw", Type: field.TypeString},
+		{Name: "task_request_curl", Type: field.TypeString, Size: 2147483647},
+		{Name: "task_request_raw", Type: field.TypeString, Size: 2147483647},
+		{Name: "task_response_raw", Type: field.TypeString, Size: 2147483647},
 		{Name: "status", Type: field.TypeInt16},
 		{Name: "error_display", Type: field.TypeString},
+		{Name: "executed_time", Type: field.TypeInt64},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 	}
 	// ProcessingFileRowTable holds the schema information for the "processing_file_row" table.
 	ProcessingFileRowTable = &schema.Table{
@@ -68,6 +131,9 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ConfigMappingTable,
+		ConfigTaskTable,
+		FpsClientTable,
 		ProcessingFileTable,
 		ProcessingFileRowTable,
 		UsersTable,
@@ -75,6 +141,15 @@ var (
 )
 
 func init() {
+	ConfigMappingTable.Annotation = &entsql.Annotation{
+		Table: "config_mapping",
+	}
+	ConfigTaskTable.Annotation = &entsql.Annotation{
+		Table: "config_task",
+	}
+	FpsClientTable.Annotation = &entsql.Annotation{
+		Table: "fps_client",
+	}
 	ProcessingFileTable.Annotation = &entsql.Annotation{
 		Table: "processing_file",
 	}
