@@ -3,12 +3,13 @@ package fileprocessing
 import (
 	"errors"
 	"fmt"
+	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"net/http"
 )
-
-import "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 
 // Request DTO =========================================================================================================
 
@@ -54,29 +55,59 @@ func (c *CreateFileProcessingRequest) Bind(r *http.Request) error {
 	return nil
 }
 
+type GetFileProcessHistoryRequest struct {
+	ClientID  int32  `json:"clientId"`
+	CreatedBy string `json:"createdBy"`
+	Page      int    `json:"page"`
+	PageSize  int    `json:"size"`
+}
+
+func bindAndValidateRequestParams(r *http.Request, data *GetFileProcessHistoryRequest) error {
+	// 1.Bind request params to struct
+	params := r.URL.Query()
+	if err := utils.BindRequestParamsToStruct(data, params, "json"); err != nil {
+		logger.Errorf("bindAndValidateRequestParams ... error %+v", err)
+		return error2.ErrInvalidRequestWithError(err)
+	}
+	data.InitDefaultValue()
+
+	// 2.Validate request params
+	if data.ClientID == 0 {
+		err := fmt.Errorf("missing required param: clientId")
+		logger.Errorf("bindAndValidateRequestParams ... error %+v", err)
+		return error2.ErrInvalidRequestWithError(err)
+	}
+
+	if data.Page < 0 || data.Page > constant.PaginationMaxPage {
+		err := fmt.Errorf("request field is out of range: page")
+		logger.Errorf("bindAndValidateRequestParams ... error %+v", err)
+		return error2.ErrInvalidRequestWithError(err)
+	}
+
+	if data.PageSize < 0 || data.PageSize > constant.PaginationMaxSize {
+		err := fmt.Errorf("request field is out of range: size")
+		logger.Errorf("bindAndValidateRequestParams ... error %+v", err)
+		return error2.ErrInvalidRequestWithError(err)
+	}
+	return nil
+}
+
+func (c *GetFileProcessHistoryRequest) InitDefaultValue() {
+	if c.Page == 0 {
+		c.Page = 1
+	}
+
+	if c.PageSize == 0 {
+		c.PageSize = 10
+	}
+}
+
 // Response DTO ========================================================================================================
 
 // CreateFileProcessingResponse ...
 type CreateFileProcessingResponse struct {
 	ProcessFileID int64 `json:"processFileId"`
 }
-
-// Error ===============================================================================================================
-
-var (
-	ErrClientIDRequired         = errors.New("client id is required")
-	ErrFileUrlRequired          = errors.New("file url is required")
-	ErrCreatedByRequired        = errors.New("created by is required")
-	ErrFileUrlOverMaxLength     = fmt.Errorf("file url over %d character", FileUrlMaxLength)
-	ErrDisplayNameOverMaxLength = fmt.Errorf("display name over %d character", DisplayNameMaxLength)
-	ErrCreatedByOverMaxLength   = fmt.Errorf("created by over %d character", CreatedByMaxLength)
-)
-
-var (
-	FileUrlMaxLength     = 255
-	DisplayNameMaxLength = 255
-	CreatedByMaxLength   = 255
-)
 
 type GetFileProcessHistoryData struct {
 	ProcessingFiles []ProcessingHistoryFile `json:"processingFiles"`
@@ -96,6 +127,23 @@ type ProcessingHistoryFile struct {
 	CreatedAt         int64  `json:"createdAt"`
 	CreatedBy         string `json:"createdBy"`
 }
+
+// Error ===============================================================================================================
+
+var (
+	ErrClientIDRequired         = errors.New("clientId is required")
+	ErrFileUrlRequired          = errors.New("fileUrl is required")
+	ErrCreatedByRequired        = errors.New("createdBy is required")
+	ErrFileUrlOverMaxLength     = fmt.Errorf("fileUrl over %d character", FileUrlMaxLength)
+	ErrDisplayNameOverMaxLength = fmt.Errorf("fileDisplayName over %d character", DisplayNameMaxLength)
+	ErrCreatedByOverMaxLength   = fmt.Errorf("createdBy over %d characters", CreatedByMaxLength)
+)
+
+var (
+	FileUrlMaxLength     = 255
+	DisplayNameMaxLength = 255
+	CreatedByMaxLength   = 255
+)
 
 const (
 	FpStatusInit       = "INIT"

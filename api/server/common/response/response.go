@@ -6,7 +6,7 @@ import (
 )
 
 type BaseResponse[D any] struct {
-	Error   codes.Code `json:"error"`
+	Error   codes.Code `json:"code"`
 	Message string     `json:"message"`
 	Data    *D         `json:"data"`
 }
