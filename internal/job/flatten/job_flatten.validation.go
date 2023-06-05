@@ -62,33 +62,18 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 
 	// 1. Get value for each RequestField in each Task
 	var tasksUpdated []configloader.ConfigTaskMD
+	fileParameters := configMapping.FileParameters
 	for _, orgTask := range configMapping.Tasks {
 		task := orgTask.Clone()
 		// 1.1. RequestField in Request Params
 		for fieldName, reqField := range task.RequestParamsMap {
-			// 1.1.1. Get value in String type
-			var valueStr string
-			switch reqField.ValueDependsOn {
-			case configloader.ValueDependsOnExcel:
-				cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(rowID, rowData, reqField)
-				if len(errorRowsExel) == 0 {
-					valueStr = cellValue
-				} else {
-					errorRows = append(errorRows, errorRowsExel...)
-				}
-			case configloader.ValueDependsOnParam:
-				paramValue, errorRowsParams := validateAndGetValueForFieldParam(rowID, reqField, configMapping.FileParameters)
-				if len(errorRowsParams) == 0 {
-					valueStr = paramValue
-				} else {
-					errorRows = append(errorRows, errorRowsParams...)
-				}
-			case configloader.ValueDependsOnNone:
-				valueStr = reqField.Value
-			default:
-				// No support ValueDependsOnTask
-				// Because data of task only is gotten after call api to provider => cannot get at this time
-				continue // go to next reqField
+			valueStr, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			if len(errorRowsAfterGet) > 0 {
+				errorRows = append(errorRows, errorRowsAfterGet...)
+				continue
+			}
+			if len(valueStr) == 0 { // no value => no need to convert
+				continue
 			}
 
 			// 1.1.2. Get real value
@@ -102,29 +87,28 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			}
 		}
 
-		// 1.2. RequestField in Request Body
+		// 1.2. RequestField in Request Body (support ArrayItem)
 		for fieldName, reqField := range task.RequestBodyMap {
-			// 1.2.1. Get value in String type
-			var valueStr string
-			switch reqField.ValueDependsOn {
-			case configloader.ValueDependsOnExcel:
-				cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(rowID, rowData, reqField)
-				if len(errorRowsExel) == 0 {
-					errorRows = append(errorRows, errorRowsExel...)
-					valueStr = cellValue
+			// 1.2.1. Validate ArrayItemMap
+			if len(reqField.ArrayItemMap) > 0 {
+				arrayItemMapUpdated, childMap, errorRowsForArrayItem := validateArrayItemMap(rowID, rowData, reqField.ArrayItemMap, fileParameters)
+				if len(errorRowsForArrayItem) > 0 {
+					errorRows = append(errorRows, errorRowsForArrayItem...)
+					continue
 				}
-			case configloader.ValueDependsOnParam:
-				paramValue, errorRowsParams := validateAndGetValueForFieldParam(rowID, reqField, configMapping.FileParameters)
-				if len(errorRowsParams) == 0 {
-					errorRows = append(errorRows, errorRowsParams...)
-					valueStr = paramValue
-				}
-			case configloader.ValueDependsOnNone:
-				valueStr = reqField.Value
-			default:
-				// No support ValueDependsOnTask
-				// Because data of task only is gotten after call api to provider => cannot get at this time
-				continue // go to next reqField
+
+				reqField.ArrayItemMap = arrayItemMapUpdated
+				task.RequestBody[fieldName] = []map[string]interface{}{childMap}
+			}
+
+			// 1.2.2. Validate field
+			valueStr, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			if len(errorRowsAfterGet) > 0 {
+				errorRows = append(errorRows, errorRowsAfterGet...)
+				continue
+			}
+			if len(valueStr) == 0 { // no value => no need to convert
+				continue
 			}
 
 			// 1.2.2. Get real value
@@ -149,6 +133,62 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 
 	// 3. Return
 	return configMapping, errorRows
+}
+
+func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*configloader.RequestFieldMD, fileParameters map[string]string) (
+	map[string]*configloader.RequestFieldMD, map[string]interface{}, []ErrorRow) {
+
+	var errorRows []ErrorRow
+	childMap := make(map[string]interface{})
+
+	for fieldNameChild, reqFieldChild := range arrayItemMap {
+		valueChildStr, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqFieldChild, fileParameters)
+		if len(errorRowsAfterGet) > 0 {
+			errorRows = append(errorRows, errorRowsAfterGet...)
+			continue
+		}
+		if len(valueChildStr) == 0 { // no value => no need to convert
+			continue
+		}
+
+		// 1.2.2. Get real value
+		realValueChild, errMsg := convertToRealValue(reqFieldChild.Type, valueChildStr, reqFieldChild.ValueDependsOnKey)
+		if len(errMsg) > 0 {
+			errorRows = append(errorRows, ErrorRow{rowID, errMsg})
+		} else {
+			childMap[reqFieldChild.Field] = realValueChild
+			// config will be converted to Json string, then save to DB -> delete to reduce size of json string
+			delete(arrayItemMap, fieldNameChild)
+		}
+	}
+	return arrayItemMap, childMap, errorRows
+}
+
+func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]string) (string, []ErrorRow) {
+	// 1.2.1. Get value in String type
+	var valueStr string
+	var errorRows []ErrorRow
+	switch reqField.ValueDependsOn {
+	case configloader.ValueDependsOnExcel:
+		cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(rowID, rowData, reqField)
+		if len(errorRowsExel) == 0 {
+			errorRows = append(errorRows, errorRowsExel...)
+			valueStr = cellValue
+		}
+	case configloader.ValueDependsOnParam:
+		paramValue, errorRowsParams := validateAndGetValueForFieldParam(rowID, reqField, fileParameters)
+		if len(errorRowsParams) == 0 {
+			errorRows = append(errorRows, errorRowsParams...)
+			valueStr = paramValue
+		}
+	case configloader.ValueDependsOnNone:
+		valueStr = reqField.Value
+	default:
+		// No support ValueDependsOnTask
+		// Because data of task only is gotten after call api to provider => cannot get at this time
+		//continue // go to next reqField
+	}
+	return valueStr, errorRows
 }
 
 func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestFieldMD, fileParameters map[string]string) (string, []ErrorRow) {
@@ -221,12 +261,6 @@ func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) 
 	switch strings.ToUpper(fieldType) {
 	case configloader.TypeString:
 		realValue = valueStr
-	//case configloader.TypeInt: // todo re-check
-	//	if valueInt, err := strconv.Atoi(valueStr); err == nil {
-	//		realValue = valueInt
-	//	} else {
-	//		return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
-	//	}
 	case configloader.TypeInt, configloader.TypeLong:
 		if valueInt64, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
 			realValue = valueInt64

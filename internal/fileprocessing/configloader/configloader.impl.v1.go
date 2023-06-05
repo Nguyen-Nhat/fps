@@ -150,21 +150,44 @@ func toMapRequestFieldMD(taskID int32, dataName string, dataRaw string) (map[str
 }
 
 // enrichRequestFieldMD ... enrich more data
-func enrichRequestFieldMD(taskId int32, reqField RequestFieldMD) (RequestFieldMD, error) {
+func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD, error) {
 	fieldName := reqField.Field
 	valuePattern := reqField.ValuePattern
 
+	// 1. Enrich for ArrayItem
+	if len(reqField.ArrayItem) > 0 {
+		// 3. Convert to Map
+		listRequestField := reqField.ArrayItem
+		fieldChildMap := map[string]*RequestFieldMD{}
+		for _, reqFieldChild := range listRequestField {
+			fieldPath := fmt.Sprintf("%s.%s", reqField.Field, reqFieldChild.Field)
+			reqFieldChildEnriched, err := enrichRequestFieldMD(taskID, *reqFieldChild)
+			if err != nil {
+				return RequestFieldMD{}, fmt.Errorf("cannot get config %v", fieldPath)
+			}
+
+			fieldChildMap[reqFieldChild.Field] = &reqFieldChildEnriched
+		}
+
+		reqField.ArrayItemMap = fieldChildMap
+		reqField.ArrayItem = nil
+
+		// finish enrich data, because we cannot enrich for `valuePattern` with type Array
+		return reqField, nil
+	}
+
+	// 2. Else, Enrich for valuePattern
 	if strings.HasPrefix(valuePattern, prefixMappingRequest) {
 		if len(valuePattern) == 2 {
 			columnIndex := string(valuePattern[1]) // if `$A` -> columnIndex = `A`
-			logger.Infof("----- task %v, field %v is mapping with column %v", taskId, fieldName, columnIndex)
+			logger.Infof("----- task %v, field %v is mapping with column %v", taskID, fieldName, columnIndex)
 			reqField.ValueDependsOn = ValueDependsOnExcel
 			reqField.ValueDependsOnKey = columnIndex
 		} else if len(valuePattern) > len(prefixMappingRequestResponse)+2 && strings.HasPrefix(valuePattern, prefixMappingRequestResponse) {
 			template := strings.TrimPrefix(valuePattern, prefixMappingRequestResponse) // $response1.field_abc -> template = 1.field_abc
 			dependOnTaskId, err := strconv.Atoi(string(template[0]))                   // 1.field_abc -> 1
 			if err != nil || template[1] != '.' {
-				logger.Infof("----- task %v, field %v has invalid value is %v", taskId, fieldName, valuePattern)
+				logger.Infof("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
 				return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
 			}
 
@@ -175,14 +198,14 @@ func enrichRequestFieldMD(taskId int32, reqField RequestFieldMD) (RequestFieldMD
 		} else if len(valuePattern) > len(prefixMappingRequestParameter)+2 && strings.HasPrefix(valuePattern, prefixMappingRequestParameter) {
 			template := strings.TrimPrefix(valuePattern, prefixMappingRequestParameter) // $param.field_abc -> paramKey = .field_abc
 			if len(template) <= 1 || template[0] != '.' {
-				logger.Infof("----- task %v, field %v has invalid value is %v", taskId, fieldName, valuePattern)
+				logger.Infof("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
 				return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
 			}
 
 			reqField.ValueDependsOn = ValueDependsOnParam
 			reqField.ValueDependsOnKey = template[1:]
 		} else {
-			logger.Errorf("----- task %v, field %v has invalid value is %v", taskId, fieldName, valuePattern)
+			logger.Errorf("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
 			return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
 		}
 	} else {

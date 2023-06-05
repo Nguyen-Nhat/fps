@@ -42,7 +42,8 @@ type RequestFieldMD struct {
 	ValuePattern string // it may be raw value or pattern to get
 
 	// Custom for array
-	ArrayItem *RequestFieldMDChild // optional, have value when type=array
+	ArrayItem    []*RequestFieldMD // optional, have value when type=array
+	ArrayItemMap map[string]*RequestFieldMD
 
 	// Constrains
 	Required bool
@@ -52,15 +53,6 @@ type RequestFieldMD struct {
 	ValueDependsOnKey    string
 	ValueDependsOnTaskID int
 	Value                string // real value in string. RealValue = Value when Value is raw. RealValue is value after get from pattern in Value
-}
-
-type RequestFieldMDChild struct {
-	Field        string `json:"field"`        // field name to request
-	Type         string `json:"type"`         // support int, string, array (item is defined in array_item)
-	ValuePattern string `json:"valuePattern"` // it may be raw value or pattern to get
-
-	// Others
-	Value string `json:"value"` // real value in string. RealValue = Value when Value is raw. RealValue is value after get from pattern in Value
 }
 
 // ResponseMD ...
@@ -83,22 +75,54 @@ type ResponseMsg struct {
 	Path string `json:"path"`
 }
 
-func (ct *ConfigTaskMD) Clone() ConfigTaskMD {
+func (ct ConfigTaskMD) Clone() ConfigTaskMD {
+	requestParamsMap := make(map[string]*RequestFieldMD)
+	for key, value := range ct.RequestParamsMap {
+		reqField := value.Clone()
+		requestParamsMap[key] = &reqField
+	}
+
+	requestBodyMap := make(map[string]*RequestFieldMD)
+	for key, value := range ct.RequestBodyMap {
+		reqField := value.Clone()
+		requestBodyMap[key] = &reqField
+	}
+
 	return ConfigTaskMD{
 		TaskIndex: ct.TaskIndex,
 		// Request
 		Endpoint:         ct.Endpoint,
 		Method:           ct.Method,
 		Header:           utils.CloneMap(ct.Header),
-		RequestParamsMap: utils.CloneMap(ct.RequestParamsMap),
-		RequestBodyMap:   utils.CloneMap(ct.RequestBodyMap),
+		RequestParamsMap: requestParamsMap,
+		RequestBodyMap:   requestBodyMap,
+
 		// Request that filled converted field's value
 		RequestParams: utils.CloneMap(ct.RequestParams),
 		RequestBody:   utils.CloneMap(ct.RequestBody),
+
 		// Response
 		Response: ct.Response,
 		// Row data in importing file -> is injected in validation phase
 		ImportRowData:  ct.ImportRowData,
 		ImportRowIndex: ct.ImportRowIndex,
+	}
+}
+
+func (rf RequestFieldMD) Clone() RequestFieldMD {
+	return RequestFieldMD{
+		Field:        rf.Field,
+		Type:         rf.Type,
+		ValuePattern: rf.ValuePattern,
+		// Custom for array
+		ArrayItem:    utils.CloneArray(rf.ArrayItem),
+		ArrayItemMap: utils.CloneMap(rf.ArrayItemMap),
+		// Constrains
+		Required: rf.Required,
+		// Others
+		ValueDependsOn:       rf.ValueDependsOn,
+		ValueDependsOnKey:    rf.ValueDependsOnKey,
+		ValueDependsOnTaskID: rf.ValueDependsOnTaskID,
+		Value:                rf.Value,
 	}
 }

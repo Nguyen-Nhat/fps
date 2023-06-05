@@ -110,8 +110,12 @@ func mapDataByPreviousResponse(taskIndex int, configMapping configloader.ConfigM
 		}
 	}
 
-	// 4. Convert request params
+	// 4. Convert request body
+	// todo: haven't supported ValueDependsOnTask for nested object (defined in RequestFieldMD.ArrayItem) -> will update later
 	for _, reqField := range task.RequestBodyMap {
+		if reqField.Type == configloader.TypeArray {
+			continue // ignore this type
+		}
 		// 1.2.1. Get value in String type
 		var valueStr string
 		switch reqField.ValueDependsOn {

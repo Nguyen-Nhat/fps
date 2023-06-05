@@ -318,3 +318,7 @@ func CloneMap[D any](root map[string]D) map[string]D {
 	}
 	return targetMap
 }
+
+func CloneArray[D any](root []D) []D {
+	return append([]D{}, root...)
+}
