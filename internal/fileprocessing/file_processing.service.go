@@ -2,13 +2,11 @@ package fileprocessing
 
 import (
 	"context"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
-)
-
-import (
-	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 )
 
 type (
@@ -51,11 +49,12 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 	// 2. Create new file processing
 	createdProcessingFile, err := s.repo.Save(ctx, ProcessingFile{
 		ProcessingFile: ent.ProcessingFile{
-			ClientID:    req.ClientID,
-			DisplayName: displayName,
-			FileURL:     req.FileURL,
-			Status:      StatusInit,
-			CreatedBy:   req.CreatedBy,
+			ClientID:       req.ClientID,
+			DisplayName:    displayName,
+			FileURL:        req.FileURL,
+			Status:         StatusInit,
+			CreatedBy:      req.CreatedBy,
+			FileParameters: req.FileParameters,
 		},
 	})
 	if err != nil {

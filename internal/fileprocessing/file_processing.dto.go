@@ -8,10 +8,11 @@ type GetFileProcessHistoryDTO struct {
 }
 
 type CreateFileProcessingReqDTO struct {
-	ClientID    int32
-	FileURL     string
-	DisplayName string
-	CreatedBy   string
+	ClientID       int32
+	FileURL        string
+	DisplayName    string
+	CreatedBy      string
+	FileParameters string
 }
 
 type CreateFileProcessingResDTO struct {

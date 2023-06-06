@@ -1,14 +1,16 @@
 package fileprocessing
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+
 	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
-	"net/http"
 )
 
 // Request DTO =========================================================================================================
@@ -19,6 +21,13 @@ type CreateFileProcessingRequest struct {
 	FileURL         string `json:"fileUrl"`
 	FileDisplayName string `json:"fileDisplayName"`
 	CreatedBy       string `json:"createdBy"`
+	Parameters      string `json:"parameters"`
+}
+
+// Take from https://stackoverflow.com/a/36922225
+func isJSONString(str string) bool {
+	var js json.RawMessage
+	return json.Unmarshal([]byte(str), &js) == nil
 }
 
 func (c *CreateFileProcessingRequest) Bind(r *http.Request) error {
@@ -51,7 +60,10 @@ func (c *CreateFileProcessingRequest) Bind(r *http.Request) error {
 	if len(c.CreatedBy) > CreatedByMaxLength {
 		return ErrCreatedByOverMaxLength
 	}
-
+	// validate parameters field, valid when it is "" or is in JSON format
+	if c.Parameters != "" && !isJSONString(c.Parameters) {
+		return ErrParametersIsNotJson
+	}
 	return nil
 }
 
@@ -138,6 +150,7 @@ var (
 	ErrFileUrlOverMaxLength     = fmt.Errorf("fileUrl over %d character", FileUrlMaxLength)
 	ErrDisplayNameOverMaxLength = fmt.Errorf("fileDisplayName over %d character", DisplayNameMaxLength)
 	ErrCreatedByOverMaxLength   = fmt.Errorf("createdBy over %d characters", CreatedByMaxLength)
+	ErrParametersIsNotJson      = errors.New("parameters field isn't in json format")
 )
 
 var (
