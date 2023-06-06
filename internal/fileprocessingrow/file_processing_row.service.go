@@ -14,7 +14,7 @@ type (
 
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
 
-		Statistics(int) (bool, int, int, map[int]string, error)
+		Statistics(int) (bool, int, int, int, map[int]string, error)
 	}
 
 	ServiceImpl struct {
@@ -76,17 +76,18 @@ func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	return pfr, nil
 }
 
-// Statistics ... return (isFinished, totalSuccess, totalFailed, errorDisplays, error)
-func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, map[int]string, error) {
+// Statistics ... return (isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, error)
+func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, int, map[int]string, error) {
 	statistics, err := s.repo.Statistics(int64(fileId))
 	if err != nil {
 		logger.Errorf("Error when get Statistics, err = %v", err)
-		return false, 0, 0, nil, err
+		return false, 0, 0, 0, nil, err
 	}
 
 	total := len(statistics)
 	totalSuccess := 0
 	totalFailed := 0
+	totalProcessed := 0
 	errorDisplays := make(map[int]string)
 	for _, stats := range statistics {
 		if stats.IsSuccessAll() {
@@ -96,13 +97,17 @@ func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, map[int]string, er
 			errorDisplay := stats.GetErrorDisplay()
 			errorDisplays[stats.RowIndex] = errorDisplay
 		}
+
+		if stats.IsProcessed() {
+			totalProcessed++
+		}
 	}
 
 	logger.Infof("----- Statistic file %v: total=%v, totalSuccess=%v, totalFailed=%v", fileId, total, totalSuccess, totalFailed)
 
 	isFinished := isFinished(totalSuccess, totalFailed, total)
 
-	return isFinished, totalSuccess, totalFailed, errorDisplays, nil
+	return isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, nil
 }
 
 // private method ------------------------------------------------------------------------------------------------------

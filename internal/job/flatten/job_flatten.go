@@ -133,11 +133,11 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 	// 1. Convert errorRows to errorDisplays
 	errorDisplays := make(map[int]string)
 	for _, errorRow := range errorRows {
-		id := errorRow.RowId
-		if errMsg, existed := errorDisplays[id]; existed {
-			errorDisplays[id] = fmt.Sprintf("%s; %s", errMsg, errorRow.Reason)
+		rowID := errorRow.RowId
+		if errMsg, existed := errorDisplays[rowID]; existed {
+			errorDisplays[rowID] = fmt.Sprintf("%s; %s", errMsg, errorRow.Reason)
 		} else {
-			errorDisplays[id] = errorRow.Reason
+			errorDisplays[rowID] = errorRow.Reason
 		}
 	}
 

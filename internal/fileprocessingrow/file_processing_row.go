@@ -84,3 +84,10 @@ func (s *CustomStatisticModel) GetErrorDisplay() string {
 
 	return errorDisplay
 }
+
+// IsProcessed ... TRUE when contains terminated status (Success/Failed)
+func (s *CustomStatisticModel) IsProcessed() bool {
+	statusFailedStr := strconv.Itoa(StatusFailed)
+	statusSuccessStr := strconv.Itoa(StatusSuccess)
+	return strings.Contains(s.Statuses, statusFailedStr) || strings.Contains(s.Statuses, statusSuccessStr)
+}

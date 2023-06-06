@@ -23,7 +23,7 @@ type (
 		FindByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
 		UpdateStatusOne(context.Context, int, int16) (*ProcessingFile, error)
 		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay, *string) (*ProcessingFile, error)
-		UpdateStatusAndStatsAndResultFileUrl(context.Context, int, int16, int, string) (*ProcessingFile, error)
+		UpdateStatusAndStatsAndResultFileUrl(context.Context, int, int16, int, int, string) (*ProcessingFile, error)
 		UpdateByExtractedData(ctx context.Context, id int, status int16, totalMapping int, statsTotalRow int) (*ProcessingFile, error)
 		PingDB(context.Context, int)
 	}
@@ -98,10 +98,11 @@ func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, stat
 	}, nil
 }
 
-func (r *repoImpl) UpdateStatusAndStatsAndResultFileUrl(ctx context.Context, id int, status int16, totalSuccess int,
+func (r *repoImpl) UpdateStatusAndStatsAndResultFileUrl(ctx context.Context, id int, status int16, totalProcessed int, totalSuccess int,
 	resultFileUrl string) (*ProcessingFile, error) {
 	fap, err := r.client.ProcessingFile.UpdateOneID(id).
 		SetStatus(status).
+		SetStatsTotalProcessed(int32(totalProcessed)).
 		SetStatsTotalSuccess(int32(totalSuccess)).
 		SetResultFileURL(resultFileUrl).
 		Save(ctx)

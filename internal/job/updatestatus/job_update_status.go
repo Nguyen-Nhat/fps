@@ -44,7 +44,7 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 	logger.Infof("----- Start Update Status ProcessingFile with ID = %v", file.ID)
 
 	// 1. Statistics success row
-	isFinished, totalSuccess, totalFailed, errorDisplays, err := job.fprService.Statistics(file.ID)
+	isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, err := job.fprService.Statistics(file.ID)
 	if err != nil {
 		logger.ErrorT("Cannot statistics for file %v, err=%v", file.ID, err)
 		return
@@ -87,7 +87,7 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 
 	// 3. Update processing_file: status, result_file_url, total_success
 	// todo update processed_row
-	_, err = job.fpService.UpdateStatusWithStatistics(ctx, file.ID, status, totalSuccess, resultFileUrl)
+	_, err = job.fpService.UpdateStatusWithStatistics(ctx, file.ID, status, totalProcessed, totalSuccess, resultFileUrl)
 	if err != nil {
 		logger.ErrorT("Cannot update %v to failed, got error %v", fileprocessing.Name(), err)
 		return

@@ -21,7 +21,13 @@ type CronJobManager interface {
 
 // InitCron ...
 func InitCron(jobMgr CronJobManager) *cron.Cron {
-	cronExecuteTask := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
+	cronExecuteTask := cron.New(
+		cron.WithParser(
+			cron.NewParser(
+				// accept cron with 6 parameters. Eg: 10 */1 * * * *
+				cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow),
+		),
+	)
 
 	jobName := jobMgr.GetJobName()
 	id, err := cronExecuteTask.AddFunc(jobMgr.GetSchedulerConfig().Schedule, func() {

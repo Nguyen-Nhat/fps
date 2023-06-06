@@ -306,7 +306,7 @@ func toResponseResult(requestBody map[string]interface{}, responseBody string, m
     -> câp nhật processing_file.status=Finished, result_file_url, total_success
 */
 func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.Context, file *fileprocessing.ProcessingFile) {
-	isFinished, totalSuccess, totalFailed, errorDisplays, err := j.fprService.Statistics(file.ID)
+	isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, err := j.fprService.Statistics(file.ID)
 	if err != nil {
 		logger.ErrorT("Cannot statistics for file %v, err=%v", file.ID, err)
 		return
@@ -340,7 +340,7 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 		}
 	}
 
-	_, err = j.fpService.UpdateStatusWithStatistics(ctx, file.ID, status, totalSuccess, resultFileUrl)
+	_, err = j.fpService.UpdateStatusWithStatistics(ctx, file.ID, status, totalProcessed, totalSuccess, resultFileUrl)
 	if err != nil {
 		logger.ErrorT("Cannot update %v to failed, got error %v", fileprocessing.Name(), err)
 		return

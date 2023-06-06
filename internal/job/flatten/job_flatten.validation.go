@@ -17,6 +17,7 @@ const (
 	errFileNoData     fileprocessing.ErrorDisplay = "file tải lên không có dữ liệu"
 	// error row
 	errRowMissingDataColumn = "thiếu dữ liệu cột"
+	errRowMissingData       = "không có dữ liệu"
 	// error config
 	errConfigMapping      = "lỗi cấu hình hệ thống"
 	errConfigMissingParam = "thiếu cấu hình hệ thống cho"
@@ -42,8 +43,9 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 	var errorRows []ErrorRow
 	var configMappings []configloader.ConfigMappingMD
 
-	for rowID := dataStartAt - 1; rowID < len(sheetData); rowID++ {
-		cfgMappingWithConvertedData, errorRowsInRow := validateImportingDataRowAndCloneConfigMapping(rowID, sheetData[rowID], cfgMapping)
+	for id := dataStartAt - 1; id < len(sheetData); id++ {
+		rowID := id - dataStartAt + 1 // rowID is index of data (not include header), start from 1
+		cfgMappingWithConvertedData, errorRowsInRow := validateImportingDataRowAndCloneConfigMapping(rowID, sheetData[id], cfgMapping)
 
 		// check error rows
 		if len(errorRowsInRow) > 0 {
@@ -59,6 +61,11 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 // validateImportingDataRowAndCloneConfigMapping ...
 func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, configMapping configloader.ConfigMappingMD) (configloader.ConfigMappingMD, []ErrorRow) {
 	var errorRows []ErrorRow
+
+	// 0. Check row empty
+	if len(rowData) == 0 {
+		return configloader.ConfigMappingMD{}, []ErrorRow{{RowId: rowID, Reason: errRowMissingData}}
+	}
 
 	// 1. Get value for each RequestField in each Task
 	var tasksUpdated []configloader.ConfigTaskMD
@@ -171,14 +178,16 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 	switch reqField.ValueDependsOn {
 	case configloader.ValueDependsOnExcel:
 		cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(rowID, rowData, reqField)
-		if len(errorRowsExel) == 0 {
+		if len(errorRowsExel) != 0 {
 			errorRows = append(errorRows, errorRowsExel...)
+		} else {
 			valueStr = cellValue
 		}
 	case configloader.ValueDependsOnParam:
 		paramValue, errorRowsParams := validateAndGetValueForFieldParam(rowID, reqField, fileParameters)
-		if len(errorRowsParams) == 0 {
+		if len(errorRowsParams) != 0 {
 			errorRows = append(errorRows, errorRowsParams...)
+		} else {
 			valueStr = paramValue
 		}
 	case configloader.ValueDependsOnNone:

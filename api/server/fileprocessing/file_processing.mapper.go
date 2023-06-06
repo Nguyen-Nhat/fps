@@ -17,19 +17,20 @@ func fromInternalToGetFileHistoryData(fp []*fileprocessing.ProcessingFile, pagin
 	}
 }
 
-func toProcessHistoryFileFromEntity(fap *fileprocessing.ProcessingFile) ProcessingHistoryFile {
+func toProcessHistoryFileFromEntity(pf *fileprocessing.ProcessingFile) ProcessingHistoryFile {
 	return ProcessingHistoryFile{
-		ClientId:          fap.ClientID,
-		ProcessingFileId:  fap.ID,
-		FileDisplayName:   fap.DisplayName,
-		FileUrl:           fap.FileURL,
-		ResultFileUrl:     fap.ResultFileURL,
-		Status:            mapStatus(fap.Status),
-		StatsTotalRow:     fap.StatsTotalRow,
-		StatsTotalSuccess: fap.StatsTotalSuccess,
-		ErrorDisplay:      fap.ErrorDisplay,
-		CreatedAt:         fap.CreatedAt.UnixMilli(),
-		CreatedBy:         fap.CreatedBy,
+		ClientId:            pf.ClientID,
+		ProcessingFileId:    pf.ID,
+		FileDisplayName:     pf.DisplayName,
+		FileUrl:             pf.FileURL,
+		ResultFileUrl:       pf.ResultFileURL,
+		Status:              mapStatus(pf.Status),
+		StatsTotalRow:       pf.StatsTotalRow,
+		StatsTotalProcessed: pf.StatsTotalProcessed,
+		StatsTotalSuccess:   pf.StatsTotalSuccess,
+		ErrorDisplay:        pf.ErrorDisplay,
+		CreatedAt:           pf.CreatedAt.UnixMilli(),
+		CreatedBy:           pf.CreatedBy,
 	}
 }
 

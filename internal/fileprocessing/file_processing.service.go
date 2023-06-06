@@ -21,7 +21,7 @@ type (
 
 		UpdateToFailedStatusWithErrorMessage(context.Context, int, ErrorDisplay, *string) (*ProcessingFile, error)
 		UpdateToProcessingStatusWithExtractedData(context.Context, int, int, int) (*ProcessingFile, error)
-		UpdateStatusWithStatistics(context.Context, int, int16, int, string) (*ProcessingFile, error)
+		UpdateStatusWithStatistics(context.Context, int, int16, int, int, string) (*ProcessingFile, error)
 	}
 
 	ServiceImpl struct {
@@ -95,8 +95,8 @@ func (s *ServiceImpl) UpdateToFailedStatusWithErrorMessage(ctx context.Context, 
 	return pf, nil
 }
 
-func (s *ServiceImpl) UpdateStatusWithStatistics(ctx context.Context, id int, status int16, totalSuccess int, resultFileUrl string) (*ProcessingFile, error) {
-	pf, err := s.repo.UpdateStatusAndStatsAndResultFileUrl(ctx, id, status, totalSuccess, resultFileUrl)
+func (s *ServiceImpl) UpdateStatusWithStatistics(ctx context.Context, id int, status int16, totalProcessed int, totalSuccess int, resultFileUrl string) (*ProcessingFile, error) {
+	pf, err := s.repo.UpdateStatusAndStatsAndResultFileUrl(ctx, id, status, totalProcessed, totalSuccess, resultFileUrl)
 	if err != nil {
 		return nil, err
 	}

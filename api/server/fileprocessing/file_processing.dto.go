@@ -115,17 +115,18 @@ type GetFileProcessHistoryData struct {
 }
 
 type ProcessingHistoryFile struct {
-	ClientId          int32  `json:"clientId"`
-	ProcessingFileId  int    `json:"processingFileId"`
-	FileDisplayName   string `json:"fileDisplayName"`
-	FileUrl           string `json:"fileUrl"`
-	ResultFileUrl     string `json:"resultFileUrl"`
-	Status            string `json:"status"`
-	StatsTotalRow     int32  `json:"statsTotalRow"`
-	StatsTotalSuccess int32  `json:"statsTotalSuccess"`
-	ErrorDisplay      string `json:"errorDisplay"`
-	CreatedAt         int64  `json:"createdAt"`
-	CreatedBy         string `json:"createdBy"`
+	ClientId            int32  `json:"clientId"`
+	ProcessingFileId    int    `json:"processingFileId"`
+	FileDisplayName     string `json:"fileDisplayName"`
+	FileUrl             string `json:"fileUrl"`
+	ResultFileUrl       string `json:"resultFileUrl"`
+	Status              string `json:"status"`
+	StatsTotalRow       int32  `json:"statsTotalRow"`
+	StatsTotalProcessed int32  `json:"statsTotalProcessed"`
+	StatsTotalSuccess   int32  `json:"statsTotalSuccess"`
+	ErrorDisplay        string `json:"errorDisplay"`
+	CreatedAt           int64  `json:"createdAt"`
+	CreatedBy           string `json:"createdBy"`
 }
 
 // Error ===============================================================================================================

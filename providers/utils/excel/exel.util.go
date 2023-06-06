@@ -101,7 +101,7 @@ func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName strin
 
 	// 4. Update column data
 	for rowID, data := range columnData {
-		axis := fmt.Sprintf("%v%v", columnIndex, dataIndexStart+rowID-1)
+		axis := fmt.Sprintf("%v%v", columnIndex, dataIndexStart+rowID)
 		err := exFile.SetCellValue(sheetName, axis, data)
 		if err != nil {
 			logger.Errorf("error when set value for cell %+v in sheet %+v, value = %+v", axis, sheetName, data)

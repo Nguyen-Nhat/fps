@@ -118,7 +118,13 @@ func (r *repoImpl) DeleteByFileId(ctx context.Context, fileId int64) error {
 
 func (r *repoImpl) Statistics(fileId int64) ([]CustomStatisticModel, error) {
 	rows, err := r.sqlDB.Query(
-		"SELECT row_index, GROUP_CONCAT(status), COUNT(*) statuses, GROUP_CONCAT(error_display) FROM processing_file_row WHERE file_id = ? GROUP BY row_index",
+		`
+			SELECT 
+				row_index, GROUP_CONCAT(status), COUNT(*), GROUP_CONCAT(error_display) 
+			FROM processing_file_row 
+			WHERE file_id = ? 
+			GROUP BY row_index
+		`,
 		fileId)
 
 	if err != nil {
