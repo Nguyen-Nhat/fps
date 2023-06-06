@@ -114,10 +114,11 @@ func (s *Server) CreateProcessingFile(ctx context.Context, request *CreateFilePr
 	// 1. Validate request
 	// 2. Call function of Service
 	fp, err := s.service.CreateFileProcessing(ctx, &fileprocessing.CreateFileProcessingReqDTO{
-		ClientID:    request.ClientID,
-		FileURL:     request.FileURL,
-		DisplayName: request.FileDisplayName,
-		CreatedBy:   request.CreatedBy,
+		ClientID:       request.ClientID,
+		FileURL:        request.FileURL,
+		DisplayName:    request.FileDisplayName,
+		CreatedBy:      request.CreatedBy,
+		FileParameters: request.Parameters,
 	})
 	if err != nil {
 		logger.Errorf("CreateProcessingFile: cannot create file processing, got: %v", err)
