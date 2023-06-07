@@ -20,13 +20,16 @@ import (
 const issue1295 = "LOY-1295"
 
 const (
-	ClientIDTest    int32 = 12345678
-	DisplayNameTest       = "a.xlsx"
-	FileUrlTest           = "https://storage.googleapis.com/folder/file.xlsx"
-	CreatedByTest         = "nguyen.ng@teko.vn"
-	UserSubTest           = "1"
-	UserNameTest          = "Abc"
-	UserEmailTest         = "abc@email.com"
+	ClientIDTest          int32 = 12345678
+	DisplayNameTest             = "a.xlsx"
+	FileUrlTest                 = "https://storage.googleapis.com/folder/file.xlsx"
+	CreatedByTest               = "nguyen.ng@teko.vn"
+	UserSubTest                 = "1"
+	UserNameTest                = "Abc"
+	UserEmailTest               = "abc@email.com"
+	NullParametersTest          = ""
+	ValidParametersTest         = "{\"abcd\": \"1234\"}"
+	InvalidParametersTest       = "{}a}"
 )
 
 func getDefaultJiraTestDetail() jiratest.Detail {
@@ -284,4 +287,92 @@ func TestAllInputValid__SaveClientIdFileUrlDisplayNameToDB(t *testing.T) {
 	assert.Equal(t, ClientIDTest, fp.ClientID)
 	assert.Equal(t, DisplayNameTest, fp.DisplayName)
 	assert.Equal(t, CreatedByTest, fp.CreatedBy)
+}
+
+func TestParametersNull__Return200Successfully(t *testing.T) {
+	// Jira test case
+	detail := getDefaultJiraTestDetail()
+	detail.Name = "[POST createProcessFile] When `parameters` field hasn't null value an is  in JSON string format"
+	defer detail.Setup(t)()
+
+	// Testcase Implementation
+	// 1. Init
+
+	// 2. Mock request
+	req := fileprocessing.CreateFileProcessingRequest{
+		ClientID:        ClientIDTest,
+		FileURL:         FileUrlTest,
+		FileDisplayName: DisplayNameTest,
+		CreatedBy:       CreatedByTest,
+		Parameters:      NullParametersTest,
+	}
+	jsonBody, _ := json.Marshal(req)
+	httpRequest, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jsonBody))
+	httpRequest.Header.Set("Content-Type", "application/json")
+
+	// 3. Request server
+	err := render.Bind(httpRequest, &fileprocessing.CreateFileProcessingRequest{})
+
+	// 4. Assert
+	// Expect
+	assert.ErrorIs(t, err, nil)
+}
+
+func TestParametersNotNullValid__Return200Successfully(t *testing.T) {
+	// Jira test case
+	detail := getDefaultJiraTestDetail()
+	detail.Name = "[POST createProcessFile] When `parameters` field hasn't null value an is  in JSON string format"
+	defer detail.Setup(t)()
+
+	// Testcase Implementation
+	// 1. Init
+
+	// 2. Mock request
+	req := fileprocessing.CreateFileProcessingRequest{
+		ClientID:        ClientIDTest,
+		FileURL:         FileUrlTest,
+		FileDisplayName: DisplayNameTest,
+		CreatedBy:       CreatedByTest,
+		Parameters:      ValidParametersTest,
+	}
+	jsonBody, _ := json.Marshal(req)
+	httpRequest, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jsonBody))
+	httpRequest.Header.Set("Content-Type", "application/json")
+
+	// 3. Request server
+	err := render.Bind(httpRequest, &fileprocessing.CreateFileProcessingRequest{})
+
+	// 4. Assert
+	// Expect
+	assert.ErrorIs(t, err, nil)
+}
+
+func TestParametersNotNullInvalid__Return400Successfully(t *testing.T) {
+	// Jira test case
+	detail := getDefaultJiraTestDetail()
+	detail.Name = "[POST createProcessFile] When `parameters` field hasn't null value and isn't in JSON string format"
+	defer detail.Setup(t)()
+
+	// Testcase Implementation
+	// Testcase Implementation
+	// 1. Init
+
+	// 2. Mock request
+	req := fileprocessing.CreateFileProcessingRequest{
+		ClientID:        ClientIDTest,
+		FileURL:         FileUrlTest,
+		FileDisplayName: DisplayNameTest,
+		CreatedBy:       CreatedByTest,
+		Parameters:      InvalidParametersTest,
+	}
+	jsonBody, _ := json.Marshal(req)
+	httpRequest, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jsonBody))
+	httpRequest.Header.Set("Content-Type", "application/json")
+
+	// 3. Request server
+	err := render.Bind(httpRequest, &fileprocessing.CreateFileProcessingRequest{})
+
+	// 4. Assert
+	// Expect
+	assert.ErrorIs(t, err, fileprocessing.ErrParametersIsNotJson)
 }
