@@ -4,6 +4,7 @@ const (
 	TypeString = "STRING"
 	TypeInt    = "INT"
 	TypeLong   = "LONG"
+	TypeDouble = "DOUBLE"
 	TypeArray  = "ARRAY"
 )
 

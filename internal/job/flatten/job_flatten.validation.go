@@ -266,13 +266,18 @@ func isWrongDataType(fieldType string, valueStr string) bool {
 
 func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) (interface{}, string) {
 	var realValue interface{}
-	// todo support ARRAY
 	switch strings.ToUpper(fieldType) {
 	case configloader.TypeString:
 		realValue = valueStr
 	case configloader.TypeInt, configloader.TypeLong:
 		if valueInt64, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
 			realValue = valueInt64
+		} else {
+			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
+		}
+	case configloader.TypeDouble:
+		if valueFloat64, err := strconv.ParseFloat(valueStr, 64); err == nil {
+			realValue = valueFloat64
 		} else {
 			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
