@@ -226,7 +226,7 @@ func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestF
 }
 
 func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqField *configloader.RequestFieldMD) (string, []ErrorRow) {
-	logger.Infof(".... validateAndGetValueForRequestFieldExcel: rowID=%v, rowData=%+v, reqField %+v")
+	logger.Infof(".... validateAndGetValueForRequestFieldExcel: rowID=%v, rowData=%+v, reqField %+v", rowID, rowData, reqField)
 	var errorRows []ErrorRow
 	columnKey := reqField.ValueDependsOnKey
 	columnIndex := int(strings.ToUpper(columnKey)[0]) - int('A') // get first character then
