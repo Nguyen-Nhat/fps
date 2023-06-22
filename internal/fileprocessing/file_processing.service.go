@@ -2,10 +2,10 @@ package fileprocessing
 
 import (
 	"context"
-
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/faltservice"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
@@ -60,6 +60,16 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 	if err != nil {
 		logger.Errorf("Cannot create file processing, got: %v", err)
 		return nil, err
+	}
+
+	// 2.1. Create ProcessingFile in f-alt-server
+	if createdProcessingFile != nil {
+		go func() {
+			_, _ = faltservice.CreateProcessingFile(&faltservice.ProcessingFileParse{
+				Status:    StatusInit,
+				FpsFileID: createdProcessingFile.ID,
+			})
+		}()
 	}
 
 	return &CreateFileProcessingResDTO{

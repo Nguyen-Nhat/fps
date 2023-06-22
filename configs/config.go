@@ -41,6 +41,7 @@ type Config struct {
 
 type ProviderConfig struct {
 	FileService FileServiceConfig `mapstructure:"file_service"`
+	FAltService FAltService       `mapstructure:"f_alt_service"`
 }
 
 const (
@@ -50,6 +51,8 @@ const (
 const (
 	ProfileTest = "TEST"
 )
+
+var Cfg = Config{}
 
 // Load config from config.yml
 func Load(paths ...string) Config {

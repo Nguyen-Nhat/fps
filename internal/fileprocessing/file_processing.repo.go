@@ -13,6 +13,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/faltservice"
 )
 
 type (
@@ -74,6 +75,12 @@ func (r *repoImpl) UpdateStatusOne(ctx context.Context, id int, status int16) (*
 	if err != nil {
 		return nil, err
 	}
+
+	// Update status of ProcessingFile in f-alt-server
+	go func() {
+		_ = faltservice.UpdateStatusProcessingFile(fap.ID, status)
+	}()
+
 	return &ProcessingFile{
 		ProcessingFile: *fap,
 	}, nil
@@ -93,6 +100,11 @@ func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, stat
 		return nil, err
 	}
 
+	// Update status of ProcessingFile in f-alt-server
+	go func() {
+		_ = faltservice.UpdateStatusProcessingFile(fap.ID, status)
+	}()
+
 	return &ProcessingFile{
 		ProcessingFile: *fap,
 	}, nil
@@ -109,6 +121,12 @@ func (r *repoImpl) UpdateStatusAndStatsAndResultFileUrl(ctx context.Context, id 
 	if err != nil {
 		return nil, err
 	}
+
+	// Update status of ProcessingFile in f-alt-server
+	go func() {
+		_ = faltservice.UpdateStatusProcessingFile(fap.ID, status)
+	}()
+
 	return &ProcessingFile{
 		ProcessingFile: *fap,
 	}, nil
@@ -120,6 +138,11 @@ func (r *repoImpl) UpdateByExtractedData(ctx context.Context, id int, status int
 		SetTotalMapping(int32(totalMapping)).
 		SetStatsTotalRow(int32(statsTotalRow)).
 		Save(ctx)
+
+	// Update status of ProcessingFile in f-alt-server
+	go func() {
+		_ = faltservice.UpdateStatusProcessingFile(pf.ID, status)
+	}()
 
 	if err != nil {
 		return nil, err
