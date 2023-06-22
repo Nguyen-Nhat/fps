@@ -1,8 +1,10 @@
 package flatten
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/tidwall/gjson"
 	"strconv"
 	"strings"
 
@@ -142,7 +144,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 	return configMapping, errorRows
 }
 
-func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*configloader.RequestFieldMD, fileParameters map[string]string) (
+func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}) (
 	map[string]*configloader.RequestFieldMD, map[string]interface{}, []ErrorRow) {
 
 	var errorRows []ErrorRow
@@ -171,7 +173,7 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 	return arrayItemMap, childMap, errorRows
 }
 
-func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]string) (string, []ErrorRow) {
+func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, []ErrorRow) {
 	// 1.2.1. Get value in String type
 	var valueStr string
 	var errorRows []ErrorRow
@@ -200,7 +202,7 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 	return valueStr, errorRows
 }
 
-func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestFieldMD, fileParameters map[string]string) (string, []ErrorRow) {
+func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, []ErrorRow) {
 	var errorRows []ErrorRow
 	paramKey := reqField.ValueDependsOnKey
 
@@ -211,18 +213,17 @@ func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestF
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
 	}
 
-	// Validate Data type
-	paramValue = strings.TrimSpace(paramValue)
-	// todo re-check, because Validating Data also works in convertToRealValue() function
-	//if isWrongDataType(reqField.Type, paramValue) {
-	//	reason := fmt.Sprintf("%s %s", errConfigWrongType, paramKey)
-	//	errorRow := ErrorRow{RowId: rowID, Reason: reason}
-	//	errorRows = append(errorRows, errorRow)
-	//}
+	// convert param to string
+	paramValueStr := ""
+	if reqField.Type == configloader.TypeJson {
+		jsonStr, _ := json.Marshal(paramValue)
+		paramValueStr = string(jsonStr)
+	} else {
+		paramValueStr = fmt.Sprintf("%v", paramValue)
+	}
+	reqField.Value = paramValueStr
 
-	reqField.Value = paramValue
-
-	return paramValue, errorRows
+	return paramValueStr, errorRows
 }
 
 func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqField *configloader.RequestFieldMD) (string, []ErrorRow) {
@@ -238,50 +239,38 @@ func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqFie
 		return "", errorRows
 	}
 
-	// Validate Data type
 	cellValue := strings.TrimSpace(rowData[columnIndex])
-	// todo re-check
-	//if isWrongDataType(reqField.Type, cellValue) {
-	//	reason := fmt.Sprintf("%s %s", errRowWrongType, columnKey)
-	//	errorRow := ErrorRow{RowId: rowID, Reason: reason}
-	//	errorRows = append(errorRows, errorRow)
-	//}
-
 	reqField.Value = cellValue
 
 	return cellValue, errorRows
 }
 
-// isWrongDataType ...
-// supporting type: Int, ...
-func isWrongDataType(fieldType string, valueStr string) bool {
-	switch fieldType {
-	case configloader.TypeInt:
-		_, err := strconv.Atoi(valueStr)
-		if err != nil {
-			return true
-		}
-	}
-	return false
-}
-
 func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) (interface{}, string) {
 	var realValue interface{}
-	switch strings.ToUpper(fieldType) {
+	switch strings.ToLower(fieldType) {
 	case configloader.TypeString:
 		realValue = valueStr
-	case configloader.TypeInt, configloader.TypeLong:
+	case configloader.TypeInteger:
 		if valueInt64, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
 			realValue = valueInt64
 		} else {
 			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
-	case configloader.TypeDouble:
+	case configloader.TypeNumber:
 		if valueFloat64, err := strconv.ParseFloat(valueStr, 64); err == nil {
 			realValue = valueFloat64
 		} else {
 			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
+	case configloader.TypeBoolean:
+		if valueBool, err := strconv.ParseBool(valueStr); err == nil {
+			realValue = valueBool
+		} else {
+			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
+		}
+	case configloader.TypeJson:
+		result := gjson.Parse(valueStr)
+		realValue = result.Value()
 	default:
 		return nil, fmt.Sprintf("%s %s", errTypeNotSupport, fieldType)
 	}

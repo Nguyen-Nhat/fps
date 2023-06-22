@@ -197,21 +197,30 @@ func isTaskSuccess(responseBody string, task configloader.ConfigTaskMD, httpStat
 
 func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) (interface{}, string) {
 	var realValue interface{}
-	switch strings.ToUpper(fieldType) {
+	switch strings.ToLower(fieldType) {
 	case configloader.TypeString:
 		realValue = valueStr
-	case configloader.TypeInt, configloader.TypeLong:
+	case configloader.TypeInteger:
 		if valueInt64, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
 			realValue = valueInt64
 		} else {
 			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
-	case configloader.TypeDouble:
+	case configloader.TypeNumber:
 		if valueFloat64, err := strconv.ParseFloat(valueStr, 64); err == nil {
 			realValue = valueFloat64
 		} else {
 			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
+	case configloader.TypeBoolean:
+		if valueBool, err := strconv.ParseBool(valueStr); err == nil {
+			realValue = valueBool
+		} else {
+			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
+		}
+	case configloader.TypeJson:
+		result := gjson.Parse(valueStr)
+		realValue = result.Value()
 	default:
 		return nil, fmt.Sprintf("%s %s", errTypeNotSupport, fieldType)
 	}

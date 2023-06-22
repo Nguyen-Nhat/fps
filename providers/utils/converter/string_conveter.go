@@ -19,6 +19,19 @@ func StringToMap(dataName string, dataRaw string, allowEmpty bool) (map[string]s
 	return headerMap, nil
 }
 
+func StringToMapInterface(dataName string, dataRaw string, allowEmpty bool) (map[string]interface{}, error) {
+	if allowEmpty && len(dataRaw) <= 0 {
+		return map[string]interface{}{}, nil
+	}
+
+	headerMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(dataRaw), &headerMap); err != nil {
+		logger.Errorf("error when convert %v: value=%v, err=%v", dataName, dataRaw, err)
+		return nil, fmt.Errorf("cannot convert %v", dataName)
+	}
+	return headerMap, nil
+}
+
 func StringJsonToStruct[OUT any](dataName string, dataRaw string, data OUT) (*OUT, error) {
 	if err := json.Unmarshal([]byte(dataRaw), &data); err != nil {
 		logger.Errorf("error when convert %v: value=%v, err=%v", dataName, dataRaw, err)

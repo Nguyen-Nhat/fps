@@ -1,11 +1,14 @@
 package configloader
 
 const (
-	TypeString = "STRING"
-	TypeInt    = "INT"
-	TypeLong   = "LONG"
-	TypeDouble = "DOUBLE"
-	TypeArray  = "ARRAY"
+	TypeString  = "string"
+	TypeInteger = "integer" // include int32 and int64
+	TypeNumber  = "number"  // include float32 and float64
+	TypeBoolean = "boolean"
+
+	TypeArray = "array"
+
+	TypeJson = "json"
 )
 
 type ValueDependsOn string
