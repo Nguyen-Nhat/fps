@@ -31,7 +31,7 @@ func PrepareDatabase(ctx context.Context) *sql.DB {
 	_ = os.Setenv(config.EnvKeyRunProfile, config.ProfileTest)
 
 	// 2. Init DB Connection, DB Client
-	dbConf := config.Load("../..").Database.MySQL
+	dbConf := config.Load("../../..").Database.MySQL
 	db, _ := dburl.Open(dbConf.DatabaseURI()) // no handle error, if error test will be terminated
 	entClient := CreateEntClientFromDB(db)
 

@@ -11,3 +11,11 @@ type FileServicePaths struct {
 	Download  string `mapstructure:"download"`
 	Delete    string `mapstructure:"delete"`
 }
+
+type FAltService struct {
+	Endpoint  string `mapstructure:"endpoint"`
+	MasterKey string `mapstructure:"master_key"`
+	RestKey   string `mapstructure:"rest_key"`
+	AppID     string `mapstructure:"app_id"`
+	IsEnable  bool   `mapstructure:"is_enable"`
+}

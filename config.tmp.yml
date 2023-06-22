@@ -49,3 +49,9 @@ provider_config:
       upload_doc: /upload/doc
       download: /files/{fileId}
       delete: /files/{fileId}
+  f_alt_service:
+    app_id: "1234"
+    master_key: "the_secret_key!"
+    rest_key: ""
+    endpoint: "https://f-alt-server.dev.tekoapis.net/parse"
+    is_enable: true

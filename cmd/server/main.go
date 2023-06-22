@@ -9,16 +9,21 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/faltservice"
 )
 
 func main() {
 	cfg := config.Load()
+	config.Cfg = cfg
 
 	// Init logger
 	_, err := logger.InitLogger(cfg.Logger)
 	if err != nil {
 		log.Fatalf("Cannot init logger, got err: %v", err)
 	}
+
+	// Init f-alt-service
+	faltservice.InitParse(cfg)
 
 	// Init App for providing API
 	app := &cli.App{
