@@ -168,9 +168,10 @@ func getValueByPreviousTaskResponse(reqField *configloader.RequestFieldMD, previ
 
 	// get data by path
 	codeRes := gjson.Get(previousResponse, reqField.ValueDependsOnKey)
-	if !codeRes.Exists() {
+	if !codeRes.Exists() || // case not existed
+		(len(codeRes.String()) == 0 && reqField.Required) { // case no value
 		logger.Errorf("---- get data by path %v, but not found in previous response %v", reqField.ValueDependsOnKey, previousResponses)
-		return "", fmt.Errorf("path %v not existed in response of previous task", reqField.ValueDependsOnKey)
+		return "", fmt.Errorf("path `%v` not existed in response of task %v", reqField.ValueDependsOnKey, dependOn)
 	}
 
 	return codeRes.String(), nil
