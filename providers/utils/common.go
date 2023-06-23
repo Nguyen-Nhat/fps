@@ -135,7 +135,7 @@ func SendHTTPRequestRaw(
 	if len(requestParams) > 0 {
 		query := req.URL.Query()
 		for paramField, paramValue := range requestParams {
-			query.Add(paramField, fmt.Sprintf("%s", paramValue))
+			query.Add(paramField, fmt.Sprintf("%v", paramValue))
 		}
 		req.URL.RawQuery = query.Encode()
 	}
