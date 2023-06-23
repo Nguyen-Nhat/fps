@@ -72,8 +72,8 @@ func (cl *databaseConfigLoaderV1) loadConfigFromDB(file fileprocessing.Processin
 }
 
 // toFileParameters ... return map[key]value
-func toFileParameters(rawJson string) map[string]string {
-	headerMap, _ := converter.StringToMap("fileParameters", rawJson, true)
+func toFileParameters(rawJson string) map[string]interface{} {
+	headerMap, _ := converter.StringToMapInterface("fileParameters", rawJson, true)
 	return headerMap
 }
 

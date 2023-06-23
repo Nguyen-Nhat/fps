@@ -10,7 +10,7 @@ type ConfigMappingMD struct {
 	ErrorColumnIndex   string   `json:"-"`
 
 	// parameter in file
-	FileParameters map[string]string `json:"-"`
+	FileParameters map[string]interface{} `json:"-"`
 
 	// List ConfigTaskMD
 	Tasks []ConfigTaskMD
