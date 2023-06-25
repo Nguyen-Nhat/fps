@@ -1,6 +1,7 @@
 package taskprovider
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/tidwall/gjson"
@@ -87,55 +88,47 @@ func mapDataByPreviousResponse(taskIndex int, configMapping configloader.ConfigM
 	}
 
 	// 3. Convert request params
-	for _, reqField := range task.RequestParamsMap {
-		// 1.2.1. Get value in String type
-		var valueStr string
-		switch reqField.ValueDependsOn {
-		case configloader.ValueDependsOnTask:
-			valueInTask, err := getValueByPreviousTaskResponse(reqField, previousResponses)
-			if err != nil {
-				return configloader.ConfigTaskMD{}, err
-			}
-			valueStr = valueInTask
-		default:
-			return configloader.ConfigTaskMD{}, fmt.Errorf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
-		}
-
-		// 1.2.2. Get real value
-		realValue, errMsg := convertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
-		if len(errMsg) > 0 {
-			return configloader.ConfigTaskMD{}, errors.New(errMsg)
+	for reqFieldName, reqField := range task.RequestParamsMap {
+		realValue, err := getValueStringFromConfig(reqField, previousResponses)
+		if err != nil {
+			return configloader.ConfigTaskMD{}, err
 		} else {
-			task.RequestParams[reqField.Field] = realValue
+			task.RequestParams[reqFieldName] = realValue
 		}
 	}
 
 	// 4. Convert request body
-	// todo: haven't supported ValueDependsOnTask for nested object (defined in RequestFieldMD.ArrayItem) -> will update later
-	for _, reqField := range task.RequestBodyMap {
-		if reqField.Type == configloader.TypeArray {
-			continue // ignore this type
-		}
-		// 1.2.1. Get value in String type
-		var valueStr string
-		switch reqField.ValueDependsOn {
-		case configloader.ValueDependsOnTask:
-			valueInTask, err := getValueByPreviousTaskResponse(reqField, previousResponses)
-			if err != nil {
-				return configloader.ConfigTaskMD{}, err
+	for reqFieldName, reqField := range task.RequestBodyMap {
+		// 4.1. Convert ArrayItem
+		if len(reqField.ArrayItemMap) > 0 {
+			// 4.1.1. For each child fields
+			for reqFieldChildName, reqFieldChild := range reqField.ArrayItemMap {
+				// get value
+				realChildValue, err := getValueStringFromConfig(reqFieldChild, previousResponses)
+				if err != nil {
+					return configloader.ConfigTaskMD{}, err
+				}
+
+				// set value to RequestBody, that will be used for requesting to api
+				// task.RequestBody[reqFieldName] is following format `array[map[string]interface{}]`
+				items, err := setValueForChild(realChildValue, task.RequestBody[reqFieldName], reqFieldName, reqFieldChildName)
+				if err != nil {
+					return configloader.ConfigTaskMD{}, err
+				} else {
+					task.RequestBody[reqFieldName] = items
+				}
 			}
-			valueStr = valueInTask
-		default:
-			return configloader.ConfigTaskMD{}, fmt.Errorf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
+
+			// 4.1.2. Continue -> no convert realValue for Array Item
+			continue
 		}
 
-		// 1.2.2. Get real value
-		realValue, errMsg := convertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
-		if len(errMsg) > 0 {
-			logger.Errorf("convertToRealValue ... error = %s", errMsg)
-			return configloader.ConfigTaskMD{}, errors.New(errMsg)
+		// 4.2. Get value
+		realValue, err := getValueStringFromConfig(reqField, previousResponses)
+		if err != nil {
+			return configloader.ConfigTaskMD{}, err
 		} else {
-			task.RequestBody[reqField.Field] = realValue
+			task.RequestBody[reqFieldName] = realValue
 		}
 	}
 
@@ -154,6 +147,24 @@ func getTaskConfig(taskIndex int, configMapping configloader.ConfigMappingMD) (c
 		}
 	}
 	return configloader.ConfigTaskMD{}, false
+}
+
+func getValueStringFromConfig(reqField *configloader.RequestFieldMD, previousResponses map[int32]string) (interface{}, error) {
+	// 1. Get value in String type
+	var valueStr string
+	switch reqField.ValueDependsOn {
+	case configloader.ValueDependsOnTask:
+		valueInTask, err := getValueByPreviousTaskResponse(reqField, previousResponses)
+		if err != nil {
+			return "", err
+		}
+		valueStr = valueInTask
+	default:
+		return "", fmt.Errorf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
+	}
+
+	// 2. Get real value then return
+	return convertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
 }
 
 func getValueByPreviousTaskResponse(reqField *configloader.RequestFieldMD, previousResponses map[int32]string) (string, error) {
@@ -196,7 +207,7 @@ func isTaskSuccess(responseBody string, task configloader.ConfigTaskMD, httpStat
 	return strings.Contains(codeSuccessValues, codeRes.String())
 }
 
-func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) (interface{}, string) {
+func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) (interface{}, error) {
 	var realValue interface{}
 	switch strings.ToLower(fieldType) {
 	case configloader.TypeString:
@@ -205,25 +216,62 @@ func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) 
 		if valueInt64, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
 			realValue = valueInt64
 		} else {
-			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
+			return nil, fmt.Errorf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
 	case configloader.TypeNumber:
 		if valueFloat64, err := strconv.ParseFloat(valueStr, 64); err == nil {
 			realValue = valueFloat64
 		} else {
-			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
+			return nil, fmt.Errorf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
 	case configloader.TypeBoolean:
 		if valueBool, err := strconv.ParseBool(valueStr); err == nil {
 			realValue = valueBool
 		} else {
-			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
+			return nil, fmt.Errorf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
 	case configloader.TypeJson:
 		result := gjson.Parse(valueStr)
 		realValue = result.Value()
 	default:
-		return nil, fmt.Sprintf("%s %s", errTypeNotSupport, fieldType)
+		return nil, fmt.Errorf("%s %s", errTypeNotSupport, fieldType)
 	}
-	return realValue, ""
+	return realValue, nil
+}
+
+func setValueForChild(realChildValue interface{}, items interface{}, reqFieldName string, reqFieldChildName string) (interface{}, error) {
+	// 1. Build first item value
+	item := map[string]interface{}{reqFieldChildName: realChildValue}
+
+	// 2. In case haven't valued -> return
+	if items == nil { //
+		return []interface{}{item}, nil
+	}
+
+	// 3. In case already have value
+	switch itemsType := items.(type) {
+	case []interface{}: // only check case items is Array
+		// 3.1. in case items empty -> return
+		if len(itemsType) <= 0 { //
+			return []interface{}{item}, nil
+		}
+
+		// 3.2. array already has value, get first item -> convert to map -> set child value
+		firstItem, err := json.Marshal(itemsType[0])
+		if err != nil {
+			logger.Errorf("failed convert first item in `%v` to string, raw=%+v", reqFieldName, itemsType[0])
+			return nil, errors.New("system error")
+		} else {
+			firstItemMap := make(map[string]interface{})
+			if err := json.Unmarshal(firstItem, &firstItemMap); err != nil {
+				logger.Errorf("failed convert first item in `%v` to string, raw=%+v", reqFieldName, itemsType[0])
+				return nil, errors.New("system error")
+			}
+			firstItemMap[reqFieldChildName] = realChildValue
+			return []interface{}{firstItemMap}, nil
+		}
+	default:
+		logger.Errorf("`%v` is not array, raw=%+v", reqFieldName, itemsType)
+		return nil, errors.New("system error")
+	}
 }
