@@ -28,6 +28,8 @@ type (
 	}
 )
 
+const errMsgByHttp = "Xảy ra lỗi http"
+
 var _ IClientV1 = &clientV1{}
 
 // NewClientV1 ...
@@ -66,8 +68,8 @@ func (c *clientV1) Execute(taskIndex int, taskMappingStr string, previousRespons
 
 	// 4. Handle response
 	logger.Infof("response is status=%v, body=%v", httpStatus, responseBody)
-	isSuccess := isTaskSuccess(responseBody, task, httpStatus)
-	messageRes := gjson.Get(responseBody, task.Response.Message.Path).String()
+	isSuccess := isTaskSuccess(task.Response, httpStatus, responseBody)
+	messageRes := getResponseMessage(task.Response.Message, httpStatus, responseBody, isSuccess)
 	return task.RequestBody, curl, responseBody, isSuccess, messageRes
 }
 
@@ -188,9 +190,8 @@ func getValueByPreviousTaskResponse(reqField *configloader.RequestFieldMD, previ
 	return codeRes.String(), nil
 }
 
-func isTaskSuccess(responseBody string, task configloader.ConfigTaskMD, httpStatus int) bool {
+func isTaskSuccess(responseMD configloader.ResponseMD, httpStatus int, responseBody string) bool {
 	// 1. case check by httpStatus
-	responseMD := task.Response
 	if responseMD.HttpStatusSuccess != nil {
 		return *responseMD.HttpStatusSuccess == int32(httpStatus)
 	}
@@ -205,6 +206,16 @@ func isTaskSuccess(responseBody string, task configloader.ConfigTaskMD, httpStat
 	}
 	// code in response belongs to mapping
 	return strings.Contains(codeSuccessValues, codeRes.String())
+}
+
+func getResponseMessage(responseMsg configloader.ResponseMsg, httpStatus int, responseBody string, isSuccess bool) string {
+	messageRes := gjson.Get(responseBody, responseMsg.Path).String()
+
+	if !isSuccess && len(messageRes) == 0 { // if failed and no message -> return error with http status
+		messageRes = fmt.Sprintf("%v %v", errMsgByHttp, httpStatus)
+	}
+
+	return messageRes
 }
 
 func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) (interface{}, error) {
