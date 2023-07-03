@@ -32,6 +32,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "config_mapping_id", Type: field.TypeInt32},
 		{Name: "task_index", Type: field.TypeInt32},
+		{Name: "name", Type: field.TypeString, Default: "no name"},
 		{Name: "end_point", Type: field.TypeString},
 		{Name: "method", Type: field.TypeString},
 		{Name: "header", Type: field.TypeString, Size: 2147483647},

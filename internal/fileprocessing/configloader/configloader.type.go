@@ -19,6 +19,7 @@ type ConfigMappingMD struct {
 // ConfigTaskMD ...
 type ConfigTaskMD struct {
 	TaskIndex int
+	TaskName  string
 	// Request
 	Endpoint         string
 	Method           string
@@ -68,6 +69,8 @@ type ResponseMD struct {
 type ResponseCode struct {
 	Path          string `json:"path"`
 	SuccessValues string `json:"successValues"`
+	// MustHaveValueInPath ... this field is temporary, we will define more general rule later
+	MustHaveValueInPath string `json:"mustHaveValueInPath"`
 }
 
 // ResponseMsg ...
@@ -90,6 +93,7 @@ func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 
 	return ConfigTaskMD{
 		TaskIndex: ct.TaskIndex,
+		TaskName:  ct.TaskName,
 		// Request
 		Endpoint:         ct.Endpoint,
 		Method:           ct.Method,

@@ -25,6 +25,7 @@ func (ConfigTask) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int32("config_mapping_id").NonNegative(),
 		field.Int32("task_index").Comment("For example: 1,2,3,..."),
+		field.String("name").NotEmpty().Default("no name").Comment("Name of task"),
 		field.String("end_point").NotEmpty().Comment("For example: http://loyalty-core-api.loyalty-service/api/v1/grant"),
 		field.String("method").NotEmpty().Comment("GET, POST, PUT, ..."),
 		field.Text("header").Comment("Format JSON"),

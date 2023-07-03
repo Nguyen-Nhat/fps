@@ -54,6 +54,20 @@ func (ctu *ConfigTaskUpdate) AddTaskIndex(i int32) *ConfigTaskUpdate {
 	return ctu
 }
 
+// SetName sets the "name" field.
+func (ctu *ConfigTaskUpdate) SetName(s string) *ConfigTaskUpdate {
+	ctu.mutation.SetName(s)
+	return ctu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ctu *ConfigTaskUpdate) SetNillableName(s *string) *ConfigTaskUpdate {
+	if s != nil {
+		ctu.SetName(*s)
+	}
+	return ctu
+}
+
 // SetEndPoint sets the "end_point" field.
 func (ctu *ConfigTaskUpdate) SetEndPoint(s string) *ConfigTaskUpdate {
 	ctu.mutation.SetEndPoint(s)
@@ -216,6 +230,11 @@ func (ctu *ConfigTaskUpdate) check() error {
 			return &ValidationError{Name: "config_mapping_id", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.config_mapping_id": %w`, err)}
 		}
 	}
+	if v, ok := ctu.mutation.Name(); ok {
+		if err := configtask.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.name": %w`, err)}
+		}
+	}
 	if v, ok := ctu.mutation.EndPoint(); ok {
 		if err := configtask.EndPointValidator(v); err != nil {
 			return &ValidationError{Name: "end_point", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.end_point": %w`, err)}
@@ -288,6 +307,13 @@ func (ctu *ConfigTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: configtask.FieldTaskIndex,
+		})
+	}
+	if value, ok := ctu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldName,
 		})
 	}
 	if value, ok := ctu.mutation.EndPoint(); ok {
@@ -416,6 +442,20 @@ func (ctuo *ConfigTaskUpdateOne) SetTaskIndex(i int32) *ConfigTaskUpdateOne {
 // AddTaskIndex adds i to the "task_index" field.
 func (ctuo *ConfigTaskUpdateOne) AddTaskIndex(i int32) *ConfigTaskUpdateOne {
 	ctuo.mutation.AddTaskIndex(i)
+	return ctuo
+}
+
+// SetName sets the "name" field.
+func (ctuo *ConfigTaskUpdateOne) SetName(s string) *ConfigTaskUpdateOne {
+	ctuo.mutation.SetName(s)
+	return ctuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ctuo *ConfigTaskUpdateOne) SetNillableName(s *string) *ConfigTaskUpdateOne {
+	if s != nil {
+		ctuo.SetName(*s)
+	}
 	return ctuo
 }
 
@@ -594,6 +634,11 @@ func (ctuo *ConfigTaskUpdateOne) check() error {
 			return &ValidationError{Name: "config_mapping_id", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.config_mapping_id": %w`, err)}
 		}
 	}
+	if v, ok := ctuo.mutation.Name(); ok {
+		if err := configtask.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.name": %w`, err)}
+		}
+	}
 	if v, ok := ctuo.mutation.EndPoint(); ok {
 		if err := configtask.EndPointValidator(v); err != nil {
 			return &ValidationError{Name: "end_point", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.end_point": %w`, err)}
@@ -683,6 +728,13 @@ func (ctuo *ConfigTaskUpdateOne) sqlSave(ctx context.Context) (_node *ConfigTask
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: configtask.FieldTaskIndex,
+		})
+	}
+	if value, ok := ctuo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldName,
 		})
 	}
 	if value, ok := ctuo.mutation.EndPoint(); ok {

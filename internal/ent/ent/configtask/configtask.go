@@ -15,6 +15,8 @@ const (
 	FieldConfigMappingID = "config_mapping_id"
 	// FieldTaskIndex holds the string denoting the task_index field in the database.
 	FieldTaskIndex = "task_index"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// FieldEndPoint holds the string denoting the end_point field in the database.
 	FieldEndPoint = "end_point"
 	// FieldMethod holds the string denoting the method field in the database.
@@ -46,6 +48,7 @@ var Columns = []string{
 	FieldID,
 	FieldConfigMappingID,
 	FieldTaskIndex,
+	FieldName,
 	FieldEndPoint,
 	FieldMethod,
 	FieldHeader,
@@ -72,6 +75,10 @@ func ValidColumn(column string) bool {
 var (
 	// ConfigMappingIDValidator is a validator for the "config_mapping_id" field. It is called by the builders before save.
 	ConfigMappingIDValidator func(int32) error
+	// DefaultName holds the default value on creation for the "name" field.
+	DefaultName string
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
 	// EndPointValidator is a validator for the "end_point" field. It is called by the builders before save.
 	EndPointValidator func(string) error
 	// MethodValidator is a validator for the "method" field. It is called by the builders before save.

@@ -20,6 +20,8 @@ type ConfigTask struct {
 	ConfigMappingID int32 `json:"config_mapping_id,omitempty"`
 	// For example: 1,2,3,...
 	TaskIndex int32 `json:"task_index,omitempty"`
+	// Name of task
+	Name string `json:"name,omitempty"`
 	// For example: http://loyalty-core-api.loyalty-service/api/v1/grant
 	EndPoint string `json:"end_point,omitempty"`
 	// GET, POST, PUT, ...
@@ -51,7 +53,7 @@ func (*ConfigTask) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case configtask.FieldID, configtask.FieldConfigMappingID, configtask.FieldTaskIndex, configtask.FieldResponseSuccessHTTPStatus:
 			values[i] = new(sql.NullInt64)
-		case configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldCreatedBy:
+		case configtask.FieldName, configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configtask.FieldCreatedAt, configtask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -87,6 +89,12 @@ func (ct *ConfigTask) assignValues(columns []string, values []interface{}) error
 				return fmt.Errorf("unexpected type %T for field task_index", values[i])
 			} else if value.Valid {
 				ct.TaskIndex = int32(value.Int64)
+			}
+		case configtask.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				ct.Name = value.String
 			}
 		case configtask.FieldEndPoint:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -187,6 +195,9 @@ func (ct *ConfigTask) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("task_index=")
 	builder.WriteString(fmt.Sprintf("%v", ct.TaskIndex))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(ct.Name)
 	builder.WriteString(", ")
 	builder.WriteString("end_point=")
 	builder.WriteString(ct.EndPoint)
