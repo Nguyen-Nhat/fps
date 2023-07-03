@@ -82,6 +82,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 				continue
 			}
 			if len(valueStr) == 0 { // no value => no need to convert
+				// need check
 				continue
 			}
 
@@ -221,8 +222,15 @@ func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestF
 	} else {
 		paramValueStr = fmt.Sprintf("%v", paramValue)
 	}
-	reqField.Value = paramValueStr
 
+	// check required
+	if reqField.Required && len(paramValueStr) == 0 {
+		reason := fmt.Sprintf("%s %s", errRowMissingData, paramKey)
+		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
+		return "", errorRows
+	}
+
+	reqField.Value = paramValueStr
 	return paramValueStr, errorRows
 }
 
