@@ -838,6 +838,7 @@ type ConfigTaskMutation struct {
 	addconfig_mapping_id            *int32
 	task_index                      *int32
 	addtask_index                   *int32
+	name                            *string
 	end_point                       *string
 	method                          *string
 	header                          *string
@@ -1064,6 +1065,42 @@ func (m *ConfigTaskMutation) AddedTaskIndex() (r int32, exists bool) {
 func (m *ConfigTaskMutation) ResetTaskIndex() {
 	m.task_index = nil
 	m.addtask_index = nil
+}
+
+// SetName sets the "name" field.
+func (m *ConfigTaskMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *ConfigTaskMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the ConfigTask entity.
+// If the ConfigTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigTaskMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *ConfigTaskMutation) ResetName() {
+	m.name = nil
 }
 
 // SetEndPoint sets the "end_point" field.
@@ -1501,12 +1538,15 @@ func (m *ConfigTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigTaskMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.config_mapping_id != nil {
 		fields = append(fields, configtask.FieldConfigMappingID)
 	}
 	if m.task_index != nil {
 		fields = append(fields, configtask.FieldTaskIndex)
+	}
+	if m.name != nil {
+		fields = append(fields, configtask.FieldName)
 	}
 	if m.end_point != nil {
 		fields = append(fields, configtask.FieldEndPoint)
@@ -1553,6 +1593,8 @@ func (m *ConfigTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.ConfigMappingID()
 	case configtask.FieldTaskIndex:
 		return m.TaskIndex()
+	case configtask.FieldName:
+		return m.Name()
 	case configtask.FieldEndPoint:
 		return m.EndPoint()
 	case configtask.FieldMethod:
@@ -1588,6 +1630,8 @@ func (m *ConfigTaskMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldConfigMappingID(ctx)
 	case configtask.FieldTaskIndex:
 		return m.OldTaskIndex(ctx)
+	case configtask.FieldName:
+		return m.OldName(ctx)
 	case configtask.FieldEndPoint:
 		return m.OldEndPoint(ctx)
 	case configtask.FieldMethod:
@@ -1632,6 +1676,13 @@ func (m *ConfigTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTaskIndex(v)
+		return nil
+	case configtask.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
 		return nil
 	case configtask.FieldEndPoint:
 		v, ok := value.(string)
@@ -1803,6 +1854,9 @@ func (m *ConfigTaskMutation) ResetField(name string) error {
 		return nil
 	case configtask.FieldTaskIndex:
 		m.ResetTaskIndex()
+		return nil
+	case configtask.FieldName:
+		m.ResetName()
 		return nil
 	case configtask.FieldEndPoint:
 		m.ResetEndPoint()

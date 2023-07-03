@@ -106,6 +106,7 @@ func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 	// 4. Return result
 	return ConfigTaskMD{
 		TaskIndex: int(task.TaskIndex),
+		TaskName:  task.Name,
 		// Request
 		Endpoint: task.EndPoint,
 		Method:   task.Method,

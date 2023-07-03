@@ -32,6 +32,20 @@ func (ctc *ConfigTaskCreate) SetTaskIndex(i int32) *ConfigTaskCreate {
 	return ctc
 }
 
+// SetName sets the "name" field.
+func (ctc *ConfigTaskCreate) SetName(s string) *ConfigTaskCreate {
+	ctc.mutation.SetName(s)
+	return ctc
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ctc *ConfigTaskCreate) SetNillableName(s *string) *ConfigTaskCreate {
+	if s != nil {
+		ctc.SetName(*s)
+	}
+	return ctc
+}
+
 // SetEndPoint sets the "end_point" field.
 func (ctc *ConfigTaskCreate) SetEndPoint(s string) *ConfigTaskCreate {
 	ctc.mutation.SetEndPoint(s)
@@ -191,6 +205,10 @@ func (ctc *ConfigTaskCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ctc *ConfigTaskCreate) defaults() {
+	if _, ok := ctc.mutation.Name(); !ok {
+		v := configtask.DefaultName
+		ctc.mutation.SetName(v)
+	}
 	if _, ok := ctc.mutation.CreatedAt(); !ok {
 		v := configtask.DefaultCreatedAt()
 		ctc.mutation.SetCreatedAt(v)
@@ -213,6 +231,14 @@ func (ctc *ConfigTaskCreate) check() error {
 	}
 	if _, ok := ctc.mutation.TaskIndex(); !ok {
 		return &ValidationError{Name: "task_index", err: errors.New(`ent: missing required field "ConfigTask.task_index"`)}
+	}
+	if _, ok := ctc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "ConfigTask.name"`)}
+	}
+	if v, ok := ctc.mutation.Name(); ok {
+		if err := configtask.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.name": %w`, err)}
+		}
 	}
 	if _, ok := ctc.mutation.EndPoint(); !ok {
 		return &ValidationError{Name: "end_point", err: errors.New(`ent: missing required field "ConfigTask.end_point"`)}
@@ -314,6 +340,14 @@ func (ctc *ConfigTaskCreate) createSpec() (*ConfigTask, *sqlgraph.CreateSpec) {
 			Column: configtask.FieldTaskIndex,
 		})
 		_node.TaskIndex = value
+	}
+	if value, ok := ctc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldName,
+		})
+		_node.Name = value
 	}
 	if value, ok := ctc.mutation.EndPoint(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -68,32 +68,38 @@ func init() {
 	configtaskDescConfigMappingID := configtaskFields[0].Descriptor()
 	// configtask.ConfigMappingIDValidator is a validator for the "config_mapping_id" field. It is called by the builders before save.
 	configtask.ConfigMappingIDValidator = configtaskDescConfigMappingID.Validators[0].(func(int32) error)
+	// configtaskDescName is the schema descriptor for name field.
+	configtaskDescName := configtaskFields[2].Descriptor()
+	// configtask.DefaultName holds the default value on creation for the name field.
+	configtask.DefaultName = configtaskDescName.Default.(string)
+	// configtask.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	configtask.NameValidator = configtaskDescName.Validators[0].(func(string) error)
 	// configtaskDescEndPoint is the schema descriptor for end_point field.
-	configtaskDescEndPoint := configtaskFields[2].Descriptor()
+	configtaskDescEndPoint := configtaskFields[3].Descriptor()
 	// configtask.EndPointValidator is a validator for the "end_point" field. It is called by the builders before save.
 	configtask.EndPointValidator = configtaskDescEndPoint.Validators[0].(func(string) error)
 	// configtaskDescMethod is the schema descriptor for method field.
-	configtaskDescMethod := configtaskFields[3].Descriptor()
+	configtaskDescMethod := configtaskFields[4].Descriptor()
 	// configtask.MethodValidator is a validator for the "method" field. It is called by the builders before save.
 	configtask.MethodValidator = configtaskDescMethod.Validators[0].(func(string) error)
 	// configtaskDescRequestParams is the schema descriptor for request_params field.
-	configtaskDescRequestParams := configtaskFields[5].Descriptor()
+	configtaskDescRequestParams := configtaskFields[6].Descriptor()
 	// configtask.RequestParamsValidator is a validator for the "request_params" field. It is called by the builders before save.
 	configtask.RequestParamsValidator = configtaskDescRequestParams.Validators[0].(func(string) error)
 	// configtaskDescRequestBody is the schema descriptor for request_body field.
-	configtaskDescRequestBody := configtaskFields[6].Descriptor()
+	configtaskDescRequestBody := configtaskFields[7].Descriptor()
 	// configtask.RequestBodyValidator is a validator for the "request_body" field. It is called by the builders before save.
 	configtask.RequestBodyValidator = configtaskDescRequestBody.Validators[0].(func(string) error)
 	// configtaskDescCreatedAt is the schema descriptor for created_at field.
-	configtaskDescCreatedAt := configtaskFields[10].Descriptor()
+	configtaskDescCreatedAt := configtaskFields[11].Descriptor()
 	// configtask.DefaultCreatedAt holds the default value on creation for the created_at field.
 	configtask.DefaultCreatedAt = configtaskDescCreatedAt.Default.(func() time.Time)
 	// configtaskDescCreatedBy is the schema descriptor for created_by field.
-	configtaskDescCreatedBy := configtaskFields[11].Descriptor()
+	configtaskDescCreatedBy := configtaskFields[12].Descriptor()
 	// configtask.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	configtask.CreatedByValidator = configtaskDescCreatedBy.Validators[0].(func(string) error)
 	// configtaskDescUpdatedAt is the schema descriptor for updated_at field.
-	configtaskDescUpdatedAt := configtaskFields[12].Descriptor()
+	configtaskDescUpdatedAt := configtaskFields[13].Descriptor()
 	// configtask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	configtask.DefaultUpdatedAt = configtaskDescUpdatedAt.Default.(func() time.Time)
 	// configtask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
