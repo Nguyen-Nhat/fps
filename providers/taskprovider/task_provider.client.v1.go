@@ -70,23 +70,23 @@ func (c *clientV1) Execute(taskIndex int, taskMappingStr string, previousRespons
 	logger.Infof("response is status=%v, body=%v", httpStatus, responseBody)
 	isSuccess := isTaskSuccess(task.Response, httpStatus, responseBody)
 	messageRes := getResponseMessage(task.Response.Message, httpStatus, responseBody, isSuccess)
-	messageRes = checkRequiredFieldWhenTaskSuccess(responseBody, task, isSuccess, messageRes)
+	messageRes, isSuccess = checkRequiredFieldWhenTaskSuccess(responseBody, task, isSuccess, messageRes)
 	return task.RequestBody, curl, responseBody, isSuccess, messageRes
 }
 
 // checkRequiredFieldWhenTaskSuccess ... using this function in case task is success, but response body not contains Required Field
-func checkRequiredFieldWhenTaskSuccess(responseBody string, task configloader.ConfigTaskMD, isSuccess bool, defaultMessage string) string {
+func checkRequiredFieldWhenTaskSuccess(responseBody string, task configloader.ConfigTaskMD, isSuccess bool, defaultMessage string) (string, bool) {
 	mustHaveValueInPath := task.Response.Code.MustHaveValueInPath
 	if !isSuccess || len(mustHaveValueInPath) <= 0 {
-		return defaultMessage
+		return defaultMessage, isSuccess
 	}
 
 	if value := gjson.Get(responseBody, mustHaveValueInPath).String(); len(value) > 0 {
 		// case have value in path -> return default message
-		return defaultMessage
+		return defaultMessage, isSuccess
 	} else {
 		// case NOT have value by path -> return task failed
-		return fmt.Sprintf("Không có dữ liệu khi %s", task.TaskName)
+		return fmt.Sprintf("Không có dữ liệu khi %s", task.TaskName), false
 	}
 }
 

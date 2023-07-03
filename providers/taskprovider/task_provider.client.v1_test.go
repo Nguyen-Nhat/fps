@@ -267,56 +267,59 @@ func Test_checkMustHaveValueInPath(t *testing.T) {
 		defaultMessage string
 	}
 	tests := []struct {
-		name string
-		args args
-		want string
+		name          string
+		args          args
+		wantMessage   string
+		wantIsSuccess bool
 	}{
 		// task is failed
 		{"responseBody=empty, taskNoRequireField, failed --> default message",
 			args{"", taskNoRequireField, false, defaultMessage},
-			defaultMessage},
+			defaultMessage, false},
 		{"responseBody contains required fields, taskWithDataIsObject, failed --> default message",
 			args{`{"data":{"name":"quy"}`, taskWithDataIsObject, false, defaultMessage},
-			defaultMessage},
+			defaultMessage, false},
 		{"responseBody not contain required fields, taskWithDataIsArray, failed --> default message",
 			args{`{"data":{"txns":[{"iddd":"123"}]}`, taskWithDataIsArray, false, defaultMessage},
-			defaultMessage},
+			defaultMessage, false},
 		// no required field
 		{"responseBody=empty, taskNoRequireField, success --> default message",
 			args{"", taskNoRequireField, true, defaultMessage},
-			defaultMessage},
+			defaultMessage, true},
 		{"responseBody contains required fields, taskNoRequireField, success --> default message",
 			args{`{"data":{"name":"quy"}`, taskNoRequireField, true, defaultMessage},
-			defaultMessage},
+			defaultMessage, true},
 		{"responseBody not contain required fields, taskNoRequireField, success --> default message",
 			args{`{"data":{"txns":[{"iddd":"123"}]}`, taskNoRequireField, true, defaultMessage},
-			defaultMessage},
+			defaultMessage, true},
 
 		// success, response body empty
 		{"responseBody=empty, taskNoRequireField, success --> default message",
 			args{"", taskNoRequireField, true, defaultMessage},
-			defaultMessage},
+			defaultMessage, true},
 		{"responseBody=empty, taskWithDataIsObject, success --> message contains taskName",
 			args{"", taskWithDataIsObject, true, defaultMessage},
-			messageContainTaskName},
+			messageContainTaskName, false},
 		{"responseBody=empty, taskWithDataIsArray, success --> message contains taskName",
 			args{"", taskWithDataIsArray, true, defaultMessage},
-			messageContainTaskName},
+			messageContainTaskName, false},
 		// success, response body contains required field
 		{"responseBody not empty, taskNoRequireField, success --> default message",
 			args{`{"data": "abc"}`, taskNoRequireField, true, defaultMessage},
-			defaultMessage},
+			defaultMessage, true},
 		{"responseBody contains required field, taskWithDataIsObject, success --> message contains taskName",
 			args{`{"data":{"name":"quy"}`, taskWithDataIsObject, true, defaultMessage},
-			defaultMessage},
+			defaultMessage, true},
 		{"responseBody contains required field, taskWithDataIsArray, success --> message contains taskName",
 			args{`{"data":{"txns":[{"id":"123"}]}`, taskWithDataIsArray, true, defaultMessage},
-			defaultMessage},
+			defaultMessage, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := checkRequiredFieldWhenTaskSuccess(tt.args.responseBody, tt.args.task, tt.args.isSuccess, tt.args.defaultMessage); got != tt.want {
-				t.Errorf("checkMustHaveValueInPath() = %v, want %v", got, tt.want)
+			gotMessage, gotIsSuccess := checkRequiredFieldWhenTaskSuccess(tt.args.responseBody, tt.args.task, tt.args.isSuccess, tt.args.defaultMessage)
+			if gotMessage != tt.wantMessage || gotIsSuccess != tt.wantIsSuccess {
+				t.Errorf("checkMustHaveValueInPath() = %v,%v while want %v, %v",
+					gotMessage, gotIsSuccess, tt.wantMessage, tt.wantIsSuccess)
 			}
 		})
 	}
