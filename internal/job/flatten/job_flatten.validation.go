@@ -199,8 +199,10 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 		isByPassField = true
 		valueStr = reqField.Value
 	default:
-		errMsg := fmt.Sprintf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
-		errorRows = append(errorRows, ErrorRow{rowID, errMsg})
+		if reqField.Type != configloader.TypeArray {
+			errMsg := fmt.Sprintf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
+			errorRows = append(errorRows, ErrorRow{rowID, errMsg})
+		}
 	}
 	return valueStr, isByPassField, errorRows
 }
