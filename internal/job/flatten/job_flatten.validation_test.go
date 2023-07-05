@@ -23,11 +23,14 @@ func Test_convertToRealValue(t *testing.T) {
 	}{
 		// Type String .....
 		{"test type STRING",
-			args{configloader.TypeString, "abc", "key_name"},
+			args{"STRING", "abc", "key_name"},
 			"abc", ""},
 		{"test type string",
-			args{"string", "abcd", "key_name"},
+			args{configloader.TypeString, "abcd", "key_name"},
 			"abcd", ""},
+		{"test type string empty",
+			args{configloader.TypeString, "", "key_name"},
+			"", ""},
 
 		// Type integer ...
 		{"test type inteGer, valid input",
@@ -63,6 +66,9 @@ func Test_convertToRealValue(t *testing.T) {
 		{"test type integer, valid input MIN_LONG",
 			args{configloader.TypeInteger, strconv.Itoa(math.MinInt64), "key_name"},
 			int64(math.MinInt64), ""},
+		{"test type integer empty",
+			args{configloader.TypeInteger, "", "key_name"},
+			int64(0), ""},
 
 		// Type number .....
 		{"test type numbEr, valid input",
@@ -86,8 +92,11 @@ func Test_convertToRealValue(t *testing.T) {
 		{"test type number, invalid input",
 			args{configloader.TypeNumber, "11.2sa", "key_name"},
 			nil, fmt.Sprintf("%s (%s)", errTypeWrong, "key_name")},
+		{"test type number empty",
+			args{configloader.TypeNumber, "", "key_name"},
+			float64(0), ""},
 
-		// Type json .....
+		// Type bool .....
 		{"test type booleAN, valid input",
 			args{"booleAN", "true", "key_name"},
 			true, ""},
@@ -103,6 +112,9 @@ func Test_convertToRealValue(t *testing.T) {
 		{"test type BOOLEAN, valid input",
 			args{"BOOLEAN", "falSE", "key_name"},
 			nil, fmt.Sprintf("%s (%s)", errTypeWrong, "key_name")},
+		{"test type BOOLEAN empty",
+			args{"BOOLEAN", "", "key_name"},
+			false, ""},
 
 		// Type json .....
 		{"test type json, valid input",
@@ -114,6 +126,9 @@ func Test_convertToRealValue(t *testing.T) {
 		{"test type json, valid input",
 			args{configloader.TypeJson, "[\"abc\",\"cde\"]", "key_name"},
 			[]interface{}{"abc", "cde"}, ""},
+		{"test type json empty",
+			args{configloader.TypeJson, "", "key_name"},
+			nil, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

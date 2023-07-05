@@ -76,13 +76,12 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 		task := orgTask.Clone()
 		// 1.1. RequestField in Request Params
 		for fieldName, reqField := range task.RequestParamsMap {
-			valueStr, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
 			}
-			if len(valueStr) == 0 { // no value => no need to convert
-				// need check
+			if isByPassField { // no need to convert
 				continue
 			}
 
@@ -112,12 +111,12 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			}
 
 			// 1.2.2. Validate field
-			valueStr, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
 			}
-			if len(valueStr) == 0 { // no value => no need to convert
+			if isByPassField { // no need to convert
 				continue
 			}
 
@@ -152,12 +151,12 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 	childMap := make(map[string]interface{})
 
 	for fieldNameChild, reqFieldChild := range arrayItemMap {
-		valueChildStr, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqFieldChild, fileParameters)
+		valueChildStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqFieldChild, fileParameters)
 		if len(errorRowsAfterGet) > 0 {
 			errorRows = append(errorRows, errorRowsAfterGet...)
 			continue
 		}
-		if len(valueChildStr) == 0 { // no value => no need to convert
+		if isByPassField { // no need to convert
 			continue
 		}
 
@@ -174,10 +173,11 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 	return arrayItemMap, childMap, errorRows
 }
 
-func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, []ErrorRow) {
+func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, bool, []ErrorRow) {
 	// 1.2.1. Get value in String type
 	var valueStr string
 	var errorRows []ErrorRow
+	isByPassField := false
 	switch reqField.ValueDependsOn {
 	case configloader.ValueDependsOnExcel:
 		cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(rowID, rowData, reqField)
@@ -195,12 +195,14 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 		}
 	case configloader.ValueDependsOnNone:
 		valueStr = reqField.Value
+	case configloader.ValueDependsOnTask:
+		isByPassField = true
+		valueStr = reqField.Value
 	default:
-		// No support ValueDependsOnTask
-		// Because data of task only is gotten after call api to provider => cannot get at this time
-		//continue // go to next reqField
+		errMsg := fmt.Sprintf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
+		errorRows = append(errorRows, ErrorRow{rowID, errMsg})
 	}
-	return valueStr, errorRows
+	return valueStr, isByPassField, errorRows
 }
 
 func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, []ErrorRow) {
@@ -259,24 +261,36 @@ func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) 
 	case configloader.TypeString:
 		realValue = valueStr
 	case configloader.TypeInteger:
+		if len(valueStr) == 0 {
+			return int64(0), ""
+		}
 		if valueInt64, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
 			realValue = valueInt64
 		} else {
 			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
 	case configloader.TypeNumber:
+		if len(valueStr) == 0 {
+			return float64(0), ""
+		}
 		if valueFloat64, err := strconv.ParseFloat(valueStr, 64); err == nil {
 			realValue = valueFloat64
 		} else {
 			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
 	case configloader.TypeBoolean:
+		if len(valueStr) == 0 {
+			return false, ""
+		}
 		if valueBool, err := strconv.ParseBool(valueStr); err == nil {
 			realValue = valueBool
 		} else {
 			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
 	case configloader.TypeJson:
+		if len(valueStr) == 0 {
+			return nil, ""
+		}
 		result := gjson.Parse(valueStr)
 		realValue = result.Value()
 	default:
