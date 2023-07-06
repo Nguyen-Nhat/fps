@@ -78,6 +78,7 @@ func (r *repoImpl) FindByFileIdAndStatusesForJob(ctx context.Context, fileId int
 			))
 
 			s.OrderBy(processingfilerow.FieldRowIndex, processingfilerow.FieldTaskIndex)
+			s.Limit(5000)
 		}).All(ctx)
 
 	if err != nil {
