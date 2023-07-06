@@ -101,7 +101,6 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 		job.updateFileProcessingToFailed(ctx, file, errFileInvalid, &resultFileUrl)
 		return
 	}
-	logger.Infof("Config mapping = \n%s\n", utils.JsonString(configMappingsWithData))
 
 	// 5. Save row data into processing_file_row
 	if err := job.extractDataAndUpdateFileStatusInDB(ctx, file.ID, configMappingsWithData); err != nil {
@@ -110,7 +109,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 	}
 
 	// 6. Update processing_file: status=Processing, total_mapping, stats_total_row
-	pf, err := job.fpService.UpdateToProcessingStatusWithExtractedData(ctx, file.ID, len(configMappingsWithData), len(configMappingsWithData))
+	pf, err := job.fpService.UpdateToProcessingStatusWithExtractedData(ctx, file.ID, len(configMapping.Tasks), len(configMappingsWithData))
 	if err != nil {
 		logger.ErrorT("Cannot update %v id=%v,got err=%v", fileprocessing.Name(), file.ID, err)
 		return

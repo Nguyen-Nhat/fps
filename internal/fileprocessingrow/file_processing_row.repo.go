@@ -111,7 +111,7 @@ func (r *repoImpl) DeleteByFileId(ctx context.Context, fileId int64) error {
 		logger.Errorf("Cannot delete records which have fileId=%v, got: %v", fileId, err)
 		return err
 	} else {
-		logger.Errorf("Deleted %v records which have fileId=%v", deletedRowCount, fileId)
+		logger.Warnf("Deleted %v records which have fileId=%v", deletedRowCount, fileId)
 		return nil
 	}
 }
