@@ -174,7 +174,12 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 }
 
 func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, bool, []ErrorRow) {
-	// 1.2.1. Get value in String type
+	// 1. If type is array, not get value
+	if reqField.Type == configloader.TypeArray {
+		return "", true, nil
+	}
+
+	// 2. Get value in String type
 	var valueStr string
 	var errorRows []ErrorRow
 	isByPassField := false
@@ -199,10 +204,9 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 		isByPassField = true
 		valueStr = reqField.Value
 	default:
-		if reqField.Type != configloader.TypeArray {
-			errMsg := fmt.Sprintf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
-			errorRows = append(errorRows, ErrorRow{rowID, errMsg})
-		}
+		errMsg := fmt.Sprintf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
+		errorRows = append(errorRows, ErrorRow{rowID, errMsg})
+
 	}
 	return valueStr, isByPassField, errorRows
 }
