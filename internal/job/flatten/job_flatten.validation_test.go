@@ -68,7 +68,7 @@ func Test_convertToRealValue(t *testing.T) {
 			int64(math.MinInt64), ""},
 		{"test type integer empty",
 			args{configloader.TypeInteger, "", "key_name"},
-			int64(0), ""},
+			nil, ""},
 
 		// Type number .....
 		{"test type numbEr, valid input",
@@ -94,7 +94,7 @@ func Test_convertToRealValue(t *testing.T) {
 			nil, fmt.Sprintf("%s (%s)", errTypeWrong, "key_name")},
 		{"test type number empty",
 			args{configloader.TypeNumber, "", "key_name"},
-			float64(0), ""},
+			nil, ""},
 
 		// Type bool .....
 		{"test type booleAN, valid input",
@@ -114,7 +114,7 @@ func Test_convertToRealValue(t *testing.T) {
 			nil, fmt.Sprintf("%s (%s)", errTypeWrong, "key_name")},
 		{"test type BOOLEAN empty",
 			args{"BOOLEAN", "", "key_name"},
-			false, ""},
+			nil, ""},
 
 		// Type json .....
 		{"test type json, valid input",

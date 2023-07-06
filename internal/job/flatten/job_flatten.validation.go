@@ -90,7 +90,9 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			if len(errMsg) > 0 {
 				errorRows = append(errorRows, ErrorRow{rowID, errMsg})
 			} else {
-				task.RequestParams[reqField.Field] = realValue
+				if realValue != nil {
+					task.RequestParams[reqField.Field] = realValue
+				}
 				// config will be converted to Json string, then save to DB -> delete to reduce size of json string
 				delete(task.RequestParamsMap, fieldName)
 			}
@@ -125,7 +127,9 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			if len(errMsg) > 0 {
 				errorRows = append(errorRows, ErrorRow{rowID, errMsg})
 			} else {
-				task.RequestBody[reqField.Field] = realValue
+				if realValue != nil {
+					task.RequestBody[reqField.Field] = realValue
+				}
 				// config will be converted to Json string, then save to DB -> delete to reduce size of json string
 				delete(task.RequestBodyMap, fieldName)
 			}
@@ -165,7 +169,9 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 		if len(errMsg) > 0 {
 			errorRows = append(errorRows, ErrorRow{rowID, errMsg})
 		} else {
-			childMap[reqFieldChild.Field] = realValueChild
+			if realValueChild != nil {
+				childMap[reqFieldChild.Field] = realValueChild
+			}
 			// config will be converted to Json string, then save to DB -> delete to reduce size of json string
 			delete(arrayItemMap, fieldNameChild)
 		}
@@ -268,7 +274,7 @@ func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) 
 		realValue = valueStr
 	case configloader.TypeInteger:
 		if len(valueStr) == 0 {
-			return int64(0), ""
+			return nil, ""
 		}
 		if valueInt64, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
 			realValue = valueInt64
@@ -277,7 +283,7 @@ func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) 
 		}
 	case configloader.TypeNumber:
 		if len(valueStr) == 0 {
-			return float64(0), ""
+			return nil, ""
 		}
 		if valueFloat64, err := strconv.ParseFloat(valueStr, 64); err == nil {
 			realValue = valueFloat64
@@ -286,7 +292,7 @@ func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) 
 		}
 	case configloader.TypeBoolean:
 		if len(valueStr) == 0 {
-			return false, ""
+			return nil, ""
 		}
 		if valueBool, err := strconv.ParseBool(valueStr); err == nil {
 			realValue = valueBool
