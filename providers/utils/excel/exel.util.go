@@ -20,7 +20,6 @@ func LoadExcelByUrl(fileURL string) ([][]string, error) {
 	}
 
 	for k := range sheetMap {
-		fmt.Println("First Element with loop", sheetMap[k])
 		return sheetMap[k], nil
 	}
 
