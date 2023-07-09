@@ -3,12 +3,12 @@ package fileprocessingrow
 import (
 	"context"
 	dbsql "database/sql"
+	"entgo.io/ent/dialect/sql"
 	"errors"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 
-	"entgo.io/ent/dialect/sql"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
@@ -17,7 +17,7 @@ type (
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
 		FindByFileIdAndStatusesForJob(context.Context, int, int16) ([]*ProcessingFileRow, error)
-		UpdateByJob(context.Context, int, string, string, string, int16, string) (*ProcessingFileRow, error)
+		UpdateByJob(context.Context, int, string, string, int16, string, int64) (*ProcessingFileRow, error)
 		DeleteByFileId(context.Context, int64) error
 
 		// Custom query ------
@@ -89,14 +89,15 @@ func (r *repoImpl) FindByFileIdAndStatusesForJob(ctx context.Context, fileId int
 	return mapEntArrToProcessingFileArr(pfs), nil
 }
 
-func (r *repoImpl) UpdateByJob(ctx context.Context, id int, requestCurl string, requestRaw string, responseRaw string,
-	status int16, errorDisplay string) (*ProcessingFileRow, error) {
+func (r *repoImpl) UpdateByJob(ctx context.Context, id int, requestCurl string, responseRaw string,
+	status int16, errorDisplay string, executedTime int64) (*ProcessingFileRow, error) {
 	fpr, err := r.client.ProcessingFileRow.UpdateOneID(id).
 		SetStatus(status).
 		SetTaskRequestCurl(requestCurl).
-		SetTaskRequestRaw(requestRaw).
+		SetTaskRequestRaw("").
 		SetTaskResponseRaw(responseRaw).
 		SetErrorDisplay(errorDisplay).
+		SetExecutedTime(executedTime).
 		Save(ctx)
 	if err != nil {
 		return nil, err

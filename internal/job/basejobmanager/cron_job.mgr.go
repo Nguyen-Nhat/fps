@@ -27,7 +27,7 @@ func InitCron(jobMgr CronJobManager) *cron.Cron {
 				// accept cron with 6 parameters. Eg: 10 */1 * * * *
 				cron.SecondOptional|cron.Minute|cron.Hour|cron.Dom|cron.Month|cron.Dow),
 		),
-		cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)),
+		cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)), // prevent 2 cycles of Job run in the same time
 	)
 
 	jobName := jobMgr.GetJobName()
