@@ -44,7 +44,7 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 	logger.Infof("----- Start Update Status ProcessingFile with ID = %v", file.ID)
 
 	// 1. Statistics success row
-	isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, err := job.fprService.Statistics(file.ID)
+	stats, err := job.fprService.Statistics(file.ID)
 	if err != nil {
 		logger.ErrorT("Cannot statistics for file %v, err=%v", file.ID, err)
 		return
@@ -53,13 +53,13 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 	status := file.Status
 	resultFileUrl := file.ResultFileURL
 	// 2. If all rows are processed
-	if isFinished { // all finished
+	if stats.IsFinished { // all finished
 		logger.InfoT("File is finished executing!!!!")
 		// 2.0. Status is Finished
 		status = fileprocessing.StatusFinished
 
 		// 2.1. Build and Upload result file to FileService
-		if totalFailed > 0 {
+		if stats.TotalFailed > 0 {
 			cfgMapping, err := job.cfgMappingService.FindByClientID(ctx, file.ClientID)
 			if err != nil {
 				logger.ErrorT("Cannot find config mapping by clientID %v, err=%v", file.ClientID, err)
@@ -67,7 +67,7 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 			}
 
 			// 2.1.1. Inject Error Display to file
-			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, "", cfgMapping.ErrorColumnIndex, int(cfgMapping.DataStartAtRow), errorDisplays, false)
+			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, "", cfgMapping.ErrorColumnIndex, int(cfgMapping.DataStartAtRow), stats.ErrorDisplays, false)
 			if err != nil {
 				logger.ErrorT("Update file with Error Display failed, err=%v", err)
 				return
@@ -87,7 +87,7 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 
 	// 3. Update processing_file: status, result_file_url, total_success
 	// todo update processed_row
-	_, err = job.fpService.UpdateStatusWithStatistics(ctx, file.ID, status, totalProcessed, totalSuccess, resultFileUrl)
+	_, err = job.fpService.UpdateStatusWithStatistics(ctx, file.ID, status, stats.TotalProcessed, stats.TotalSuccess, resultFileUrl)
 	if err != nil {
 		logger.ErrorT("Cannot update %v to failed, got error %v", fileprocessing.Name(), err)
 		return

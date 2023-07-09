@@ -14,7 +14,7 @@ type (
 
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
 
-		Statistics(int) (bool, int, int, int, map[int]string, error)
+		Statistics(int) (StatisticData, error)
 	}
 
 	ServiceImpl struct {
@@ -31,17 +31,17 @@ func NewService(repo Repo) *ServiceImpl {
 }
 
 // SaveExtractedDataFromFile ...
-func (s *ServiceImpl) SaveExtractedDataFromFile(ctx context.Context, fileId int, request []CreateProcessingFileRowJob) error {
-	// 1. Clean all old data which relate to fileId
-	_ = s.repo.DeleteByFileId(ctx, int64(fileId))
+func (s *ServiceImpl) SaveExtractedDataFromFile(ctx context.Context, fileID int, request []CreateProcessingFileRowJob) error {
+	// 1. Clean all old data which relate to fileID
+	_ = s.repo.DeleteByFileId(ctx, int64(fileID))
 
 	// 2. Save by batch
-	saveListFileFunc := func(subReq []CreateProcessingFileRowJob) error { return saveListFile(ctx, subReq, s) }
+	saveListFileFunc := func(subReq []CreateProcessingFileRowJob) error { return createRows(ctx, subReq, s) }
 	return utils.BatchExecuting(500, request, saveListFileFunc)
 }
 
-func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileId int, status int16) (map[int32][]*ProcessingFileRow, error) {
-	pfrs, err := s.repo.FindByFileIdAndStatusesForJob(ctx, fileId, status)
+func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileID int, status int16) (map[int32][]*ProcessingFileRow, error) {
+	pfrs, err := s.repo.FindByFileIdAndStatusesForJob(ctx, fileID, status)
 	if err != nil {
 		return nil, err
 	}
@@ -66,22 +66,21 @@ func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileId i
 
 func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	request UpdateAfterExecutingByJob) (*ProcessingFileRow, error) {
-	logger.Infof("Prepare update %v with request=%+v", Name(), request)
-	pfr, err := s.repo.UpdateByJob(ctx, id, request.RequestCurl, request.RequestRaw, request.ResponseRaw, request.Status, request.ErrorDisplay)
+	pfr, err := s.repo.UpdateByJob(ctx, id, request.RequestCurl, request.ResponseRaw, request.Status, request.ErrorDisplay, request.ExecutedTime)
 	if err != nil {
-		logger.Errorf("Failed to update %v, error=%v", Name(), err)
+		logger.Errorf("Failed to update %v, error=%v, request=%+v", Name(), err, request)
 		return nil, err
 	}
 
 	return pfr, nil
 }
 
-// Statistics ... return (isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, error)
-func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, int, map[int]string, error) {
-	statistics, err := s.repo.Statistics(int64(fileId))
+// Statistics ...
+func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
+	statistics, err := s.repo.Statistics(int64(fileID))
 	if err != nil {
 		logger.Errorf("Error when get Statistics, err = %v", err)
-		return false, 0, 0, 0, nil, err
+		return StatisticData{}, err
 	}
 
 	total := len(statistics)
@@ -103,11 +102,16 @@ func (s *ServiceImpl) Statistics(fileId int) (bool, int, int, int, map[int]strin
 		}
 	}
 
-	logger.Infof("----- Statistic file %v: total=%v, totalSuccess=%v, totalFailed=%v", fileId, total, totalSuccess, totalFailed)
+	logger.Infof("----- Statistic file %v: total=%v, totalSuccess=%v, totalFailed=%v", fileID, total, totalSuccess, totalFailed)
 
-	isFinished := isFinished(totalSuccess, totalFailed, total)
-
-	return isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, nil
+	statisticData := StatisticData{
+		IsFinished:     isFinished(totalSuccess, totalFailed, total),
+		ErrorDisplays:  errorDisplays,
+		TotalProcessed: totalProcessed,
+		TotalSuccess:   totalSuccess,
+		TotalFailed:    totalFailed,
+	}
+	return statisticData, nil
 }
 
 // private method ------------------------------------------------------------------------------------------------------
@@ -117,9 +121,9 @@ func isFinished(totalSuccess int, totalFailed int, total int) bool {
 	return isSuccess
 }
 
-func saveListFile(ctx context.Context, subRequest []CreateProcessingFileRowJob, s *ServiceImpl) error {
+func createRows(ctx context.Context, subRequest []CreateProcessingFileRowJob, service *ServiceImpl) error {
 	pfrArr := toProcessingFileRowArr(subRequest)
-	if _, err := s.repo.SaveAll(ctx, pfrArr, false); err != nil {
+	if _, err := service.repo.SaveAll(ctx, pfrArr, false); err != nil {
 		logger.Errorf("error when save all %v, got err %v", Name(), err)
 		return err
 	}

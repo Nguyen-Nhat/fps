@@ -19,7 +19,7 @@ import (
 type (
 	// IClientV1 ...
 	IClientV1 interface {
-		Execute(taskIndex int, taskMappingStr string, previousResponse map[int32]string) (map[string]interface{}, string, string, bool, string)
+		Execute(taskIndex int, taskMappingStr string, previousResponse map[int32]string) (string, string, bool, string)
 	}
 
 	// ClientV1 ....
@@ -41,29 +41,29 @@ func NewClientV1() IClientV1 {
 	}
 }
 
-func (c *clientV1) Execute(taskIndex int, taskMappingStr string, previousResponse map[int32]string) (map[string]interface{}, string, string, bool, string) {
+func (c *clientV1) Execute(taskIndex int, taskMappingStr string, previousResponse map[int32]string) (string, string, bool, string) {
 	// 1. Load Data and Mapping
-	configMapping, err := converter.StringJsonToStruct("data_raw", taskMappingStr, configloader.ConfigMappingMD{})
+	configMapping, err := converter.StringJsonToStruct("config mapping", taskMappingStr, configloader.ConfigMappingMD{})
 	if err != nil {
-		return nil, "", "", false, "failed to load config map"
+		return "", "", false, "failed to load config map"
 	}
 
 	// 2. Build request
 	task, err := mapDataByPreviousResponse(taskIndex, *configMapping, previousResponse)
 	if err != nil {
-		return nil, "", "", false, err.Error()
+		return "", "", false, err.Error()
 	}
 
 	// 3. Request
 	reqHeader := task.Header
-	reqHeader["Content-Type"] = "application/json"
+	reqHeader["Content-Type"] = "application/json" // default header
 	logger.Infof("Prepare call %v with header=%v, requestParams=%+v, requestBody=%+v", task.Endpoint, reqHeader, task.RequestParams, task.RequestBody)
 	httpStatus, responseBody, curl, err := utils.SendHTTPRequestRaw(c.client, task.Method, task.Endpoint, reqHeader, task.RequestParams, task.RequestBody)
 	if err != nil {
 		logger.Errorf("failed to call %v, got error=%v", task.Endpoint, err)
 		logger.Errorf("-----> curl:\n%s", curl)
 		responseBody = fmt.Sprintf("httpStatus=%v, responseBody=%v, error=%v", httpStatus, responseBody, err)
-		return task.RequestBody, curl, responseBody, false, err.Error()
+		return curl, responseBody, false, err.Error()
 	}
 
 	// 4. Handle response
@@ -71,7 +71,7 @@ func (c *clientV1) Execute(taskIndex int, taskMappingStr string, previousRespons
 	isSuccess := isTaskSuccess(task.Response, httpStatus, responseBody)
 	messageRes := getResponseMessage(task.Response.Message, httpStatus, responseBody, isSuccess)
 	messageRes, isSuccess = checkRequiredFieldWhenTaskSuccess(responseBody, task, isSuccess, messageRes)
-	return task.RequestBody, curl, responseBody, isSuccess, messageRes
+	return curl, responseBody, isSuccess, messageRes
 }
 
 // checkRequiredFieldWhenTaskSuccess ... using this function in case task is success, but response body not contains Required Field

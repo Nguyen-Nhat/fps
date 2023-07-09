@@ -159,14 +159,14 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 	return resultFileUrl
 }
 
-func (job *jobFlatten) extractDataAndUpdateFileStatusInDB(ctx context.Context, fileId int,
+func (job *jobFlatten) extractDataAndUpdateFileStatusInDB(ctx context.Context, fileID int,
 	configMappingMDs []configloader.ConfigMappingMD) error {
 	// 1. Add extracted data to ProcessingFileRow
 	var pfrCreateList []fileprocessingrow.CreateProcessingFileRowJob
 	for _, mapping := range configMappingMDs {
 		for _, task := range mapping.Tasks {
 			pfr := fileprocessingrow.CreateProcessingFileRowJob{
-				FileId:      fileId,
+				FileID:      fileID,
 				RowIndex:    task.ImportRowIndex,
 				RowDataRaw:  utils.JsonString(task.ImportRowData),
 				TaskIndex:   task.TaskIndex,
@@ -177,5 +177,5 @@ func (job *jobFlatten) extractDataAndUpdateFileStatusInDB(ctx context.Context, f
 	}
 
 	// 2. Save
-	return job.fprService.SaveExtractedDataFromFile(ctx, fileId, pfrCreateList)
+	return job.fprService.SaveExtractedDataFromFile(ctx, fileID, pfrCreateList)
 }

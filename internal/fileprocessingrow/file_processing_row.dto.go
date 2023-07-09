@@ -1,7 +1,7 @@
 package fileprocessingrow
 
 type CreateProcessingFileRowJob struct {
-	FileId      int
+	FileID      int
 	RowIndex    int
 	RowDataRaw  string
 	TaskIndex   int
@@ -10,8 +10,17 @@ type CreateProcessingFileRowJob struct {
 
 type UpdateAfterExecutingByJob struct {
 	RequestCurl  string
-	RequestRaw   string
 	ResponseRaw  string
 	Status       int16
 	ErrorDisplay string
+	ExecutedTime int64 // unit milliseconds
+}
+
+type StatisticData struct {
+	IsFinished    bool
+	ErrorDisplays map[int]string
+
+	TotalProcessed int
+	TotalSuccess   int
+	TotalFailed    int
 }
