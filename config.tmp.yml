@@ -51,7 +51,10 @@ provider_config:
       delete: /files/{fileId}
   f_alt_service:
     app_id: "1234"
+    username: "username"
+    password: "password"
     master_key: "the_secret_key!"
+    session_expired_in: 1 # month
     rest_key: ""
     endpoint: "https://f-alt-server.dev.tekoapis.net/parse"
     is_enable: true

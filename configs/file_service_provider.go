@@ -13,9 +13,12 @@ type FileServicePaths struct {
 }
 
 type FAltService struct {
-	Endpoint  string `mapstructure:"endpoint"`
-	MasterKey string `mapstructure:"master_key"`
-	RestKey   string `mapstructure:"rest_key"`
-	AppID     string `mapstructure:"app_id"`
-	IsEnable  bool   `mapstructure:"is_enable"`
+	Endpoint         string `mapstructure:"endpoint"`
+	MasterKey        string `mapstructure:"master_key"`
+	RestKey          string `mapstructure:"rest_key"`
+	SessionExpiredIn int    `mapstructure:"session_expired_in"`
+	AppID            string `mapstructure:"app_id"`
+	IsEnable         bool   `mapstructure:"is_enable"`
+	Username         string `mapstructure:"username"`
+	Password         string `mapstructure:"password"`
 }

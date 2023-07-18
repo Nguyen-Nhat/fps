@@ -31,7 +31,7 @@ func isJSONString(str string) bool {
 }
 
 func (c *CreateFileProcessingRequest) Bind(r *http.Request) error {
-	logger.Infof("===== Request CreateFileProcessingRequest: \n%v\n", utils.JsonString(r))
+	logger.Infof("===== Request CreateFileProcessingRequest: \n%+v\n", *c)
 
 	// validate Id missing
 	if c.ClientID == 0 {
