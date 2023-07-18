@@ -21,3 +21,7 @@ const (
 const (
 	EmptyString = ""
 )
+
+const (
+	ParseInvalidSessionTokenCode = 209
+)

@@ -2,9 +2,18 @@ package faltservice
 
 import (
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"github.com/kylemcc/parse"
+	"time"
 )
+
+type Session struct {
+	ParseSession parse.Session
+	ExpiredIn    time.Time
+}
+
+var InstanceSession *Session
 
 // InitParse Init Parse (The core of f-alt-service)
 func InitParse(cfg config.Config) {
@@ -25,6 +34,28 @@ func InitParse(cfg config.Config) {
 	}
 }
 
+// Authenticate to f-alt-server (Apply Singleton pattern)
+func Authenticate() (*Session, error) {
+	// If nil or expired (now + 3 days > timeExpiredIn)
+	if InstanceSession == nil || InstanceSession.ExpiredIn.Before(time.Now().AddDate(0, 0, 3)) {
+		login, err := parse.Login(
+			config.Cfg.ProviderConfig.FAltService.Username,
+			config.Cfg.ProviderConfig.FAltService.Password,
+			nil)
+		if err != nil {
+			logger.Errorf("===== Authenticate to Parse failed, got: %+v", err.Error())
+			return nil, err
+		}
+
+		InstanceSession = &Session{
+			ParseSession: login,
+			ExpiredIn:    time.Now().AddDate(0, config.Cfg.ProviderConfig.FAltService.SessionExpiredIn, 0),
+		}
+	}
+
+	return InstanceSession, nil
+}
+
 // UpdateStatusProcessingFile Update status of model ProcessingFileParse
 func UpdateStatusProcessingFile(fpsFileID int, status int16) error {
 	if !config.Cfg.ProviderConfig.FAltService.IsEnable {
@@ -32,10 +63,16 @@ func UpdateStatusProcessingFile(fpsFileID int, status int16) error {
 		return nil
 	}
 
+	auth, err := Authenticate()
+	if err != nil {
+		logger.Errorf("===== Authenticate to parse failed: %+v", err.Error())
+		return err
+	}
+
 	if fpsFileID != 0 {
 		processingFileParse := &ProcessingFileParse{}
 
-		q, err := parse.NewQuery(processingFileParse)
+		q, err := auth.ParseSession.NewQuery(processingFileParse)
 		if err != nil {
 			logger.Errorf("===== NewQuery processingFileParse failed: %+v", err.Error())
 			return err
@@ -47,7 +84,7 @@ func UpdateStatusProcessingFile(fpsFileID int, status int16) error {
 			return err
 		}
 
-		if u, err := parse.NewUpdate(processingFileParse); err != nil {
+		if u, err := auth.ParseSession.NewUpdate(processingFileParse); err != nil {
 			logger.Errorf("===== Update fileParseID=%+v failed: %+v", processingFileParse.Id, err.Error())
 			return err
 		} else {
@@ -70,11 +107,38 @@ func CreateProcessingFile(processingFileParse *ProcessingFileParse) (*Processing
 		return nil, nil
 	}
 
-	err := parse.Create(processingFileParse, false)
+	auth, err := Authenticate()
+	if err != nil {
+		logger.Errorf("===== Authenticate to parse failed: %+v", err.Error())
+		return nil, err
+	}
+
+	user := auth.ParseSession.User().(*parse.User)
+
+	acl := parse.NewACL()
+	acl.SetWriteAccess(user.Id, true)
+	acl.SetReadAccess(user.Id, true)
+
+	processingFileParse.Base.ACL = acl
+
+	err = auth.ParseSession.Create(processingFileParse)
 	if err != nil {
 		logger.Errorf("===== Save to Parse failed, got: %+v", err.Error())
+		HandleParseErr(err)
 		return processingFileParse, err
 	}
 
 	return processingFileParse, nil
+}
+
+// HandleParseErr Handle err of parse
+func HandleParseErr(err error) {
+	parseErr, _ := err.(parse.ParseError)
+
+	// ParseServerCode = 209 - InvalidSessionToken
+	if parseErr != nil && parseErr.Code() == constant.ParseInvalidSessionTokenCode {
+		// The device’s session token is no longer valid.
+		// The application should ask the service to log in to f-alt-server again.
+		InstanceSession = nil
+	}
 }
