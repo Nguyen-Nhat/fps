@@ -69,6 +69,8 @@ func UpdateStatusProcessingFile(fpsFileID int, status int16) error {
 		return err
 	}
 
+	defer HandleParseErr(err)
+
 	if fpsFileID != 0 {
 		processingFileParse := &ProcessingFileParse{}
 
@@ -113,18 +115,11 @@ func CreateProcessingFile(processingFileParse *ProcessingFileParse) (*Processing
 		return nil, err
 	}
 
-	user := auth.ParseSession.User().(*parse.User)
-
-	acl := parse.NewACL()
-	acl.SetWriteAccess(user.Id, true)
-	acl.SetReadAccess(user.Id, true)
-
-	processingFileParse.Base.ACL = acl
+	defer HandleParseErr(err)
 
 	err = auth.ParseSession.Create(processingFileParse)
 	if err != nil {
 		logger.Errorf("===== Save to Parse failed, got: %+v", err.Error())
-		HandleParseErr(err)
 		return processingFileParse, err
 	}
 
