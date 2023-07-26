@@ -290,13 +290,13 @@ func BatchExecuting[T any](batchSize int, listData []T, execute func([]T) error)
 
 		batch := listData[head:tail]
 
+		logger.Infof("Execute %v item (%v -> %v)\n", len(batch), head, tail)
 		err := execute(batch)
 
 		if err != nil {
 			return err
 		}
 
-		logger.Infof("Execute %v item (%v -> %v)\n", len(batch), head, tail)
 	}
 
 	return nil

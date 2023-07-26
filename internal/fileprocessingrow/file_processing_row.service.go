@@ -36,6 +36,7 @@ func (s *ServiceImpl) SaveExtractedDataFromFile(ctx context.Context, fileID int,
 	_ = s.repo.DeleteByFileId(ctx, int64(fileID))
 
 	// 2. Save by batch
+	logger.Infof("----- Prepare SaveExtractedDataFromFile with size = %+v", len(request))
 	saveListFileFunc := func(subReq []CreateProcessingFileRowJob) error { return createRows(ctx, subReq, s) }
 	return utils.BatchExecuting(500, request, saveListFileFunc)
 }
