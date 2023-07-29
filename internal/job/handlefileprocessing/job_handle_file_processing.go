@@ -173,7 +173,7 @@ func (j *jobHandleProcessingFileImpl) extractDataAndUpdateFileStatusInDB(ctx con
 	for rowId, data := range sheetData {
 		for _, mapping := range sheetMapping {
 			pfr := fileprocessingrow.CreateProcessingFileRowJob{
-				FileId:      fileId,
+				FileID:      fileId,
 				RowIndex:    rowId,
 				RowDataRaw:  toJsonStringNotCareError(data),
 				TaskIndex:   mapping.TaskId,
@@ -278,9 +278,9 @@ func (j *jobHandleProcessingFileImpl) handleFileInProcessingStatus(ctx context.C
 
 func toResponseResult(requestBody map[string]interface{}, responseBody string, messageRes string, isSuccess bool) fileprocessingrow.UpdateAfterExecutingByJob {
 	// 1. Common value
-	reqByte, _ := json.Marshal(requestBody)
+	//reqByte, _ := json.Marshal(requestBody)
 	updateRequest := fileprocessingrow.UpdateAfterExecutingByJob{
-		RequestRaw:   string(reqByte),
+		//RequestRaw:   string(reqByte),
 		ResponseRaw:  responseBody,
 		Status:       1,
 		ErrorDisplay: messageRes,
@@ -306,7 +306,8 @@ func toResponseResult(requestBody map[string]interface{}, responseBody string, m
     -> câp nhật processing_file.status=Finished, result_file_url, total_success
 */
 func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.Context, file *fileprocessing.ProcessingFile) {
-	isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, err := j.fprService.Statistics(file.ID)
+	//isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, err := j.fprService.Statistics(file.ID)
+	stats, err := j.fprService.Statistics(file.ID)
 	if err != nil {
 		logger.ErrorT("Cannot statistics for file %v, err=%v", file.ID, err)
 		return
@@ -314,15 +315,15 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 
 	status := file.Status
 	resultFileUrl := file.ResultFileURL
-	if isFinished { // all finished
+	if stats.IsFinished { // all finished
 		logger.InfoT("File is finished executing!!!!")
 		// 1. Status is Finished
 		status = fileprocessing.StatusFinished
 
 		// 2. Create Result File if has error row
-		if totalFailed > 0 {
+		if stats.TotalFailed > 0 {
 			// 2.1 Inject Error Display to file
-			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, errorDisplays, false)
+			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, stats.ErrorDisplays, false)
 			if err != nil {
 				logger.ErrorT("Update file with Error Display failed, err=%v", err)
 				return
@@ -340,7 +341,7 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 		}
 	}
 
-	_, err = j.fpService.UpdateStatusWithStatistics(ctx, file.ID, status, totalProcessed, totalSuccess, resultFileUrl)
+	_, err = j.fpService.UpdateStatusWithStatistics(ctx, file.ID, status, stats.TotalProcessed, stats.TotalSuccess, resultFileUrl)
 	if err != nil {
 		logger.ErrorT("Cannot update %v to failed, got error %v", fileprocessing.Name(), err)
 		return

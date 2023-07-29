@@ -17,7 +17,7 @@ func toProcessingFileRowArr(request []CreateProcessingFileRowJob) []ProcessingFi
 func toProcessingFileRow(request CreateProcessingFileRowJob) ProcessingFileRow {
 	return ProcessingFileRow{
 		ProcessingFileRow: ent.ProcessingFileRow{
-			FileID:       int64(request.FileId),
+			FileID:       int64(request.FileID),
 			RowIndex:     int32(request.RowIndex),
 			RowDataRaw:   request.RowDataRaw,
 			TaskIndex:    int32(request.TaskIndex),

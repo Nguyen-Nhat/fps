@@ -206,9 +206,9 @@ func TestJob_step3__executeTask_callFailed(t *testing.T) {
 		before := pfrsBefore[i]
 		if after.TaskIndex == 1 {
 			assert.Equal(t, fileprocessingrow.StatusFailed, int(after.Status))
-			assert.NotEqual(t, before.TaskRequestRaw, after.TaskRequestRaw)
+			// assert.NotEqual(t, before.TaskRequestRaw, after.TaskRequestRaw) // comment, because RequestRaw is deprecated
 			assert.NotEqual(t, before.TaskResponseRaw, after.TaskResponseRaw)
-			assert.True(t, len(after.TaskRequestRaw) > 0)
+			// assert.True(t, len(after.TaskRequestRaw) > 0) // comment, because RequestRaw is deprecated
 			assert.True(t, len(after.TaskResponseRaw) > 0)
 			assert.Contains(t, after.ErrorDisplay, failedMsg)
 		} else { // remaining task not change data
@@ -267,8 +267,8 @@ func TestJob_step3__executeTask_callSuccessButMappingResponseFailed(t *testing.T
 			assertTaskSuccess(t, after, before, successMsg)
 		} else { // task 2 failed
 			assert.Equal(t, fileprocessingrow.StatusFailed, int(after.Status))
-			assert.NotEqual(t, before.TaskRequestRaw, after.TaskRequestRaw)
-			assert.True(t, len(after.TaskRequestRaw) > 0)
+			//assert.NotEqual(t, before.TaskRequestRaw, after.TaskRequestRaw) // comment, because RequestRaw is deprecated
+			//assert.True(t, len(after.TaskRequestRaw) > 0) // comment, because RequestRaw is deprecated
 			assert.Equal(t, before.TaskResponseRaw, after.TaskResponseRaw)
 			assert.Contains(t, after.ErrorDisplay, "result.memberId")
 		}
@@ -319,9 +319,9 @@ func TestJob_step3__executeTask_callSuccess(t *testing.T) {
 	for i, after := range pfrsAfter {
 		before := pfrsBefore[i]
 		assert.Equal(t, fileprocessingrow.StatusSuccess, int(after.Status))
-		assert.NotEqual(t, before.TaskRequestRaw, after.TaskRequestRaw)
+		//assert.NotEqual(t, before.TaskRequestRaw, after.TaskRequestRaw) // comment, because RequestRaw is deprecated
 		assert.NotEqual(t, before.TaskResponseRaw, after.TaskResponseRaw)
-		assert.True(t, len(after.TaskRequestRaw) > 0)
+		//assert.True(t, len(after.TaskRequestRaw) > 0) // comment, because RequestRaw is deprecated
 		assert.True(t, len(after.TaskResponseRaw) > 0)
 		assert.Contains(t, after.ErrorDisplay, successMsg)
 	}
@@ -351,9 +351,9 @@ func assertListProcessingFileRow(t *testing.T, pfrsAfter []*ent.ProcessingFileRo
 
 func assertTaskSuccess(t *testing.T, after *ent.ProcessingFileRow, before *ent.ProcessingFileRow, successMsg string) {
 	assert.Equal(t, fileprocessingrow.StatusSuccess, int(after.Status))
-	assert.NotEqual(t, before.TaskRequestRaw, after.TaskRequestRaw)
+	//assert.NotEqual(t, before.TaskRequestRaw, after.TaskRequestRaw) // comment, because RequestRaw is deprecated
 	assert.NotEqual(t, before.TaskResponseRaw, after.TaskResponseRaw)
-	assert.True(t, len(after.TaskRequestRaw) > 0)
+	//assert.True(t, len(after.TaskRequestRaw) > 0) // comment, because RequestRaw is deprecated
 	assert.True(t, len(after.TaskResponseRaw) > 0)
 	assert.Contains(t, after.ErrorDisplay, successMsg)
 }
