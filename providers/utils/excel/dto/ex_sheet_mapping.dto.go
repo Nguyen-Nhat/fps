@@ -118,7 +118,7 @@ type (
 )
 
 const (
-	prefixMappingRequest         = "$"
+	PrefixMappingRequest         = "$"
 	prefixMappingRequestResponse = "$response"
 )
 
@@ -126,7 +126,7 @@ func convertRequestMapping(taskId int, requestMap map[string]string) (map[string
 	result := make(map[string]MappingRequest)
 	for fieldName, valueMapping := range requestMap {
 		mappingRequest := MappingRequest{FieldName: fieldName}
-		if strings.HasPrefix(valueMapping, prefixMappingRequest) {
+		if strings.HasPrefix(valueMapping, PrefixMappingRequest) {
 			if len(valueMapping) == 2 {
 				columnIndex := string(valueMapping[1])
 				logger.Infof("----- task %v, field %v is mapping with column %v", taskId, fieldName, columnIndex)
