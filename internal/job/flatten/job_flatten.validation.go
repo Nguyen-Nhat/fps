@@ -220,6 +220,12 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 		valueStr = reqField.Value
 	case configloader.ValueDependsOnTask:
 		isByPassField = true
+		valueDependsOnKeyMatched, errorRow := validateAndMatchJsonPath(rowID, rowData, reqField.ValueDependsOnKey)
+		if errorRow != nil {
+			errorRows = append(errorRows, *errorRow)
+		} else {
+			reqField.ValueDependsOnKey = valueDependsOnKeyMatched
+		}
 		valueStr = reqField.Value
 	default:
 		errMsg := fmt.Sprintf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
