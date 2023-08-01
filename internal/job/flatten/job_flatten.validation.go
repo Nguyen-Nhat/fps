@@ -5,12 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/tidwall/gjson"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 )
 
 const (
@@ -27,6 +29,8 @@ const (
 	errTypeWrong      = "sai kiểu dữ liệu"
 	errTypeNotSupport = "không hỗ trợ kiểu dữ liệu"
 )
+
+var regexDoubleBrace = regexp.MustCompile(`\{\{(.*?)}}`)
 
 // validateImportingData ...
 // check: empty, invalid data type, constrains
@@ -133,6 +137,14 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 				// config will be converted to Json string, then save to DB -> delete to reduce size of json string
 				delete(task.RequestBodyMap, fieldName)
 			}
+		}
+
+		// 1.3. Validate ResponseCode config
+		resultAfterMatch, errorRow := validateAndMatchJsonPath(rowID, rowData, task.Response.Code.MustHaveValueInPath)
+		if errorRow != nil {
+			errorRows = append(errorRows, *errorRow)
+		} else {
+			task.Response.Code.MustHaveValueInPath = resultAfterMatch
 		}
 
 		// 1.3. Set value for remaining data
@@ -309,4 +321,50 @@ func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) 
 		return nil, fmt.Sprintf("%s %s", errTypeNotSupport, fieldType)
 	}
 	return realValue, ""
+}
+
+// validateAndMatchJsonPath ... support validate json path and update json path if it contains variable
+// for example:
+//   - Json path: data.transactions.#(name=="{{ $A }}").id
+//   - Excel data has $A = quy
+//     -> output: data.transactions.#(name=="quy").id
+func validateAndMatchJsonPath(rowID int, rowData []string, jsonPath string) (string, *ErrorRow) {
+	// 1. Extract data with format like `{{ $A }}`
+	matchers := regexDoubleBrace.FindStringSubmatch(jsonPath)
+
+	// 2. Return if not match
+	if len(matchers) != 2 {
+		return jsonPath, nil
+	}
+
+	// 3. Validate and Replace value
+	{
+		valuePatternWithDoubleBrace := matchers[0]
+		valuePattern := strings.TrimSpace(matchers[1])
+
+		// 3.1. Get column key: $A -> A
+		if !strings.HasPrefix(valuePattern, dto.PrefixMappingRequest) || len(valuePattern) != 2 {
+			errorRow := ErrorRow{RowId: rowID, Reason: errConfigMapping}
+			logger.Errorf("validateResponseCode ... error %s -> %s", errConfigMapping, valuePatternWithDoubleBrace)
+			return "", &errorRow
+		}
+		columnKey := string(valuePattern[1]) // if `$A` -> columnIndex = `A`
+		columnIndex := int(strings.ToUpper(columnKey)[0]) - int('A')
+
+		// 3.2. Validate value
+		if columnIndex >= len(rowData) || // column request out of range
+			len(strings.TrimSpace(rowData[columnIndex])) == 0 { // column is required by value is empty
+			reason := fmt.Sprintf("%s %s", errRowMissingDataColumn, columnKey)
+			errorRow := ErrorRow{RowId: rowID, Reason: reason}
+			logger.Errorf("validateResponseCode ... error %+v", reason)
+			return "", &errorRow
+		}
+
+		// 3.3. Replace value
+		cellValue := strings.TrimSpace(rowData[columnIndex])
+		jsonPath = strings.ReplaceAll(jsonPath, valuePatternWithDoubleBrace, cellValue)
+	}
+
+	// 4. return
+	return jsonPath, nil
 }

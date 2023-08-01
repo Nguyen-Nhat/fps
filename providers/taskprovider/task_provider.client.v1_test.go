@@ -260,6 +260,12 @@ func Test_checkMustHaveValueInPath(t *testing.T) {
 		Response: configloader.ResponseMD{Code: configloader.ResponseCode{MustHaveValueInPath: "data.txns.0.id"}},
 	}
 
+	pathHasFilterByName := `data.txns.#(name=="quy").name`
+	taskWithDataIsArrayAndPathHasFilter := configloader.ConfigTaskMD{
+		TaskName: taskName,
+		Response: configloader.ResponseMD{Code: configloader.ResponseCode{MustHaveValueInPath: pathHasFilterByName}},
+	}
+
 	type args struct {
 		responseBody   string
 		task           configloader.ConfigTaskMD
@@ -282,6 +288,10 @@ func Test_checkMustHaveValueInPath(t *testing.T) {
 		{"responseBody not contain required fields, taskWithDataIsArray, failed --> default message",
 			args{`{"data":{"txns":[{"iddd":"123"}]}`, taskWithDataIsArray, false, defaultMessage},
 			defaultMessage, false},
+		{"responseBody not contain required fields, taskWithDataIsArrayAndPathHasFilter, failed --> default message",
+			args{`{"data":{"txns":[{"nameeee":"quy"}]}`, taskWithDataIsArrayAndPathHasFilter, false, defaultMessage},
+			defaultMessage, false},
+
 		// no required field
 		{"responseBody=empty, taskNoRequireField, success --> default message",
 			args{"", taskNoRequireField, true, defaultMessage},
@@ -303,6 +313,10 @@ func Test_checkMustHaveValueInPath(t *testing.T) {
 		{"responseBody=empty, taskWithDataIsArray, success --> message contains taskName",
 			args{"", taskWithDataIsArray, true, defaultMessage},
 			messageContainTaskName, false},
+		{"responseBody=empty, taskWithDataIsArrayAndPathHasFilter, success --> message contains taskName",
+			args{"", taskWithDataIsArrayAndPathHasFilter, true, defaultMessage},
+			messageContainTaskName, false},
+
 		// success, response body contains required field
 		{"responseBody not empty, taskNoRequireField, success --> default message",
 			args{`{"data": "abc"}`, taskNoRequireField, true, defaultMessage},
@@ -312,6 +326,9 @@ func Test_checkMustHaveValueInPath(t *testing.T) {
 			defaultMessage, true},
 		{"responseBody contains required field, taskWithDataIsArray, success --> message contains taskName",
 			args{`{"data":{"txns":[{"id":"123"}]}`, taskWithDataIsArray, true, defaultMessage},
+			defaultMessage, true},
+		{"responseBody contains required field, taskWithDataIsArrayAndPathHasFilter, success --> message contains taskName",
+			args{`{"data":{"txns":[{"name":"123"},{"name":"quy"},{"name":"abc"}]}`, taskWithDataIsArrayAndPathHasFilter, true, defaultMessage},
 			defaultMessage, true},
 	}
 	for _, tt := range tests {
