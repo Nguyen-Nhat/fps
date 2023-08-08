@@ -2,6 +2,7 @@ package fileprocessingrow
 
 import (
 	"context"
+	"time"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
@@ -42,7 +43,9 @@ func (s *ServiceImpl) SaveExtractedDataFromFile(ctx context.Context, fileID int,
 }
 
 func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileID int, status int16) (map[int32][]*ProcessingFileRow, error) {
+	startAt := time.Now()
 	pfrs, err := s.repo.FindByFileIdAndStatusesForJob(ctx, fileID, status)
+	logger.Infof("----- FindByFileIdAndStatusesForJob: executed time is %s", time.Since(startAt))
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +81,9 @@ func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 
 // Statistics ...
 func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
+	startAt := time.Now()
 	statistics, err := s.repo.Statistics(int64(fileID))
+	logger.Infof("----- Statistics: executed time is %s", time.Since(startAt))
 	if err != nil {
 		logger.Errorf("Error when get Statistics, err = %v", err)
 		return StatisticData{}, err
@@ -103,7 +108,7 @@ func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
 		}
 	}
 
-	logger.Infof("----- Statistic file %v: total=%v, totalSuccess=%v, totalFailed=%v", fileID, total, totalSuccess, totalFailed)
+	logger.Infof("----- Statistic file %v: total=%v, totalProcessed=%v, totalSuccess=%v, totalFailed=%v", fileID, total, totalProcessed, totalSuccess, totalFailed)
 
 	statisticData := StatisticData{
 		IsFinished:     isFinished(totalSuccess, totalFailed, total),
