@@ -81,7 +81,7 @@ func (mgr *jobExecuteTaskManager) Execute() {
 	jobExecuteTask := newJobExecuteTask(mgr.fprService)
 	for _, file := range fpList {
 		// 3.1. Get all task of file.ID, group by rowIndex
-		taskGroupByRow, _ := mgr.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, fileprocessingrow.StatusInit)
+		taskGroupByRow, _ := mgr.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, 5000)
 		if len(taskGroupByRow) == 0 {
 			logger.ErrorT("No row need to execute for fileId=%v", file.ID)
 			continue

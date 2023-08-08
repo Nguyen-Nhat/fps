@@ -16,7 +16,7 @@ type (
 	Repo interface {
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
-		FindByFileIdAndStatusesForJob(context.Context, int, int16) ([]*ProcessingFileRow, error)
+		FindRowsByFileIdForJobExecute(context.Context, int, int) ([]*ProcessingFileRow, error)
 		UpdateByJob(context.Context, int, string, string, int16, string, int64) (*ProcessingFileRow, error)
 		DeleteByFileId(context.Context, int64) error
 
@@ -38,6 +38,8 @@ var _ Repo = &repoImpl{} // only for mention that repoImpl implement Repo
 // NewRepo ...
 func NewRepo(db *dbsql.DB) Repo {
 	drv := sql.OpenDB(dbEngine, db)
+	//drvDebug := dialect.Debug(drv)
+	//client := ent.NewClient(ent.Driver(drvDebug))
 	client := ent.NewClient(ent.Driver(drv))
 	return &repoImpl{client: client, sqlDB: db}
 }
@@ -60,12 +62,25 @@ func (r *repoImpl) FindByID(ctx context.Context, id int) (*ProcessingFileRow, er
 	return &ProcessingFileRow{*fp}, nil
 }
 
-func (r *repoImpl) FindByFileIdAndStatusesForJob(ctx context.Context, fileId int, status int16) ([]*ProcessingFileRow, error) {
+func (r *repoImpl) FindRowsByFileIdForJobExecute(ctx context.Context, fileId int, limit int) ([]*ProcessingFileRow, error) {
+	/*
+		select *
+		from processing_file_row
+		where file_id = ?
+			and row_index in (
+				select distinct row_index from processing_file_row where file_id=? and status=1
+			)
+			and row_index not in (
+				select distinct row_index from processing_file_row where file_id=? and status=3
+			);
+	*/
+
 	pfs, err := r.client.ProcessingFileRow.Query().
 		Where(func(s *sql.Selector) {
 			t := sql.Table(processingfilerow.Table)
 			eqFileId := sql.EQ(t.C(processingfilerow.FieldFileID), fileId)
-			eqStatus := sql.EQ(t.C(processingfilerow.FieldStatus), status)
+			eqStatus := sql.EQ(t.C(processingfilerow.FieldStatus), StatusInit)
+			eqExcludeStatus := sql.EQ(t.C(processingfilerow.FieldStatus), StatusFailed)
 
 			// file_id=?
 			s.Where(eqFileId)
@@ -76,13 +91,20 @@ func (r *repoImpl) FindByFileIdAndStatusesForJob(ctx context.Context, fileId int
 					From(t).
 					Where(sql.And(eqFileId, eqStatus)),
 			))
+			// row_id NOT in (select distinct row_id from processing_file_row where file_id=? and status=?)
+			s.Where(sql.NotIn(
+				s.C(processingfilerow.FieldRowIndex),
+				sql.Select(sql.Distinct(t.C(processingfilerow.FieldRowIndex))).
+					From(t).
+					Where(sql.And(eqFileId, eqExcludeStatus)),
+			))
 
 			s.OrderBy(processingfilerow.FieldRowIndex, processingfilerow.FieldTaskIndex)
-			s.Limit(5000)
+			s.Limit(limit)
 		}).All(ctx)
 
 	if err != nil {
-		logger.Errorf("fail to get %v by status with status %#v", Name(), status)
+		logger.Errorf("fail to get %v by status with status %#v", Name(), StatusInit)
 		return nil, errors.New("fail to get file processing row by status")
 	}
 
