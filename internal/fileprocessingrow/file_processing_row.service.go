@@ -2,6 +2,7 @@ package fileprocessingrow
 
 import (
 	"context"
+	"time"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
@@ -10,7 +11,7 @@ import (
 type (
 	Service interface {
 		SaveExtractedDataFromFile(context.Context, int, []CreateProcessingFileRowJob) error
-		GetAllRowsNeedToExecuteByJob(context.Context, int, int16) (map[int32][]*ProcessingFileRow, error)
+		GetAllRowsNeedToExecuteByJob(context.Context, int, int) (map[int32][]*ProcessingFileRow, error)
 
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
 
@@ -41,25 +42,19 @@ func (s *ServiceImpl) SaveExtractedDataFromFile(ctx context.Context, fileID int,
 	return utils.BatchExecuting(500, request, saveListFileFunc)
 }
 
-func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileID int, status int16) (map[int32][]*ProcessingFileRow, error) {
-	pfrs, err := s.repo.FindByFileIdAndStatusesForJob(ctx, fileID, status)
+func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileID int, limit int) (map[int32][]*ProcessingFileRow, error) {
+	startAt := time.Now()
+	pfrs, err := s.repo.FindRowsByFileIdForJobExecute(ctx, fileID, limit)
+	logger.Infof("----- FindByFileIdAndStatusesForJob: limit=%v, totalResult=%v, executed time is %s", limit, len(pfrs), time.Since(startAt))
 	if err != nil {
 		return nil, err
 	}
 
 	// group task by rowIndex
-	var rowContainsFailedTasks []int32
+	//var rowContainsFailedTasks []int32
 	groupByRow := make(map[int32][]*ProcessingFileRow)
 	for _, task := range pfrs {
 		groupByRow[task.RowIndex] = append(groupByRow[task.RowIndex], task)
-		if task.IsFailedStatus() {
-			rowContainsFailedTasks = append(rowContainsFailedTasks, task.RowIndex)
-		}
-	}
-
-	// remove row which has at least on task failed
-	for _, rowIndex := range rowContainsFailedTasks {
-		delete(groupByRow, rowIndex)
 	}
 
 	return groupByRow, nil
@@ -78,7 +73,9 @@ func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 
 // Statistics ...
 func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
+	startAt := time.Now()
 	statistics, err := s.repo.Statistics(int64(fileID))
+	logger.Infof("----- Statistics: executed time is %s", time.Since(startAt))
 	if err != nil {
 		logger.Errorf("Error when get Statistics, err = %v", err)
 		return StatisticData{}, err
@@ -103,7 +100,7 @@ func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
 		}
 	}
 
-	logger.Infof("----- Statistic file %v: total=%v, totalSuccess=%v, totalFailed=%v", fileID, total, totalSuccess, totalFailed)
+	logger.Infof("----- Statistic file %v: total=%v, totalProcessed=%v, totalSuccess=%v, totalFailed=%v", fileID, total, totalProcessed, totalSuccess, totalFailed)
 
 	statisticData := StatisticData{
 		IsFinished:     isFinished(totalSuccess, totalFailed, total),

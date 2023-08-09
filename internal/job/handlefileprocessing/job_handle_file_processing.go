@@ -238,7 +238,7 @@ func getListCellFromMapping(sheetMapping []dto.MappingRow) []dto.CellData[string
     3.3. Tải file Result về, bổ sung thêm các row bị lỗi vào, upload file Result lên FileService
 */
 func (j *jobHandleProcessingFileImpl) handleFileInProcessingStatus(ctx context.Context, file *fileprocessing.ProcessingFile) {
-	taskGroupByRow, _ := j.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, fileprocessingrow.StatusInit)
+	taskGroupByRow, _ := j.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, 5000)
 	if len(taskGroupByRow) == 0 {
 		logger.ErrorT("No row need to execute for fileId=%v", file.ID)
 		return
