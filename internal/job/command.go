@@ -12,6 +12,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executetask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/flatten"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/handlefileprocessing"
@@ -40,6 +41,9 @@ func Command(cfg config.Config) *cli.Command {
 	// file processing row
 	fprRepo := fileprocessingrow.NewRepo(db)
 	fprService := fileprocessingrow.NewService(fprRepo)
+
+	_ = fpRowGroup.NewRepo(db)
+	_ = fpRowGroup.NewService(db)
 
 	// services about config
 	cmRepo := configmapping.NewRepo(db)

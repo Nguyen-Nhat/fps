@@ -25,6 +25,8 @@ const (
 	FieldFileParameters = "file_parameters"
 	// FieldTotalMapping holds the string denoting the total_mapping field in the database.
 	FieldTotalMapping = "total_mapping"
+	// FieldNeedGroupRow holds the string denoting the need_group_row field in the database.
+	FieldNeedGroupRow = "need_group_row"
 	// FieldStatsTotalRow holds the string denoting the stats_total_row field in the database.
 	FieldStatsTotalRow = "stats_total_row"
 	// FieldStatsTotalProcessed holds the string denoting the stats_total_processed field in the database.
@@ -53,6 +55,7 @@ var Columns = []string{
 	FieldStatus,
 	FieldFileParameters,
 	FieldTotalMapping,
+	FieldNeedGroupRow,
 	FieldStatsTotalRow,
 	FieldStatsTotalProcessed,
 	FieldStatsTotalSuccess,
@@ -79,6 +82,8 @@ var (
 	FileURLValidator func(string) error
 	// DefaultTotalMapping holds the default value on creation for the "total_mapping" field.
 	DefaultTotalMapping int32
+	// DefaultNeedGroupRow holds the default value on creation for the "need_group_row" field.
+	DefaultNeedGroupRow bool
 	// DefaultStatsTotalRow holds the default value on creation for the "stats_total_row" field.
 	DefaultStatsTotalRow int32
 	// DefaultStatsTotalProcessed holds the default value on creation for the "stats_total_processed" field.

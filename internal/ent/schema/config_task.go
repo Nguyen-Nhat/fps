@@ -34,6 +34,8 @@ func (ConfigTask) Fields() []ent.Field {
 		field.Int32("response_success_http_status").Comment("For example: http 200"),
 		field.String("response_success_code_schema").Comment("Format JSON, contains path and values"),
 		field.String("response_message_schema").Comment("Format JSON, contains path"),
+		field.String("group_by_columns").Default("").Comment("Group by list columns name. Eg: A,B,C"),
+		field.Int32("group_by_size_limit").Default(0).Comment("Max size of a Group. If exceed, reject file"),
 		// default fields
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),

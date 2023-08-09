@@ -28,6 +28,7 @@ func (ProcessingFileRow) Fields() []ent.Field {
 		field.Int32("task_index"),
 		field.Text("task_mapping"),
 		field.String("task_depends_on"),
+		field.Text("group_by_value").Default(""),
 		field.Text("task_request_curl"),
 		field.Text("task_request_raw"),
 		field.Text("task_response_raw"),

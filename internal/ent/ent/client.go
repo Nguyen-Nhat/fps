@@ -15,6 +15,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fpsclient"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -36,6 +37,8 @@ type Client struct {
 	ProcessingFile *ProcessingFileClient
 	// ProcessingFileRow is the client for interacting with the ProcessingFileRow builders.
 	ProcessingFileRow *ProcessingFileRowClient
+	// ProcessingFileRowGroup is the client for interacting with the ProcessingFileRowGroup builders.
+	ProcessingFileRowGroup *ProcessingFileRowGroupClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -56,6 +59,7 @@ func (c *Client) init() {
 	c.FpsClient = NewFpsClientClient(c.config)
 	c.ProcessingFile = NewProcessingFileClient(c.config)
 	c.ProcessingFileRow = NewProcessingFileRowClient(c.config)
+	c.ProcessingFileRowGroup = NewProcessingFileRowGroupClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -88,14 +92,15 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:               ctx,
-		config:            cfg,
-		ConfigMapping:     NewConfigMappingClient(cfg),
-		ConfigTask:        NewConfigTaskClient(cfg),
-		FpsClient:         NewFpsClientClient(cfg),
-		ProcessingFile:    NewProcessingFileClient(cfg),
-		ProcessingFileRow: NewProcessingFileRowClient(cfg),
-		User:              NewUserClient(cfg),
+		ctx:                    ctx,
+		config:                 cfg,
+		ConfigMapping:          NewConfigMappingClient(cfg),
+		ConfigTask:             NewConfigTaskClient(cfg),
+		FpsClient:              NewFpsClientClient(cfg),
+		ProcessingFile:         NewProcessingFileClient(cfg),
+		ProcessingFileRow:      NewProcessingFileRowClient(cfg),
+		ProcessingFileRowGroup: NewProcessingFileRowGroupClient(cfg),
+		User:                   NewUserClient(cfg),
 	}, nil
 }
 
@@ -113,14 +118,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:               ctx,
-		config:            cfg,
-		ConfigMapping:     NewConfigMappingClient(cfg),
-		ConfigTask:        NewConfigTaskClient(cfg),
-		FpsClient:         NewFpsClientClient(cfg),
-		ProcessingFile:    NewProcessingFileClient(cfg),
-		ProcessingFileRow: NewProcessingFileRowClient(cfg),
-		User:              NewUserClient(cfg),
+		ctx:                    ctx,
+		config:                 cfg,
+		ConfigMapping:          NewConfigMappingClient(cfg),
+		ConfigTask:             NewConfigTaskClient(cfg),
+		FpsClient:              NewFpsClientClient(cfg),
+		ProcessingFile:         NewProcessingFileClient(cfg),
+		ProcessingFileRow:      NewProcessingFileRowClient(cfg),
+		ProcessingFileRowGroup: NewProcessingFileRowGroupClient(cfg),
+		User:                   NewUserClient(cfg),
 	}, nil
 }
 
@@ -154,6 +160,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.FpsClient.Use(hooks...)
 	c.ProcessingFile.Use(hooks...)
 	c.ProcessingFileRow.Use(hooks...)
+	c.ProcessingFileRowGroup.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -605,6 +612,96 @@ func (c *ProcessingFileRowClient) GetX(ctx context.Context, id int) *ProcessingF
 // Hooks returns the client hooks.
 func (c *ProcessingFileRowClient) Hooks() []Hook {
 	return c.hooks.ProcessingFileRow
+}
+
+// ProcessingFileRowGroupClient is a client for the ProcessingFileRowGroup schema.
+type ProcessingFileRowGroupClient struct {
+	config
+}
+
+// NewProcessingFileRowGroupClient returns a client for the ProcessingFileRowGroup from the given config.
+func NewProcessingFileRowGroupClient(c config) *ProcessingFileRowGroupClient {
+	return &ProcessingFileRowGroupClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `processingfilerowgroup.Hooks(f(g(h())))`.
+func (c *ProcessingFileRowGroupClient) Use(hooks ...Hook) {
+	c.hooks.ProcessingFileRowGroup = append(c.hooks.ProcessingFileRowGroup, hooks...)
+}
+
+// Create returns a builder for creating a ProcessingFileRowGroup entity.
+func (c *ProcessingFileRowGroupClient) Create() *ProcessingFileRowGroupCreate {
+	mutation := newProcessingFileRowGroupMutation(c.config, OpCreate)
+	return &ProcessingFileRowGroupCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProcessingFileRowGroup entities.
+func (c *ProcessingFileRowGroupClient) CreateBulk(builders ...*ProcessingFileRowGroupCreate) *ProcessingFileRowGroupCreateBulk {
+	return &ProcessingFileRowGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProcessingFileRowGroup.
+func (c *ProcessingFileRowGroupClient) Update() *ProcessingFileRowGroupUpdate {
+	mutation := newProcessingFileRowGroupMutation(c.config, OpUpdate)
+	return &ProcessingFileRowGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProcessingFileRowGroupClient) UpdateOne(pfrg *ProcessingFileRowGroup) *ProcessingFileRowGroupUpdateOne {
+	mutation := newProcessingFileRowGroupMutation(c.config, OpUpdateOne, withProcessingFileRowGroup(pfrg))
+	return &ProcessingFileRowGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProcessingFileRowGroupClient) UpdateOneID(id int) *ProcessingFileRowGroupUpdateOne {
+	mutation := newProcessingFileRowGroupMutation(c.config, OpUpdateOne, withProcessingFileRowGroupID(id))
+	return &ProcessingFileRowGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProcessingFileRowGroup.
+func (c *ProcessingFileRowGroupClient) Delete() *ProcessingFileRowGroupDelete {
+	mutation := newProcessingFileRowGroupMutation(c.config, OpDelete)
+	return &ProcessingFileRowGroupDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProcessingFileRowGroupClient) DeleteOne(pfrg *ProcessingFileRowGroup) *ProcessingFileRowGroupDeleteOne {
+	return c.DeleteOneID(pfrg.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *ProcessingFileRowGroupClient) DeleteOneID(id int) *ProcessingFileRowGroupDeleteOne {
+	builder := c.Delete().Where(processingfilerowgroup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProcessingFileRowGroupDeleteOne{builder}
+}
+
+// Query returns a query builder for ProcessingFileRowGroup.
+func (c *ProcessingFileRowGroupClient) Query() *ProcessingFileRowGroupQuery {
+	return &ProcessingFileRowGroupQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ProcessingFileRowGroup entity by its id.
+func (c *ProcessingFileRowGroupClient) Get(ctx context.Context, id int) (*ProcessingFileRowGroup, error) {
+	return c.Query().Where(processingfilerowgroup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProcessingFileRowGroupClient) GetX(ctx context.Context, id int) *ProcessingFileRowGroup {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ProcessingFileRowGroupClient) Hooks() []Hook {
+	return c.hooks.ProcessingFileRowGroup
 }
 
 // UserClient is a client for the User schema.

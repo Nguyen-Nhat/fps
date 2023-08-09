@@ -30,6 +30,8 @@ type ProcessingFile struct {
 	FileParameters string `json:"file_parameters,omitempty"`
 	// TotalMapping holds the value of the "total_mapping" field.
 	TotalMapping int32 `json:"total_mapping,omitempty"`
+	// NeedGroupRow holds the value of the "need_group_row" field.
+	NeedGroupRow bool `json:"need_group_row,omitempty"`
 	// StatsTotalRow holds the value of the "stats_total_row" field.
 	StatsTotalRow int32 `json:"stats_total_row,omitempty"`
 	// StatsTotalProcessed holds the value of the "stats_total_processed" field.
@@ -51,6 +53,8 @@ func (*ProcessingFile) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case processingfile.FieldNeedGroupRow:
+			values[i] = new(sql.NullBool)
 		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalProcessed, processingfile.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
 		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldFileParameters, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
@@ -119,6 +123,12 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 				return fmt.Errorf("unexpected type %T for field total_mapping", values[i])
 			} else if value.Valid {
 				pf.TotalMapping = int32(value.Int64)
+			}
+		case processingfile.FieldNeedGroupRow:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field need_group_row", values[i])
+			} else if value.Valid {
+				pf.NeedGroupRow = value.Bool
 			}
 		case processingfile.FieldStatsTotalRow:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -210,6 +220,9 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("total_mapping=")
 	builder.WriteString(fmt.Sprintf("%v", pf.TotalMapping))
+	builder.WriteString(", ")
+	builder.WriteString("need_group_row=")
+	builder.WriteString(fmt.Sprintf("%v", pf.NeedGroupRow))
 	builder.WriteString(", ")
 	builder.WriteString("stats_total_row=")
 	builder.WriteString(fmt.Sprintf("%v", pf.StatsTotalRow))

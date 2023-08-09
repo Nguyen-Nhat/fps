@@ -157,6 +157,20 @@ func ResponseMessageSchema(v string) predicate.ConfigTask {
 	})
 }
 
+// GroupByColumns applies equality check predicate on the "group_by_columns" field. It's identical to GroupByColumnsEQ.
+func GroupByColumns(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupBySizeLimit applies equality check predicate on the "group_by_size_limit" field. It's identical to GroupBySizeLimitEQ.
+func GroupBySizeLimit(v int32) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGroupBySizeLimit), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
@@ -1159,6 +1173,169 @@ func ResponseMessageSchemaEqualFold(v string) predicate.ConfigTask {
 func ResponseMessageSchemaContainsFold(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldResponseMessageSchema), v))
+	})
+}
+
+// GroupByColumnsEQ applies the EQ predicate on the "group_by_columns" field.
+func GroupByColumnsEQ(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsNEQ applies the NEQ predicate on the "group_by_columns" field.
+func GroupByColumnsNEQ(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsIn applies the In predicate on the "group_by_columns" field.
+func GroupByColumnsIn(vs ...string) predicate.ConfigTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldGroupByColumns), v...))
+	})
+}
+
+// GroupByColumnsNotIn applies the NotIn predicate on the "group_by_columns" field.
+func GroupByColumnsNotIn(vs ...string) predicate.ConfigTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldGroupByColumns), v...))
+	})
+}
+
+// GroupByColumnsGT applies the GT predicate on the "group_by_columns" field.
+func GroupByColumnsGT(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsGTE applies the GTE predicate on the "group_by_columns" field.
+func GroupByColumnsGTE(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsLT applies the LT predicate on the "group_by_columns" field.
+func GroupByColumnsLT(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsLTE applies the LTE predicate on the "group_by_columns" field.
+func GroupByColumnsLTE(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsContains applies the Contains predicate on the "group_by_columns" field.
+func GroupByColumnsContains(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsHasPrefix applies the HasPrefix predicate on the "group_by_columns" field.
+func GroupByColumnsHasPrefix(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsHasSuffix applies the HasSuffix predicate on the "group_by_columns" field.
+func GroupByColumnsHasSuffix(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsEqualFold applies the EqualFold predicate on the "group_by_columns" field.
+func GroupByColumnsEqualFold(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupByColumnsContainsFold applies the ContainsFold predicate on the "group_by_columns" field.
+func GroupByColumnsContainsFold(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldGroupByColumns), v))
+	})
+}
+
+// GroupBySizeLimitEQ applies the EQ predicate on the "group_by_size_limit" field.
+func GroupBySizeLimitEQ(v int32) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGroupBySizeLimit), v))
+	})
+}
+
+// GroupBySizeLimitNEQ applies the NEQ predicate on the "group_by_size_limit" field.
+func GroupBySizeLimitNEQ(v int32) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldGroupBySizeLimit), v))
+	})
+}
+
+// GroupBySizeLimitIn applies the In predicate on the "group_by_size_limit" field.
+func GroupBySizeLimitIn(vs ...int32) predicate.ConfigTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldGroupBySizeLimit), v...))
+	})
+}
+
+// GroupBySizeLimitNotIn applies the NotIn predicate on the "group_by_size_limit" field.
+func GroupBySizeLimitNotIn(vs ...int32) predicate.ConfigTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldGroupBySizeLimit), v...))
+	})
+}
+
+// GroupBySizeLimitGT applies the GT predicate on the "group_by_size_limit" field.
+func GroupBySizeLimitGT(v int32) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldGroupBySizeLimit), v))
+	})
+}
+
+// GroupBySizeLimitGTE applies the GTE predicate on the "group_by_size_limit" field.
+func GroupBySizeLimitGTE(v int32) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldGroupBySizeLimit), v))
+	})
+}
+
+// GroupBySizeLimitLT applies the LT predicate on the "group_by_size_limit" field.
+func GroupBySizeLimitLT(v int32) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldGroupBySizeLimit), v))
+	})
+}
+
+// GroupBySizeLimitLTE applies the LTE predicate on the "group_by_size_limit" field.
+func GroupBySizeLimitLTE(v int32) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldGroupBySizeLimit), v))
 	})
 }
 

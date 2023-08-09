@@ -85,6 +85,20 @@ func (pfru *ProcessingFileRowUpdate) SetTaskDependsOn(s string) *ProcessingFileR
 	return pfru
 }
 
+// SetGroupByValue sets the "group_by_value" field.
+func (pfru *ProcessingFileRowUpdate) SetGroupByValue(s string) *ProcessingFileRowUpdate {
+	pfru.mutation.SetGroupByValue(s)
+	return pfru
+}
+
+// SetNillableGroupByValue sets the "group_by_value" field if the given value is not nil.
+func (pfru *ProcessingFileRowUpdate) SetNillableGroupByValue(s *string) *ProcessingFileRowUpdate {
+	if s != nil {
+		pfru.SetGroupByValue(*s)
+	}
+	return pfru
+}
+
 // SetTaskRequestCurl sets the "task_request_curl" field.
 func (pfru *ProcessingFileRowUpdate) SetTaskRequestCurl(s string) *ProcessingFileRowUpdate {
 	pfru.mutation.SetTaskRequestCurl(s)
@@ -304,6 +318,13 @@ func (pfru *ProcessingFileRowUpdate) sqlSave(ctx context.Context) (n int, err er
 			Column: processingfilerow.FieldTaskDependsOn,
 		})
 	}
+	if value, ok := pfru.mutation.GroupByValue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldGroupByValue,
+		})
+	}
 	if value, ok := pfru.mutation.TaskRequestCurl(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -447,6 +468,20 @@ func (pfruo *ProcessingFileRowUpdateOne) SetTaskMapping(s string) *ProcessingFil
 // SetTaskDependsOn sets the "task_depends_on" field.
 func (pfruo *ProcessingFileRowUpdateOne) SetTaskDependsOn(s string) *ProcessingFileRowUpdateOne {
 	pfruo.mutation.SetTaskDependsOn(s)
+	return pfruo
+}
+
+// SetGroupByValue sets the "group_by_value" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetGroupByValue(s string) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetGroupByValue(s)
+	return pfruo
+}
+
+// SetNillableGroupByValue sets the "group_by_value" field if the given value is not nil.
+func (pfruo *ProcessingFileRowUpdateOne) SetNillableGroupByValue(s *string) *ProcessingFileRowUpdateOne {
+	if s != nil {
+		pfruo.SetGroupByValue(*s)
+	}
 	return pfruo
 }
 
@@ -697,6 +732,13 @@ func (pfruo *ProcessingFileRowUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfilerow.FieldTaskDependsOn,
+		})
+	}
+	if value, ok := pfruo.mutation.GroupByValue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldGroupByValue,
 		})
 	}
 	if value, ok := pfruo.mutation.TaskRequestCurl(); ok {

@@ -41,6 +41,8 @@ var (
 		{Name: "response_success_http_status", Type: field.TypeInt32},
 		{Name: "response_success_code_schema", Type: field.TypeString},
 		{Name: "response_message_schema", Type: field.TypeString},
+		{Name: "group_by_columns", Type: field.TypeString, Default: ""},
+		{Name: "group_by_size_limit", Type: field.TypeInt32, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -77,6 +79,7 @@ var (
 		{Name: "status", Type: field.TypeInt16},
 		{Name: "file_parameters", Type: field.TypeString, Size: 2147483647},
 		{Name: "total_mapping", Type: field.TypeInt32, Default: 0},
+		{Name: "need_group_row", Type: field.TypeBool, Default: false},
 		{Name: "stats_total_row", Type: field.TypeInt32, Default: 0},
 		{Name: "stats_total_processed", Type: field.TypeInt32, Default: 0},
 		{Name: "stats_total_success", Type: field.TypeInt32, Default: 0},
@@ -100,6 +103,7 @@ var (
 		{Name: "task_index", Type: field.TypeInt32},
 		{Name: "task_mapping", Type: field.TypeString, Size: 2147483647},
 		{Name: "task_depends_on", Type: field.TypeString},
+		{Name: "group_by_value", Type: field.TypeString, Size: 2147483647, Default: ""},
 		{Name: "task_request_curl", Type: field.TypeString, Size: 2147483647},
 		{Name: "task_request_raw", Type: field.TypeString, Size: 2147483647},
 		{Name: "task_response_raw", Type: field.TypeString, Size: 2147483647},
@@ -114,6 +118,28 @@ var (
 		Name:       "processing_file_row",
 		Columns:    ProcessingFileRowColumns,
 		PrimaryKey: []*schema.Column{ProcessingFileRowColumns[0]},
+	}
+	// ProcessingFileRowGroupColumns holds the columns for the "processing_file_row_group" table.
+	ProcessingFileRowGroupColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "file_id", Type: field.TypeInt64},
+		{Name: "task_index", Type: field.TypeInt32},
+		{Name: "group_by_value", Type: field.TypeString, Size: 2147483647},
+		{Name: "total_rows", Type: field.TypeInt32},
+		{Name: "row_index_list", Type: field.TypeString, Size: 2147483647},
+		{Name: "group_request_curl", Type: field.TypeString, Size: 2147483647},
+		{Name: "group_response_raw", Type: field.TypeString, Size: 2147483647},
+		{Name: "status", Type: field.TypeInt16},
+		{Name: "error_display", Type: field.TypeString},
+		{Name: "executed_time", Type: field.TypeInt64},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ProcessingFileRowGroupTable holds the schema information for the "processing_file_row_group" table.
+	ProcessingFileRowGroupTable = &schema.Table{
+		Name:       "processing_file_row_group",
+		Columns:    ProcessingFileRowGroupColumns,
+		PrimaryKey: []*schema.Column{ProcessingFileRowGroupColumns[0]},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
@@ -137,6 +163,7 @@ var (
 		FpsClientTable,
 		ProcessingFileTable,
 		ProcessingFileRowTable,
+		ProcessingFileRowGroupTable,
 		UsersTable,
 	}
 )
@@ -156,5 +183,8 @@ func init() {
 	}
 	ProcessingFileRowTable.Annotation = &entsql.Annotation{
 		Table: "processing_file_row",
+	}
+	ProcessingFileRowGroupTable.Annotation = &entsql.Annotation{
+		Table: "processing_file_row_group",
 	}
 }

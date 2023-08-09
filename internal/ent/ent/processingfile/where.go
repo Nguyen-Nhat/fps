@@ -129,6 +129,13 @@ func TotalMapping(v int32) predicate.ProcessingFile {
 	})
 }
 
+// NeedGroupRow applies equality check predicate on the "need_group_row" field. It's identical to NeedGroupRowEQ.
+func NeedGroupRow(v bool) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldNeedGroupRow), v))
+	})
+}
+
 // StatsTotalRow applies equality check predicate on the "stats_total_row" field. It's identical to StatsTotalRowEQ.
 func StatsTotalRow(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -763,6 +770,20 @@ func TotalMappingLT(v int32) predicate.ProcessingFile {
 func TotalMappingLTE(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldTotalMapping), v))
+	})
+}
+
+// NeedGroupRowEQ applies the EQ predicate on the "need_group_row" field.
+func NeedGroupRowEQ(v bool) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldNeedGroupRow), v))
+	})
+}
+
+// NeedGroupRowNEQ applies the NEQ predicate on the "need_group_row" field.
+func NeedGroupRowNEQ(v bool) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldNeedGroupRow), v))
 	})
 }
 
