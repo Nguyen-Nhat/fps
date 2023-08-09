@@ -21,5 +21,8 @@ type ProcessingFile func(*sql.Selector)
 // ProcessingFileRow is the predicate function for processingfilerow builders.
 type ProcessingFileRow func(*sql.Selector)
 
+// ProcessingFileRowGroup is the predicate function for processingfilerowgroup builders.
+type ProcessingFileRowGroup func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

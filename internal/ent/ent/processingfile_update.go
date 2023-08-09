@@ -99,6 +99,20 @@ func (pfu *ProcessingFileUpdate) AddTotalMapping(i int32) *ProcessingFileUpdate 
 	return pfu
 }
 
+// SetNeedGroupRow sets the "need_group_row" field.
+func (pfu *ProcessingFileUpdate) SetNeedGroupRow(b bool) *ProcessingFileUpdate {
+	pfu.mutation.SetNeedGroupRow(b)
+	return pfu
+}
+
+// SetNillableNeedGroupRow sets the "need_group_row" field if the given value is not nil.
+func (pfu *ProcessingFileUpdate) SetNillableNeedGroupRow(b *bool) *ProcessingFileUpdate {
+	if b != nil {
+		pfu.SetNeedGroupRow(*b)
+	}
+	return pfu
+}
+
 // SetStatsTotalRow sets the "stats_total_row" field.
 func (pfu *ProcessingFileUpdate) SetStatsTotalRow(i int32) *ProcessingFileUpdate {
 	pfu.mutation.ResetStatsTotalRow()
@@ -376,6 +390,13 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldTotalMapping,
 		})
 	}
+	if value, ok := pfu.mutation.NeedGroupRow(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: processingfile.FieldNeedGroupRow,
+		})
+	}
 	if value, ok := pfu.mutation.StatsTotalRow(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
@@ -533,6 +554,20 @@ func (pfuo *ProcessingFileUpdateOne) SetNillableTotalMapping(i *int32) *Processi
 // AddTotalMapping adds i to the "total_mapping" field.
 func (pfuo *ProcessingFileUpdateOne) AddTotalMapping(i int32) *ProcessingFileUpdateOne {
 	pfuo.mutation.AddTotalMapping(i)
+	return pfuo
+}
+
+// SetNeedGroupRow sets the "need_group_row" field.
+func (pfuo *ProcessingFileUpdateOne) SetNeedGroupRow(b bool) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetNeedGroupRow(b)
+	return pfuo
+}
+
+// SetNillableNeedGroupRow sets the "need_group_row" field if the given value is not nil.
+func (pfuo *ProcessingFileUpdateOne) SetNillableNeedGroupRow(b *bool) *ProcessingFileUpdateOne {
+	if b != nil {
+		pfuo.SetNeedGroupRow(*b)
+	}
 	return pfuo
 }
 
@@ -841,6 +876,13 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: processingfile.FieldTotalMapping,
+		})
+	}
+	if value, ok := pfuo.mutation.NeedGroupRow(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: processingfile.FieldNeedGroupRow,
 		})
 	}
 	if value, ok := pfuo.mutation.StatsTotalRow(); ok {

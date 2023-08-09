@@ -30,6 +30,7 @@ func (ProcessingFile) Fields() []ent.Field {
 		field.Int16("status").Comment("Init=1; Processing=2; Failed=3; Finished=4"),
 		field.Text("file_parameters").Comment("Format JSON. For storing parameters of client"),
 		field.Int32("total_mapping").Default(0),
+		field.Bool("need_group_row").Default(false),
 		field.Int32("stats_total_row").Default(0),
 		field.Int32("stats_total_processed").Default(0),
 		field.Int32("stats_total_success").Default(0),

@@ -70,6 +70,20 @@ func (pfc *ProcessingFileCreate) SetNillableTotalMapping(i *int32) *ProcessingFi
 	return pfc
 }
 
+// SetNeedGroupRow sets the "need_group_row" field.
+func (pfc *ProcessingFileCreate) SetNeedGroupRow(b bool) *ProcessingFileCreate {
+	pfc.mutation.SetNeedGroupRow(b)
+	return pfc
+}
+
+// SetNillableNeedGroupRow sets the "need_group_row" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableNeedGroupRow(b *bool) *ProcessingFileCreate {
+	if b != nil {
+		pfc.SetNeedGroupRow(*b)
+	}
+	return pfc
+}
+
 // SetStatsTotalRow sets the "stats_total_row" field.
 func (pfc *ProcessingFileCreate) SetStatsTotalRow(i int32) *ProcessingFileCreate {
 	pfc.mutation.SetStatsTotalRow(i)
@@ -233,6 +247,10 @@ func (pfc *ProcessingFileCreate) defaults() {
 		v := processingfile.DefaultTotalMapping
 		pfc.mutation.SetTotalMapping(v)
 	}
+	if _, ok := pfc.mutation.NeedGroupRow(); !ok {
+		v := processingfile.DefaultNeedGroupRow
+		pfc.mutation.SetNeedGroupRow(v)
+	}
 	if _, ok := pfc.mutation.StatsTotalRow(); !ok {
 		v := processingfile.DefaultStatsTotalRow
 		pfc.mutation.SetStatsTotalRow(v)
@@ -287,6 +305,9 @@ func (pfc *ProcessingFileCreate) check() error {
 	}
 	if _, ok := pfc.mutation.TotalMapping(); !ok {
 		return &ValidationError{Name: "total_mapping", err: errors.New(`ent: missing required field "ProcessingFile.total_mapping"`)}
+	}
+	if _, ok := pfc.mutation.NeedGroupRow(); !ok {
+		return &ValidationError{Name: "need_group_row", err: errors.New(`ent: missing required field "ProcessingFile.need_group_row"`)}
 	}
 	if _, ok := pfc.mutation.StatsTotalRow(); !ok {
 		return &ValidationError{Name: "stats_total_row", err: errors.New(`ent: missing required field "ProcessingFile.stats_total_row"`)}
@@ -396,6 +417,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 			Column: processingfile.FieldTotalMapping,
 		})
 		_node.TotalMapping = value
+	}
+	if value, ok := pfc.mutation.NeedGroupRow(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: processingfile.FieldNeedGroupRow,
+		})
+		_node.NeedGroupRow = value
 	}
 	if value, ok := pfc.mutation.StatsTotalRow(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

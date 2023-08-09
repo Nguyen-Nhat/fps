@@ -8,9 +8,10 @@ import (
 
 // Status ENUM ...
 const (
-	StatusInit    = 1
-	StatusFailed  = 3
-	StatusSuccess = 4
+	StatusInit            = 1
+	StatusFailed          = 3
+	StatusSuccess         = 4
+	StatusWaitForGrouping = 5
 )
 
 type ProcessingFileRow struct {

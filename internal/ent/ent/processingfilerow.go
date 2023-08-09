@@ -28,6 +28,8 @@ type ProcessingFileRow struct {
 	TaskMapping string `json:"task_mapping,omitempty"`
 	// TaskDependsOn holds the value of the "task_depends_on" field.
 	TaskDependsOn string `json:"task_depends_on,omitempty"`
+	// GroupByValue holds the value of the "group_by_value" field.
+	GroupByValue string `json:"group_by_value,omitempty"`
 	// TaskRequestCurl holds the value of the "task_request_curl" field.
 	TaskRequestCurl string `json:"task_request_curl,omitempty"`
 	// TaskRequestRaw holds the value of the "task_request_raw" field.
@@ -53,7 +55,7 @@ func (*ProcessingFileRow) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case processingfilerow.FieldID, processingfilerow.FieldFileID, processingfilerow.FieldRowIndex, processingfilerow.FieldTaskIndex, processingfilerow.FieldStatus, processingfilerow.FieldExecutedTime:
 			values[i] = new(sql.NullInt64)
-		case processingfilerow.FieldRowDataRaw, processingfilerow.FieldTaskMapping, processingfilerow.FieldTaskDependsOn, processingfilerow.FieldTaskRequestCurl, processingfilerow.FieldTaskRequestRaw, processingfilerow.FieldTaskResponseRaw, processingfilerow.FieldErrorDisplay:
+		case processingfilerow.FieldRowDataRaw, processingfilerow.FieldTaskMapping, processingfilerow.FieldTaskDependsOn, processingfilerow.FieldGroupByValue, processingfilerow.FieldTaskRequestCurl, processingfilerow.FieldTaskRequestRaw, processingfilerow.FieldTaskResponseRaw, processingfilerow.FieldErrorDisplay:
 			values[i] = new(sql.NullString)
 		case processingfilerow.FieldCreatedAt, processingfilerow.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -113,6 +115,12 @@ func (pfr *ProcessingFileRow) assignValues(columns []string, values []interface{
 				return fmt.Errorf("unexpected type %T for field task_depends_on", values[i])
 			} else if value.Valid {
 				pfr.TaskDependsOn = value.String
+			}
+		case processingfilerow.FieldGroupByValue:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field group_by_value", values[i])
+			} else if value.Valid {
+				pfr.GroupByValue = value.String
 			}
 		case processingfilerow.FieldTaskRequestCurl:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -207,6 +215,9 @@ func (pfr *ProcessingFileRow) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("task_depends_on=")
 	builder.WriteString(pfr.TaskDependsOn)
+	builder.WriteString(", ")
+	builder.WriteString("group_by_value=")
+	builder.WriteString(pfr.GroupByValue)
 	builder.WriteString(", ")
 	builder.WriteString("task_request_curl=")
 	builder.WriteString(pfr.TaskRequestCurl)

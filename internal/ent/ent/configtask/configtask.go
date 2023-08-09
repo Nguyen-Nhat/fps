@@ -33,6 +33,10 @@ const (
 	FieldResponseSuccessCodeSchema = "response_success_code_schema"
 	// FieldResponseMessageSchema holds the string denoting the response_message_schema field in the database.
 	FieldResponseMessageSchema = "response_message_schema"
+	// FieldGroupByColumns holds the string denoting the group_by_columns field in the database.
+	FieldGroupByColumns = "group_by_columns"
+	// FieldGroupBySizeLimit holds the string denoting the group_by_size_limit field in the database.
+	FieldGroupBySizeLimit = "group_by_size_limit"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -57,6 +61,8 @@ var Columns = []string{
 	FieldResponseSuccessHTTPStatus,
 	FieldResponseSuccessCodeSchema,
 	FieldResponseMessageSchema,
+	FieldGroupByColumns,
+	FieldGroupBySizeLimit,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -87,6 +93,10 @@ var (
 	RequestParamsValidator func(string) error
 	// RequestBodyValidator is a validator for the "request_body" field. It is called by the builders before save.
 	RequestBodyValidator func(string) error
+	// DefaultGroupByColumns holds the default value on creation for the "group_by_columns" field.
+	DefaultGroupByColumns string
+	// DefaultGroupBySizeLimit holds the default value on creation for the "group_by_size_limit" field.
+	DefaultGroupBySizeLimit int32
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.

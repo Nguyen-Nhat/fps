@@ -31,6 +31,9 @@ type ConfigTaskMD struct {
 	RequestBody   map[string]interface{}
 	// Response
 	Response ResponseMD
+	// Group
+	GroupTask      GroupTaskMD
+	GroupTaskValue string
 	// Row data in importing file -> is injected in validation phase
 	ImportRowData  []string
 	ImportRowIndex int
@@ -76,6 +79,12 @@ type ResponseCode struct {
 // ResponseMsg ...
 type ResponseMsg struct {
 	Path string `json:"path"`
+}
+
+// GroupTaskMD ...
+type GroupTaskMD struct {
+	ByColumns []string `json:"-"`
+	SizeLimit int      `json:"-"`
 }
 
 func (ct ConfigTaskMD) Clone() ConfigTaskMD {

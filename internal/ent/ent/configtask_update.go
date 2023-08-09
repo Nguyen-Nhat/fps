@@ -123,6 +123,41 @@ func (ctu *ConfigTaskUpdate) SetResponseMessageSchema(s string) *ConfigTaskUpdat
 	return ctu
 }
 
+// SetGroupByColumns sets the "group_by_columns" field.
+func (ctu *ConfigTaskUpdate) SetGroupByColumns(s string) *ConfigTaskUpdate {
+	ctu.mutation.SetGroupByColumns(s)
+	return ctu
+}
+
+// SetNillableGroupByColumns sets the "group_by_columns" field if the given value is not nil.
+func (ctu *ConfigTaskUpdate) SetNillableGroupByColumns(s *string) *ConfigTaskUpdate {
+	if s != nil {
+		ctu.SetGroupByColumns(*s)
+	}
+	return ctu
+}
+
+// SetGroupBySizeLimit sets the "group_by_size_limit" field.
+func (ctu *ConfigTaskUpdate) SetGroupBySizeLimit(i int32) *ConfigTaskUpdate {
+	ctu.mutation.ResetGroupBySizeLimit()
+	ctu.mutation.SetGroupBySizeLimit(i)
+	return ctu
+}
+
+// SetNillableGroupBySizeLimit sets the "group_by_size_limit" field if the given value is not nil.
+func (ctu *ConfigTaskUpdate) SetNillableGroupBySizeLimit(i *int32) *ConfigTaskUpdate {
+	if i != nil {
+		ctu.SetGroupBySizeLimit(*i)
+	}
+	return ctu
+}
+
+// AddGroupBySizeLimit adds i to the "group_by_size_limit" field.
+func (ctu *ConfigTaskUpdate) AddGroupBySizeLimit(i int32) *ConfigTaskUpdate {
+	ctu.mutation.AddGroupBySizeLimit(i)
+	return ctu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ctu *ConfigTaskUpdate) SetCreatedAt(t time.Time) *ConfigTaskUpdate {
 	ctu.mutation.SetCreatedAt(t)
@@ -379,6 +414,27 @@ func (ctu *ConfigTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: configtask.FieldResponseMessageSchema,
 		})
 	}
+	if value, ok := ctu.mutation.GroupByColumns(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldGroupByColumns,
+		})
+	}
+	if value, ok := ctu.mutation.GroupBySizeLimit(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configtask.FieldGroupBySizeLimit,
+		})
+	}
+	if value, ok := ctu.mutation.AddedGroupBySizeLimit(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configtask.FieldGroupBySizeLimit,
+		})
+	}
 	if value, ok := ctu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -511,6 +567,41 @@ func (ctuo *ConfigTaskUpdateOne) SetResponseSuccessCodeSchema(s string) *ConfigT
 // SetResponseMessageSchema sets the "response_message_schema" field.
 func (ctuo *ConfigTaskUpdateOne) SetResponseMessageSchema(s string) *ConfigTaskUpdateOne {
 	ctuo.mutation.SetResponseMessageSchema(s)
+	return ctuo
+}
+
+// SetGroupByColumns sets the "group_by_columns" field.
+func (ctuo *ConfigTaskUpdateOne) SetGroupByColumns(s string) *ConfigTaskUpdateOne {
+	ctuo.mutation.SetGroupByColumns(s)
+	return ctuo
+}
+
+// SetNillableGroupByColumns sets the "group_by_columns" field if the given value is not nil.
+func (ctuo *ConfigTaskUpdateOne) SetNillableGroupByColumns(s *string) *ConfigTaskUpdateOne {
+	if s != nil {
+		ctuo.SetGroupByColumns(*s)
+	}
+	return ctuo
+}
+
+// SetGroupBySizeLimit sets the "group_by_size_limit" field.
+func (ctuo *ConfigTaskUpdateOne) SetGroupBySizeLimit(i int32) *ConfigTaskUpdateOne {
+	ctuo.mutation.ResetGroupBySizeLimit()
+	ctuo.mutation.SetGroupBySizeLimit(i)
+	return ctuo
+}
+
+// SetNillableGroupBySizeLimit sets the "group_by_size_limit" field if the given value is not nil.
+func (ctuo *ConfigTaskUpdateOne) SetNillableGroupBySizeLimit(i *int32) *ConfigTaskUpdateOne {
+	if i != nil {
+		ctuo.SetGroupBySizeLimit(*i)
+	}
+	return ctuo
+}
+
+// AddGroupBySizeLimit adds i to the "group_by_size_limit" field.
+func (ctuo *ConfigTaskUpdateOne) AddGroupBySizeLimit(i int32) *ConfigTaskUpdateOne {
+	ctuo.mutation.AddGroupBySizeLimit(i)
 	return ctuo
 }
 
@@ -798,6 +889,27 @@ func (ctuo *ConfigTaskUpdateOne) sqlSave(ctx context.Context) (_node *ConfigTask
 			Type:   field.TypeString,
 			Value:  value,
 			Column: configtask.FieldResponseMessageSchema,
+		})
+	}
+	if value, ok := ctuo.mutation.GroupByColumns(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldGroupByColumns,
+		})
+	}
+	if value, ok := ctuo.mutation.GroupBySizeLimit(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configtask.FieldGroupBySizeLimit,
+		})
+	}
+	if value, ok := ctuo.mutation.AddedGroupBySizeLimit(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configtask.FieldGroupBySizeLimit,
 		})
 	}
 	if value, ok := ctuo.mutation.CreatedAt(); ok {

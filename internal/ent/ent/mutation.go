@@ -15,6 +15,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/predicate"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 
 	"entgo.io/ent"
@@ -29,12 +30,13 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeConfigMapping     = "ConfigMapping"
-	TypeConfigTask        = "ConfigTask"
-	TypeFpsClient         = "FpsClient"
-	TypeProcessingFile    = "ProcessingFile"
-	TypeProcessingFileRow = "ProcessingFileRow"
-	TypeUser              = "User"
+	TypeConfigMapping          = "ConfigMapping"
+	TypeConfigTask             = "ConfigTask"
+	TypeFpsClient              = "FpsClient"
+	TypeProcessingFile         = "ProcessingFile"
+	TypeProcessingFileRow      = "ProcessingFileRow"
+	TypeProcessingFileRowGroup = "ProcessingFileRowGroup"
+	TypeUser                   = "User"
 )
 
 // ConfigMappingMutation represents an operation that mutates the ConfigMapping nodes in the graph.
@@ -848,6 +850,9 @@ type ConfigTaskMutation struct {
 	addresponse_success_http_status *int32
 	response_success_code_schema    *string
 	response_message_schema         *string
+	group_by_columns                *string
+	group_by_size_limit             *int32
+	addgroup_by_size_limit          *int32
 	created_at                      *time.Time
 	created_by                      *string
 	updated_at                      *time.Time
@@ -1411,6 +1416,98 @@ func (m *ConfigTaskMutation) ResetResponseMessageSchema() {
 	m.response_message_schema = nil
 }
 
+// SetGroupByColumns sets the "group_by_columns" field.
+func (m *ConfigTaskMutation) SetGroupByColumns(s string) {
+	m.group_by_columns = &s
+}
+
+// GroupByColumns returns the value of the "group_by_columns" field in the mutation.
+func (m *ConfigTaskMutation) GroupByColumns() (r string, exists bool) {
+	v := m.group_by_columns
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupByColumns returns the old "group_by_columns" field's value of the ConfigTask entity.
+// If the ConfigTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigTaskMutation) OldGroupByColumns(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupByColumns is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupByColumns requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupByColumns: %w", err)
+	}
+	return oldValue.GroupByColumns, nil
+}
+
+// ResetGroupByColumns resets all changes to the "group_by_columns" field.
+func (m *ConfigTaskMutation) ResetGroupByColumns() {
+	m.group_by_columns = nil
+}
+
+// SetGroupBySizeLimit sets the "group_by_size_limit" field.
+func (m *ConfigTaskMutation) SetGroupBySizeLimit(i int32) {
+	m.group_by_size_limit = &i
+	m.addgroup_by_size_limit = nil
+}
+
+// GroupBySizeLimit returns the value of the "group_by_size_limit" field in the mutation.
+func (m *ConfigTaskMutation) GroupBySizeLimit() (r int32, exists bool) {
+	v := m.group_by_size_limit
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupBySizeLimit returns the old "group_by_size_limit" field's value of the ConfigTask entity.
+// If the ConfigTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigTaskMutation) OldGroupBySizeLimit(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupBySizeLimit is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupBySizeLimit requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupBySizeLimit: %w", err)
+	}
+	return oldValue.GroupBySizeLimit, nil
+}
+
+// AddGroupBySizeLimit adds i to the "group_by_size_limit" field.
+func (m *ConfigTaskMutation) AddGroupBySizeLimit(i int32) {
+	if m.addgroup_by_size_limit != nil {
+		*m.addgroup_by_size_limit += i
+	} else {
+		m.addgroup_by_size_limit = &i
+	}
+}
+
+// AddedGroupBySizeLimit returns the value that was added to the "group_by_size_limit" field in this mutation.
+func (m *ConfigTaskMutation) AddedGroupBySizeLimit() (r int32, exists bool) {
+	v := m.addgroup_by_size_limit
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetGroupBySizeLimit resets all changes to the "group_by_size_limit" field.
+func (m *ConfigTaskMutation) ResetGroupBySizeLimit() {
+	m.group_by_size_limit = nil
+	m.addgroup_by_size_limit = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ConfigTaskMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1538,7 +1635,7 @@ func (m *ConfigTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigTaskMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 16)
 	if m.config_mapping_id != nil {
 		fields = append(fields, configtask.FieldConfigMappingID)
 	}
@@ -1571,6 +1668,12 @@ func (m *ConfigTaskMutation) Fields() []string {
 	}
 	if m.response_message_schema != nil {
 		fields = append(fields, configtask.FieldResponseMessageSchema)
+	}
+	if m.group_by_columns != nil {
+		fields = append(fields, configtask.FieldGroupByColumns)
+	}
+	if m.group_by_size_limit != nil {
+		fields = append(fields, configtask.FieldGroupBySizeLimit)
 	}
 	if m.created_at != nil {
 		fields = append(fields, configtask.FieldCreatedAt)
@@ -1611,6 +1714,10 @@ func (m *ConfigTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.ResponseSuccessCodeSchema()
 	case configtask.FieldResponseMessageSchema:
 		return m.ResponseMessageSchema()
+	case configtask.FieldGroupByColumns:
+		return m.GroupByColumns()
+	case configtask.FieldGroupBySizeLimit:
+		return m.GroupBySizeLimit()
 	case configtask.FieldCreatedAt:
 		return m.CreatedAt()
 	case configtask.FieldCreatedBy:
@@ -1648,6 +1755,10 @@ func (m *ConfigTaskMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldResponseSuccessCodeSchema(ctx)
 	case configtask.FieldResponseMessageSchema:
 		return m.OldResponseMessageSchema(ctx)
+	case configtask.FieldGroupByColumns:
+		return m.OldGroupByColumns(ctx)
+	case configtask.FieldGroupBySizeLimit:
+		return m.OldGroupBySizeLimit(ctx)
 	case configtask.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case configtask.FieldCreatedBy:
@@ -1740,6 +1851,20 @@ func (m *ConfigTaskMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetResponseMessageSchema(v)
 		return nil
+	case configtask.FieldGroupByColumns:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupByColumns(v)
+		return nil
+	case configtask.FieldGroupBySizeLimit:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupBySizeLimit(v)
+		return nil
 	case configtask.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -1778,6 +1903,9 @@ func (m *ConfigTaskMutation) AddedFields() []string {
 	if m.addresponse_success_http_status != nil {
 		fields = append(fields, configtask.FieldResponseSuccessHTTPStatus)
 	}
+	if m.addgroup_by_size_limit != nil {
+		fields = append(fields, configtask.FieldGroupBySizeLimit)
+	}
 	return fields
 }
 
@@ -1792,6 +1920,8 @@ func (m *ConfigTaskMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTaskIndex()
 	case configtask.FieldResponseSuccessHTTPStatus:
 		return m.AddedResponseSuccessHTTPStatus()
+	case configtask.FieldGroupBySizeLimit:
+		return m.AddedGroupBySizeLimit()
 	}
 	return nil, false
 }
@@ -1821,6 +1951,13 @@ func (m *ConfigTaskMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddResponseSuccessHTTPStatus(v)
+		return nil
+	case configtask.FieldGroupBySizeLimit:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddGroupBySizeLimit(v)
 		return nil
 	}
 	return fmt.Errorf("unknown ConfigTask numeric field %s", name)
@@ -1881,6 +2018,12 @@ func (m *ConfigTaskMutation) ResetField(name string) error {
 		return nil
 	case configtask.FieldResponseMessageSchema:
 		m.ResetResponseMessageSchema()
+		return nil
+	case configtask.FieldGroupByColumns:
+		m.ResetGroupByColumns()
+		return nil
+	case configtask.FieldGroupBySizeLimit:
+		m.ResetGroupBySizeLimit()
 		return nil
 	case configtask.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -2576,6 +2719,7 @@ type ProcessingFileMutation struct {
 	file_parameters          *string
 	total_mapping            *int32
 	addtotal_mapping         *int32
+	need_group_row           *bool
 	stats_total_row          *int32
 	addstats_total_row       *int32
 	stats_total_processed    *int32
@@ -3002,6 +3146,42 @@ func (m *ProcessingFileMutation) ResetTotalMapping() {
 	m.addtotal_mapping = nil
 }
 
+// SetNeedGroupRow sets the "need_group_row" field.
+func (m *ProcessingFileMutation) SetNeedGroupRow(b bool) {
+	m.need_group_row = &b
+}
+
+// NeedGroupRow returns the value of the "need_group_row" field in the mutation.
+func (m *ProcessingFileMutation) NeedGroupRow() (r bool, exists bool) {
+	v := m.need_group_row
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNeedGroupRow returns the old "need_group_row" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldNeedGroupRow(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNeedGroupRow is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNeedGroupRow requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNeedGroupRow: %w", err)
+	}
+	return oldValue.NeedGroupRow, nil
+}
+
+// ResetNeedGroupRow resets all changes to the "need_group_row" field.
+func (m *ProcessingFileMutation) ResetNeedGroupRow() {
+	m.need_group_row = nil
+}
+
 // SetStatsTotalRow sets the "stats_total_row" field.
 func (m *ProcessingFileMutation) SetStatsTotalRow(i int32) {
 	m.stats_total_row = &i
@@ -3333,7 +3513,7 @@ func (m *ProcessingFileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.client_id != nil {
 		fields = append(fields, processingfile.FieldClientID)
 	}
@@ -3354,6 +3534,9 @@ func (m *ProcessingFileMutation) Fields() []string {
 	}
 	if m.total_mapping != nil {
 		fields = append(fields, processingfile.FieldTotalMapping)
+	}
+	if m.need_group_row != nil {
+		fields = append(fields, processingfile.FieldNeedGroupRow)
 	}
 	if m.stats_total_row != nil {
 		fields = append(fields, processingfile.FieldStatsTotalRow)
@@ -3398,6 +3581,8 @@ func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
 		return m.FileParameters()
 	case processingfile.FieldTotalMapping:
 		return m.TotalMapping()
+	case processingfile.FieldNeedGroupRow:
+		return m.NeedGroupRow()
 	case processingfile.FieldStatsTotalRow:
 		return m.StatsTotalRow()
 	case processingfile.FieldStatsTotalProcessed:
@@ -3435,6 +3620,8 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldFileParameters(ctx)
 	case processingfile.FieldTotalMapping:
 		return m.OldTotalMapping(ctx)
+	case processingfile.FieldNeedGroupRow:
+		return m.OldNeedGroupRow(ctx)
 	case processingfile.FieldStatsTotalRow:
 		return m.OldStatsTotalRow(ctx)
 	case processingfile.FieldStatsTotalProcessed:
@@ -3506,6 +3693,13 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTotalMapping(v)
+		return nil
+	case processingfile.FieldNeedGroupRow:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNeedGroupRow(v)
 		return nil
 	case processingfile.FieldStatsTotalRow:
 		v, ok := value.(int32)
@@ -3701,6 +3895,9 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 	case processingfile.FieldTotalMapping:
 		m.ResetTotalMapping()
 		return nil
+	case processingfile.FieldNeedGroupRow:
+		m.ResetNeedGroupRow()
+		return nil
 	case processingfile.FieldStatsTotalRow:
 		m.ResetStatsTotalRow()
 		return nil
@@ -3789,6 +3986,7 @@ type ProcessingFileRowMutation struct {
 	addtask_index     *int32
 	task_mapping      *string
 	task_depends_on   *string
+	group_by_value    *string
 	task_request_curl *string
 	task_request_raw  *string
 	task_response_raw *string
@@ -4179,6 +4377,42 @@ func (m *ProcessingFileRowMutation) ResetTaskDependsOn() {
 	m.task_depends_on = nil
 }
 
+// SetGroupByValue sets the "group_by_value" field.
+func (m *ProcessingFileRowMutation) SetGroupByValue(s string) {
+	m.group_by_value = &s
+}
+
+// GroupByValue returns the value of the "group_by_value" field in the mutation.
+func (m *ProcessingFileRowMutation) GroupByValue() (r string, exists bool) {
+	v := m.group_by_value
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupByValue returns the old "group_by_value" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldGroupByValue(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupByValue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupByValue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupByValue: %w", err)
+	}
+	return oldValue.GroupByValue, nil
+}
+
+// ResetGroupByValue resets all changes to the "group_by_value" field.
+func (m *ProcessingFileRowMutation) ResetGroupByValue() {
+	m.group_by_value = nil
+}
+
 // SetTaskRequestCurl sets the "task_request_curl" field.
 func (m *ProcessingFileRowMutation) SetTaskRequestCurl(s string) {
 	m.task_request_curl = &s
@@ -4526,7 +4760,7 @@ func (m *ProcessingFileRowMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileRowMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.file_id != nil {
 		fields = append(fields, processingfilerow.FieldFileID)
 	}
@@ -4544,6 +4778,9 @@ func (m *ProcessingFileRowMutation) Fields() []string {
 	}
 	if m.task_depends_on != nil {
 		fields = append(fields, processingfilerow.FieldTaskDependsOn)
+	}
+	if m.group_by_value != nil {
+		fields = append(fields, processingfilerow.FieldGroupByValue)
 	}
 	if m.task_request_curl != nil {
 		fields = append(fields, processingfilerow.FieldTaskRequestCurl)
@@ -4589,6 +4826,8 @@ func (m *ProcessingFileRowMutation) Field(name string) (ent.Value, bool) {
 		return m.TaskMapping()
 	case processingfilerow.FieldTaskDependsOn:
 		return m.TaskDependsOn()
+	case processingfilerow.FieldGroupByValue:
+		return m.GroupByValue()
 	case processingfilerow.FieldTaskRequestCurl:
 		return m.TaskRequestCurl()
 	case processingfilerow.FieldTaskRequestRaw:
@@ -4626,6 +4865,8 @@ func (m *ProcessingFileRowMutation) OldField(ctx context.Context, name string) (
 		return m.OldTaskMapping(ctx)
 	case processingfilerow.FieldTaskDependsOn:
 		return m.OldTaskDependsOn(ctx)
+	case processingfilerow.FieldGroupByValue:
+		return m.OldGroupByValue(ctx)
 	case processingfilerow.FieldTaskRequestCurl:
 		return m.OldTaskRequestCurl(ctx)
 	case processingfilerow.FieldTaskRequestRaw:
@@ -4692,6 +4933,13 @@ func (m *ProcessingFileRowMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTaskDependsOn(v)
+		return nil
+	case processingfilerow.FieldGroupByValue:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupByValue(v)
 		return nil
 	case processingfilerow.FieldTaskRequestCurl:
 		v, ok := value.(string)
@@ -4879,6 +5127,9 @@ func (m *ProcessingFileRowMutation) ResetField(name string) error {
 	case processingfilerow.FieldTaskDependsOn:
 		m.ResetTaskDependsOn()
 		return nil
+	case processingfilerow.FieldGroupByValue:
+		m.ResetGroupByValue()
+		return nil
 	case processingfilerow.FieldTaskRequestCurl:
 		m.ResetTaskRequestCurl()
 		return nil
@@ -4953,6 +5204,1079 @@ func (m *ProcessingFileRowMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ProcessingFileRowMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown ProcessingFileRow edge %s", name)
+}
+
+// ProcessingFileRowGroupMutation represents an operation that mutates the ProcessingFileRowGroup nodes in the graph.
+type ProcessingFileRowGroupMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *int
+	file_id            *int64
+	addfile_id         *int64
+	task_index         *int32
+	addtask_index      *int32
+	group_by_value     *string
+	total_rows         *int32
+	addtotal_rows      *int32
+	row_index_list     *string
+	group_request_curl *string
+	group_response_raw *string
+	status             *int16
+	addstatus          *int16
+	error_display      *string
+	executed_time      *int64
+	addexecuted_time   *int64
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*ProcessingFileRowGroup, error)
+	predicates         []predicate.ProcessingFileRowGroup
+}
+
+var _ ent.Mutation = (*ProcessingFileRowGroupMutation)(nil)
+
+// processingfilerowgroupOption allows management of the mutation configuration using functional options.
+type processingfilerowgroupOption func(*ProcessingFileRowGroupMutation)
+
+// newProcessingFileRowGroupMutation creates new mutation for the ProcessingFileRowGroup entity.
+func newProcessingFileRowGroupMutation(c config, op Op, opts ...processingfilerowgroupOption) *ProcessingFileRowGroupMutation {
+	m := &ProcessingFileRowGroupMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProcessingFileRowGroup,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProcessingFileRowGroupID sets the ID field of the mutation.
+func withProcessingFileRowGroupID(id int) processingfilerowgroupOption {
+	return func(m *ProcessingFileRowGroupMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProcessingFileRowGroup
+		)
+		m.oldValue = func(ctx context.Context) (*ProcessingFileRowGroup, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProcessingFileRowGroup.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProcessingFileRowGroup sets the old ProcessingFileRowGroup of the mutation.
+func withProcessingFileRowGroup(node *ProcessingFileRowGroup) processingfilerowgroupOption {
+	return func(m *ProcessingFileRowGroupMutation) {
+		m.oldValue = func(context.Context) (*ProcessingFileRowGroup, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProcessingFileRowGroupMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProcessingFileRowGroupMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProcessingFileRowGroupMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ProcessingFileRowGroupMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ProcessingFileRowGroup.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetFileID sets the "file_id" field.
+func (m *ProcessingFileRowGroupMutation) SetFileID(i int64) {
+	m.file_id = &i
+	m.addfile_id = nil
+}
+
+// FileID returns the value of the "file_id" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) FileID() (r int64, exists bool) {
+	v := m.file_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileID returns the old "file_id" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldFileID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileID: %w", err)
+	}
+	return oldValue.FileID, nil
+}
+
+// AddFileID adds i to the "file_id" field.
+func (m *ProcessingFileRowGroupMutation) AddFileID(i int64) {
+	if m.addfile_id != nil {
+		*m.addfile_id += i
+	} else {
+		m.addfile_id = &i
+	}
+}
+
+// AddedFileID returns the value that was added to the "file_id" field in this mutation.
+func (m *ProcessingFileRowGroupMutation) AddedFileID() (r int64, exists bool) {
+	v := m.addfile_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFileID resets all changes to the "file_id" field.
+func (m *ProcessingFileRowGroupMutation) ResetFileID() {
+	m.file_id = nil
+	m.addfile_id = nil
+}
+
+// SetTaskIndex sets the "task_index" field.
+func (m *ProcessingFileRowGroupMutation) SetTaskIndex(i int32) {
+	m.task_index = &i
+	m.addtask_index = nil
+}
+
+// TaskIndex returns the value of the "task_index" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) TaskIndex() (r int32, exists bool) {
+	v := m.task_index
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskIndex returns the old "task_index" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldTaskIndex(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskIndex is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskIndex requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskIndex: %w", err)
+	}
+	return oldValue.TaskIndex, nil
+}
+
+// AddTaskIndex adds i to the "task_index" field.
+func (m *ProcessingFileRowGroupMutation) AddTaskIndex(i int32) {
+	if m.addtask_index != nil {
+		*m.addtask_index += i
+	} else {
+		m.addtask_index = &i
+	}
+}
+
+// AddedTaskIndex returns the value that was added to the "task_index" field in this mutation.
+func (m *ProcessingFileRowGroupMutation) AddedTaskIndex() (r int32, exists bool) {
+	v := m.addtask_index
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTaskIndex resets all changes to the "task_index" field.
+func (m *ProcessingFileRowGroupMutation) ResetTaskIndex() {
+	m.task_index = nil
+	m.addtask_index = nil
+}
+
+// SetGroupByValue sets the "group_by_value" field.
+func (m *ProcessingFileRowGroupMutation) SetGroupByValue(s string) {
+	m.group_by_value = &s
+}
+
+// GroupByValue returns the value of the "group_by_value" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) GroupByValue() (r string, exists bool) {
+	v := m.group_by_value
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupByValue returns the old "group_by_value" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldGroupByValue(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupByValue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupByValue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupByValue: %w", err)
+	}
+	return oldValue.GroupByValue, nil
+}
+
+// ResetGroupByValue resets all changes to the "group_by_value" field.
+func (m *ProcessingFileRowGroupMutation) ResetGroupByValue() {
+	m.group_by_value = nil
+}
+
+// SetTotalRows sets the "total_rows" field.
+func (m *ProcessingFileRowGroupMutation) SetTotalRows(i int32) {
+	m.total_rows = &i
+	m.addtotal_rows = nil
+}
+
+// TotalRows returns the value of the "total_rows" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) TotalRows() (r int32, exists bool) {
+	v := m.total_rows
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalRows returns the old "total_rows" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldTotalRows(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalRows is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalRows requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalRows: %w", err)
+	}
+	return oldValue.TotalRows, nil
+}
+
+// AddTotalRows adds i to the "total_rows" field.
+func (m *ProcessingFileRowGroupMutation) AddTotalRows(i int32) {
+	if m.addtotal_rows != nil {
+		*m.addtotal_rows += i
+	} else {
+		m.addtotal_rows = &i
+	}
+}
+
+// AddedTotalRows returns the value that was added to the "total_rows" field in this mutation.
+func (m *ProcessingFileRowGroupMutation) AddedTotalRows() (r int32, exists bool) {
+	v := m.addtotal_rows
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalRows resets all changes to the "total_rows" field.
+func (m *ProcessingFileRowGroupMutation) ResetTotalRows() {
+	m.total_rows = nil
+	m.addtotal_rows = nil
+}
+
+// SetRowIndexList sets the "row_index_list" field.
+func (m *ProcessingFileRowGroupMutation) SetRowIndexList(s string) {
+	m.row_index_list = &s
+}
+
+// RowIndexList returns the value of the "row_index_list" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) RowIndexList() (r string, exists bool) {
+	v := m.row_index_list
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRowIndexList returns the old "row_index_list" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldRowIndexList(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRowIndexList is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRowIndexList requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRowIndexList: %w", err)
+	}
+	return oldValue.RowIndexList, nil
+}
+
+// ResetRowIndexList resets all changes to the "row_index_list" field.
+func (m *ProcessingFileRowGroupMutation) ResetRowIndexList() {
+	m.row_index_list = nil
+}
+
+// SetGroupRequestCurl sets the "group_request_curl" field.
+func (m *ProcessingFileRowGroupMutation) SetGroupRequestCurl(s string) {
+	m.group_request_curl = &s
+}
+
+// GroupRequestCurl returns the value of the "group_request_curl" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) GroupRequestCurl() (r string, exists bool) {
+	v := m.group_request_curl
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupRequestCurl returns the old "group_request_curl" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldGroupRequestCurl(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupRequestCurl is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupRequestCurl requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupRequestCurl: %w", err)
+	}
+	return oldValue.GroupRequestCurl, nil
+}
+
+// ResetGroupRequestCurl resets all changes to the "group_request_curl" field.
+func (m *ProcessingFileRowGroupMutation) ResetGroupRequestCurl() {
+	m.group_request_curl = nil
+}
+
+// SetGroupResponseRaw sets the "group_response_raw" field.
+func (m *ProcessingFileRowGroupMutation) SetGroupResponseRaw(s string) {
+	m.group_response_raw = &s
+}
+
+// GroupResponseRaw returns the value of the "group_response_raw" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) GroupResponseRaw() (r string, exists bool) {
+	v := m.group_response_raw
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupResponseRaw returns the old "group_response_raw" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldGroupResponseRaw(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupResponseRaw is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupResponseRaw requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupResponseRaw: %w", err)
+	}
+	return oldValue.GroupResponseRaw, nil
+}
+
+// ResetGroupResponseRaw resets all changes to the "group_response_raw" field.
+func (m *ProcessingFileRowGroupMutation) ResetGroupResponseRaw() {
+	m.group_response_raw = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *ProcessingFileRowGroupMutation) SetStatus(i int16) {
+	m.status = &i
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) Status() (r int16, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldStatus(ctx context.Context) (v int16, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds i to the "status" field.
+func (m *ProcessingFileRowGroupMutation) AddStatus(i int16) {
+	if m.addstatus != nil {
+		*m.addstatus += i
+	} else {
+		m.addstatus = &i
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *ProcessingFileRowGroupMutation) AddedStatus() (r int16, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *ProcessingFileRowGroupMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
+// SetErrorDisplay sets the "error_display" field.
+func (m *ProcessingFileRowGroupMutation) SetErrorDisplay(s string) {
+	m.error_display = &s
+}
+
+// ErrorDisplay returns the value of the "error_display" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) ErrorDisplay() (r string, exists bool) {
+	v := m.error_display
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldErrorDisplay returns the old "error_display" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldErrorDisplay(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldErrorDisplay is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldErrorDisplay requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldErrorDisplay: %w", err)
+	}
+	return oldValue.ErrorDisplay, nil
+}
+
+// ResetErrorDisplay resets all changes to the "error_display" field.
+func (m *ProcessingFileRowGroupMutation) ResetErrorDisplay() {
+	m.error_display = nil
+}
+
+// SetExecutedTime sets the "executed_time" field.
+func (m *ProcessingFileRowGroupMutation) SetExecutedTime(i int64) {
+	m.executed_time = &i
+	m.addexecuted_time = nil
+}
+
+// ExecutedTime returns the value of the "executed_time" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) ExecutedTime() (r int64, exists bool) {
+	v := m.executed_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExecutedTime returns the old "executed_time" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldExecutedTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExecutedTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExecutedTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExecutedTime: %w", err)
+	}
+	return oldValue.ExecutedTime, nil
+}
+
+// AddExecutedTime adds i to the "executed_time" field.
+func (m *ProcessingFileRowGroupMutation) AddExecutedTime(i int64) {
+	if m.addexecuted_time != nil {
+		*m.addexecuted_time += i
+	} else {
+		m.addexecuted_time = &i
+	}
+}
+
+// AddedExecutedTime returns the value that was added to the "executed_time" field in this mutation.
+func (m *ProcessingFileRowGroupMutation) AddedExecutedTime() (r int64, exists bool) {
+	v := m.addexecuted_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetExecutedTime resets all changes to the "executed_time" field.
+func (m *ProcessingFileRowGroupMutation) ResetExecutedTime() {
+	m.executed_time = nil
+	m.addexecuted_time = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ProcessingFileRowGroupMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProcessingFileRowGroupMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProcessingFileRowGroupMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProcessingFileRowGroupMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProcessingFileRowGroup entity.
+// If the ProcessingFileRowGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowGroupMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProcessingFileRowGroupMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the ProcessingFileRowGroupMutation builder.
+func (m *ProcessingFileRowGroupMutation) Where(ps ...predicate.ProcessingFileRowGroup) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ProcessingFileRowGroupMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ProcessingFileRowGroup).
+func (m *ProcessingFileRowGroupMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProcessingFileRowGroupMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.file_id != nil {
+		fields = append(fields, processingfilerowgroup.FieldFileID)
+	}
+	if m.task_index != nil {
+		fields = append(fields, processingfilerowgroup.FieldTaskIndex)
+	}
+	if m.group_by_value != nil {
+		fields = append(fields, processingfilerowgroup.FieldGroupByValue)
+	}
+	if m.total_rows != nil {
+		fields = append(fields, processingfilerowgroup.FieldTotalRows)
+	}
+	if m.row_index_list != nil {
+		fields = append(fields, processingfilerowgroup.FieldRowIndexList)
+	}
+	if m.group_request_curl != nil {
+		fields = append(fields, processingfilerowgroup.FieldGroupRequestCurl)
+	}
+	if m.group_response_raw != nil {
+		fields = append(fields, processingfilerowgroup.FieldGroupResponseRaw)
+	}
+	if m.status != nil {
+		fields = append(fields, processingfilerowgroup.FieldStatus)
+	}
+	if m.error_display != nil {
+		fields = append(fields, processingfilerowgroup.FieldErrorDisplay)
+	}
+	if m.executed_time != nil {
+		fields = append(fields, processingfilerowgroup.FieldExecutedTime)
+	}
+	if m.created_at != nil {
+		fields = append(fields, processingfilerowgroup.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, processingfilerowgroup.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProcessingFileRowGroupMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case processingfilerowgroup.FieldFileID:
+		return m.FileID()
+	case processingfilerowgroup.FieldTaskIndex:
+		return m.TaskIndex()
+	case processingfilerowgroup.FieldGroupByValue:
+		return m.GroupByValue()
+	case processingfilerowgroup.FieldTotalRows:
+		return m.TotalRows()
+	case processingfilerowgroup.FieldRowIndexList:
+		return m.RowIndexList()
+	case processingfilerowgroup.FieldGroupRequestCurl:
+		return m.GroupRequestCurl()
+	case processingfilerowgroup.FieldGroupResponseRaw:
+		return m.GroupResponseRaw()
+	case processingfilerowgroup.FieldStatus:
+		return m.Status()
+	case processingfilerowgroup.FieldErrorDisplay:
+		return m.ErrorDisplay()
+	case processingfilerowgroup.FieldExecutedTime:
+		return m.ExecutedTime()
+	case processingfilerowgroup.FieldCreatedAt:
+		return m.CreatedAt()
+	case processingfilerowgroup.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProcessingFileRowGroupMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case processingfilerowgroup.FieldFileID:
+		return m.OldFileID(ctx)
+	case processingfilerowgroup.FieldTaskIndex:
+		return m.OldTaskIndex(ctx)
+	case processingfilerowgroup.FieldGroupByValue:
+		return m.OldGroupByValue(ctx)
+	case processingfilerowgroup.FieldTotalRows:
+		return m.OldTotalRows(ctx)
+	case processingfilerowgroup.FieldRowIndexList:
+		return m.OldRowIndexList(ctx)
+	case processingfilerowgroup.FieldGroupRequestCurl:
+		return m.OldGroupRequestCurl(ctx)
+	case processingfilerowgroup.FieldGroupResponseRaw:
+		return m.OldGroupResponseRaw(ctx)
+	case processingfilerowgroup.FieldStatus:
+		return m.OldStatus(ctx)
+	case processingfilerowgroup.FieldErrorDisplay:
+		return m.OldErrorDisplay(ctx)
+	case processingfilerowgroup.FieldExecutedTime:
+		return m.OldExecutedTime(ctx)
+	case processingfilerowgroup.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case processingfilerowgroup.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProcessingFileRowGroup field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProcessingFileRowGroupMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case processingfilerowgroup.FieldFileID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileID(v)
+		return nil
+	case processingfilerowgroup.FieldTaskIndex:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskIndex(v)
+		return nil
+	case processingfilerowgroup.FieldGroupByValue:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupByValue(v)
+		return nil
+	case processingfilerowgroup.FieldTotalRows:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalRows(v)
+		return nil
+	case processingfilerowgroup.FieldRowIndexList:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRowIndexList(v)
+		return nil
+	case processingfilerowgroup.FieldGroupRequestCurl:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupRequestCurl(v)
+		return nil
+	case processingfilerowgroup.FieldGroupResponseRaw:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupResponseRaw(v)
+		return nil
+	case processingfilerowgroup.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case processingfilerowgroup.FieldErrorDisplay:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetErrorDisplay(v)
+		return nil
+	case processingfilerowgroup.FieldExecutedTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExecutedTime(v)
+		return nil
+	case processingfilerowgroup.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case processingfilerowgroup.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFileRowGroup field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProcessingFileRowGroupMutation) AddedFields() []string {
+	var fields []string
+	if m.addfile_id != nil {
+		fields = append(fields, processingfilerowgroup.FieldFileID)
+	}
+	if m.addtask_index != nil {
+		fields = append(fields, processingfilerowgroup.FieldTaskIndex)
+	}
+	if m.addtotal_rows != nil {
+		fields = append(fields, processingfilerowgroup.FieldTotalRows)
+	}
+	if m.addstatus != nil {
+		fields = append(fields, processingfilerowgroup.FieldStatus)
+	}
+	if m.addexecuted_time != nil {
+		fields = append(fields, processingfilerowgroup.FieldExecutedTime)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProcessingFileRowGroupMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case processingfilerowgroup.FieldFileID:
+		return m.AddedFileID()
+	case processingfilerowgroup.FieldTaskIndex:
+		return m.AddedTaskIndex()
+	case processingfilerowgroup.FieldTotalRows:
+		return m.AddedTotalRows()
+	case processingfilerowgroup.FieldStatus:
+		return m.AddedStatus()
+	case processingfilerowgroup.FieldExecutedTime:
+		return m.AddedExecutedTime()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProcessingFileRowGroupMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case processingfilerowgroup.FieldFileID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFileID(v)
+		return nil
+	case processingfilerowgroup.FieldTaskIndex:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTaskIndex(v)
+		return nil
+	case processingfilerowgroup.FieldTotalRows:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalRows(v)
+		return nil
+	case processingfilerowgroup.FieldStatus:
+		v, ok := value.(int16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
+	case processingfilerowgroup.FieldExecutedTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddExecutedTime(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFileRowGroup numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProcessingFileRowGroupMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProcessingFileRowGroupMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProcessingFileRowGroupMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProcessingFileRowGroup nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProcessingFileRowGroupMutation) ResetField(name string) error {
+	switch name {
+	case processingfilerowgroup.FieldFileID:
+		m.ResetFileID()
+		return nil
+	case processingfilerowgroup.FieldTaskIndex:
+		m.ResetTaskIndex()
+		return nil
+	case processingfilerowgroup.FieldGroupByValue:
+		m.ResetGroupByValue()
+		return nil
+	case processingfilerowgroup.FieldTotalRows:
+		m.ResetTotalRows()
+		return nil
+	case processingfilerowgroup.FieldRowIndexList:
+		m.ResetRowIndexList()
+		return nil
+	case processingfilerowgroup.FieldGroupRequestCurl:
+		m.ResetGroupRequestCurl()
+		return nil
+	case processingfilerowgroup.FieldGroupResponseRaw:
+		m.ResetGroupResponseRaw()
+		return nil
+	case processingfilerowgroup.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case processingfilerowgroup.FieldErrorDisplay:
+		m.ResetErrorDisplay()
+		return nil
+	case processingfilerowgroup.FieldExecutedTime:
+		m.ResetExecutedTime()
+		return nil
+	case processingfilerowgroup.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case processingfilerowgroup.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ProcessingFileRowGroup field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProcessingFileRowGroupMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProcessingFileRowGroupMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProcessingFileRowGroupMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProcessingFileRowGroupMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProcessingFileRowGroupMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProcessingFileRowGroupMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProcessingFileRowGroupMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ProcessingFileRowGroup unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProcessingFileRowGroupMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ProcessingFileRowGroup edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

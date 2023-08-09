@@ -122,6 +122,13 @@ func TaskDependsOn(v string) predicate.ProcessingFileRow {
 	})
 }
 
+// GroupByValue applies equality check predicate on the "group_by_value" field. It's identical to GroupByValueEQ.
+func GroupByValue(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGroupByValue), v))
+	})
+}
+
 // TaskRequestCurl applies equality check predicate on the "task_request_curl" field. It's identical to TaskRequestCurlEQ.
 func TaskRequestCurl(v string) predicate.ProcessingFileRow {
 	return predicate.ProcessingFileRow(func(s *sql.Selector) {
@@ -664,6 +671,105 @@ func TaskDependsOnEqualFold(v string) predicate.ProcessingFileRow {
 func TaskDependsOnContainsFold(v string) predicate.ProcessingFileRow {
 	return predicate.ProcessingFileRow(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTaskDependsOn), v))
+	})
+}
+
+// GroupByValueEQ applies the EQ predicate on the "group_by_value" field.
+func GroupByValueEQ(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueNEQ applies the NEQ predicate on the "group_by_value" field.
+func GroupByValueNEQ(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueIn applies the In predicate on the "group_by_value" field.
+func GroupByValueIn(vs ...string) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldGroupByValue), v...))
+	})
+}
+
+// GroupByValueNotIn applies the NotIn predicate on the "group_by_value" field.
+func GroupByValueNotIn(vs ...string) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldGroupByValue), v...))
+	})
+}
+
+// GroupByValueGT applies the GT predicate on the "group_by_value" field.
+func GroupByValueGT(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueGTE applies the GTE predicate on the "group_by_value" field.
+func GroupByValueGTE(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueLT applies the LT predicate on the "group_by_value" field.
+func GroupByValueLT(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueLTE applies the LTE predicate on the "group_by_value" field.
+func GroupByValueLTE(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueContains applies the Contains predicate on the "group_by_value" field.
+func GroupByValueContains(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueHasPrefix applies the HasPrefix predicate on the "group_by_value" field.
+func GroupByValueHasPrefix(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueHasSuffix applies the HasSuffix predicate on the "group_by_value" field.
+func GroupByValueHasSuffix(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueEqualFold applies the EqualFold predicate on the "group_by_value" field.
+func GroupByValueEqualFold(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldGroupByValue), v))
+	})
+}
+
+// GroupByValueContainsFold applies the ContainsFold predicate on the "group_by_value" field.
+func GroupByValueContainsFold(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldGroupByValue), v))
 	})
 }
 
