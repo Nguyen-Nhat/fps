@@ -107,7 +107,7 @@ type ResponseMsg struct {
 // RowGroupMD ...
 type RowGroupMD struct {
 	GroupByColumnsRaw string `json:"-"`
-	GroupByColumns    []int  `json:"-"`
+	GroupByColumns    []int  `json:"groupByColumns"`
 	GroupSizeLimit    int    `json:"-"`
 }
 

@@ -2,11 +2,14 @@ package executetask
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/taskprovider"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
 
 type jobExecuteTask struct {
@@ -28,20 +31,36 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 	providerClient := taskprovider.NewClientV1()
 	previousResponse := make(map[int32]string) // map[task_index]=<response_string>
 	for _, task := range tasks {
+		startAt := time.Now()
+
 		// 1. If success, only get response, then go to next task
 		if task.IsSuccessStatus() {
 			previousResponse[task.TaskIndex] = task.TaskResponseRaw
 			continue
 		}
 
-		// 2. Execute task
-		startAt := time.Now()
+		// 2. Build & Map request
 		logger.Infof("---------- Execute fileID=%v, rowID=%v, taskID=%v", fileID, rowID, task.TaskIndex)
-		curl, responseBody, isSuccess, messageRes := providerClient.Execute(int(task.TaskIndex), task.TaskMapping, previousResponse)
+		configTask, err := convertConfigMappingAndMapDataFromPreviousResponse(task, previousResponse)
+		if err != nil {
+			updateRequest := toResponseResult("", "", err.Error(), fileprocessingrow.StatusFailed, startAt)
+			_, _ = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
+			break // task failed  -> break loop, finish execute task
+		}
 
-		// 3. Update task status and save raw data for tracing
-		updateRequest := toResponseResult(curl, responseBody, messageRes, isSuccess, startAt)
-		_, err := job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
+		// 3. Check case row group
+		if configTask.RowGroup.IsSupportGrouping() {
+			updateRequest := toResponseResult("", "", "", fileprocessingrow.StatusWaitForGrouping, startAt)
+			_, _ = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
+			break // need to handle in Job Execute Row Group -> finish execute this task, and this row
+		}
+
+		// 4. Execute task
+		curl, responseBody, isSuccess, messageRes := providerClient.Execute(configTask)
+
+		// 5. Update task status and save raw data for tracing
+		updateRequest := toResponseResult(curl, responseBody, messageRes, fileprocessingrow.StatusSuccess, startAt)
+		_, err = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 		if err != nil {
 			logger.ErrorT("Update %v failed ---> ignore remaining tasks", fileprocessingrow.Name())
 			break // error occur  -> break loop, finish execute task
@@ -57,15 +76,21 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func toResponseResult(curl string, responseBody string, messageRes string, isSuccess bool, startAt time.Time) fileprocessingrow.UpdateAfterExecutingByJob {
-	// 1. get status
-	var status int16
-	if isSuccess {
-		status = fileprocessingrow.StatusSuccess
-	} else {
-		status = fileprocessingrow.StatusFailed
+func convertConfigMappingAndMapDataFromPreviousResponse(
+	task *fileprocessingrow.ProcessingFileRow,
+	previousResponse map[int32]string) (configloader.ConfigTaskMD, error) {
+	// 1. Load Data and Mapping
+	configMapping, err := converter.StringJsonToStruct("config mapping", task.TaskMapping, configloader.ConfigMappingMD{})
+	if err != nil {
+		return configloader.ConfigTaskMD{}, fmt.Errorf("failed to load config map")
 	}
 
+	// 2. Map data then Build request
+	configTask, err := mapDataByPreviousResponse(int(task.TaskIndex), *configMapping, previousResponse)
+	return configTask, err
+}
+
+func toResponseResult(curl string, responseBody string, messageRes string, status int16, startAt time.Time) fileprocessingrow.UpdateAfterExecutingByJob {
 	// 2. Common value
 	return fileprocessingrow.UpdateAfterExecutingByJob{
 		RequestCurl:  curl,
