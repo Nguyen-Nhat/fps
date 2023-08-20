@@ -24,4 +24,5 @@ type StatisticData struct {
 	TotalProcessed int
 	TotalSuccess   int
 	TotalFailed    int
+	TotalWaiting   int
 }

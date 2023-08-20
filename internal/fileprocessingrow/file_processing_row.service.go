@@ -101,6 +101,7 @@ func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
 	totalSuccess := 0
 	totalFailed := 0
 	totalProcessed := 0
+	totalWaiting := 0
 	errorDisplays := make(map[int]string)
 	for _, stats := range statistics {
 		if stats.IsSuccessAll() {
@@ -113,10 +114,13 @@ func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
 
 		if stats.IsProcessed() {
 			totalProcessed++
+		} else if stats.IsWaiting() {
+			totalWaiting++
 		}
 	}
 
-	logger.Infof("----- Statistic file %v: total=%v, totalProcessed=%v, totalSuccess=%v, totalFailed=%v", fileID, total, totalProcessed, totalSuccess, totalFailed)
+	logger.Infof("----- Statistic file %v: total=%v, totalProcessed=%v, totalSuccess=%v, totalFailed=%v, totalWaiting=%v",
+		fileID, total, totalProcessed, totalSuccess, totalFailed, totalWaiting)
 
 	statisticData := StatisticData{
 		IsFinished:     isFinished(totalSuccess, totalFailed, total),
@@ -124,6 +128,7 @@ func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
 		TotalProcessed: totalProcessed,
 		TotalSuccess:   totalSuccess,
 		TotalFailed:    totalFailed,
+		TotalWaiting:   totalWaiting,
 	}
 	return statisticData, nil
 }
