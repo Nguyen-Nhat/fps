@@ -16,6 +16,8 @@ type ConfigMappingMD struct {
 
 	// List ConfigTaskMD
 	Tasks []ConfigTaskMD
+	//Task *ConfigTaskMD // todo use Task instead of Tasks, because Tasks should be used as a metadata, and Task will contains data of row
+	RowGroupValue string `json:"-"` // todo remove when use Task, RowGroupValue only support group value for 1 task, not multi-task, need cause this
 }
 
 // GetConfigTaskMD ...  always return task
@@ -54,8 +56,7 @@ type ConfigTaskMD struct {
 	// Response
 	Response ResponseMD
 	// Group
-	RowGroup      RowGroupMD
-	RowGroupValue string // value get from file excel
+	RowGroup RowGroupMD
 	// Row data in importing file -> is injected in validation phase
 	ImportRowData  []string
 	ImportRowIndex int

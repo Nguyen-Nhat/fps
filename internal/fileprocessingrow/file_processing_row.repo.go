@@ -198,6 +198,7 @@ func mapProcessingFileRow(client *ent.Client, fpr ProcessingFileRow) *ent.Proces
 		SetTaskRequestCurl(fpr.TaskRequestCurl).
 		SetTaskRequestRaw(fpr.TaskRequestRaw).
 		SetTaskResponseRaw(fpr.TaskResponseRaw).
+		SetGroupByValue(fpr.GroupByValue).
 		SetStatus(fpr.Status).
 		SetErrorDisplay(fpr.ErrorDisplay).
 		SetExecutedTime(fpr.ExecutedTime).

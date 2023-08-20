@@ -34,7 +34,7 @@ var regexDoubleBrace = regexp.MustCompile(`\{\{(.*?)}}`)
 
 // validateImportingData ...
 // check: empty, invalid data type, constrains
-func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigMappingMD) ([]configloader.ConfigMappingMD, []ErrorRow, error) {
+func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigMappingMD) ([]*configloader.ConfigMappingMD, []ErrorRow, error) {
 	// 1. Empty or no data (at start row)
 	dataStartAt := cfgMapping.DataStartAtRow
 	if dataStartAt <= 1 { // must >= 2
@@ -47,7 +47,7 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 
 	// 2. Validate
 	var errorRows []ErrorRow
-	var configMappings []configloader.ConfigMappingMD
+	var configMappings []*configloader.ConfigMappingMD
 
 	for id := dataStartAt - 1; id < len(sheetData); id++ {
 		rowID := id - dataStartAt + 1 // rowID is index of data (not include header), start from 1
@@ -57,7 +57,7 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 		if len(errorRowsInRow) > 0 {
 			errorRows = append(errorRows, errorRowsInRow...)
 		} else {
-			configMappings = append(configMappings, cfgMappingWithConvertedData)
+			configMappings = append(configMappings, &cfgMappingWithConvertedData)
 		}
 	}
 

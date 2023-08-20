@@ -183,7 +183,7 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 
 func (job *jobFlatten) extractRowAndRowGroupToDB(ctx context.Context,
 	fileID int,
-	configMappingMDs []configloader.ConfigMappingMD,
+	configMappingMDs []*configloader.ConfigMappingMD,
 	createRowGroupJobs []fpRowGroup.CreateRowGroupJob) error {
 
 	// 1. Save Row Group
@@ -201,11 +201,12 @@ func (job *jobFlatten) extractRowAndRowGroupToDB(ctx context.Context,
 	for _, mapping := range configMappingMDs {
 		for _, task := range mapping.Tasks {
 			pfr := fileprocessingrow.CreateProcessingFileRowJob{
-				FileID:      fileID,
-				RowIndex:    task.ImportRowIndex,
-				RowDataRaw:  utils.JsonString(task.ImportRowData),
-				TaskIndex:   task.TaskIndex,
-				TaskMapping: utils.JsonString(mapping),
+				FileID:       fileID,
+				RowIndex:     task.ImportRowIndex,
+				RowDataRaw:   utils.JsonString(task.ImportRowData),
+				TaskIndex:    task.TaskIndex,
+				TaskMapping:  utils.JsonString(mapping),
+				GroupByValue: mapping.RowGroupValue,
 			}
 			pfrCreateList = append(pfrCreateList, pfr)
 		}

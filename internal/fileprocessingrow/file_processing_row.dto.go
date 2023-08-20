@@ -1,11 +1,12 @@
 package fileprocessingrow
 
 type CreateProcessingFileRowJob struct {
-	FileID      int
-	RowIndex    int
-	RowDataRaw  string
-	TaskIndex   int
-	TaskMapping string
+	FileID       int
+	RowIndex     int
+	RowDataRaw   string
+	TaskIndex    int
+	TaskMapping  string
+	GroupByValue string
 }
 
 type UpdateAfterExecutingByJob struct {

@@ -11,7 +11,7 @@ import (
 )
 
 // validateAndBuildRowGroupData ...
-func validateAndBuildRowGroupData(fileID int, configMappingMD configloader.ConfigMappingMD, configMappingsWithData []configloader.ConfigMappingMD) ([]ErrorRow, []fpRowGroup.CreateRowGroupJob) {
+func validateAndBuildRowGroupData(fileID int, configMappingMD configloader.ConfigMappingMD, configMappingsWithData []*configloader.ConfigMappingMD) ([]ErrorRow, []fpRowGroup.CreateRowGroupJob) {
 	// config mapping not have config for grouping
 	if !configMappingMD.IsSupportGrouping() {
 		return nil, nil
@@ -53,7 +53,7 @@ func validateAndBuildRowGroupData(fileID int, configMappingMD configloader.Confi
 	return errorRows, createRowGroupJobs
 }
 
-func groupingRowsBaseOnFileData(configMappingsWithData []configloader.ConfigMappingMD, taskMD configloader.ConfigTaskMD) (map[string][]int, []ErrorRow) {
+func groupingRowsBaseOnFileData(configMappingsWithData []*configloader.ConfigMappingMD, taskMD configloader.ConfigTaskMD) (map[string][]int, []ErrorRow) {
 	var errorRows []ErrorRow
 	groupMap := make(map[string][]int) // map[group_value][]rowID
 
@@ -66,7 +66,10 @@ func groupingRowsBaseOnFileData(configMappingsWithData []configloader.ConfigMapp
 			continue // next row, we don't choose `break` because we should show all rows that has error
 		}
 
-		// 2.2. Group and count rows
+		// 2.2. Set group value to config task
+		datum.RowGroupValue = groupValue
+
+		// 2.3. Group and count rows
 		if rowIDs, ok := groupMap[groupValue]; ok {
 			rowIDsTmp := append(rowIDs, task.ImportRowIndex)
 			groupMap[groupValue] = rowIDsTmp // still update counter, we will show all rows that belongs to this group
