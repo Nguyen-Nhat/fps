@@ -6,10 +6,11 @@ import (
 
 // Status ENUM ...
 const (
-	StatusInit       = 1
-	StatusProcessing = 2
-	StatusFailed     = 3
-	StatusSuccess    = 4
+	StatusInit             = 1
+	StatusFailed           = 3
+	StatusSuccess          = 4
+	StatusCalledApiFail    = 5
+	StatusCalledApiSuccess = 6
 )
 
 type ProcessingFileRowGroup struct {
@@ -26,10 +27,10 @@ func (rg *ProcessingFileRowGroup) IsInitStatus() bool {
 	return rg.Status == StatusInit
 }
 
-func (rg *ProcessingFileRowGroup) IsSuccessStatus() bool {
-	return rg.Status == StatusSuccess
+func (rg *ProcessingFileRowGroup) IsCalledAPI() bool {
+	return rg.Status == StatusCalledApiFail || rg.Status == StatusCalledApiSuccess
 }
 
-func (rg *ProcessingFileRowGroup) IsFailedStatus() bool {
-	return rg.Status == StatusFailed
+func (rg *ProcessingFileRowGroup) IsCalledApiSuccess() bool {
+	return rg.Status == StatusCalledApiSuccess
 }

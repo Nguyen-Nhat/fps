@@ -3,9 +3,11 @@ package config
 // JobConfig ...
 type JobConfig struct {
 	FileProcessingConfig FileProcessingConfig `mapstructure:"file_processing"`
-	FlattenConfig        SchedulerConfig      `mapstructure:"flatten"`
-	ExecuteTaskConfig    SchedulerConfig      `mapstructure:"execute_task"`
-	UpdateStatusConfig   SchedulerConfig      `mapstructure:"update_status"`
+
+	FlattenConfig          SchedulerConfig `mapstructure:"flatten"`
+	ExecuteTaskConfig      SchedulerConfig `mapstructure:"execute_task"`
+	ExecuteGroupTaskConfig SchedulerConfig `mapstructure:"execute_group_task"`
+	UpdateStatusConfig     SchedulerConfig `mapstructure:"update_status"`
 }
 
 // FileProcessingConfig ...

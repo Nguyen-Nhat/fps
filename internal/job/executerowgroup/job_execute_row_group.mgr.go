@@ -1,4 +1,4 @@
-package executetask
+package executerowgroup
 
 import (
 	"context"
@@ -9,52 +9,56 @@ import (
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
-// JobExecuteTaskManager ...
-type jobExecuteTaskManager struct {
+// jobExecuteRowGroupManager ...
+type jobExecuteRowGroupManager struct {
 	cfg     config.SchedulerConfig
 	cronJob *cron.Cron
 	// services
-	fpService  fileprocessing.Service
-	fprService fileprocessingrow.Service
+	fpService         fileprocessing.Service
+	fprService        fileprocessingrow.Service
+	fpRowGroupService fpRowGroup.Service
 }
 
-var jobExecuteTaskMgr *jobExecuteTaskManager
+var jobExecuteRowGroupMgr *jobExecuteRowGroupManager
 var once sync.Once
 
-// NewJobExecuteTaskManager ...
-func NewJobExecuteTaskManager(
+// NewJobExecuteRowGroupManager ...
+func NewJobExecuteRowGroupManager(
 	cfg config.SchedulerConfig,
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
+	fpRowGroupService fpRowGroup.Service,
 ) basejobmanager.CronJobManager {
-	if jobExecuteTaskMgr == nil {
+	if jobExecuteRowGroupMgr == nil {
 		once.Do(func() {
-			jobExecuteTaskMgr = &jobExecuteTaskManager{
-				cfg:        cfg,
-				fpService:  fpService,
-				fprService: fprService,
+			jobExecuteRowGroupMgr = &jobExecuteRowGroupManager{
+				cfg:               cfg,
+				fpService:         fpService,
+				fprService:        fprService,
+				fpRowGroupService: fpRowGroupService,
 			}
 		})
 	}
 
-	jobExecuteTaskMgr.cronJob = basejobmanager.InitCron(jobExecuteTaskMgr)
+	jobExecuteRowGroupMgr.cronJob = basejobmanager.InitCron(jobExecuteRowGroupMgr)
 
-	return jobExecuteTaskMgr
+	return jobExecuteRowGroupMgr
 }
 
-func (mgr *jobExecuteTaskManager) Start() {
+func (mgr *jobExecuteRowGroupManager) Start() {
 	mgr.cronJob.Start()
 }
 
-func (mgr *jobExecuteTaskManager) GetJobName() string {
-	return "Job Execute Tasks ProcessingFile"
+func (mgr *jobExecuteRowGroupManager) GetJobName() string {
+	return "Job Execute Group Tasks ProcessingFile"
 }
 
-func (mgr *jobExecuteTaskManager) GetSchedulerConfig() config.SchedulerConfig {
+func (mgr *jobExecuteRowGroupManager) GetSchedulerConfig() config.SchedulerConfig {
 	return mgr.cfg
 }
 
@@ -62,8 +66,8 @@ func (mgr *jobExecuteTaskManager) GetSchedulerConfig() config.SchedulerConfig {
 // Logic:
 //  1. Fetch all file that have status = PROCESSING
 //  2. If no file, do nothing
-//  3. Group tasks by row_index, then execute each task order by task_id
-func (mgr *jobExecuteTaskManager) Execute() {
+//  3. File all Row Group that have status in (INIT, CALLED_API)
+func (mgr *jobExecuteRowGroupManager) Execute() {
 	// 1. Fetch all file that have status = PROCESSING
 	ctx := context.Background()
 	fpList, err := mgr.fpService.GetListFileByStatuses(ctx, []int16{fileprocessing.StatusProcessing})
@@ -79,19 +83,21 @@ func (mgr *jobExecuteTaskManager) Execute() {
 	}
 
 	// 3. Execute Tasks in each file
-	jobExecuteTask := newJobExecuteTask(mgr.fprService)
+	jobExecuteRowGroup := newJobExecuteRowGroup(mgr.fprService, mgr.fpRowGroupService)
 	for _, file := range fpList {
 		// 3.1. Get all task of file.ID, group by rowIndex
-		taskGroupByRow, _ := mgr.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, 5000)
-		if len(taskGroupByRow) == 0 {
+		rowGroupMap, _ := mgr.fpRowGroupService.FindRowGroupForJobExecute(ctx, file.ID)
+		if len(rowGroupMap) == 0 {
 			logger.ErrorT("No row need to execute for fileId=%v", file.ID)
 			continue
 		}
 
 		// 3.2. Handle tasks in each rowIndex
 		// todo: can use multi thread for improving performance
-		for rowId, tasks := range taskGroupByRow {
-			jobExecuteTask.ExecuteTask(ctx, file.ID, rowId, tasks)
+		for taskIndex, rowGroups := range rowGroupMap {
+			for _, rowGroup := range rowGroups {
+				jobExecuteRowGroup.ExecuteRowGroup(ctx, file.ID, taskIndex, *rowGroup)
+			}
 		}
 
 	}
