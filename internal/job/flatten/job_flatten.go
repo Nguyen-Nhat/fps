@@ -9,6 +9,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
@@ -17,9 +18,10 @@ import (
 
 type jobFlatten struct {
 	// services
-	fpService   fileprocessing.Service
-	fprService  fileprocessingrow.Service
-	fileService fileservice.IService
+	fpService         fileprocessing.Service
+	fprService        fileprocessingrow.Service
+	fpRowGroupService fpRowGroup.Service
+	fileService       fileservice.IService
 	// services config
 	cfgMappingService configmapping.Service
 	cfgTaskService    configtask.Service
@@ -28,6 +30,7 @@ type jobFlatten struct {
 func newJobFlatten(
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
+	fpRowGroupService fpRowGroup.Service,
 	fileService fileservice.IService,
 	cfgMappingService configmapping.Service,
 	cfgTaskService configtask.Service,
@@ -35,6 +38,7 @@ func newJobFlatten(
 	return &jobFlatten{
 		fpService:         fpService,
 		fprService:        fprService,
+		fpRowGroupService: fpRowGroupService,
 		fileService:       fileService,
 		cfgMappingService: cfgMappingService,
 		cfgTaskService:    cfgTaskService,
@@ -54,10 +58,13 @@ func newJobFlatten(
 //  4. Validate importing data
 //     -> if error 	==> update status = FAILED
 //
-//  5. Save row data into processing_file_row
+//  5. 5. validate row group config with file data
 //     -> if error 	==> terminate, remaining rows will be executed at next run cycle
 //
-//  6. Update processing_file: status=Processing, total_mapping, stats_total_row
+//  6. Save row and row_group data into processing_file_row
+//     -> if error 	==> terminate, remaining rows will be executed at next run cycle
+//
+//  7. Update processing_file: status=Processing, total_mapping, stats_total_row
 func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.ProcessingFile) {
 	logger.Infof("----- Start flattening ProcessingFile with ID = %v \nFile = %+v", file.ID, file)
 
@@ -102,13 +109,28 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 		return
 	}
 
-	// 5. Save row data into processing_file_row
-	if err := job.extractDataAndUpdateFileStatusInDB(ctx, file.ID, configMappingsWithData); err != nil {
-		logger.ErrorT("Cannot save extracted data of fileId=%v, got err=%v", file.ID, err)
+	// 5. validate row group config with file data
+	// 5.1. Group Row
+	errorRows, createRowGroupJobs := validateAndBuildRowGroupData(file.ID, configMapping, configMappingsWithData)
+	// 5.2. Check error, logic is same to step (4.2)
+	if len(errorRows) > 0 {
+		// Logging
+		logger.ErrorT("Importing file is invalid, fileID = %v, error in %v row(s)", file.ID, len(errorRows))
+		logger.ErrorT("Error rows = \n%v\n", utils.JsonString(errorRows))
+		// Update file result
+		resultFileUrl := job.updateFileResult(configMapping, file.FileURL, errorRows)
+		// Update file processing
+		job.updateFileProcessingToFailed(ctx, file, errFileInvalid, &resultFileUrl)
 		return
 	}
 
-	// 6. Update processing_file: status=Processing, total_mapping, stats_total_row
+	// 6. Save row and row_group data into processing_file_row
+	if err = job.extractRowAndRowGroupToDB(ctx, file.ID, configMappingsWithData, createRowGroupJobs); err != nil {
+		logger.ErrorT("Cannot save extracted data of fileID=%v, got err=%v", file.ID, err)
+		return
+	}
+
+	// 7. Update processing_file: status=Processing, total_mapping, stats_total_row
 	pf, err := job.fpService.UpdateToProcessingStatusWithExtractedData(ctx, file.ID, len(configMapping.Tasks), len(configMappingsWithData))
 	if err != nil {
 		logger.ErrorT("Cannot update %v id=%v,got err=%v", fileprocessing.Name(), file.ID, err)
@@ -159,9 +181,22 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 	return resultFileUrl
 }
 
-func (job *jobFlatten) extractDataAndUpdateFileStatusInDB(ctx context.Context, fileID int,
-	configMappingMDs []configloader.ConfigMappingMD) error {
-	// 1. Add extracted data to ProcessingFileRow
+func (job *jobFlatten) extractRowAndRowGroupToDB(ctx context.Context,
+	fileID int,
+	configMappingMDs []configloader.ConfigMappingMD,
+	createRowGroupJobs []fpRowGroup.CreateRowGroupJob) error {
+
+	// 1. Save Row Group
+	if len(createRowGroupJobs) > 0 {
+		err := job.fpRowGroupService.SaveExtractedRowGroupFromFile(ctx, fileID, createRowGroupJobs)
+		if err != nil {
+			return err
+		}
+	} else {
+		logger.Infof("----- fileID=%d -> No row group need to save to DB", fileID)
+	}
+
+	// 2. Add extracted data to ProcessingFileRow
 	var pfrCreateList []fileprocessingrow.CreateProcessingFileRowJob
 	for _, mapping := range configMappingMDs {
 		for _, task := range mapping.Tasks {
@@ -176,6 +211,6 @@ func (job *jobFlatten) extractDataAndUpdateFileStatusInDB(ctx context.Context, f
 		}
 	}
 
-	// 2. Save
-	return job.fprService.SaveExtractedDataFromFile(ctx, fileID, pfrCreateList)
+	// 3. Save Row-Task
+	return job.fprService.SaveExtractedRowTaskFromFile(ctx, fileID, pfrCreateList)
 }

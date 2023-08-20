@@ -42,8 +42,9 @@ func Command(cfg config.Config) *cli.Command {
 	fprRepo := fileprocessingrow.NewRepo(db)
 	fprService := fileprocessingrow.NewService(fprRepo)
 
-	_ = fpRowGroup.NewRepo(db)
-	_ = fpRowGroup.NewService(db)
+	// file processing row group
+	fpRowGroupRepo := fpRowGroup.NewRepo(db)
+	fpRowGroupService := fpRowGroup.NewService(fpRowGroupRepo)
 
 	// services about config
 	cmRepo := configmapping.NewRepo(db)
@@ -76,7 +77,7 @@ func Command(cfg config.Config) *cli.Command {
 						Usage: "flatten data in file processing",
 						Action: func(*cli.Context) error {
 							job := flatten.NewJobFlattenManager(cfg.JobConfig.FlattenConfig,
-								fpService, fprService, fileService,
+								fpService, fprService, fpRowGroupService, fileService,
 								cmService, ctService)
 							job.Start()
 

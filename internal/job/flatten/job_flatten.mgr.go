@@ -2,15 +2,17 @@ package flatten
 
 import (
 	"context"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
-	"github.com/robfig/cron/v3"
 	"sync"
+
+	"github.com/robfig/cron/v3"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 )
@@ -20,9 +22,10 @@ type jobFlattenManager struct {
 	cfg     config.SchedulerConfig
 	cronJob *cron.Cron
 	// services
-	fpService   fileprocessing.Service
-	fprService  fileprocessingrow.Service
-	fileService fileservice.IService
+	fpService         fileprocessing.Service
+	fprService        fileprocessingrow.Service
+	fpRowGroupService fpRowGroup.Service
+	fileService       fileservice.IService
 	// services config
 	cfgMappingService configmapping.Service
 	cfgTaskService    configtask.Service
@@ -36,6 +39,7 @@ func NewJobFlattenManager(
 	cfg config.SchedulerConfig,
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
+	fpRowGroupService fpRowGroup.Service,
 	fileService fileservice.IService,
 	cfgMappingService configmapping.Service,
 	cfgTaskService configtask.Service,
@@ -46,6 +50,7 @@ func NewJobFlattenManager(
 				cfg:               cfg,
 				fpService:         fpService,
 				fprService:        fprService,
+				fpRowGroupService: fpRowGroupService,
 				fileService:       fileService,
 				cfgMappingService: cfgMappingService,
 				cfgTaskService:    cfgTaskService,
@@ -90,7 +95,10 @@ func (mgr *jobFlattenManager) Execute() {
 	}
 
 	// 3. Flattening each file
-	jobFlatten := newJobFlatten(mgr.fpService, mgr.fprService, mgr.fileService, mgr.cfgMappingService, mgr.cfgTaskService)
+	jobFlatten := newJobFlatten(
+		mgr.fpService, mgr.fprService, mgr.fpRowGroupService,
+		mgr.fileService,
+		mgr.cfgMappingService, mgr.cfgTaskService)
 	// todo: can use multi thread for improving performance
 	for _, fp := range fpList {
 		jobFlatten.Flatten(ctx, *fp)
