@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/tidwall/gjson"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 )
@@ -25,9 +24,6 @@ const (
 	// error config
 	errConfigMapping      = "lỗi cấu hình hệ thống"
 	errConfigMissingParam = "thiếu cấu hình hệ thống cho"
-	// error data type
-	errTypeWrong      = "sai kiểu dữ liệu"
-	errTypeNotSupport = "không hỗ trợ kiểu dữ liệu"
 )
 
 var regexDoubleBrace = regexp.MustCompile(`\{\{(.*?)}}`)
@@ -90,9 +86,9 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			}
 
 			// 1.1.2. Get real value
-			realValue, errMsg := convertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
-			if len(errMsg) > 0 {
-				errorRows = append(errorRows, ErrorRow{rowID, errMsg})
+			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			if err != nil {
+				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
 				if realValue != nil {
 					task.RequestParams[reqField.Field] = realValue
@@ -114,6 +110,9 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 
 				reqField.ArrayItemMap = arrayItemMapUpdated
 				task.RequestBody[fieldName] = []map[string]interface{}{childMap}
+				if len(arrayItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove task.RequestBodyMap field value
+					delete(task.RequestBodyMap, fieldName)
+				}
 			}
 
 			// 1.2.2. Validate field
@@ -127,9 +126,9 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			}
 
 			// 1.2.2. Get real value
-			realValue, errMsg := convertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
-			if len(errMsg) > 0 {
-				errorRows = append(errorRows, ErrorRow{rowID, errMsg})
+			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			if err != nil {
+				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
 				if realValue != nil {
 					task.RequestBody[reqField.Field] = realValue
@@ -177,9 +176,9 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 		}
 
 		// 1.2.2. Get real value
-		realValueChild, errMsg := convertToRealValue(reqFieldChild.Type, valueChildStr, reqFieldChild.ValueDependsOnKey)
-		if len(errMsg) > 0 {
-			errorRows = append(errorRows, ErrorRow{rowID, errMsg})
+		realValueChild, err := basejobmanager.ConvertToRealValue(reqFieldChild.Type, valueChildStr, reqFieldChild.ValueDependsOnKey)
+		if err != nil {
+			errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 		} else {
 			if realValueChild != nil {
 				childMap[reqFieldChild.Field] = realValueChild
@@ -283,50 +282,6 @@ func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqFie
 	reqField.Value = cellValue
 
 	return cellValue, errorRows
-}
-
-func convertToRealValue(fieldType string, valueStr string, dependsOnKey string) (interface{}, string) {
-	var realValue interface{}
-	switch strings.ToLower(fieldType) {
-	case configloader.TypeString:
-		realValue = valueStr
-	case configloader.TypeInteger:
-		if len(valueStr) == 0 {
-			return nil, ""
-		}
-		if valueInt64, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
-			realValue = valueInt64
-		} else {
-			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
-		}
-	case configloader.TypeNumber:
-		if len(valueStr) == 0 {
-			return nil, ""
-		}
-		if valueFloat64, err := strconv.ParseFloat(valueStr, 64); err == nil {
-			realValue = valueFloat64
-		} else {
-			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
-		}
-	case configloader.TypeBoolean:
-		if len(valueStr) == 0 {
-			return nil, ""
-		}
-		if valueBool, err := strconv.ParseBool(valueStr); err == nil {
-			realValue = valueBool
-		} else {
-			return nil, fmt.Sprintf("%s (%s)", errTypeWrong, dependsOnKey)
-		}
-	case configloader.TypeJson:
-		if len(valueStr) == 0 {
-			return nil, ""
-		}
-		result := gjson.Parse(valueStr)
-		realValue = result.Value()
-	default:
-		return nil, fmt.Sprintf("%s %s", errTypeNotSupport, fieldType)
-	}
-	return realValue, ""
 }
 
 // validateAndMatchJsonPath ... support validate json path and update json path if it contains variable
