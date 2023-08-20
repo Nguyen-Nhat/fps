@@ -10,7 +10,7 @@ import (
 
 type (
 	Service interface {
-		SaveExtractedDataFromFile(context.Context, int, []CreateProcessingFileRowJob) error
+		SaveExtractedRowTaskFromFile(context.Context, int, []CreateProcessingFileRowJob) error
 		GetAllRowsNeedToExecuteByJob(context.Context, int, int) (map[int32][]*ProcessingFileRow, error)
 
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
@@ -31,13 +31,13 @@ func NewService(repo Repo) *ServiceImpl {
 	}
 }
 
-// SaveExtractedDataFromFile ...
-func (s *ServiceImpl) SaveExtractedDataFromFile(ctx context.Context, fileID int, request []CreateProcessingFileRowJob) error {
+// SaveExtractedRowTaskFromFile ...
+func (s *ServiceImpl) SaveExtractedRowTaskFromFile(ctx context.Context, fileID int, request []CreateProcessingFileRowJob) error {
 	// 1. Clean all old data which relate to fileID
 	_ = s.repo.DeleteByFileId(ctx, int64(fileID))
 
 	// 2. Save by batch
-	logger.Infof("----- Prepare SaveExtractedDataFromFile with size = %+v", len(request))
+	logger.Infof("----- Prepare SaveExtractedRowTaskFromFile with size = %+v", len(request))
 	saveListFileFunc := func(subReq []CreateProcessingFileRowJob) error { return createRows(ctx, subReq, s) }
 	return utils.BatchExecuting(500, request, saveListFileFunc)
 }
