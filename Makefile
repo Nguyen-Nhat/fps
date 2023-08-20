@@ -33,5 +33,8 @@ jobs-process-file-flatten:
 jobs-process-file-execute-task:
 	go run cmd/server/main.go jobs process-file execute-task
 
+jobs-process-file-execute-row-group:
+	go run cmd/server/main.go jobs process-file execute-row-group
+
 jobs-process-file-update-status:
 	go run cmd/server/main.go jobs process-file update-status

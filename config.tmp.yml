@@ -28,13 +28,15 @@ job:
     schedule: '-' # every 5 minutes at first minute
     max_checking_time: 60 # unit is minutes
   file_processing:
-    schedule: '*/3 * * * *' # every 3 minutes
+    schedule: '*/1 * * * *' # every 3 minutes
   flatten:
-    schedule: '0 */3 * * * *' # every 3 minutes
+    schedule: '0 */1 * * * *' # every 1 minutes
   execute_task:
-    schedule: '20 */3 * * * *' # every 3 minutes
+    schedule: '20 */1 * * * *' # every 1 minutes
+  execute_group_task:
+    schedule: '30 */1 * * * *' # every 1 minutes
   update_status:
-    schedule: '50 */3 * * * *' # every 3 minutes
+    schedule: '50 */1 * * * *' # every 1 minutes
 
 provider_config:
   loyalty:

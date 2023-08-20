@@ -10,10 +10,12 @@ import (
 
 type (
 	Service interface {
-		SaveExtractedRowTaskFromFile(context.Context, int, []CreateProcessingFileRowJob) error
 		GetAllRowsNeedToExecuteByJob(context.Context, int, int) (map[int32][]*ProcessingFileRow, error)
+		GetAllTasksForJobExecuteRowGroup(context.Context, int, int, string) ([]*ProcessingFileRow, error)
 
+		SaveExtractedRowTaskFromFile(context.Context, int, []CreateProcessingFileRowJob) error
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
+		UpdateAfterExecutingByJobForListIDs(context.Context, []int, UpdateAfterExecutingByJob) error
 
 		Statistics(int) (StatisticData, error)
 	}
@@ -60,6 +62,10 @@ func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileID i
 	return groupByRow, nil
 }
 
+func (s *ServiceImpl) GetAllTasksForJobExecuteRowGroup(ctx context.Context, fileID int, taskIndex int, groupValue string) ([]*ProcessingFileRow, error) {
+	return s.repo.FindByFileIdAndTaskIndexAndGroupValueAndStatus(ctx, int64(fileID), int32(taskIndex), groupValue, StatusWaitForGrouping)
+}
+
 func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	request UpdateAfterExecutingByJob) (*ProcessingFileRow, error) {
 	pfr, err := s.repo.UpdateByJob(ctx, id, request.RequestCurl, request.ResponseRaw, request.Status, request.ErrorDisplay, request.ExecutedTime)
@@ -69,6 +75,16 @@ func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	}
 
 	return pfr, nil
+}
+
+func (s *ServiceImpl) UpdateAfterExecutingByJobForListIDs(ctx context.Context, ids []int,
+	request UpdateAfterExecutingByJob) error {
+	err := s.repo.UpdateByJobForListIDs(ctx, ids, request.ResponseRaw, request.Status, request.ErrorDisplay, request.ExecutedTime)
+	if err != nil {
+		logger.Errorf("Failed to update %v, error=%v, ids=%+v, request=%+v", Name(), err, ids, request)
+		return err
+	}
+	return nil
 }
 
 // Statistics ...

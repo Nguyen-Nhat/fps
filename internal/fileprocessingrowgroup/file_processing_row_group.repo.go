@@ -3,18 +3,22 @@ package fpRowGroup
 import (
 	"context"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerowgroup"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 
 	dbsql "database/sql"
 	"entgo.io/ent/dialect/sql"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerowgroup"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 type (
 	Repo interface {
+		FindByFileIdAndStatusIn(context.Context, int64, []int16) ([]*ProcessingFileRowGroup, error)
+
 		SaveAll(context.Context, []ProcessingFileRowGroup, bool) ([]ProcessingFileRowGroup, error)
+		UpdateByJob(context.Context, int, string, string, int16, string, int64) (*ProcessingFileRowGroup, error)
+
 		DeleteByFileId(context.Context, int64) error
 	}
 
@@ -37,8 +41,43 @@ func NewRepo(db *dbsql.DB) Repo {
 	return &repoImpl{client: client, sqlDB: db}
 }
 
+func (r *repoImpl) FindByFileIdAndStatusIn(ctx context.Context, fileID int64, statuses []int16) ([]*ProcessingFileRowGroup, error) {
+	rowGroups, err := r.client.ProcessingFileRowGroup.
+		Query().
+		Where(
+			processingfilerowgroup.FileID(fileID),
+			processingfilerowgroup.StatusIn(statuses...),
+		).
+		All(ctx)
+
+	if err != nil {
+		logger.Errorf("fail to get %s by filedID=%d, err = %v", Name(), fileID, err)
+		return nil, fmt.Errorf("fail to get %s by status", Name())
+	}
+
+	return mapEntArrToProcessingFileRowGroupArr(rowGroups), nil
+}
+
 func (r *repoImpl) SaveAll(ctx context.Context, pfrArr []ProcessingFileRowGroup, needResult bool) ([]ProcessingFileRowGroup, error) {
 	return SaveAll(ctx, r.client, pfrArr, needResult)
+}
+
+func (r *repoImpl) UpdateByJob(ctx context.Context, id int, requestCurl string, responseRaw string,
+	status int16, errorDisplay string, executedTime int64) (*ProcessingFileRowGroup, error) {
+	fpr, err := r.client.ProcessingFileRowGroup.UpdateOneID(id).
+		SetStatus(status).
+		SetGroupRequestCurl(requestCurl).
+		SetGroupResponseRaw(responseRaw).
+		SetErrorDisplay(errorDisplay).
+		SetExecutedTime(executedTime).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ProcessingFileRowGroup{
+		ProcessingFileRowGroup: *fpr,
+	}, nil
 }
 
 func (r *repoImpl) DeleteByFileId(ctx context.Context, fileId int64) error {
@@ -53,6 +92,14 @@ func (r *repoImpl) DeleteByFileId(ctx context.Context, fileId int64) error {
 }
 
 // private function ---------------------------------------------------------------------------------------------
+
+func mapEntArrToProcessingFileRowGroupArr(arr ent.ProcessingFileRowGroups) []*ProcessingFileRowGroup {
+	var result []*ProcessingFileRowGroup
+	for _, v := range arr {
+		result = append(result, &ProcessingFileRowGroup{*v})
+	}
+	return result
+}
 
 func SaveAll(ctx context.Context, client *ent.Client, pfrgArr []ProcessingFileRowGroup, needResult bool) ([]ProcessingFileRowGroup, error) {
 	// 1. Build bulk

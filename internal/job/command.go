@@ -1,11 +1,12 @@
 package job
 
 import (
-	"github.com/urfave/cli/v2"
-	"github.com/xo/dburl"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/urfave/cli/v2"
+	"github.com/xo/dburl"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
@@ -13,6 +14,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executerowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executetask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/flatten"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/handlefileprocessing"
@@ -91,6 +93,18 @@ func Command(cfg config.Config) *cli.Command {
 						Action: func(*cli.Context) error {
 							job := executetask.NewJobExecuteTaskManager(cfg.JobConfig.ExecuteTaskConfig,
 								fpService, fprService)
+							job.Start()
+
+							waitForKillingSign()
+							return nil
+						},
+					},
+					{
+						Name:  "execute-row-group",
+						Usage: "execute group task for file processing",
+						Action: func(*cli.Context) error {
+							job := executerowgroup.NewJobExecuteRowGroupManager(cfg.JobConfig.ExecuteGroupTaskConfig,
+								fpService, fprService, fpRowGroupService)
 							job.Start()
 
 							waitForKillingSign()
