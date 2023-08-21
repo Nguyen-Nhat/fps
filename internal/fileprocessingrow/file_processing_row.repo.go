@@ -2,10 +2,11 @@ package fileprocessingrow
 
 import (
 	"context"
-	dbsql "database/sql"
-	"entgo.io/ent/dialect/sql"
 	"errors"
 	"fmt"
+
+	dbsql "database/sql"
+	"entgo.io/ent/dialect/sql"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
@@ -14,10 +15,14 @@ import (
 
 type (
 	Repo interface {
+		FindRowsByFileIdForJobExecute(context.Context, int, int) ([]*ProcessingFileRow, error)
+		FindByFileIdAndTaskIndexAndGroupValueAndStatus(context.Context, int64, int32, string, int16) ([]*ProcessingFileRow, error)
+
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
-		FindRowsByFileIdForJobExecute(context.Context, int, int) ([]*ProcessingFileRow, error)
 		UpdateByJob(context.Context, int, string, string, int16, string, int64) (*ProcessingFileRow, error)
+		UpdateByJobForListIDs(context.Context, []int, string, int16, string, int64) error
+
 		DeleteByFileId(context.Context, int64) error
 
 		// Custom query ------
@@ -60,6 +65,27 @@ func (r *repoImpl) FindByID(ctx context.Context, id int) (*ProcessingFileRow, er
 	}
 
 	return &ProcessingFileRow{*fp}, nil
+}
+
+func (r *repoImpl) FindByFileIdAndTaskIndexAndGroupValueAndStatus(ctx context.Context,
+	fileID int64, taskIndex int32, groupValue string, status int16,
+) ([]*ProcessingFileRow, error) {
+	pfrs, err := r.client.ProcessingFileRow.
+		Query().
+		Where(
+			processingfilerow.FileID(fileID),
+			processingfilerow.TaskIndex(taskIndex),
+			processingfilerow.GroupByValue(groupValue),
+			processingfilerow.Status(status),
+		).
+		All(ctx)
+
+	if err != nil {
+		logger.Errorf("fail to get %s by filedID=%d, groupValue=%s, err = %v", Name(), fileID, groupValue, err)
+		return nil, fmt.Errorf("fail to get %s by groupValue", Name())
+	}
+
+	return mapEntArrToProcessingFileArr(pfrs), nil
 }
 
 func (r *repoImpl) FindRowsByFileIdForJobExecute(ctx context.Context, fileId int, limit int) ([]*ProcessingFileRow, error) {
@@ -127,6 +153,20 @@ func (r *repoImpl) UpdateByJob(ctx context.Context, id int, requestCurl string, 
 	return &ProcessingFileRow{
 		ProcessingFileRow: *fpr,
 	}, nil
+}
+
+func (r *repoImpl) UpdateByJobForListIDs(ctx context.Context, ids []int, responseRaw string,
+	status int16, errorDisplay string, executedTime int64) error {
+	_, err := r.client.ProcessingFileRow.Update().
+		SetStatus(status).
+		SetTaskRequestRaw("").
+		SetTaskResponseRaw(responseRaw).
+		SetErrorDisplay(errorDisplay).
+		SetExecutedTime(executedTime).
+		Where(processingfilerow.IDIn(ids...)).
+		Save(ctx)
+
+	return err
 }
 
 func (r *repoImpl) DeleteByFileId(ctx context.Context, fileId int64) error {
@@ -198,6 +238,7 @@ func mapProcessingFileRow(client *ent.Client, fpr ProcessingFileRow) *ent.Proces
 		SetTaskRequestCurl(fpr.TaskRequestCurl).
 		SetTaskRequestRaw(fpr.TaskRequestRaw).
 		SetTaskResponseRaw(fpr.TaskResponseRaw).
+		SetGroupByValue(fpr.GroupByValue).
 		SetStatus(fpr.Status).
 		SetErrorDisplay(fpr.ErrorDisplay).
 		SetExecutedTime(fpr.ExecutedTime).

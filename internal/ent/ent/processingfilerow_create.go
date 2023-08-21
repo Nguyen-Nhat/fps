@@ -56,6 +56,20 @@ func (pfrc *ProcessingFileRowCreate) SetTaskDependsOn(s string) *ProcessingFileR
 	return pfrc
 }
 
+// SetGroupByValue sets the "group_by_value" field.
+func (pfrc *ProcessingFileRowCreate) SetGroupByValue(s string) *ProcessingFileRowCreate {
+	pfrc.mutation.SetGroupByValue(s)
+	return pfrc
+}
+
+// SetNillableGroupByValue sets the "group_by_value" field if the given value is not nil.
+func (pfrc *ProcessingFileRowCreate) SetNillableGroupByValue(s *string) *ProcessingFileRowCreate {
+	if s != nil {
+		pfrc.SetGroupByValue(*s)
+	}
+	return pfrc
+}
+
 // SetTaskRequestCurl sets the "task_request_curl" field.
 func (pfrc *ProcessingFileRowCreate) SetTaskRequestCurl(s string) *ProcessingFileRowCreate {
 	pfrc.mutation.SetTaskRequestCurl(s)
@@ -197,6 +211,10 @@ func (pfrc *ProcessingFileRowCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (pfrc *ProcessingFileRowCreate) defaults() {
+	if _, ok := pfrc.mutation.GroupByValue(); !ok {
+		v := processingfilerow.DefaultGroupByValue
+		pfrc.mutation.SetGroupByValue(v)
+	}
 	if _, ok := pfrc.mutation.CreatedAt(); !ok {
 		v := processingfilerow.DefaultCreatedAt()
 		pfrc.mutation.SetCreatedAt(v)
@@ -226,6 +244,9 @@ func (pfrc *ProcessingFileRowCreate) check() error {
 	}
 	if _, ok := pfrc.mutation.TaskDependsOn(); !ok {
 		return &ValidationError{Name: "task_depends_on", err: errors.New(`ent: missing required field "ProcessingFileRow.task_depends_on"`)}
+	}
+	if _, ok := pfrc.mutation.GroupByValue(); !ok {
+		return &ValidationError{Name: "group_by_value", err: errors.New(`ent: missing required field "ProcessingFileRow.group_by_value"`)}
 	}
 	if _, ok := pfrc.mutation.TaskRequestCurl(); !ok {
 		return &ValidationError{Name: "task_request_curl", err: errors.New(`ent: missing required field "ProcessingFileRow.task_request_curl"`)}
@@ -325,6 +346,14 @@ func (pfrc *ProcessingFileRowCreate) createSpec() (*ProcessingFileRow, *sqlgraph
 			Column: processingfilerow.FieldTaskDependsOn,
 		})
 		_node.TaskDependsOn = value
+	}
+	if value, ok := pfrc.mutation.GroupByValue(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldGroupByValue,
+		})
+		_node.GroupByValue = value
 	}
 	if value, ok := pfrc.mutation.TaskRequestCurl(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -22,6 +22,7 @@ func toProcessingFileRow(request CreateProcessingFileRowJob) ProcessingFileRow {
 			RowDataRaw:   request.RowDataRaw,
 			TaskIndex:    int32(request.TaskIndex),
 			TaskMapping:  request.TaskMapping,
+			GroupByValue: request.GroupByValue,
 			Status:       StatusInit,
 			ExecutedTime: -1,
 			CreatedAt:    time.Now(),

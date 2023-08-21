@@ -10,6 +10,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/fpsclient"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/user"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/schema"
 )
@@ -90,16 +91,24 @@ func init() {
 	configtaskDescRequestBody := configtaskFields[7].Descriptor()
 	// configtask.RequestBodyValidator is a validator for the "request_body" field. It is called by the builders before save.
 	configtask.RequestBodyValidator = configtaskDescRequestBody.Validators[0].(func(string) error)
+	// configtaskDescGroupByColumns is the schema descriptor for group_by_columns field.
+	configtaskDescGroupByColumns := configtaskFields[11].Descriptor()
+	// configtask.DefaultGroupByColumns holds the default value on creation for the group_by_columns field.
+	configtask.DefaultGroupByColumns = configtaskDescGroupByColumns.Default.(string)
+	// configtaskDescGroupBySizeLimit is the schema descriptor for group_by_size_limit field.
+	configtaskDescGroupBySizeLimit := configtaskFields[12].Descriptor()
+	// configtask.DefaultGroupBySizeLimit holds the default value on creation for the group_by_size_limit field.
+	configtask.DefaultGroupBySizeLimit = configtaskDescGroupBySizeLimit.Default.(int32)
 	// configtaskDescCreatedAt is the schema descriptor for created_at field.
-	configtaskDescCreatedAt := configtaskFields[11].Descriptor()
+	configtaskDescCreatedAt := configtaskFields[13].Descriptor()
 	// configtask.DefaultCreatedAt holds the default value on creation for the created_at field.
 	configtask.DefaultCreatedAt = configtaskDescCreatedAt.Default.(func() time.Time)
 	// configtaskDescCreatedBy is the schema descriptor for created_by field.
-	configtaskDescCreatedBy := configtaskFields[12].Descriptor()
+	configtaskDescCreatedBy := configtaskFields[14].Descriptor()
 	// configtask.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	configtask.CreatedByValidator = configtaskDescCreatedBy.Validators[0].(func(string) error)
 	// configtaskDescUpdatedAt is the schema descriptor for updated_at field.
-	configtaskDescUpdatedAt := configtaskFields[13].Descriptor()
+	configtaskDescUpdatedAt := configtaskFields[15].Descriptor()
 	// configtask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	configtask.DefaultUpdatedAt = configtaskDescUpdatedAt.Default.(func() time.Time)
 	// configtask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -142,44 +151,64 @@ func init() {
 	processingfileDescTotalMapping := processingfileFields[6].Descriptor()
 	// processingfile.DefaultTotalMapping holds the default value on creation for the total_mapping field.
 	processingfile.DefaultTotalMapping = processingfileDescTotalMapping.Default.(int32)
+	// processingfileDescNeedGroupRow is the schema descriptor for need_group_row field.
+	processingfileDescNeedGroupRow := processingfileFields[7].Descriptor()
+	// processingfile.DefaultNeedGroupRow holds the default value on creation for the need_group_row field.
+	processingfile.DefaultNeedGroupRow = processingfileDescNeedGroupRow.Default.(bool)
 	// processingfileDescStatsTotalRow is the schema descriptor for stats_total_row field.
-	processingfileDescStatsTotalRow := processingfileFields[7].Descriptor()
+	processingfileDescStatsTotalRow := processingfileFields[8].Descriptor()
 	// processingfile.DefaultStatsTotalRow holds the default value on creation for the stats_total_row field.
 	processingfile.DefaultStatsTotalRow = processingfileDescStatsTotalRow.Default.(int32)
 	// processingfileDescStatsTotalProcessed is the schema descriptor for stats_total_processed field.
-	processingfileDescStatsTotalProcessed := processingfileFields[8].Descriptor()
+	processingfileDescStatsTotalProcessed := processingfileFields[9].Descriptor()
 	// processingfile.DefaultStatsTotalProcessed holds the default value on creation for the stats_total_processed field.
 	processingfile.DefaultStatsTotalProcessed = processingfileDescStatsTotalProcessed.Default.(int32)
 	// processingfileDescStatsTotalSuccess is the schema descriptor for stats_total_success field.
-	processingfileDescStatsTotalSuccess := processingfileFields[9].Descriptor()
+	processingfileDescStatsTotalSuccess := processingfileFields[10].Descriptor()
 	// processingfile.DefaultStatsTotalSuccess holds the default value on creation for the stats_total_success field.
 	processingfile.DefaultStatsTotalSuccess = processingfileDescStatsTotalSuccess.Default.(int32)
 	// processingfileDescCreatedAt is the schema descriptor for created_at field.
-	processingfileDescCreatedAt := processingfileFields[11].Descriptor()
+	processingfileDescCreatedAt := processingfileFields[12].Descriptor()
 	// processingfile.DefaultCreatedAt holds the default value on creation for the created_at field.
 	processingfile.DefaultCreatedAt = processingfileDescCreatedAt.Default.(func() time.Time)
 	// processingfileDescCreatedBy is the schema descriptor for created_by field.
-	processingfileDescCreatedBy := processingfileFields[12].Descriptor()
+	processingfileDescCreatedBy := processingfileFields[13].Descriptor()
 	// processingfile.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	processingfile.CreatedByValidator = processingfileDescCreatedBy.Validators[0].(func(string) error)
 	// processingfileDescUpdatedAt is the schema descriptor for updated_at field.
-	processingfileDescUpdatedAt := processingfileFields[13].Descriptor()
+	processingfileDescUpdatedAt := processingfileFields[14].Descriptor()
 	// processingfile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	processingfile.DefaultUpdatedAt = processingfileDescUpdatedAt.Default.(func() time.Time)
 	// processingfile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	processingfile.UpdateDefaultUpdatedAt = processingfileDescUpdatedAt.UpdateDefault.(func() time.Time)
 	processingfilerowFields := schema.ProcessingFileRow{}.Fields()
 	_ = processingfilerowFields
+	// processingfilerowDescGroupByValue is the schema descriptor for group_by_value field.
+	processingfilerowDescGroupByValue := processingfilerowFields[6].Descriptor()
+	// processingfilerow.DefaultGroupByValue holds the default value on creation for the group_by_value field.
+	processingfilerow.DefaultGroupByValue = processingfilerowDescGroupByValue.Default.(string)
 	// processingfilerowDescCreatedAt is the schema descriptor for created_at field.
-	processingfilerowDescCreatedAt := processingfilerowFields[12].Descriptor()
+	processingfilerowDescCreatedAt := processingfilerowFields[13].Descriptor()
 	// processingfilerow.DefaultCreatedAt holds the default value on creation for the created_at field.
 	processingfilerow.DefaultCreatedAt = processingfilerowDescCreatedAt.Default.(func() time.Time)
 	// processingfilerowDescUpdatedAt is the schema descriptor for updated_at field.
-	processingfilerowDescUpdatedAt := processingfilerowFields[13].Descriptor()
+	processingfilerowDescUpdatedAt := processingfilerowFields[14].Descriptor()
 	// processingfilerow.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	processingfilerow.DefaultUpdatedAt = processingfilerowDescUpdatedAt.Default.(func() time.Time)
 	// processingfilerow.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	processingfilerow.UpdateDefaultUpdatedAt = processingfilerowDescUpdatedAt.UpdateDefault.(func() time.Time)
+	processingfilerowgroupFields := schema.ProcessingFileRowGroup{}.Fields()
+	_ = processingfilerowgroupFields
+	// processingfilerowgroupDescCreatedAt is the schema descriptor for created_at field.
+	processingfilerowgroupDescCreatedAt := processingfilerowgroupFields[10].Descriptor()
+	// processingfilerowgroup.DefaultCreatedAt holds the default value on creation for the created_at field.
+	processingfilerowgroup.DefaultCreatedAt = processingfilerowgroupDescCreatedAt.Default.(func() time.Time)
+	// processingfilerowgroupDescUpdatedAt is the schema descriptor for updated_at field.
+	processingfilerowgroupDescUpdatedAt := processingfilerowgroupFields[11].Descriptor()
+	// processingfilerowgroup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	processingfilerowgroup.DefaultUpdatedAt = processingfilerowgroupDescUpdatedAt.Default.(func() time.Time)
+	// processingfilerowgroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	processingfilerowgroup.UpdateDefaultUpdatedAt = processingfilerowgroupDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

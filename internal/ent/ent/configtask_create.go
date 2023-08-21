@@ -94,6 +94,34 @@ func (ctc *ConfigTaskCreate) SetResponseMessageSchema(s string) *ConfigTaskCreat
 	return ctc
 }
 
+// SetGroupByColumns sets the "group_by_columns" field.
+func (ctc *ConfigTaskCreate) SetGroupByColumns(s string) *ConfigTaskCreate {
+	ctc.mutation.SetGroupByColumns(s)
+	return ctc
+}
+
+// SetNillableGroupByColumns sets the "group_by_columns" field if the given value is not nil.
+func (ctc *ConfigTaskCreate) SetNillableGroupByColumns(s *string) *ConfigTaskCreate {
+	if s != nil {
+		ctc.SetGroupByColumns(*s)
+	}
+	return ctc
+}
+
+// SetGroupBySizeLimit sets the "group_by_size_limit" field.
+func (ctc *ConfigTaskCreate) SetGroupBySizeLimit(i int32) *ConfigTaskCreate {
+	ctc.mutation.SetGroupBySizeLimit(i)
+	return ctc
+}
+
+// SetNillableGroupBySizeLimit sets the "group_by_size_limit" field if the given value is not nil.
+func (ctc *ConfigTaskCreate) SetNillableGroupBySizeLimit(i *int32) *ConfigTaskCreate {
+	if i != nil {
+		ctc.SetGroupBySizeLimit(*i)
+	}
+	return ctc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ctc *ConfigTaskCreate) SetCreatedAt(t time.Time) *ConfigTaskCreate {
 	ctc.mutation.SetCreatedAt(t)
@@ -209,6 +237,14 @@ func (ctc *ConfigTaskCreate) defaults() {
 		v := configtask.DefaultName
 		ctc.mutation.SetName(v)
 	}
+	if _, ok := ctc.mutation.GroupByColumns(); !ok {
+		v := configtask.DefaultGroupByColumns
+		ctc.mutation.SetGroupByColumns(v)
+	}
+	if _, ok := ctc.mutation.GroupBySizeLimit(); !ok {
+		v := configtask.DefaultGroupBySizeLimit
+		ctc.mutation.SetGroupBySizeLimit(v)
+	}
 	if _, ok := ctc.mutation.CreatedAt(); !ok {
 		v := configtask.DefaultCreatedAt()
 		ctc.mutation.SetCreatedAt(v)
@@ -283,6 +319,12 @@ func (ctc *ConfigTaskCreate) check() error {
 	}
 	if _, ok := ctc.mutation.ResponseMessageSchema(); !ok {
 		return &ValidationError{Name: "response_message_schema", err: errors.New(`ent: missing required field "ConfigTask.response_message_schema"`)}
+	}
+	if _, ok := ctc.mutation.GroupByColumns(); !ok {
+		return &ValidationError{Name: "group_by_columns", err: errors.New(`ent: missing required field "ConfigTask.group_by_columns"`)}
+	}
+	if _, ok := ctc.mutation.GroupBySizeLimit(); !ok {
+		return &ValidationError{Name: "group_by_size_limit", err: errors.New(`ent: missing required field "ConfigTask.group_by_size_limit"`)}
 	}
 	if _, ok := ctc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ConfigTask.created_at"`)}
@@ -412,6 +454,22 @@ func (ctc *ConfigTaskCreate) createSpec() (*ConfigTask, *sqlgraph.CreateSpec) {
 			Column: configtask.FieldResponseMessageSchema,
 		})
 		_node.ResponseMessageSchema = value
+	}
+	if value, ok := ctc.mutation.GroupByColumns(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldGroupByColumns,
+		})
+		_node.GroupByColumns = value
+	}
+	if value, ok := ctc.mutation.GroupBySizeLimit(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configtask.FieldGroupBySizeLimit,
+		})
+		_node.GroupBySizeLimit = value
 	}
 	if value, ok := ctc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

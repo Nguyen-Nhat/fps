@@ -8,9 +8,10 @@ import (
 
 // Status ENUM ...
 const (
-	StatusInit    = 1
-	StatusFailed  = 3
-	StatusSuccess = 4
+	StatusInit            = 1
+	StatusFailed          = 3
+	StatusSuccess         = 4
+	StatusWaitForGrouping = 5
 )
 
 type ProcessingFileRow struct {
@@ -90,4 +91,10 @@ func (s *CustomStatisticModel) IsProcessed() bool {
 	statusFailedStr := strconv.Itoa(StatusFailed)
 	statusSuccessStr := strconv.Itoa(StatusSuccess)
 	return strings.Contains(s.Statuses, statusFailedStr) || strings.Contains(s.Statuses, statusSuccessStr)
+}
+
+// IsWaiting ... TRUE when contains waiting status
+func (s *CustomStatisticModel) IsWaiting() bool {
+	statusFailedStr := strconv.Itoa(StatusWaitForGrouping)
+	return strings.Contains(s.Statuses, statusFailedStr)
 }

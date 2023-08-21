@@ -103,7 +103,10 @@ func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 		return ConfigTaskMD{}, err
 	}
 
-	// 4. Return result
+	// 4. convert RowGroupMD
+	rowGroup := toRowGroupMD(task)
+
+	// 5. Return result
 	return ConfigTaskMD{
 		TaskIndex: int(task.TaskIndex),
 		TaskName:  task.Name,
@@ -118,7 +121,30 @@ func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 		RequestBody:      map[string]interface{}{},
 		// Response
 		Response: responseMD,
+		// Row Group
+		RowGroup: rowGroup,
 	}, nil
+}
+
+// toRowGroupMD ...
+func toRowGroupMD(task configtask.ConfigTask) RowGroupMD {
+	// case no config group
+	if len(task.GroupByColumns) <= 0 {
+		return RowGroupMD{task.GroupByColumns, []int{}, int(task.GroupBySizeLimit)}
+	}
+
+	groupByColumns := strings.Split(task.GroupByColumns, ",")
+	var groupByColumnsIndex []int
+	for _, columnName := range groupByColumns {
+		columnIndex := int(strings.ToUpper(columnName)[0]) - int('A')
+		groupByColumnsIndex = append(groupByColumnsIndex, columnIndex)
+	}
+
+	return RowGroupMD{
+		GroupByColumnsRaw: task.GroupByColumns,
+		GroupByColumns:    groupByColumnsIndex,
+		GroupSizeLimit:    int(task.GroupBySizeLimit),
+	}
 }
 
 // toMapRequestFieldMD ... return map[fieldName]RequestFieldMD, error

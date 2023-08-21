@@ -22,6 +22,8 @@ type Tx struct {
 	ProcessingFile *ProcessingFileClient
 	// ProcessingFileRow is the client for interacting with the ProcessingFileRow builders.
 	ProcessingFileRow *ProcessingFileRowClient
+	// ProcessingFileRowGroup is the client for interacting with the ProcessingFileRowGroup builders.
+	ProcessingFileRowGroup *ProcessingFileRowGroupClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -164,6 +166,7 @@ func (tx *Tx) init() {
 	tx.FpsClient = NewFpsClientClient(tx.config)
 	tx.ProcessingFile = NewProcessingFileClient(tx.config)
 	tx.ProcessingFileRow = NewProcessingFileRowClient(tx.config)
+	tx.ProcessingFileRowGroup = NewProcessingFileRowGroupClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

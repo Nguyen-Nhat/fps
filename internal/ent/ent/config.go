@@ -24,12 +24,13 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	ConfigMapping     []ent.Hook
-	ConfigTask        []ent.Hook
-	FpsClient         []ent.Hook
-	ProcessingFile    []ent.Hook
-	ProcessingFileRow []ent.Hook
-	User              []ent.Hook
+	ConfigMapping          []ent.Hook
+	ConfigTask             []ent.Hook
+	FpsClient              []ent.Hook
+	ProcessingFile         []ent.Hook
+	ProcessingFileRow      []ent.Hook
+	ProcessingFileRowGroup []ent.Hook
+	User                   []ent.Hook
 }
 
 // Options applies the options on the config object.

@@ -182,7 +182,7 @@ func (j *jobHandleProcessingFileImpl) extractDataAndUpdateFileStatusInDB(ctx con
 			pfrCreateList = append(pfrCreateList, pfr)
 		}
 	}
-	if err := j.fprService.SaveExtractedDataFromFile(ctx, fileId, pfrCreateList); err != nil {
+	if err := j.fprService.SaveExtractedRowTaskFromFile(ctx, fileId, pfrCreateList); err != nil {
 		logger.ErrorT("Cannot save extracted data of fileId=%v, got err=%v", fileId, err)
 		return nil, err
 	}

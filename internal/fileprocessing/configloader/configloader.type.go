@@ -1,6 +1,8 @@
 package configloader
 
-import "git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
+import (
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
+)
 
 // ConfigMappingMD ...
 type ConfigMappingMD struct {
@@ -14,6 +16,28 @@ type ConfigMappingMD struct {
 
 	// List ConfigTaskMD
 	Tasks []ConfigTaskMD
+	//Task *ConfigTaskMD // todo use Task instead of Tasks, because Tasks should be used as a metadata, and Task will contains data of row
+	RowGroupValue string `json:"-"` // todo remove when use Task, RowGroupValue only support group value for 1 task, not multi-task, need cause this
+}
+
+// GetConfigTaskMD ...  always return task
+func (cf *ConfigMappingMD) GetConfigTaskMD(taskIndex int) ConfigTaskMD {
+	for _, t := range cf.Tasks {
+		if t.TaskIndex == taskIndex {
+			return t
+		}
+	}
+
+	return ConfigTaskMD{}
+}
+
+func (cf *ConfigMappingMD) IsSupportGrouping() bool {
+	for _, task := range cf.Tasks {
+		if task.RowGroup.IsSupportGrouping() { // at least one task support grouping
+			return true
+		}
+	}
+	return false
 }
 
 // ConfigTaskMD ...
@@ -31,6 +55,8 @@ type ConfigTaskMD struct {
 	RequestBody   map[string]interface{}
 	// Response
 	Response ResponseMD
+	// Group
+	RowGroup RowGroupMD
 	// Row data in importing file -> is injected in validation phase
 	ImportRowData  []string
 	ImportRowIndex int
@@ -78,6 +104,17 @@ type ResponseMsg struct {
 	Path string `json:"path"`
 }
 
+// RowGroupMD ...
+type RowGroupMD struct {
+	GroupByColumnsRaw string `json:"-"`
+	GroupByColumns    []int  `json:"groupByColumns"`
+	GroupSizeLimit    int    `json:"-"`
+}
+
+func (rg RowGroupMD) IsSupportGrouping() bool {
+	return len(rg.GroupByColumns) > 0
+}
+
 func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 	requestParamsMap := make(map[string]*RequestFieldMD)
 	for key, value := range ct.RequestParamsMap {
@@ -107,6 +144,10 @@ func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 
 		// Response
 		Response: ct.Response,
+
+		// Row Group
+		RowGroup: ct.RowGroup,
+
 		// Row data in importing file -> is injected in validation phase
 		ImportRowData:  ct.ImportRowData,
 		ImportRowIndex: ct.ImportRowIndex,

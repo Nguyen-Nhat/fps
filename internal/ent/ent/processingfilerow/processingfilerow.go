@@ -23,6 +23,8 @@ const (
 	FieldTaskMapping = "task_mapping"
 	// FieldTaskDependsOn holds the string denoting the task_depends_on field in the database.
 	FieldTaskDependsOn = "task_depends_on"
+	// FieldGroupByValue holds the string denoting the group_by_value field in the database.
+	FieldGroupByValue = "group_by_value"
 	// FieldTaskRequestCurl holds the string denoting the task_request_curl field in the database.
 	FieldTaskRequestCurl = "task_request_curl"
 	// FieldTaskRequestRaw holds the string denoting the task_request_raw field in the database.
@@ -52,6 +54,7 @@ var Columns = []string{
 	FieldTaskIndex,
 	FieldTaskMapping,
 	FieldTaskDependsOn,
+	FieldGroupByValue,
 	FieldTaskRequestCurl,
 	FieldTaskRequestRaw,
 	FieldTaskResponseRaw,
@@ -73,6 +76,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultGroupByValue holds the default value on creation for the "group_by_value" field.
+	DefaultGroupByValue string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

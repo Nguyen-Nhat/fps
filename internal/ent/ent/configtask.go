@@ -38,6 +38,10 @@ type ConfigTask struct {
 	ResponseSuccessCodeSchema string `json:"response_success_code_schema,omitempty"`
 	// Format JSON, contains path
 	ResponseMessageSchema string `json:"response_message_schema,omitempty"`
+	// Group by list columns name. Eg: A,B,C
+	GroupByColumns string `json:"group_by_columns,omitempty"`
+	// Max size of a Group. If exceed, reject file
+	GroupBySizeLimit int32 `json:"group_by_size_limit,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -51,9 +55,9 @@ func (*ConfigTask) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case configtask.FieldID, configtask.FieldConfigMappingID, configtask.FieldTaskIndex, configtask.FieldResponseSuccessHTTPStatus:
+		case configtask.FieldID, configtask.FieldConfigMappingID, configtask.FieldTaskIndex, configtask.FieldResponseSuccessHTTPStatus, configtask.FieldGroupBySizeLimit:
 			values[i] = new(sql.NullInt64)
-		case configtask.FieldName, configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldCreatedBy:
+		case configtask.FieldName, configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldGroupByColumns, configtask.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configtask.FieldCreatedAt, configtask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -144,6 +148,18 @@ func (ct *ConfigTask) assignValues(columns []string, values []interface{}) error
 			} else if value.Valid {
 				ct.ResponseMessageSchema = value.String
 			}
+		case configtask.FieldGroupByColumns:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field group_by_columns", values[i])
+			} else if value.Valid {
+				ct.GroupByColumns = value.String
+			}
+		case configtask.FieldGroupBySizeLimit:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field group_by_size_limit", values[i])
+			} else if value.Valid {
+				ct.GroupBySizeLimit = int32(value.Int64)
+			}
 		case configtask.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -222,6 +238,12 @@ func (ct *ConfigTask) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("response_message_schema=")
 	builder.WriteString(ct.ResponseMessageSchema)
+	builder.WriteString(", ")
+	builder.WriteString("group_by_columns=")
+	builder.WriteString(ct.GroupByColumns)
+	builder.WriteString(", ")
+	builder.WriteString("group_by_size_limit=")
+	builder.WriteString(fmt.Sprintf("%v", ct.GroupBySizeLimit))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ct.CreatedAt.Format(time.ANSIC))
