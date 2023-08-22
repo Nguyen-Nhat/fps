@@ -59,7 +59,11 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 		curl, responseBody, isSuccess, messageRes := providerClient.Execute(configTask)
 
 		// 5. Update task status and save raw data for tracing
-		updateRequest := toResponseResult(curl, responseBody, messageRes, fileprocessingrow.StatusSuccess, startAt)
+		statusTask := fileprocessingrow.StatusWaitForGrouping
+		if isSuccess {
+			statusTask = fileprocessingrow.StatusSuccess
+		}
+		updateRequest := toResponseResult(curl, responseBody, messageRes, int16(statusTask), startAt)
 		_, err = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 		if err != nil {
 			logger.ErrorT("Update %v failed ---> ignore remaining tasks", fileprocessingrow.Name())
