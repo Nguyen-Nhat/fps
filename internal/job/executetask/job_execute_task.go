@@ -59,7 +59,7 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 		curl, responseBody, isSuccess, messageRes := providerClient.Execute(configTask)
 
 		// 5. Update task status and save raw data for tracing
-		statusTask := fileprocessingrow.StatusWaitForGrouping
+		statusTask := fileprocessingrow.StatusFailed
 		if isSuccess {
 			statusTask = fileprocessingrow.StatusSuccess
 		}
