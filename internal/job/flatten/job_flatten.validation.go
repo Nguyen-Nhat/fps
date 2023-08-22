@@ -279,7 +279,11 @@ func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqFie
 		return "", errorRows
 	}
 
-	cellValue := strings.TrimSpace(rowData[columnIndex])
+	cellValue := ""
+	if columnIndex < len(rowData) { // if out of range -> default is empty
+		cellValue = strings.TrimSpace(rowData[columnIndex])
+	}
+
 	reqField.Value = cellValue
 
 	return cellValue, errorRows
