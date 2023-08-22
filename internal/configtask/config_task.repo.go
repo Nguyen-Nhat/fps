@@ -33,7 +33,10 @@ func NewRepo(db *dbsql.DB) Repo {
 }
 
 func (r *repoImpl) FindByConfigMappingID(ctx context.Context, configMappingID int32) ([]*ConfigTask, error) {
-	cts, err := r.client.ConfigTask.Query().Where(configtask.ConfigMappingID(configMappingID)).All(ctx)
+	cts, err := r.client.ConfigTask.Query().
+		Where(configtask.ConfigMappingID(configMappingID)).
+		Order(ent.Asc(configtask.FieldTaskIndex)).
+		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying config task: %w", err)
 	}
