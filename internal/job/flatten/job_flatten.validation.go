@@ -271,8 +271,9 @@ func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqFie
 	columnIndex := int(strings.ToUpper(columnKey)[0]) - int('A') // get first character then
 
 	// Validate Require
-	if columnIndex >= len(rowData) || // column request out of range
-		(reqField.Required && len(strings.TrimSpace(rowData[columnIndex])) == 0) { // column is required by value is empty
+	if reqField.Required &&
+		(columnIndex >= len(rowData) || // column request out of range
+			len(strings.TrimSpace(rowData[columnIndex])) == 0) { // column is required by value is empty
 		reason := fmt.Sprintf("%s %s", errRowMissingDataColumn, columnKey)
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
 		return "", errorRows

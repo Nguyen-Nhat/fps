@@ -5,7 +5,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/tidwall/gjson"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 func Test_isTaskSuccess(t *testing.T) {
@@ -219,3 +222,49 @@ func Test_checkMustHaveValueInPath(t *testing.T) {
 		})
 	}
 }
+
+func Test_abc(t *testing.T) {
+	logger.Infof("\nadjustmentTypeId = %s\n",
+		gjson.Get(responseTest, `data.adjustmentTypes.#(reasons.#(reasonDescription=="quytm_3")).adjustmentTypeId`).String())
+
+	logger.Infof("\nreasonId = %s\n",
+		gjson.Get(responseTest, `data.adjustmentTypes.#(reasons.#(reasonDescription=="quytm_3")).reasons.#(reasonDescription=="quytm_3").reasonId`).String())
+
+	//logger.Infof("\nreasonId = %s\n",
+	//	gjson.Get(responseTest, `data.adjustmentTypes.#.reasons.#(reasonDescription=="quytm_3").reasonId`).String())
+}
+
+var responseTest = `
+{
+  "code": 0,
+  "message": "string",
+  "data": {
+    "adjustmentTypes": [
+      {
+        "adjustmentTypeId": 1111,
+        "adjustmentTypeName": "string",
+        "reasons": [
+          {
+            "reasonId": 12,
+            "reasonDescription": "quytm_1"
+          }
+        ]
+      },
+      {
+        "adjustmentTypeId": 22222,
+        "adjustmentTypeName": "string",
+        "reasons": [
+          {
+            "reasonId": 34,
+            "reasonDescription": "quytm_2"
+          },
+          {
+            "reasonId": 56,
+            "reasonDescription": "quytm_3"
+          }
+        ]
+      }
+    ]
+  }
+}
+`
