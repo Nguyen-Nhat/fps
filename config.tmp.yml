@@ -32,7 +32,7 @@ job:
   flatten:
     schedule: '0 */1 * * * *' # every 1 minutes
   execute_task:
-    schedule: '20 */1 * * * *' # every 1 minutes
+    schedule: '15 */1 * * * *' # every 1 minutes
   execute_group_task:
     schedule: '30 */1 * * * *' # every 1 minutes
   update_status:
