@@ -17,12 +17,13 @@ import (
 type (
 	Repo interface {
 		FindRowsByFileIdForJobExecute(context.Context, int, int) ([]*ProcessingFileRow, error)
-		FindByFileIdAndTaskIndexAndGroupValueAndStatus(context.Context, int64, int32, string, int16) ([]*ProcessingFileRow, error)
+		FindByFileIdAndTaskIndexAndGroupValueAndStatus(context.Context, int64, int32, string, []int16) ([]*ProcessingFileRow, error)
 
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
 		UpdateByJob(context.Context, int, string, string, string, int16, string, int64) (*ProcessingFileRow, error)
 		UpdateByJobForListIDs(context.Context, []int, string, int16, string, int64) error
+		UpdateStatusFromTask(context.Context, int64, int32, int32) (int, error)
 
 		DeleteByFileId(context.Context, int64) error
 
@@ -69,7 +70,7 @@ func (r *repoImpl) FindByID(ctx context.Context, id int) (*ProcessingFileRow, er
 }
 
 func (r *repoImpl) FindByFileIdAndTaskIndexAndGroupValueAndStatus(ctx context.Context,
-	fileID int64, taskIndex int32, groupValue string, status int16,
+	fileID int64, taskIndex int32, groupValue string, statuses []int16,
 ) ([]*ProcessingFileRow, error) {
 	pfrs, err := r.client.ProcessingFileRow.
 		Query().
@@ -77,7 +78,7 @@ func (r *repoImpl) FindByFileIdAndTaskIndexAndGroupValueAndStatus(ctx context.Co
 			processingfilerow.FileID(fileID),
 			processingfilerow.TaskIndex(taskIndex),
 			processingfilerow.GroupByValue(groupValue),
-			processingfilerow.Status(status),
+			processingfilerow.StatusIn(statuses...),
 		).
 		All(ctx)
 
@@ -171,6 +172,17 @@ func (r *repoImpl) UpdateByJobForListIDs(ctx context.Context, ids []int, respons
 		Save(ctx)
 
 	return err
+}
+
+func (r *repoImpl) UpdateStatusFromTask(ctx context.Context, fileID int64, rowIndex int32, fromTaskIndex int32) (int, error) {
+	return r.client.ProcessingFileRow.Update().
+		SetStatus(StatusRejected).
+		Where(
+			processingfilerow.FileID(fileID),
+			processingfilerow.RowIndex(rowIndex),
+			processingfilerow.TaskIndexGT(fromTaskIndex),
+		).
+		Save(ctx)
 }
 
 func (r *repoImpl) DeleteByFileId(ctx context.Context, fileId int64) error {

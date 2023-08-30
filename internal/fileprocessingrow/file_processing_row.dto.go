@@ -10,6 +10,8 @@ type CreateProcessingFileRowJob struct {
 }
 
 type UpdateAfterExecutingByJob struct {
+	Task ProcessingFileRow // original data
+
 	TaskMapping  string
 	RequestCurl  string
 	ResponseRaw  string

@@ -63,11 +63,21 @@ func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileID i
 }
 
 func (s *ServiceImpl) GetAllTasksForJobExecuteRowGroup(ctx context.Context, fileID int, taskIndex int, groupValue string) ([]*ProcessingFileRow, error) {
-	return s.repo.FindByFileIdAndTaskIndexAndGroupValueAndStatus(ctx, int64(fileID), int32(taskIndex), groupValue, StatusWaitForGrouping)
+	return s.repo.FindByFileIdAndTaskIndexAndGroupValueAndStatus(ctx, int64(fileID), int32(taskIndex), groupValue, []int16{StatusWaitForGrouping, StatusRejected})
 }
 
 func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	request UpdateAfterExecutingByJob) (*ProcessingFileRow, error) {
+	// 1. If task failed -> remaining tasks of row are marked to
+	if request.Status == StatusFailed {
+		// todo ...
+		task := request.Task
+		affected, err := s.repo.UpdateStatusFromTask(ctx, task.FileID, task.RowIndex, task.TaskIndex)
+		logger.Infof("Update remaining tasks to REJECT status with fileID=%v, rowIndex=%v, taskIndexFrom=%v ---> affected=%v, err=%+v",
+			task.FileID, task.RowIndex, task.TaskIndex, affected, err)
+	}
+
+	// 2. Update task
 	pfr, err := s.repo.UpdateByJob(ctx, id, request.TaskMapping, request.RequestCurl, request.ResponseRaw, request.Status, request.ErrorDisplay, request.ExecutedTime)
 	if err != nil {
 		logger.Errorf("Failed to update %v, error=%v, request=%+v", Name(), err, request)
