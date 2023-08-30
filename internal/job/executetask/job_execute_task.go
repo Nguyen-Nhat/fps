@@ -9,6 +9,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/taskprovider"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
 
@@ -41,16 +42,16 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 
 		// 2. Build & Map request
 		logger.Infof("---------- Execute fileID=%v, rowID=%v, taskID=%v", fileID, rowID, task.TaskIndex)
-		configTask, err := convertConfigMappingAndMapDataFromPreviousResponse(task, previousResponse)
+		taskMappingUpdated, configTask, err := convertConfigMappingAndMapDataFromPreviousResponse(task.TaskIndex, task.TaskMapping, previousResponse)
 		if err != nil {
-			updateRequest := toResponseResult("", "", err.Error(), fileprocessingrow.StatusFailed, startAt)
+			updateRequest := toResponseResult(task.TaskMapping, "", "", err.Error(), fileprocessingrow.StatusFailed, startAt)
 			_, _ = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 			break // task failed  -> break loop, finish execute task
 		}
 
 		// 3. Check case row group
 		if configTask.RowGroup.IsSupportGrouping() {
-			updateRequest := toResponseResult("", "", "", fileprocessingrow.StatusWaitForGrouping, startAt)
+			updateRequest := toResponseResult(task.TaskMapping, "", "", "", fileprocessingrow.StatusWaitForGrouping, startAt)
 			_, _ = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 			break // need to handle in Job Execute Row Group -> finish execute this task, and this row
 		}
@@ -63,7 +64,7 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 		if isSuccess {
 			statusTask = fileprocessingrow.StatusSuccess
 		}
-		updateRequest := toResponseResult(curl, responseBody, messageRes, int16(statusTask), startAt)
+		updateRequest := toResponseResult(taskMappingUpdated, curl, responseBody, messageRes, int16(statusTask), startAt)
 		_, err = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 		if err != nil {
 			logger.ErrorT("Update %v failed ---> ignore remaining tasks", fileprocessingrow.Name())
@@ -81,22 +82,27 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 // ---------------------------------------------------------------------------------------------------------------------
 
 func convertConfigMappingAndMapDataFromPreviousResponse(
-	task *fileprocessingrow.ProcessingFileRow,
-	previousResponse map[int32]string) (configloader.ConfigTaskMD, error) {
+	taskIndex int32, taskMapping string, previousResponse map[int32]string) (string, configloader.ConfigTaskMD, error) {
 	// 1. Load Data and Mapping
-	configMapping, err := converter.StringJsonToStruct("config mapping", task.TaskMapping, configloader.ConfigMappingMD{})
+	configMapping, err := converter.StringJsonToStruct("config mapping", taskMapping, configloader.ConfigMappingMD{})
 	if err != nil {
-		return configloader.ConfigTaskMD{}, fmt.Errorf("failed to load config map")
+		return "", configloader.ConfigTaskMD{}, fmt.Errorf("failed to load config map")
 	}
 
 	// 2. Map data then Build request
-	configTask, err := mapDataByPreviousResponse(int(task.TaskIndex), *configMapping, previousResponse)
-	return configTask, err
+	configTask, err := mapDataByPreviousResponse(int(taskIndex), *configMapping, previousResponse)
+	if err == nil {
+		return "", configTask, err
+	} else {
+		configMapping.Tasks = []configloader.ConfigTaskMD{configTask}
+		return utils.JsonString(configMapping), configTask, nil
+	}
 }
 
-func toResponseResult(curl string, responseBody string, messageRes string, status int16, startAt time.Time) fileprocessingrow.UpdateAfterExecutingByJob {
+func toResponseResult(taskMappingUpdated, curl string, responseBody string, messageRes string, status int16, startAt time.Time) fileprocessingrow.UpdateAfterExecutingByJob {
 	// 2. Common value
 	return fileprocessingrow.UpdateAfterExecutingByJob{
+		TaskMapping:  taskMappingUpdated,
 		RequestCurl:  curl,
 		ResponseRaw:  responseBody,
 		Status:       status,

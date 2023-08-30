@@ -68,7 +68,7 @@ func (s *ServiceImpl) GetAllTasksForJobExecuteRowGroup(ctx context.Context, file
 
 func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	request UpdateAfterExecutingByJob) (*ProcessingFileRow, error) {
-	pfr, err := s.repo.UpdateByJob(ctx, id, request.RequestCurl, request.ResponseRaw, request.Status, request.ErrorDisplay, request.ExecutedTime)
+	pfr, err := s.repo.UpdateByJob(ctx, id, request.TaskMapping, request.RequestCurl, request.ResponseRaw, request.Status, request.ErrorDisplay, request.ExecutedTime)
 	if err != nil {
 		logger.Errorf("Failed to update %v, error=%v, request=%+v", Name(), err, request)
 		return nil, err

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	dbsql "database/sql"
+
 	"entgo.io/ent/dialect/sql"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
@@ -20,7 +21,7 @@ type (
 
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
-		UpdateByJob(context.Context, int, string, string, int16, string, int64) (*ProcessingFileRow, error)
+		UpdateByJob(context.Context, int, string, string, string, int16, string, int64) (*ProcessingFileRow, error)
 		UpdateByJobForListIDs(context.Context, []int, string, int16, string, int64) error
 
 		DeleteByFileId(context.Context, int64) error
@@ -137,10 +138,13 @@ func (r *repoImpl) FindRowsByFileIdForJobExecute(ctx context.Context, fileId int
 	return mapEntArrToProcessingFileArr(pfs), nil
 }
 
-func (r *repoImpl) UpdateByJob(ctx context.Context, id int, requestCurl string, responseRaw string,
+func (r *repoImpl) UpdateByJob(ctx context.Context, id int,
+	taskMapping string,
+	requestCurl string, responseRaw string,
 	status int16, errorDisplay string, executedTime int64) (*ProcessingFileRow, error) {
 	fpr, err := r.client.ProcessingFileRow.UpdateOneID(id).
 		SetStatus(status).
+		SetTaskMapping(taskMapping).
 		SetTaskRequestCurl(requestCurl).
 		SetTaskRequestRaw("").
 		SetTaskResponseRaw(responseRaw).
