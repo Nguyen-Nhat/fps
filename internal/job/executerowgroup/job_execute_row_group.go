@@ -105,7 +105,9 @@ func (job *jobExecuteRowGroup) executeRowGroupCaseStatusIsCalledAPI(ctx context.
 
 	var pfrIDs []int
 	for _, task := range tasks {
-		pfrIDs = append(pfrIDs, task.ID)
+		if task.IsWaitForGroupingStatus() {
+			pfrIDs = append(pfrIDs, task.ID)
+		}
 	}
 
 	var pfrStatus = false
@@ -126,13 +128,18 @@ func mergeTasksToConfigTask(tasks []*fileprocessingrow.ProcessingFileRow, taskIn
 
 	// 2. Explore each task
 	for _, task := range tasks {
-		// 2.1. Load Data and Mapping
+		// 2.1. Ignore tasks that are rejected
+		if !task.IsWaitForGroupingStatus() {
+			continue
+		}
+
+		// 2.2. Load Data and Mapping
 		configMapping, err := converter.StringJsonToStruct("config mapping", task.TaskMapping, configloader.ConfigMappingMD{})
 		if err != nil {
 			return configloader.ConfigTaskMD{}, fmt.Errorf("internal error")
 		}
 
-		// 2.2. Merge request params
+		// 2.3. Merge request params
 		configTask = configMapping.GetConfigTaskMD(taskIndex)
 		requestParamsMerged, err := mergeMapInterface(requestParams, configTask.RequestParams)
 		if err != nil {
@@ -140,7 +147,7 @@ func mergeTasksToConfigTask(tasks []*fileprocessingrow.ProcessingFileRow, taskIn
 		}
 		requestParams = requestParamsMerged
 
-		// 2.3. Merge request body
+		// 2.4. Merge request body
 		requestBodyMerged, err := mergeMapInterface(requestBody, configTask.RequestBody)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err

@@ -44,14 +44,14 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 		logger.Infof("---------- Execute fileID=%v, rowID=%v, taskID=%v", fileID, rowID, task.TaskIndex)
 		taskMappingUpdated, configTask, err := convertConfigMappingAndMapDataFromPreviousResponse(task.TaskIndex, task.TaskMapping, previousResponse)
 		if err != nil {
-			updateRequest := toResponseResult(task.TaskMapping, "", "", err.Error(), fileprocessingrow.StatusFailed, startAt)
+			updateRequest := toResponseResult(*task, task.TaskMapping, "", "", err.Error(), fileprocessingrow.StatusFailed, startAt)
 			_, _ = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 			break // task failed  -> break loop, finish execute task
 		}
 
 		// 3. Check case row group
 		if configTask.RowGroup.IsSupportGrouping() {
-			updateRequest := toResponseResult(taskMappingUpdated, "", "", "", fileprocessingrow.StatusWaitForGrouping, startAt)
+			updateRequest := toResponseResult(*task, taskMappingUpdated, "", "", "", fileprocessingrow.StatusWaitForGrouping, startAt)
 			_, _ = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 			break // need to handle in Job Execute Row Group -> finish execute this task, and this row
 		}
@@ -64,7 +64,7 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 		if isSuccess {
 			statusTask = fileprocessingrow.StatusSuccess
 		}
-		updateRequest := toResponseResult(taskMappingUpdated, curl, responseBody, messageRes, int16(statusTask), startAt)
+		updateRequest := toResponseResult(*task, taskMappingUpdated, curl, responseBody, messageRes, int16(statusTask), startAt)
 		_, err = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 		if err != nil {
 			logger.ErrorT("Update %v failed ---> ignore remaining tasks", fileprocessingrow.Name())
@@ -99,9 +99,12 @@ func convertConfigMappingAndMapDataFromPreviousResponse(
 	}
 }
 
-func toResponseResult(taskMappingUpdated, curl string, responseBody string, messageRes string, status int16, startAt time.Time) fileprocessingrow.UpdateAfterExecutingByJob {
+func toResponseResult(task fileprocessingrow.ProcessingFileRow,
+	taskMappingUpdated, curl string, responseBody string, messageRes string,
+	status int16, startAt time.Time) fileprocessingrow.UpdateAfterExecutingByJob {
 	// 2. Common value
 	return fileprocessingrow.UpdateAfterExecutingByJob{
+		Task:         task,
 		TaskMapping:  taskMappingUpdated,
 		RequestCurl:  curl,
 		ResponseRaw:  responseBody,

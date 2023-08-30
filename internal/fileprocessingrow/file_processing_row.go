@@ -1,9 +1,10 @@
 package fileprocessingrow
 
 import (
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"strconv"
 	"strings"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 )
 
 // Status ENUM ...
@@ -12,6 +13,7 @@ const (
 	StatusFailed          = 3
 	StatusSuccess         = 4
 	StatusWaitForGrouping = 5
+	StatusRejected        = 6
 )
 
 type ProcessingFileRow struct {
@@ -47,6 +49,10 @@ func (pf *ProcessingFileRow) IsSuccessStatus() bool {
 
 func (pf *ProcessingFileRow) IsFailedStatus() bool {
 	return pf.Status == StatusFailed
+}
+
+func (pf *ProcessingFileRow) IsWaitForGroupingStatus() bool {
+	return pf.Status == StatusWaitForGrouping
 }
 
 func (s *CustomStatisticModel) IsSuccessAll() bool {
