@@ -127,6 +127,7 @@ func mergeTasksToConfigTask(tasks []*fileprocessingrow.ProcessingFileRow, taskIn
 	var configTask configloader.ConfigTaskMD
 
 	// 2. Explore each task
+	totalTasksNeedToMerge := 0
 	for _, task := range tasks {
 		// 2.1. Ignore tasks that are rejected
 		if !task.IsWaitForGroupingStatus() {
@@ -134,6 +135,7 @@ func mergeTasksToConfigTask(tasks []*fileprocessingrow.ProcessingFileRow, taskIn
 		}
 
 		// 2.2. Load Data and Mapping
+		totalTasksNeedToMerge++
 		configMapping, err := converter.StringJsonToStruct("config mapping", task.TaskMapping, configloader.ConfigMappingMD{})
 		if err != nil {
 			return configloader.ConfigTaskMD{}, fmt.Errorf("internal error")
@@ -160,6 +162,10 @@ func mergeTasksToConfigTask(tasks []*fileprocessingrow.ProcessingFileRow, taskIn
 	configTask.RequestBody = requestBody
 
 	// 4. Return
+	if totalTasksNeedToMerge == 0 {
+		logger.Warnf("---> no task ready to group for taskIndex=%v", taskIndex)
+		return configTask, fmt.Errorf("no tasks ready to group")
+	}
 	return configTask, nil
 }
 
