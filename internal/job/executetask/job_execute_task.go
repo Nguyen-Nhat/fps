@@ -91,7 +91,7 @@ func convertConfigMappingAndMapDataFromPreviousResponse(
 
 	// 2. Map data then Build request
 	configTask, err := mapDataByPreviousResponse(int(taskIndex), *configMapping, previousResponse)
-	if err == nil {
+	if err != nil {
 		return "", configTask, err
 	} else {
 		configMapping.Tasks = []configloader.ConfigTaskMD{configTask}
