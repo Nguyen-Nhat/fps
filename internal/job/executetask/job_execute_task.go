@@ -51,7 +51,7 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 
 		// 3. Check case row group
 		if configTask.RowGroup.IsSupportGrouping() {
-			updateRequest := toResponseResult(task.TaskMapping, "", "", "", fileprocessingrow.StatusWaitForGrouping, startAt)
+			updateRequest := toResponseResult(taskMappingUpdated, "", "", "", fileprocessingrow.StatusWaitForGrouping, startAt)
 			_, _ = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
 			break // need to handle in Job Execute Row Group -> finish execute this task, and this row
 		}
