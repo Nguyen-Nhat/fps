@@ -17,7 +17,6 @@ func validateAndBuildRowGroupData(fileID int, configMappingMD configloader.Confi
 		return nil, nil
 	}
 
-	var errorRows []ErrorRow
 	var createRowGroupJobs []fpRowGroup.CreateRowGroupJob
 	for _, taskMD := range configMappingMD.Tasks {
 		// 1. case no support -> ignore
@@ -26,9 +25,9 @@ func validateAndBuildRowGroupData(fileID int, configMappingMD configloader.Confi
 		}
 
 		// 2. grouping rows and check error/no group
-		groupMap, errorRows := groupingRowsBaseOnFileData(configMappingsWithData, taskMD)
-		if len(errorRows) > 0 {
-			break // -> break loop, do NOT check next task
+		groupMap, errorRowGroups := groupingRowsBaseOnFileData(configMappingsWithData, taskMD)
+		if len(errorRowGroups) > 0 {
+			return errorRowGroups, nil // -> return error, do NOT check next task
 		}
 		if len(groupMap) <= 0 {
 			logger.Warnf("--- Task %d support Grouping but cannot find any group in file", taskMD.TaskIndex)
@@ -50,7 +49,7 @@ func validateAndBuildRowGroupData(fileID int, configMappingMD configloader.Confi
 
 	}
 
-	return errorRows, createRowGroupJobs
+	return nil, createRowGroupJobs
 }
 
 func groupingRowsBaseOnFileData(configMappingsWithData []*configloader.ConfigMappingMD, taskMD configloader.ConfigTaskMD) (map[string][]int, []ErrorRow) {
