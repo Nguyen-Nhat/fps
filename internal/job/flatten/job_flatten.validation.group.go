@@ -74,7 +74,7 @@ func groupingRowsBaseOnFileData(configMappingsWithData []*configloader.ConfigMap
 			groupMap[groupValue] = rowIDsTmp // still update counter, we will show all rows that belongs to this group
 			if len(rowIDsTmp) > task.RowGroup.GroupSizeLimit {
 				logger.Errorf("file invalid by total item in group %s greater than %d", fmt.Sprintf("[%s]", groupValue), taskMD.RowGroup.GroupSizeLimit)
-				errTmp := ErrorRow{task.ImportRowIndex, fmt.Sprintf("Total item in group %s is greater than %d", fmt.Sprintf("[%s]", groupValue), taskMD.RowGroup.GroupByColumns)}
+				errTmp := ErrorRow{task.ImportRowIndex, fmt.Sprintf("Total item in group %s is greater than %d", fmt.Sprintf("[%s]", groupValue), taskMD.RowGroup.GroupSizeLimit)}
 				errorRows = append(errorRows, errTmp)
 			}
 		} else {
