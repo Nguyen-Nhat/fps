@@ -113,7 +113,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 	// 5.1. Group Row
 	errorRows, createRowGroupJobs := validateAndBuildRowGroupData(file.ID, configMapping, configMappingsWithData)
 	// 5.2. Check error, logic is same to step (4.2)
-	if len(errorRows) > 0 || len(createRowGroupJobs) == 0 {
+	if configMapping.IsSupportGrouping() && (len(errorRows) > 0 || len(createRowGroupJobs) == 0) {
 		// Logging
 		if len(errorRows) > 0 {
 			logger.ErrorT("Importing file is invalid, fileID = %v, error in %v row(s)", file.ID, len(errorRows))
