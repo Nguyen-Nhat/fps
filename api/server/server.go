@@ -4,19 +4,21 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
-	fps "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
-	"github.com/robfig/cron/v3"
 	"net/http"
-
-	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
-	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/robfig/cron/v3"
 	"github.com/xo/dburl"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/filerow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fpsclient"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
+	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	fps "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 type Server struct {
@@ -70,18 +72,34 @@ func (s *Server) initRoutes() {
 	// 2. User API
 	userServer := user.InitUserServer(s.db)
 	userRouter := chi.NewRouter()
-	userRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
+	userRouter.Use(middleware.LoggerMW, middleware.UserMW)
 	userRouter.Post("/", userServer.CreateUserAPI())
 	s.Router.Mount("/lfp/users", userRouter)
 
-	// 4. File Processing API
+	// 3. File Processing API
 	fpServer := fileprocessing.InitFileProcessingServer(s.db)
 	fpRouter := chi.NewRouter()
-	fpRouter.Use(middleware.LoggerMW, middleware.APIKeyMW, middleware.UserMW)
+	fpRouter.Use(middleware.LoggerMW, middleware.UserMW)
 	fpRouter.Get("/getListProcessFiles", fpServer.GetFileProcessHistoryAPI())
 	fpRouter.Post("/createProcessFile", fpServer.CreateProcessByFileAPI())
 	s.Router.Mount("/v1", fpRouter)
 	s.Router.Mount("/lfp/v1", fpRouter)
+	s.Router.Mount("/fps/v1", fpRouter)
+
+	// 4. Client
+	clServer := fpsclient.InitClientServer(s.db)
+	clRouter := chi.NewRouter()
+	clRouter.Use(middleware.LoggerMW)
+	clRouter.Get("/getList", clServer.GetListClientAPI())
+	s.Router.Mount("/fps/v1/client", clRouter)
+
+	// 5. File Row
+	fileRowServer := filerow.InitFileRowServer(s.db)
+	fileRowRouter := chi.NewRouter()
+	fileRowRouter.Use(middleware.LoggerMW)
+	fileRowRouter.Get("/", fileRowServer.GetListFileRowAPI())
+	s.Router.Mount("/fps/v1/files/{fileID}/rows", fileRowRouter)
+
 }
 
 func (s *Server) Serve(cfg config.ServerListen) error {

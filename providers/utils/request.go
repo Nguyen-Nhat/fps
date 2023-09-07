@@ -2,11 +2,12 @@ package utils
 
 import (
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 // BindRequestParamsToStruct ... bind request params to struct
@@ -23,19 +24,44 @@ func BindRequestParamsToStruct(outputStruct interface{}, params url.Values, tag 
 	}
 
 	// 3. Explore each field to set value
+	rElem := reflect.ValueOf(outputStruct).Elem()
 	for i := 0; i < rt.NumField(); i++ {
-		// 3.1. Get field specs
-		rField := rt.Field(i)
-		rFieldValue := reflect.ValueOf(outputStruct).Elem().FieldByName(rField.Name)
-		rKey := strings.Split(rField.Tag.Get(tag), ",")[0] // use split to ignore tag "options" like omitempty, etc.
 
-		// 3.2. If key existed, set value
-		if value := params.Get(rKey); len(value) > 0 {
-			err := reflectionSetFieldValue(rKey, rField, rFieldValue, value)
-			if err != nil {
-				logger.Errorf("bindRequestParamsToStruct ... error %+v", err)
-				return err
+		// 3.1. Case nested struct
+		if rt.Field(i).Type.Kind() == reflect.Struct {
+			rtChild := rt.Field(i).Type
+			rElemChild := rElem.Addr().Elem()
+			for j := 0; j < rtChild.NumField(); j++ {
+				rFieldChild := rtChild.Field(j)
+				if err := reflectionSetFieldValueOfStruct(rElemChild, rFieldChild, tag, params); err != nil {
+					return err
+				}
 			}
+
+			continue
+		}
+
+		// 3.2. Case field is not struct
+		rField := rt.Field(i)
+		if err := reflectionSetFieldValueOfStruct(rElem, rField, tag, params); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// private method ------------------------------------------------------------------------------------------------------
+
+func reflectionSetFieldValueOfStruct(rElem reflect.Value, rField reflect.StructField, tag string, params url.Values) error {
+	rFieldValue := rElem.FieldByName(rField.Name)
+	rKey := strings.Split(rField.Tag.Get(tag), ",")[0] // use split to ignore tag "options" like omitempty, etc.
+
+	// 3.2. If key existed, set value
+	if value := params.Get(rKey); len(value) > 0 {
+		err := reflectionSetFieldValue(rKey, rField, rFieldValue, value)
+		if err != nil {
+			logger.Errorf("bindRequestParamsToStruct ... error %+v", err)
+			return err
 		}
 	}
 	return nil

@@ -53,6 +53,20 @@ func (fcu *FpsClientUpdate) SetDescription(s string) *FpsClientUpdate {
 	return fcu
 }
 
+// SetSampleFileURL sets the "sample_file_url" field.
+func (fcu *FpsClientUpdate) SetSampleFileURL(s string) *FpsClientUpdate {
+	fcu.mutation.SetSampleFileURL(s)
+	return fcu
+}
+
+// SetNillableSampleFileURL sets the "sample_file_url" field if the given value is not nil.
+func (fcu *FpsClientUpdate) SetNillableSampleFileURL(s *string) *FpsClientUpdate {
+	if s != nil {
+		fcu.SetSampleFileURL(*s)
+	}
+	return fcu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (fcu *FpsClientUpdate) SetCreatedAt(t time.Time) *FpsClientUpdate {
 	fcu.mutation.SetCreatedAt(t)
@@ -219,6 +233,13 @@ func (fcu *FpsClientUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: fpsclient.FieldDescription,
 		})
 	}
+	if value, ok := fcu.mutation.SampleFileURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fpsclient.FieldSampleFileURL,
+		})
+	}
 	if value, ok := fcu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -281,6 +302,20 @@ func (fcuo *FpsClientUpdateOne) SetName(s string) *FpsClientUpdateOne {
 // SetDescription sets the "description" field.
 func (fcuo *FpsClientUpdateOne) SetDescription(s string) *FpsClientUpdateOne {
 	fcuo.mutation.SetDescription(s)
+	return fcuo
+}
+
+// SetSampleFileURL sets the "sample_file_url" field.
+func (fcuo *FpsClientUpdateOne) SetSampleFileURL(s string) *FpsClientUpdateOne {
+	fcuo.mutation.SetSampleFileURL(s)
+	return fcuo
+}
+
+// SetNillableSampleFileURL sets the "sample_file_url" field if the given value is not nil.
+func (fcuo *FpsClientUpdateOne) SetNillableSampleFileURL(s *string) *FpsClientUpdateOne {
+	if s != nil {
+		fcuo.SetSampleFileURL(*s)
+	}
 	return fcuo
 }
 
@@ -478,6 +513,13 @@ func (fcuo *FpsClientUpdateOne) sqlSave(ctx context.Context) (_node *FpsClient, 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: fpsclient.FieldDescription,
+		})
+	}
+	if value, ok := fcuo.mutation.SampleFileURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fpsclient.FieldSampleFileURL,
 		})
 	}
 	if value, ok := fcuo.mutation.CreatedAt(); ok {

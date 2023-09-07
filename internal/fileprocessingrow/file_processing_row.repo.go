@@ -12,12 +12,15 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
 
 type (
 	Repo interface {
 		FindRowsByFileIdForJobExecute(context.Context, int, int) ([]*ProcessingFileRow, error)
 		FindByFileIdAndTaskIndexAndGroupValueAndStatus(context.Context, int64, int32, string, []int16) ([]*ProcessingFileRow, error)
+		FindRowIdsByFileIdAndFilter(context.Context, int64, GetListFileRowsRequest) ([]int, int, error)
+		FindRowsByIDsAndOffsetLimit(context.Context, int64, []int) ([]*ProcessingFileRow, error)
 
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
@@ -137,6 +140,51 @@ func (r *repoImpl) FindRowsByFileIdForJobExecute(ctx context.Context, fileId int
 	}
 
 	return mapEntArrToProcessingFileArr(pfs), nil
+}
+
+func (r *repoImpl) FindRowIdsByFileIdAndFilter(ctx context.Context, fileID int64, req GetListFileRowsRequest) ([]int, int, error) {
+	query := r.client.ProcessingFileRow.Query().
+		Where(processingfilerow.FileID(fileID))
+
+	// query by filter
+	// todo ...
+
+	allRowIDs, err := query.Unique(true).Select(processingfilerow.FieldRowIndex).Ints(ctx)
+	if err != nil {
+		return nil, 0, err
+	} else if len(allRowIDs) == 0 {
+		return []int{}, 0, nil
+	}
+
+	total := len(allRowIDs)
+
+	rowIDs, err := query.
+		Limit(req.PageSize).
+		Offset((req.Page - 1) * req.PageSize).
+		Order(ent.Asc(processingfilerow.FieldRowIndex)).
+		GroupBy(processingfilerow.FieldRowIndex).
+		Ints(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return rowIDs, total, nil
+}
+
+func (r *repoImpl) FindRowsByIDsAndOffsetLimit(ctx context.Context, fileID int64, rowIDs []int) ([]*ProcessingFileRow, error) {
+	rowTasks, err := r.client.ProcessingFileRow.Query().
+		Where(
+			processingfilerow.FileID(fileID),
+			processingfilerow.RowIndexIn(converter.IntArrToInt32Arr(rowIDs)...),
+		).
+		Order(ent.Asc(processingfilerow.FieldRowIndex)).
+		All(ctx)
+	if err != nil {
+		logger.Errorf(err.Error())
+		return nil, err
+	}
+
+	return mapEntArrToProcessingFileArr(rowTasks), nil
 }
 
 func (r *repoImpl) UpdateByJob(ctx context.Context, id int,

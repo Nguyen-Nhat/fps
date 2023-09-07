@@ -2089,20 +2089,21 @@ func (m *ConfigTaskMutation) ResetEdge(name string) error {
 // FpsClientMutation represents an operation that mutates the FpsClient nodes in the graph.
 type FpsClientMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	client_id     *int32
-	addclient_id  *int32
-	name          *string
-	description   *string
-	created_at    *time.Time
-	created_by    *string
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*FpsClient, error)
-	predicates    []predicate.FpsClient
+	op              Op
+	typ             string
+	id              *int
+	client_id       *int32
+	addclient_id    *int32
+	name            *string
+	description     *string
+	sample_file_url *string
+	created_at      *time.Time
+	created_by      *string
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*FpsClient, error)
+	predicates      []predicate.FpsClient
 }
 
 var _ ent.Mutation = (*FpsClientMutation)(nil)
@@ -2331,6 +2332,42 @@ func (m *FpsClientMutation) ResetDescription() {
 	m.description = nil
 }
 
+// SetSampleFileURL sets the "sample_file_url" field.
+func (m *FpsClientMutation) SetSampleFileURL(s string) {
+	m.sample_file_url = &s
+}
+
+// SampleFileURL returns the value of the "sample_file_url" field in the mutation.
+func (m *FpsClientMutation) SampleFileURL() (r string, exists bool) {
+	v := m.sample_file_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSampleFileURL returns the old "sample_file_url" field's value of the FpsClient entity.
+// If the FpsClient object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FpsClientMutation) OldSampleFileURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSampleFileURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSampleFileURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSampleFileURL: %w", err)
+	}
+	return oldValue.SampleFileURL, nil
+}
+
+// ResetSampleFileURL resets all changes to the "sample_file_url" field.
+func (m *FpsClientMutation) ResetSampleFileURL() {
+	m.sample_file_url = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *FpsClientMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -2458,7 +2495,7 @@ func (m *FpsClientMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FpsClientMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.client_id != nil {
 		fields = append(fields, fpsclient.FieldClientID)
 	}
@@ -2467,6 +2504,9 @@ func (m *FpsClientMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, fpsclient.FieldDescription)
+	}
+	if m.sample_file_url != nil {
+		fields = append(fields, fpsclient.FieldSampleFileURL)
 	}
 	if m.created_at != nil {
 		fields = append(fields, fpsclient.FieldCreatedAt)
@@ -2491,6 +2531,8 @@ func (m *FpsClientMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case fpsclient.FieldDescription:
 		return m.Description()
+	case fpsclient.FieldSampleFileURL:
+		return m.SampleFileURL()
 	case fpsclient.FieldCreatedAt:
 		return m.CreatedAt()
 	case fpsclient.FieldCreatedBy:
@@ -2512,6 +2554,8 @@ func (m *FpsClientMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldName(ctx)
 	case fpsclient.FieldDescription:
 		return m.OldDescription(ctx)
+	case fpsclient.FieldSampleFileURL:
+		return m.OldSampleFileURL(ctx)
 	case fpsclient.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case fpsclient.FieldCreatedBy:
@@ -2547,6 +2591,13 @@ func (m *FpsClientMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case fpsclient.FieldSampleFileURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSampleFileURL(v)
 		return nil
 	case fpsclient.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -2641,6 +2692,9 @@ func (m *FpsClientMutation) ResetField(name string) error {
 		return nil
 	case fpsclient.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case fpsclient.FieldSampleFileURL:
+		m.ResetSampleFileURL()
 		return nil
 	case fpsclient.FieldCreatedAt:
 		m.ResetCreatedAt()

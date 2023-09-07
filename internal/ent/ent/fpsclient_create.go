@@ -38,6 +38,20 @@ func (fcc *FpsClientCreate) SetDescription(s string) *FpsClientCreate {
 	return fcc
 }
 
+// SetSampleFileURL sets the "sample_file_url" field.
+func (fcc *FpsClientCreate) SetSampleFileURL(s string) *FpsClientCreate {
+	fcc.mutation.SetSampleFileURL(s)
+	return fcc
+}
+
+// SetNillableSampleFileURL sets the "sample_file_url" field if the given value is not nil.
+func (fcc *FpsClientCreate) SetNillableSampleFileURL(s *string) *FpsClientCreate {
+	if s != nil {
+		fcc.SetSampleFileURL(*s)
+	}
+	return fcc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (fcc *FpsClientCreate) SetCreatedAt(t time.Time) *FpsClientCreate {
 	fcc.mutation.SetCreatedAt(t)
@@ -149,6 +163,10 @@ func (fcc *FpsClientCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (fcc *FpsClientCreate) defaults() {
+	if _, ok := fcc.mutation.SampleFileURL(); !ok {
+		v := fpsclient.DefaultSampleFileURL
+		fcc.mutation.SetSampleFileURL(v)
+	}
 	if _, ok := fcc.mutation.CreatedAt(); !ok {
 		v := fpsclient.DefaultCreatedAt()
 		fcc.mutation.SetCreatedAt(v)
@@ -179,6 +197,9 @@ func (fcc *FpsClientCreate) check() error {
 		if err := fpsclient.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "FpsClient.description": %w`, err)}
 		}
+	}
+	if _, ok := fcc.mutation.SampleFileURL(); !ok {
+		return &ValidationError{Name: "sample_file_url", err: errors.New(`ent: missing required field "FpsClient.sample_file_url"`)}
 	}
 	if _, ok := fcc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "FpsClient.created_at"`)}
@@ -244,6 +265,14 @@ func (fcc *FpsClientCreate) createSpec() (*FpsClient, *sqlgraph.CreateSpec) {
 			Column: fpsclient.FieldDescription,
 		})
 		_node.Description = value
+	}
+	if value, ok := fcc.mutation.SampleFileURL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fpsclient.FieldSampleFileURL,
+		})
+		_node.SampleFileURL = value
 	}
 	if value, ok := fcc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

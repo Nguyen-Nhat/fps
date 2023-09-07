@@ -16,19 +16,29 @@ func UserMW(next http.Handler) http.Handler {
 		// Get header
 		userRaw := r.Header.Get(userHeader)
 		logger.Infof("USER = %v", userRaw)
+		user := &User{}
 		if len(userRaw) == 0 {
 			msg := fmt.Sprintf("Missing %v", userHeader)
 			logger.Warn(msg)
 			//_ = render.Render(w, r, error2.ErrRenderInvalidRequest(errors.New(msg)))
-			return
-		}
-
-		// Map header to User
-		user := &User{}
-		err := json.Unmarshal([]byte(userRaw), &user)
-		if err != nil {
-			logger.Errorf("Cannot unmarshal user info in header: err=%v, rawUser=%v", err, userRaw)
-			// todo return error
+			user = &User{
+				Sub:   "unknown_sub",
+				Name:  "unknown_user",
+				Email: "unknown_user@teko.vn",
+			}
+		} else {
+			// Map header to User
+			user := &User{}
+			err := json.Unmarshal([]byte(userRaw), &user)
+			if err != nil {
+				logger.Errorf("Cannot unmarshal user info in header: err=%v, rawUser=%v", err, userRaw)
+				// todo return error
+				user = &User{
+					Sub:   "unknown_sub",
+					Name:  "unknown_user",
+					Email: "unknown_user@teko.vn",
+				}
+			}
 		}
 
 		// Set to context

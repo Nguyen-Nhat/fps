@@ -101,6 +101,13 @@ func Description(v string) predicate.FpsClient {
 	})
 }
 
+// SampleFileURL applies equality check predicate on the "sample_file_url" field. It's identical to SampleFileURLEQ.
+func SampleFileURL(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSampleFileURL), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.FpsClient {
 	return predicate.FpsClient(func(s *sql.Selector) {
@@ -381,6 +388,105 @@ func DescriptionEqualFold(v string) predicate.FpsClient {
 func DescriptionContainsFold(v string) predicate.FpsClient {
 	return predicate.FpsClient(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldDescription), v))
+	})
+}
+
+// SampleFileURLEQ applies the EQ predicate on the "sample_file_url" field.
+func SampleFileURLEQ(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLNEQ applies the NEQ predicate on the "sample_file_url" field.
+func SampleFileURLNEQ(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLIn applies the In predicate on the "sample_file_url" field.
+func SampleFileURLIn(vs ...string) predicate.FpsClient {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldSampleFileURL), v...))
+	})
+}
+
+// SampleFileURLNotIn applies the NotIn predicate on the "sample_file_url" field.
+func SampleFileURLNotIn(vs ...string) predicate.FpsClient {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldSampleFileURL), v...))
+	})
+}
+
+// SampleFileURLGT applies the GT predicate on the "sample_file_url" field.
+func SampleFileURLGT(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLGTE applies the GTE predicate on the "sample_file_url" field.
+func SampleFileURLGTE(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLLT applies the LT predicate on the "sample_file_url" field.
+func SampleFileURLLT(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLLTE applies the LTE predicate on the "sample_file_url" field.
+func SampleFileURLLTE(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLContains applies the Contains predicate on the "sample_file_url" field.
+func SampleFileURLContains(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLHasPrefix applies the HasPrefix predicate on the "sample_file_url" field.
+func SampleFileURLHasPrefix(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLHasSuffix applies the HasSuffix predicate on the "sample_file_url" field.
+func SampleFileURLHasSuffix(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLEqualFold applies the EqualFold predicate on the "sample_file_url" field.
+func SampleFileURLEqualFold(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// SampleFileURLContainsFold applies the ContainsFold predicate on the "sample_file_url" field.
+func SampleFileURLContainsFold(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldSampleFileURL), v))
 	})
 }
 
