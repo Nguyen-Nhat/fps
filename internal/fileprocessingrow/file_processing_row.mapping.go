@@ -4,15 +4,9 @@ import (
 	"time"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
-
-func toProcessingFileRowArr(request []CreateProcessingFileRowJob) []ProcessingFileRow {
-	var res []ProcessingFileRow
-	for _, req := range request {
-		res = append(res, toProcessingFileRow(req))
-	}
-	return res
-}
 
 func toProcessingFileRow(request CreateProcessingFileRowJob) ProcessingFileRow {
 	return ProcessingFileRow{
@@ -29,4 +23,54 @@ func toProcessingFileRow(request CreateProcessingFileRowJob) ProcessingFileRow {
 			UpdatedAt:    time.Now(),
 		},
 	}
+}
+
+func toArrGetListFileRowsItem(taskMap map[int32][]*ProcessingFileRow, fileID int) []GetListFileRowsItem {
+	var result []GetListFileRowsItem
+	for rowIndex, tasksInRow := range taskMap {
+		task := tasksInRow[0]
+		tmp := GetListFileRowsItem{
+			FileID:       fileID,
+			RowIndex:     int(rowIndex),
+			RowDataRaw:   task.RowDataRaw,
+			ExecutedTime: -1,
+			Tasks:        converter.Map(tasksInRow, toTaskInRowItem),
+		}
+		result = append(result, tmp)
+	}
+	return result
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+func toTaskInRowItem(taskInRow *ProcessingFileRow) TaskInRowItem {
+	taskName := getTaskName(taskInRow)
+
+	return TaskInRowItem{
+		TaskIndex:       int(taskInRow.TaskIndex),
+		TaskRequestCurl: taskInRow.TaskRequestCurl,
+		TaskResponseRaw: taskInRow.TaskResponseRaw,
+		TaskName:        taskName,
+		Status:          taskInRow.Status,
+		ErrorDisplay:    taskInRow.ErrorDisplay,
+		ExecutedTime:    int(taskInRow.ExecutedTime),
+	}
+}
+
+func getTaskName(taskInRow *ProcessingFileRow) string {
+	// 1. Load Data and Mapping
+	configMapping, err := converter.StringJsonToStruct("config mapping", taskInRow.TaskMapping, configloader.ConfigMappingMD{})
+	if err != nil {
+		return ""
+	}
+
+	// 2. Get task
+	for _, taskMD := range configMapping.Tasks {
+		if taskMD.TaskIndex == int(taskInRow.TaskIndex) {
+			return taskMD.TaskName // return when find task
+		}
+	}
+
+	// 3. return no name
+	return "no name"
 }

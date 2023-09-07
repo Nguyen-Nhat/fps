@@ -22,6 +22,8 @@ type FpsClient struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// SampleFileURL holds the value of the "sample_file_url" field.
+	SampleFileURL string `json:"sample_file_url,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -37,7 +39,7 @@ func (*FpsClient) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case fpsclient.FieldID, fpsclient.FieldClientID:
 			values[i] = new(sql.NullInt64)
-		case fpsclient.FieldName, fpsclient.FieldDescription, fpsclient.FieldCreatedBy:
+		case fpsclient.FieldName, fpsclient.FieldDescription, fpsclient.FieldSampleFileURL, fpsclient.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case fpsclient.FieldCreatedAt, fpsclient.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -79,6 +81,12 @@ func (fc *FpsClient) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				fc.Description = value.String
+			}
+		case fpsclient.FieldSampleFileURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sample_file_url", values[i])
+			} else if value.Valid {
+				fc.SampleFileURL = value.String
 			}
 		case fpsclient.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -134,6 +142,9 @@ func (fc *FpsClient) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(fc.Description)
+	builder.WriteString(", ")
+	builder.WriteString("sample_file_url=")
+	builder.WriteString(fc.SampleFileURL)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(fc.CreatedAt.Format(time.ANSIC))

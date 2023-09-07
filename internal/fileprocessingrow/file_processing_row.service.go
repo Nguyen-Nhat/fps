@@ -4,14 +4,17 @@ import (
 	"context"
 	"time"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
 
 type (
 	Service interface {
 		GetAllRowsNeedToExecuteByJob(context.Context, int, int) (map[int32][]*ProcessingFileRow, error)
 		GetAllTasksForJobExecuteRowGroup(context.Context, int, int, string) ([]*ProcessingFileRow, error)
+		GetListFileRowsByFileID(context.Context, int, GetListFileRowsRequest) ([]GetListFileRowsItem, response.PaginationNew, error)
 
 		SaveExtractedRowTaskFromFile(context.Context, int, []CreateProcessingFileRowJob) error
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
@@ -64,6 +67,37 @@ func (s *ServiceImpl) GetAllRowsNeedToExecuteByJob(ctx context.Context, fileID i
 
 func (s *ServiceImpl) GetAllTasksForJobExecuteRowGroup(ctx context.Context, fileID int, taskIndex int, groupValue string) ([]*ProcessingFileRow, error) {
 	return s.repo.FindByFileIdAndTaskIndexAndGroupValueAndStatus(ctx, int64(fileID), int32(taskIndex), groupValue, []int16{StatusWaitForGrouping, StatusRejected})
+}
+
+func (s *ServiceImpl) GetListFileRowsByFileID(ctx context.Context, fileID int, req GetListFileRowsRequest,
+) ([]GetListFileRowsItem, response.PaginationNew, error) {
+	rowIDs, total, err := s.repo.FindRowIdsByFileIdAndFilter(ctx, int64(fileID), req)
+	if err != nil {
+		logger.Infof("Error in FindRowIdsByFileIdAndFilter, err %+v", err)
+		return nil, response.PaginationNew{}, err
+	}
+
+	tasks, err := s.repo.FindRowsByIDsAndOffsetLimit(ctx, int64(fileID), rowIDs)
+	if err != nil {
+		logger.Infof("Error in FindRowsByIDsAndOffsetLimit, err %+v", err)
+		return nil, response.PaginationNew{}, err
+	}
+
+	pagination := response.GetPaginationNew(total, req.PageRequest)
+
+	taskMap := make(map[int32][]*ProcessingFileRow)
+	for _, task := range tasks {
+		val, existed := taskMap[task.RowIndex]
+		if existed {
+			taskMap[task.RowIndex] = append(val, task)
+		} else {
+			taskMap[task.RowIndex] = []*ProcessingFileRow{task}
+		}
+	}
+
+	result := toArrGetListFileRowsItem(taskMap, fileID)
+
+	return result, pagination, err
 }
 
 func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
@@ -151,7 +185,7 @@ func isFinished(totalSuccess int, totalFailed int, total int) bool {
 }
 
 func createRows(ctx context.Context, subRequest []CreateProcessingFileRowJob, service *ServiceImpl) error {
-	pfrArr := toProcessingFileRowArr(subRequest)
+	pfrArr := converter.Map(subRequest, toProcessingFileRow)
 	if _, err := service.repo.SaveAll(ctx, pfrArr, false); err != nil {
 		logger.Errorf("error when save all %v, got err %v", Name(), err)
 		return err

@@ -26,6 +26,7 @@ func (FpsClient) Fields() []ent.Field {
 		field.Int32("client_id"),
 		field.String("name").NotEmpty(),
 		field.String("description").NotEmpty(),
+		field.String("sample_file_url").Default(""),
 		// default fields
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),

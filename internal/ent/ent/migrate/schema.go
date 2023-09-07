@@ -59,6 +59,7 @@ var (
 		{Name: "client_id", Type: field.TypeInt32},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString},
+		{Name: "sample_file_url", Type: field.TypeString, Default: ""},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},

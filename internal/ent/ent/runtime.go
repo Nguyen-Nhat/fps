@@ -123,16 +123,20 @@ func init() {
 	fpsclientDescDescription := fpsclientFields[2].Descriptor()
 	// fpsclient.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	fpsclient.DescriptionValidator = fpsclientDescDescription.Validators[0].(func(string) error)
+	// fpsclientDescSampleFileURL is the schema descriptor for sample_file_url field.
+	fpsclientDescSampleFileURL := fpsclientFields[3].Descriptor()
+	// fpsclient.DefaultSampleFileURL holds the default value on creation for the sample_file_url field.
+	fpsclient.DefaultSampleFileURL = fpsclientDescSampleFileURL.Default.(string)
 	// fpsclientDescCreatedAt is the schema descriptor for created_at field.
-	fpsclientDescCreatedAt := fpsclientFields[3].Descriptor()
+	fpsclientDescCreatedAt := fpsclientFields[4].Descriptor()
 	// fpsclient.DefaultCreatedAt holds the default value on creation for the created_at field.
 	fpsclient.DefaultCreatedAt = fpsclientDescCreatedAt.Default.(func() time.Time)
 	// fpsclientDescCreatedBy is the schema descriptor for created_by field.
-	fpsclientDescCreatedBy := fpsclientFields[4].Descriptor()
+	fpsclientDescCreatedBy := fpsclientFields[5].Descriptor()
 	// fpsclient.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	fpsclient.CreatedByValidator = fpsclientDescCreatedBy.Validators[0].(func(string) error)
 	// fpsclientDescUpdatedAt is the schema descriptor for updated_at field.
-	fpsclientDescUpdatedAt := fpsclientFields[5].Descriptor()
+	fpsclientDescUpdatedAt := fpsclientFields[6].Descriptor()
 	// fpsclient.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	fpsclient.DefaultUpdatedAt = fpsclientDescUpdatedAt.Default.(func() time.Time)
 	// fpsclient.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

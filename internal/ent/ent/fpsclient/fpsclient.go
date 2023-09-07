@@ -17,6 +17,8 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldSampleFileURL holds the string denoting the sample_file_url field in the database.
+	FieldSampleFileURL = "sample_file_url"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -33,6 +35,7 @@ var Columns = []string{
 	FieldClientID,
 	FieldName,
 	FieldDescription,
+	FieldSampleFileURL,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -53,6 +56,8 @@ var (
 	NameValidator func(string) error
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
+	// DefaultSampleFileURL holds the default value on creation for the "sample_file_url" field.
+	DefaultSampleFileURL string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
