@@ -177,7 +177,10 @@ func (r *repoImpl) FindRowsByIDsAndOffsetLimit(ctx context.Context, fileID int64
 			processingfilerow.FileID(fileID),
 			processingfilerow.RowIndexIn(converter.IntArrToInt32Arr(rowIDs)...),
 		).
-		Order(ent.Asc(processingfilerow.FieldRowIndex)).
+		Order(
+			ent.Asc(processingfilerow.FieldRowIndex),
+			ent.Asc(processingfilerow.FieldTaskIndex),
+		).
 		All(ctx)
 	if err != nil {
 		logger.Errorf(err.Error())
