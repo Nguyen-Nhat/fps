@@ -2,16 +2,17 @@ package updatestatus
 
 import (
 	"context"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
-	"github.com/robfig/cron/v3"
 	"sync"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/boundedparallelism"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
+	"github.com/robfig/cron/v3"
 )
 
 // jobUpdateStatusManager ...
@@ -87,8 +88,18 @@ func (mgr *jobUpdateStatusManager) Execute() {
 
 	// 3. Flattening each file
 	jobFlatten := newJobUpdateStatus(mgr.fpService, mgr.fprService, mgr.fileService, mgr.cfgMappingService)
-	// todo: can use multi thread for improving performance
-	for _, fp := range fpList {
-		jobFlatten.UpdateStatus(ctx, *fp)
+	fileProcessingChannel := make(chan fileprocessing.ProcessingFile)
+	boundedParallelism := boundedparallelism.NewBoundedParallelism(int(mgr.cfg.NumDigesters), digesterFunction)
+
+	boundedParallelism.Execute(func() {
+		for _, fp := range fpList {
+			fileProcessingChannel <- *fp
+		}
+	}, BoundedParallelismParams{ctx: ctx, jobFlatten: jobFlatten, fileProcessingChannel: fileProcessingChannel, numDigesters: mgr.cfg.NumDigesters})
+}
+
+func digesterFunction(args BoundedParallelismParams) {
+	for fp := range args.fileProcessingChannel {
+		args.jobFlatten.UpdateStatus(args.ctx, fp)
 	}
 }

@@ -31,12 +31,16 @@ job:
     schedule: '*/1 * * * *' # every 3 minutes
   flatten:
     schedule: '0 */1 * * * *' # every 1 minutes
+    num_digesters: 2
   execute_task:
     schedule: '15 */1 * * * *' # every 1 minutes
+    num_digesters: 2
   execute_group_task:
     schedule: '30 */1 * * * *' # every 1 minutes
+    num_digesters: 2
   update_status:
     schedule: '50 */1 * * * *' # every 1 minutes
+    num_digesters: 2
 
 provider_config:
   loyalty:

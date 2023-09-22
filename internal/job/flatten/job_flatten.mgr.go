@@ -13,6 +13,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/boundedparallelism"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 )
@@ -99,8 +100,18 @@ func (mgr *jobFlattenManager) Execute() {
 		mgr.fpService, mgr.fprService, mgr.fpRowGroupService,
 		mgr.fileService,
 		mgr.cfgMappingService, mgr.cfgTaskService)
-	// todo: can use multi thread for improving performance
-	for _, fp := range fpList {
-		jobFlatten.Flatten(ctx, *fp)
+	fileProcessingChannel := make(chan fileprocessing.ProcessingFile)
+
+	boundedParallelism := boundedparallelism.NewBoundedParallelism(mgr.cfg.NumDigesters, digesterFunction)
+	boundedParallelism.Execute(func() {
+		for _, fp := range fpList {
+			fileProcessingChannel <- *fp
+		}
+	}, BoundedParallelismParams{ctx: ctx, jobFlatten: jobFlatten, fileProcessingChannel: fileProcessingChannel})
+}
+
+func digesterFunction(args BoundedParallelismParams) {
+	for fp := range args.fileProcessingChannel {
+		args.jobFlatten.Flatten(args.ctx, fp)
 	}
 }
