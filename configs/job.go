@@ -17,5 +17,6 @@ type FileProcessingConfig struct {
 
 // SchedulerConfig ...
 type SchedulerConfig struct {
-	Schedule string `mapstructure:"schedule"`
+	Schedule     string `mapstructure:"schedule"`
+	NumDigesters int    `mapstructure:"num_digesters"`
 }
