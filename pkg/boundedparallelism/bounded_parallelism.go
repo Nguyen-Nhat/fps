@@ -23,7 +23,7 @@ func (b *BoundedParallelism[T]) Execute(sendToChannel InitChannel, args T) {
 
 	// 2. Create go routines for implement tasks
 	var wg sync.WaitGroup
-	wg.Add(int(b.numDigesters))
+	wg.Add(b.numDigesters)
 	for i := 0; i < b.numDigesters; i++ {
 		go func() {
 			b.digester(args)

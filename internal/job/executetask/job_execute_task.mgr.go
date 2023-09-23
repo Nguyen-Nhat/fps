@@ -105,6 +105,6 @@ func (mgr *jobExecuteTaskManager) Execute() {
 
 func digesterFunction(args BoundedParallelismParams) {
 	for taskGroup := range args.taskGroupByRowChannels {
-		go args.jobExecuteTask.ExecuteTask(args.ctx, taskGroup.fileID, taskGroup.rowID, taskGroup.tasks)
+		args.jobExecuteTask.ExecuteTask(args.ctx, taskGroup.fileID, taskGroup.rowID, taskGroup.tasks)
 	}
 }
