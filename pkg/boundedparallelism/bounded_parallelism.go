@@ -1,6 +1,9 @@
 package boundedparallelism
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type DigesterFunction[T any] func(args T)
 
@@ -25,7 +28,9 @@ func (b *BoundedParallelism[T]) Execute(sendToChannel InitChannel, args T) {
 	var wg sync.WaitGroup
 	wg.Add(b.numDigesters)
 	for i := 0; i < b.numDigesters; i++ {
+		tmp := i
 		go func() {
+			time.Sleep(time.Duration(tmp*50) * time.Millisecond)
 			b.digester(args)
 			wg.Done()
 		}()
