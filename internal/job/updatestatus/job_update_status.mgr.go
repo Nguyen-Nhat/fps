@@ -9,8 +9,8 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/boundedparallelism"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/workers"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 	"github.com/robfig/cron/v3"
 )
@@ -88,18 +88,12 @@ func (mgr *jobUpdateStatusManager) Execute() {
 
 	// 3. Flattening each file
 	jobFlatten := newJobUpdateStatus(mgr.fpService, mgr.fprService, mgr.fileService, mgr.cfgMappingService)
-	fileProcessingChannel := make(chan fileprocessing.ProcessingFile)
-	boundedParallelism := boundedparallelism.NewBoundedParallelism(int(mgr.cfg.NumDigesters), digesterFunction)
-
-	boundedParallelism.Execute(func() {
-		for _, fp := range fpList {
-			fileProcessingChannel <- *fp
-		}
-	}, BoundedParallelismParams{ctx: ctx, jobFlatten: jobFlatten, fileProcessingChannel: fileProcessingChannel, numDigesters: mgr.cfg.NumDigesters})
-}
-
-func digesterFunction(args BoundedParallelismParams) {
-	for fp := range args.fileProcessingChannel {
-		args.jobFlatten.UpdateStatus(args.ctx, fp)
+	workerPool := workers.NewWorkerPool(mgr.cfg.NumDigesters)
+	workerPool.Run()
+	for _, fp := range fpList {
+		workerPool.AddTask(func() {
+			jobFlatten.UpdateStatus(ctx, *fp)
+		})
 	}
+	workerPool.Close()
 }
