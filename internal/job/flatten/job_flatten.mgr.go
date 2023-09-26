@@ -14,7 +14,6 @@ import (
 	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/workers"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 )
 
@@ -100,13 +99,7 @@ func (mgr *jobFlattenManager) Execute() {
 		mgr.fpService, mgr.fprService, mgr.fpRowGroupService,
 		mgr.fileService,
 		mgr.cfgMappingService, mgr.cfgTaskService)
-	workerPool := workers.NewWorkerPool(mgr.cfg.NumDigesters)
-	workerPool.Run()
 	for _, fp := range fpList {
-		tmpFp := fp
-		workerPool.AddTask(func() {
-			jobFlatten.Flatten(ctx, *tmpFp)
-		})
+		jobFlatten.Flatten(ctx, *fp)
 	}
-	workerPool.Close()
 }
