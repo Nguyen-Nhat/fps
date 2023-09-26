@@ -99,6 +99,6 @@ func (mgr *jobExecuteTaskManager) Execute() {
 				jobExecuteTask.ExecuteTask(ctx, file.ID, tmpRowId, tmpTasks)
 			})
 		}
-		workerPool.Close()
 	}
+	workerPool.Close()
 }
