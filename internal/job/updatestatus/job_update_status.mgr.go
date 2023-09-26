@@ -10,7 +10,6 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/workers"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 	"github.com/robfig/cron/v3"
 )
@@ -88,13 +87,7 @@ func (mgr *jobUpdateStatusManager) Execute() {
 
 	// 3. Flattening each file
 	jobFlatten := newJobUpdateStatus(mgr.fpService, mgr.fprService, mgr.fileService, mgr.cfgMappingService)
-	workerPool := workers.NewWorkerPool(mgr.cfg.NumDigesters)
-	workerPool.Run()
 	for _, fp := range fpList {
-		tmpFp := fp
-		workerPool.AddTask(func() {
-			jobFlatten.UpdateStatus(ctx, *tmpFp)
-		})
+		jobFlatten.UpdateStatus(ctx, *fp)
 	}
-	workerPool.Close()
 }
