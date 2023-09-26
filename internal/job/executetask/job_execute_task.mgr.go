@@ -10,8 +10,8 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/boundedparallelism"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/workers"
 )
 
 // JobExecuteTaskManager ...
@@ -81,30 +81,22 @@ func (mgr *jobExecuteTaskManager) Execute() {
 
 	// 3. Execute Tasks in each file
 	jobExecuteTask := newJobExecuteTask(mgr.fprService)
-	taskGroupByRowChannel := make(chan TaskGroupByRowType)
-	boundedParallelism := boundedparallelism.NewBoundedParallelism(mgr.cfg.NumDigesters, digesterFunction)
-
-	boundedParallelism.Execute(func() {
-		for _, file := range fpList {
-			// 3.1. Get all task of file.ID, group by rowIndex
-			taskGroupByRow, _ := mgr.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, 5000)
-			if len(taskGroupByRow) == 0 {
-				logger.ErrorT("No row need to execute for fileId=%v", file.ID)
-				continue
-			}
-
-			// 3.2. Handle tasks in each rowIndex
-			func() {
-				for rowID, tasks := range taskGroupByRow {
-					taskGroupByRowChannel <- TaskGroupByRowType{file.ID, rowID, tasks}
-				}
-			}()
+	workerPool := workers.NewWorkerPool(mgr.cfg.NumDigesters)
+	workerPool.Run()
+	for _, file := range fpList {
+		// 3.1. Get all task of file.ID, group by rowIndex
+		taskGroupByRow, _ := mgr.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, 5000)
+		if len(taskGroupByRow) == 0 {
+			logger.ErrorT("No row need to execute for fileId=%v", file.ID)
+			continue
 		}
-	}, BoundedParallelismParams{ctx, taskGroupByRowChannel, jobExecuteTask})
-}
 
-func digesterFunction(args BoundedParallelismParams) {
-	for taskGroup := range args.taskGroupByRowChannels {
-		args.jobExecuteTask.ExecuteTask(args.ctx, taskGroup.fileID, taskGroup.rowID, taskGroup.tasks)
+		// 3.2. Handle tasks in each rowIndex
+		for rowId, tasks := range taskGroupByRow {
+			workerPool.AddTask(func() {
+				jobExecuteTask.ExecuteTask(ctx, file.ID, rowId, tasks)
+			})
+		}
+		workerPool.Close()
 	}
 }

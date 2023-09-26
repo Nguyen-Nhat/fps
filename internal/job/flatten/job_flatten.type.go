@@ -1,19 +1,7 @@
 package flatten
 
-import (
-	"context"
-
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
-)
-
 type ErrorRow struct {
 	RowId  int // id file, start at 0
 	Reason string
 	//RowData []string
-}
-
-type BoundedParallelismParams struct {
-	ctx                   context.Context
-	jobFlatten            *jobFlatten
-	fileProcessingChannel <-chan fileprocessing.ProcessingFile
 }
