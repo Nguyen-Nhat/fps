@@ -91,8 +91,9 @@ func (mgr *jobUpdateStatusManager) Execute() {
 	workerPool := workers.NewWorkerPool(mgr.cfg.NumDigesters)
 	workerPool.Run()
 	for _, fp := range fpList {
+		tmpFp := fp
 		workerPool.AddTask(func() {
-			jobFlatten.UpdateStatus(ctx, *fp)
+			jobFlatten.UpdateStatus(ctx, *tmpFp)
 		})
 	}
 	workerPool.Close()

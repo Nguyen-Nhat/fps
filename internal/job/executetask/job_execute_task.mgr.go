@@ -93,8 +93,10 @@ func (mgr *jobExecuteTaskManager) Execute() {
 
 		// 3.2. Handle tasks in each rowIndex
 		for rowId, tasks := range taskGroupByRow {
+			tmpRowId := rowId
+			tmpTasks := tasks
 			workerPool.AddTask(func() {
-				jobExecuteTask.ExecuteTask(ctx, file.ID, rowId, tasks)
+				jobExecuteTask.ExecuteTask(ctx, file.ID, tmpRowId, tmpTasks)
 			})
 		}
 		workerPool.Close()

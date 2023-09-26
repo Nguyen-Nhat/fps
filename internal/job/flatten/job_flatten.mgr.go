@@ -103,8 +103,9 @@ func (mgr *jobFlattenManager) Execute() {
 	workerPool := workers.NewWorkerPool(mgr.cfg.NumDigesters)
 	workerPool.Run()
 	for _, fp := range fpList {
+		tmpFp := fp
 		workerPool.AddTask(func() {
-			jobFlatten.Flatten(ctx, *fp)
+			jobFlatten.Flatten(ctx, *tmpFp)
 		})
 	}
 	workerPool.Close()
