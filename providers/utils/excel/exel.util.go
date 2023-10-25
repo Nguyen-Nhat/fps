@@ -3,10 +3,11 @@ package excel
 import (
 	"bytes"
 	"fmt"
-	"github.com/xuri/excelize/v2"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/xuri/excelize/v2"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )

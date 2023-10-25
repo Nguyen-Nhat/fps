@@ -68,9 +68,13 @@ type RequestFieldMD struct {
 	Type         string // support int, string, array (item is defined in array_item)
 	ValuePattern string // it may be raw value or pattern to get
 
-	// Custom for array
+	// For array
 	ArrayItem    []*RequestFieldMD // optional, have value when type=array
 	ArrayItemMap map[string]*RequestFieldMD
+
+	// For nested object
+	Items    []*RequestFieldMD // optional, have value when type=object
+	ItemsMap map[string]*RequestFieldMD
 
 	// Constrains
 	Required bool
