@@ -6,7 +6,8 @@ const (
 	TypeNumber  = "number"  // include float32 and float64
 	TypeBoolean = "boolean"
 
-	TypeArray = "array"
+	TypeArray  = "array"
+	TypeObject = "object"
 
 	TypeJson = "json"
 )

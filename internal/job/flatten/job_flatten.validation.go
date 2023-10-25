@@ -110,6 +110,11 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 
 				reqField.ArrayItemMap = arrayItemMapUpdated
 				task.RequestBody[fieldName] = []map[string]interface{}{childMap}
+				if len(childMap) == 1 { // in case int[], string[], ... -> remove key empty, then convert map to array
+					if val, ok := childMap[""]; ok {
+						task.RequestBody[fieldName] = []interface{}{val}
+					}
+				}
 				if len(arrayItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove task.RequestBodyMap field value
 					delete(task.RequestBodyMap, fieldName)
 				}
@@ -161,11 +166,58 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 
 func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}) (
 	map[string]*configloader.RequestFieldMD, map[string]interface{}, []ErrorRow) {
-
+	// 1. Init value
 	var errorRows []ErrorRow
 	childMap := make(map[string]interface{})
 
+	// 2. Explore each item in array
 	for fieldNameChild, reqFieldChild := range arrayItemMap {
+		// 2.1. Case field type is Array
+		if len(reqFieldChild.ArrayItemMap) > 0 {
+			// 2.1.1. Validate
+			arrayItemMapUpdated, childMapInArr, errorRowsForArrayItem := validateArrayItemMap(rowID, rowData, reqFieldChild.ArrayItemMap, fileParameters)
+			if len(errorRowsForArrayItem) > 0 {
+				errorRows = append(errorRows, errorRowsForArrayItem...)
+				continue
+			}
+
+			// 2.1.2. Update childMap and remove field if it was mapped data
+			reqFieldChild.ArrayItemMap = arrayItemMapUpdated
+			childMap[fieldNameChild] = []map[string]interface{}{childMapInArr}
+			if len(childMapInArr) == 1 { // in case int[], string[], ... -> remove key empty, then convert map to array
+				if val, ok := childMapInArr[""]; ok {
+					childMap[fieldNameChild] = []interface{}{val}
+				}
+			}
+			if len(arrayItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove that field in arrayItemMap
+				delete(arrayItemMap, fieldNameChild)
+			}
+
+			// 2.1.3. Continue
+			continue
+		}
+
+		// 2.2. Case field type is Object
+		if len(reqFieldChild.ItemsMap) > 0 {
+			// 2.2.1. Validate
+			objectItemMapUpdated, childMapInObj, errorRowsForArrayItem := validateArrayItemMap(rowID, rowData, reqFieldChild.ItemsMap, fileParameters)
+			if len(errorRowsForArrayItem) > 0 {
+				errorRows = append(errorRows, errorRowsForArrayItem...)
+				continue
+			}
+
+			// 2.2.2. Update childMap and remove field if it was mapped data
+			reqFieldChild.ArrayItemMap = objectItemMapUpdated
+			childMap[fieldNameChild] = childMapInObj
+			if len(objectItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove that field in arrayItemMap
+				delete(arrayItemMap, fieldNameChild)
+			}
+
+			// 2.2.3. Continue
+			continue
+		}
+
+		// 2.3. In Normal case, field maybe int, string, ... -> need to get value (string) from config
 		valueChildStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqFieldChild, fileParameters)
 		if len(errorRowsAfterGet) > 0 {
 			errorRows = append(errorRows, errorRowsAfterGet...)
@@ -175,7 +227,7 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 			continue
 		}
 
-		// 1.2.2. Get real value
+		// 2.4. Get real value from string value
 		realValueChild, err := basejobmanager.ConvertToRealValue(reqFieldChild.Type, valueChildStr, reqFieldChild.ValueDependsOnKey)
 		if err != nil {
 			errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
@@ -187,12 +239,14 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 			delete(arrayItemMap, fieldNameChild)
 		}
 	}
+
+	// 3. Return
 	return arrayItemMap, childMap, errorRows
 }
 
 func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, bool, []ErrorRow) {
-	// 1. If type is array, not get value
-	if reqField.Type == configloader.TypeArray {
+	// 1. If type is array or object, not get value
+	if reqField.Type == configloader.TypeArray || reqField.Type == configloader.TypeObject {
 		return "", true, nil
 	}
 
@@ -218,7 +272,7 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 	case configloader.ValueDependsOnNone:
 		valueStr = reqField.Value
 	case configloader.ValueDependsOnTask:
-		isByPassField = true
+		isByPassField = true // If value depends on Previous Task -> not get value
 		valueDependsOnKeyMatched, errorRow := validateAndMatchJsonPath(rowID, rowData, reqField.ValueDependsOnKey)
 		if errorRow != nil {
 			errorRows = append(errorRows, *errorRow)

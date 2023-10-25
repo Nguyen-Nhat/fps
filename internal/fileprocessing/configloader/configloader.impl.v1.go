@@ -183,7 +183,7 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 
 	// 1. Enrich for ArrayItem
 	if len(reqField.ArrayItem) > 0 {
-		// 3. Convert to Map
+		// 1.1. Convert to Map for each field
 		listRequestField := reqField.ArrayItem
 		fieldChildMap := map[string]*RequestFieldMD{}
 		for _, reqFieldChild := range listRequestField {
@@ -196,6 +196,7 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 			fieldChildMap[reqFieldChild.Field] = &reqFieldChildEnriched
 		}
 
+		// 1.2. Set result
 		reqField.ArrayItemMap = fieldChildMap
 		reqField.ArrayItem = nil
 
@@ -203,14 +204,40 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 		return reqField, nil
 	}
 
-	// 2. Else, Enrich for valuePattern
+	// 2. Enrich for Items (field of object)
+	if len(reqField.Items) > 0 {
+		// 2.1. Convert to Map for each field
+		objectFields := reqField.Items
+		objectFieldsMap := map[string]*RequestFieldMD{}
+		for _, objectField := range objectFields {
+			fieldPath := fmt.Sprintf("%s.%s", reqField.Field, objectField.Field)
+			reqFieldChildEnriched, err := enrichRequestFieldMD(taskID, *objectField)
+			if err != nil {
+				return RequestFieldMD{}, fmt.Errorf("cannot get config %v", fieldPath)
+			}
+
+			objectFieldsMap[objectField.Field] = &reqFieldChildEnriched
+		}
+
+		// 2.2. Set result
+		reqField.ItemsMap = objectFieldsMap
+		reqField.Items = nil
+
+		// finish enrich data, because we cannot enrich for `valuePattern` with type Array
+		return reqField, nil
+	}
+
+	// 3. Else, Enrich for valuePattern
 	if strings.HasPrefix(valuePattern, prefixMappingRequest) {
+		// 3.1. Case value depends on Excel Column
 		if len(valuePattern) == 2 {
 			columnIndex := string(valuePattern[1]) // if `$A` -> columnIndex = `A`
 			logger.Infof("----- task %v, field %v is mapping with column %v, type=%s, required=%v", taskID, fieldName, columnIndex, reqField.Type, reqField.Required)
 			reqField.ValueDependsOn = ValueDependsOnExcel
 			reqField.ValueDependsOnKey = columnIndex
-		} else if len(valuePattern) > len(prefixMappingRequestResponse)+2 && strings.HasPrefix(valuePattern, prefixMappingRequestResponse) {
+		} else
+		// 3.2. Else, case value depends on Previous Response
+		if len(valuePattern) > len(prefixMappingRequestResponse)+2 && strings.HasPrefix(valuePattern, prefixMappingRequestResponse) {
 			template := strings.TrimPrefix(valuePattern, prefixMappingRequestResponse) // $response1.field_abc -> template = 1.field_abc
 			dependOnTaskId, err := strconv.Atoi(string(template[0]))                   // 1.field_abc -> 1
 			if err != nil || template[1] != '.' {
@@ -222,7 +249,9 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 			reqField.ValueDependsOn = ValueDependsOnTask
 			reqField.ValueDependsOnKey = responsePath
 			reqField.ValueDependsOnTaskID = dependOnTaskId
-		} else if len(valuePattern) > len(prefixMappingRequestParameter)+2 && strings.HasPrefix(valuePattern, prefixMappingRequestParameter) {
+		} else
+		// 3.3. Else, case value depends on Parameter
+		if len(valuePattern) > len(prefixMappingRequestParameter)+2 && strings.HasPrefix(valuePattern, prefixMappingRequestParameter) {
 			template := strings.TrimPrefix(valuePattern, prefixMappingRequestParameter) // $param.field_abc -> paramKey = .field_abc
 			if len(template) <= 1 || template[0] != '.' {
 				logger.Errorf("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
@@ -231,11 +260,13 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 
 			reqField.ValueDependsOn = ValueDependsOnParam
 			reqField.ValueDependsOnKey = template[1:]
-		} else {
+		} else
+		// 3.4. Else, Not match any supported pattern
+		{
 			logger.Errorf("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
 			return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
 		}
-	} else {
+	} else { // 3.5. Else, case value is strict / hardcode
 		reqField.Value = valuePattern // raw data
 		reqField.ValueDependsOn = ValueDependsOnNone
 	}
