@@ -111,8 +111,11 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 				reqField.ArrayItemMap = arrayItemMapUpdated
 				task.RequestBody[fieldName] = []map[string]interface{}{childMap}
 				if len(childMap) == 1 { // in case int[], string[], ... -> remove key empty, then convert map to array
-					if val, ok := childMap[""]; ok {
+					val, ok := childMap[""]
+					if ok && len(fmt.Sprintf("%+v", val)) > 0 { // val is not empty value -> set field is array[val]
 						task.RequestBody[fieldName] = []interface{}{val}
+					} else if ok && len(fmt.Sprintf("%+v", val)) == 0 { // val is empty -> remove field
+						delete(task.RequestBody, fieldName)
 					}
 				}
 				if len(arrayItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove task.RequestBodyMap field value
@@ -185,8 +188,11 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 			reqFieldChild.ArrayItemMap = arrayItemMapUpdated
 			childMap[fieldNameChild] = []map[string]interface{}{childMapInArr}
 			if len(childMapInArr) == 1 { // in case int[], string[], ... -> remove key empty, then convert map to array
-				if val, ok := childMapInArr[""]; ok {
+				val, ok := childMapInArr[""]
+				if ok && len(fmt.Sprintf("%+v", val)) > 0 { // val is not empty value -> set field is array[val]
 					childMap[fieldNameChild] = []interface{}{val}
+				} else if ok && len(fmt.Sprintf("%+v", val)) == 0 { // val is empty -> remove field
+					delete(childMap, fieldNameChild)
 				}
 			}
 			if len(arrayItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove that field in arrayItemMap
