@@ -1,6 +1,8 @@
 package configloader
 
 import (
+	"encoding/json"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
@@ -159,21 +161,8 @@ func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 }
 
 func (rf RequestFieldMD) Clone() RequestFieldMD {
-	return RequestFieldMD{
-		Field:        rf.Field,
-		Type:         rf.Type,
-		ValuePattern: rf.ValuePattern,
-		// Custom for array
-		ArrayItem:    utils.CloneArray(rf.ArrayItem),
-		ArrayItemMap: utils.CloneMap(rf.ArrayItemMap),
-		Items:        utils.CloneArray(rf.Items),
-		ItemsMap:     utils.CloneMap(rf.ItemsMap),
-		// Constrains
-		Required: rf.Required,
-		// Others
-		ValueDependsOn:       rf.ValueDependsOn,
-		ValueDependsOnKey:    rf.ValueDependsOnKey,
-		ValueDependsOnTaskID: rf.ValueDependsOnTaskID,
-		Value:                rf.Value,
-	}
+	js, _ := json.Marshal(rf)
+	res := RequestFieldMD{}
+	_ = json.Unmarshal(js, &res)
+	return res
 }
