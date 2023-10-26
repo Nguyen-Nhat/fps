@@ -166,6 +166,8 @@ func (rf RequestFieldMD) Clone() RequestFieldMD {
 		// Custom for array
 		ArrayItem:    utils.CloneArray(rf.ArrayItem),
 		ArrayItemMap: utils.CloneMap(rf.ArrayItemMap),
+		Items:        utils.CloneArray(rf.Items),
+		ItemsMap:     utils.CloneMap(rf.ItemsMap),
 		// Constrains
 		Required: rf.Required,
 		// Others
