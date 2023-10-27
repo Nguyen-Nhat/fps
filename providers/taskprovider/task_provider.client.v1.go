@@ -40,7 +40,7 @@ func NewClientV1() IClientV1 {
 
 func (c *clientV1) Execute(task configloader.ConfigTaskMD) (string, string, bool, string) {
 	// 1. Request
-	reqHeader := task.Header
+	reqHeader := task.RequestHeader
 	reqHeader["Content-Type"] = "application/json" // default header
 	logger.Infof("Prepare call %v with header=%v, requestParams=%+v, requestBody=%+v", task.Endpoint, reqHeader, task.RequestParams, task.RequestBody)
 	httpStatus, responseBody, curl, err := utils.SendHTTPRequestRaw(c.client, task.Method, task.Endpoint, reqHeader, task.RequestParams, task.RequestBody)

@@ -75,6 +75,30 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 	for _, orgTask := range configMapping.Tasks {
 		task := orgTask.Clone()
 		// 1.1. RequestField in Request Params
+		for fieldName, reqField := range task.RequestHeaderMap {
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			if len(errorRowsAfterGet) > 0 {
+				errorRows = append(errorRows, errorRowsAfterGet...)
+				continue
+			}
+			if isByPassField { // no need to convert
+				continue
+			}
+
+			// 1.1.2. Get real value
+			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			if err != nil {
+				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
+			} else {
+				if realValue != nil {
+					task.RequestHeader[reqField.Field] = realValue
+				}
+				// config will be converted to Json string, then save to DB -> delete to reduce size of json string
+				delete(task.RequestHeaderMap, fieldName)
+			}
+		}
+
+		// 1.2. RequestField in Request Params
 		for fieldName, reqField := range task.RequestParamsMap {
 			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
@@ -98,9 +122,9 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			}
 		}
 
-		// 1.2. RequestField in Request Body (support ArrayItem)
+		// 1.3. RequestField in Request Body (support ArrayItem)
 		for fieldName, reqField := range task.RequestBodyMap {
-			// 1.2.1. Validate ArrayItemMap
+			// 1.3.1. Validate ArrayItemMap
 			if len(reqField.ArrayItemMap) > 0 {
 				arrayItemMapUpdated, childMap, errorRowsForArrayItem := validateArrayItemMap(rowID, rowData, reqField.ArrayItemMap, fileParameters)
 				if len(errorRowsForArrayItem) > 0 {
@@ -123,7 +147,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 				}
 			}
 
-			// 1.2.2. Validate field
+			// 1.3.2. Validate field
 			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
@@ -133,7 +157,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 				continue
 			}
 
-			// 1.2.2. Get real value
+			// 1.3.2. Get real value
 			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
@@ -146,7 +170,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			}
 		}
 
-		// 1.3. Validate ResponseCode config
+		// 1.4. Validate ResponseCode config
 		resultAfterMatch, errorRow := validateAndMatchJsonPath(rowID, rowData, task.Response.Code.MustHaveValueInPath)
 		if errorRow != nil {
 			errorRows = append(errorRows, *errorRow)
@@ -154,7 +178,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			task.Response.Code.MustHaveValueInPath = resultAfterMatch
 		}
 
-		// 1.3. Set value for remaining data
+		// 1.4. Set value for remaining data
 		task.ImportRowData = rowData
 		task.ImportRowIndex = rowID
 		tasksUpdated = append(tasksUpdated, task)

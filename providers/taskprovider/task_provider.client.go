@@ -2,15 +2,16 @@ package taskprovider
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 	"github.com/tidwall/gjson"
-	"net/http"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type (
@@ -88,7 +89,7 @@ func convertDataAndMappingFromRawData(dataRaw string, taskMappingStr string) (*d
 
 // buildRequestForTask ... return (reqHeader, reqEndPoint, requestBody, error)
 func buildRequestForTask(taskMapping *dto.MappingRow, dataMap map[string]string, previousResponses map[int32]string) (
-	map[string]string, string, map[string]interface{}, error) {
+	map[string]interface{}, string, map[string]interface{}, error) {
 	requestBody := make(map[string]interface{})
 	for _, reqMapping := range taskMapping.Request {
 		if reqMapping.IsMappingExcel {
