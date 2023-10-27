@@ -10,10 +10,11 @@ import (
 	"log"
 	mr "math/rand"
 	"mime/multipart"
-	"moul.io/http2curl"
 	"net/http"
 	"net/textproto"
 	"net/url"
+
+	"moul.io/http2curl"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -105,7 +106,7 @@ func SendHTTPRequest[REQ any, RES any](
 func SendHTTPRequestRaw(
 	client *http.Client,
 	method, url string,
-	header map[string]string,
+	header map[string]interface{},
 	requestParams map[string]interface{},
 	requestBody map[string]interface{},
 ) (int, string, string, error) {
@@ -127,7 +128,7 @@ func SendHTTPRequestRaw(
 	// 3. Set Header
 	if len(header) > 0 {
 		for k, v := range header {
-			req.Header.Set(k, v)
+			req.Header.Set(k, fmt.Sprintf("%s", v))
 		}
 	}
 

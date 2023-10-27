@@ -49,10 +49,11 @@ type ConfigTaskMD struct {
 	// Request
 	Endpoint         string
 	Method           string
-	Header           map[string]string
+	RequestHeaderMap map[string]*RequestFieldMD
 	RequestParamsMap map[string]*RequestFieldMD
 	RequestBodyMap   map[string]*RequestFieldMD
 	// Request that filled converted field's value
+	RequestHeader map[string]interface{}
 	RequestParams map[string]interface{}
 	RequestBody   map[string]interface{}
 	// Response
@@ -122,6 +123,12 @@ func (rg RowGroupMD) IsSupportGrouping() bool {
 }
 
 func (ct ConfigTaskMD) Clone() ConfigTaskMD {
+	headerMap := make(map[string]*RequestFieldMD)
+	for key, value := range ct.RequestHeaderMap {
+		reqField := value.Clone()
+		headerMap[key] = &reqField
+	}
+
 	requestParamsMap := make(map[string]*RequestFieldMD)
 	for key, value := range ct.RequestParamsMap {
 		reqField := value.Clone()
@@ -140,7 +147,8 @@ func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 		// Request
 		Endpoint:         ct.Endpoint,
 		Method:           ct.Method,
-		Header:           utils.CloneMap(ct.Header),
+		RequestHeader:    utils.CloneMap(ct.RequestHeader),
+		RequestHeaderMap: headerMap,
 		RequestParamsMap: requestParamsMap,
 		RequestBodyMap:   requestBodyMap,
 

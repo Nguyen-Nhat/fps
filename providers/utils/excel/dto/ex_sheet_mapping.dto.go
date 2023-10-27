@@ -2,10 +2,11 @@ package dto
 
 import (
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 	"strconv"
 	"strings"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
 
 type SheetMappingMetadata struct {
@@ -43,7 +44,7 @@ func (f *SheetMappingMetadata) GetHeaders() []string {
 func (f *SheetMappingMetadata) ToOutput(rowId int) (MappingRow, error) {
 	noData := MappingRow{}
 	// 1. convert Header
-	headerMap, err := converter.StringToMap(f.Header.ColumnName, f.Header.Value, !f.Header.Constrains.IsRequired)
+	headerMap, err := converter.StringToMapInterface(f.Header.ColumnName, f.Header.Value, !f.Header.Constrains.IsRequired)
 	if err != nil {
 		return noData, err
 	}
@@ -87,7 +88,7 @@ type (
 		RowId    int
 		TaskId   int
 		Endpoint string
-		Header   map[string]string
+		Header   map[string]interface{}
 		Request  map[string]MappingRequest // map[field_name]MappingRequest
 		Response MappingResponse
 	}

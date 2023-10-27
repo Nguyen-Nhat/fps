@@ -80,9 +80,15 @@ func toFileParameters(rawJson string) map[string]interface{} {
 // toConfigTaskMD ...
 func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 	// 1. convert Header
-	headerMap, err := converter.StringToMap("header", task.Header, true)
+	headerMap, err := converter.StringToMapInterface("header", task.Header, true)
+	var headerMapFieldMD map[string]*RequestFieldMD
 	if err != nil {
-		return ConfigTaskMD{}, err
+		headerMD, _ := toMapRequestFieldMD(task.TaskIndex, "configRequestHeader", task.Header)
+		if headerMD != nil {
+			headerMapFieldMD = headerMD
+		} else {
+			return ConfigTaskMD{}, err
+		}
 	}
 
 	// 2. convert Request Params
@@ -111,10 +117,10 @@ func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 		TaskIndex: int(task.TaskIndex),
 		TaskName:  task.Name,
 		// Request
-		Endpoint: task.EndPoint,
-		Method:   task.Method,
-		Header:   headerMap,
-		//RequestParams: requestParamsMap,
+		Endpoint:         task.EndPoint,
+		Method:           task.Method,
+		RequestHeader:    headerMap,
+		RequestHeaderMap: headerMapFieldMD,
 		RequestParamsMap: requestParamsMap,
 		RequestBodyMap:   requestBodyMap,
 		RequestParams:    map[string]interface{}{},
