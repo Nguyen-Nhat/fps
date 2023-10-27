@@ -128,7 +128,7 @@ func SendHTTPRequestRaw(
 	// 3. Set Header
 	if len(header) > 0 {
 		for k, v := range header {
-			req.Header.Set(k, fmt.Sprintf("%s", v))
+			req.Header.Set(k, fmt.Sprintf("%v", v))
 		}
 	}
 
