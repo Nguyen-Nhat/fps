@@ -101,6 +101,13 @@ func DataStartAtRow(v int32) predicate.ConfigMapping {
 	})
 }
 
+// DataAtSheet applies equality check predicate on the "data_at_sheet" field. It's identical to DataAtSheetEQ.
+func DataAtSheet(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDataAtSheet), v))
+	})
+}
+
 // RequireColumnIndex applies equality check predicate on the "require_column_index" field. It's identical to RequireColumnIndexEQ.
 func RequireColumnIndex(v string) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
@@ -325,6 +332,105 @@ func DataStartAtRowLT(v int32) predicate.ConfigMapping {
 func DataStartAtRowLTE(v int32) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldDataStartAtRow), v))
+	})
+}
+
+// DataAtSheetEQ applies the EQ predicate on the "data_at_sheet" field.
+func DataAtSheetEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetNEQ applies the NEQ predicate on the "data_at_sheet" field.
+func DataAtSheetNEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetIn applies the In predicate on the "data_at_sheet" field.
+func DataAtSheetIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldDataAtSheet), v...))
+	})
+}
+
+// DataAtSheetNotIn applies the NotIn predicate on the "data_at_sheet" field.
+func DataAtSheetNotIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldDataAtSheet), v...))
+	})
+}
+
+// DataAtSheetGT applies the GT predicate on the "data_at_sheet" field.
+func DataAtSheetGT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetGTE applies the GTE predicate on the "data_at_sheet" field.
+func DataAtSheetGTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetLT applies the LT predicate on the "data_at_sheet" field.
+func DataAtSheetLT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetLTE applies the LTE predicate on the "data_at_sheet" field.
+func DataAtSheetLTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetContains applies the Contains predicate on the "data_at_sheet" field.
+func DataAtSheetContains(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetHasPrefix applies the HasPrefix predicate on the "data_at_sheet" field.
+func DataAtSheetHasPrefix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetHasSuffix applies the HasSuffix predicate on the "data_at_sheet" field.
+func DataAtSheetHasSuffix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetEqualFold applies the EqualFold predicate on the "data_at_sheet" field.
+func DataAtSheetEqualFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDataAtSheet), v))
+	})
+}
+
+// DataAtSheetContainsFold applies the ContainsFold predicate on the "data_at_sheet" field.
+func DataAtSheetContainsFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDataAtSheet), v))
 	})
 }
 

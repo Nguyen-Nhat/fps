@@ -83,6 +83,12 @@ func (cmu *ConfigMappingUpdate) AddDataStartAtRow(i int32) *ConfigMappingUpdate 
 	return cmu
 }
 
+// SetDataAtSheet sets the "data_at_sheet" field.
+func (cmu *ConfigMappingUpdate) SetDataAtSheet(s string) *ConfigMappingUpdate {
+	cmu.mutation.SetDataAtSheet(s)
+	return cmu
+}
+
 // SetRequireColumnIndex sets the "require_column_index" field.
 func (cmu *ConfigMappingUpdate) SetRequireColumnIndex(s string) *ConfigMappingUpdate {
 	cmu.mutation.SetRequireColumnIndex(s)
@@ -275,6 +281,13 @@ func (cmu *ConfigMappingUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: configmapping.FieldDataStartAtRow,
 		})
 	}
+	if value, ok := cmu.mutation.DataAtSheet(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldDataAtSheet,
+		})
+	}
 	if value, ok := cmu.mutation.RequireColumnIndex(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -381,6 +394,12 @@ func (cmuo *ConfigMappingUpdateOne) SetNillableDataStartAtRow(i *int32) *ConfigM
 // AddDataStartAtRow adds i to the "data_start_at_row" field.
 func (cmuo *ConfigMappingUpdateOne) AddDataStartAtRow(i int32) *ConfigMappingUpdateOne {
 	cmuo.mutation.AddDataStartAtRow(i)
+	return cmuo
+}
+
+// SetDataAtSheet sets the "data_at_sheet" field.
+func (cmuo *ConfigMappingUpdateOne) SetDataAtSheet(s string) *ConfigMappingUpdateOne {
+	cmuo.mutation.SetDataAtSheet(s)
 	return cmuo
 }
 
@@ -604,6 +623,13 @@ func (cmuo *ConfigMappingUpdateOne) sqlSave(ctx context.Context) (_node *ConfigM
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: configmapping.FieldDataStartAtRow,
+		})
+	}
+	if value, ok := cmuo.mutation.DataAtSheet(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldDataAtSheet,
 		})
 	}
 	if value, ok := cmuo.mutation.RequireColumnIndex(); ok {

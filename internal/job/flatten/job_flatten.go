@@ -74,20 +74,20 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 		return
 	}
 
-	// 2. Get file by URL -> data in first sheet
-	sheetData, err := excel.LoadExcelByUrl(file.FileURL)
-	if err != nil {
-		logger.ErrorT("Cannot get data from fileURL, fileID = %v, url = %v, got error %v", file.ID, file.FileURL, err)
-		job.updateFileProcessingToFailed(ctx, file, errFileCannotLoad, nil)
-		return
-	}
-
-	// 3. Load Config Mapping & Config Task
+	// 2. Load Config Mapping & Config Task
 	cfgLoaderFactory := configloader.NewConfigLoaderFactory(job.cfgMappingService, job.cfgTaskService)
 	configMapping, err := cfgLoaderFactory.GetConfigLoader(file)
 	if err != nil {
 		logger.ErrorT("Cannot load config mapping, fileID = %v", file.ID)
 		job.updateFileProcessingToFailed(ctx, file, errConfigMapping, nil)
+		return
+	}
+
+	// 3. Get file by URL -> data in first sheet
+	sheetData, err := excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
+	if err != nil {
+		logger.ErrorT("Cannot get data from fileURL, fileID = %v, url = %v, got error %v", file.ID, file.FileURL, err)
+		job.updateFileProcessingToFailed(ctx, file, errFileCannotLoad, nil)
 		return
 	}
 

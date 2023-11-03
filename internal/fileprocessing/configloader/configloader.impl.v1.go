@@ -42,6 +42,7 @@ func (cl *databaseConfigLoaderV1) Load(file fileprocessing.ProcessingFile) (Conf
 	return ConfigMappingMD{
 		// metadata get from file processing
 		DataStartAtRow:     int(cfgMapping.DataStartAtRow),
+		DataAtSheet:        cfgMapping.DataAtSheet,
 		RequireColumnIndex: strings.Split(cfgMapping.RequireColumnIndex, ","),
 		ErrorColumnIndex:   cfgMapping.ErrorColumnIndex,
 		// parameter in file

@@ -27,6 +27,7 @@ func (ConfigMapping) Fields() []ent.Field {
 		field.Int32("total_tasks").Default(0),
 		field.Int32("data_start_at_row").
 			Default(0).NonNegative().Min(0).Comment("Data start in this row index. Apply for excel, csv"),
+		field.String("data_at_sheet").Comment("Default is first sheet in file"),
 		field.String("require_column_index").Comment("For example: A,B,C"),
 		field.String("error_column_index").Comment("Index of column, that FPS will fill when error happens"),
 		// default fields

@@ -17,6 +17,8 @@ const (
 	FieldTotalTasks = "total_tasks"
 	// FieldDataStartAtRow holds the string denoting the data_start_at_row field in the database.
 	FieldDataStartAtRow = "data_start_at_row"
+	// FieldDataAtSheet holds the string denoting the data_at_sheet field in the database.
+	FieldDataAtSheet = "data_at_sheet"
 	// FieldRequireColumnIndex holds the string denoting the require_column_index field in the database.
 	FieldRequireColumnIndex = "require_column_index"
 	// FieldErrorColumnIndex holds the string denoting the error_column_index field in the database.
@@ -37,6 +39,7 @@ var Columns = []string{
 	FieldClientID,
 	FieldTotalTasks,
 	FieldDataStartAtRow,
+	FieldDataAtSheet,
 	FieldRequireColumnIndex,
 	FieldErrorColumnIndex,
 	FieldCreatedAt,
