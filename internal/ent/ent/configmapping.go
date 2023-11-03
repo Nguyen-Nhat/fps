@@ -22,6 +22,8 @@ type ConfigMapping struct {
 	TotalTasks int32 `json:"total_tasks,omitempty"`
 	// Data start in this row index. Apply for excel, csv
 	DataStartAtRow int32 `json:"data_start_at_row,omitempty"`
+	// Default is first sheet in file
+	DataAtSheet string `json:"data_at_sheet,omitempty"`
 	// For example: A,B,C
 	RequireColumnIndex string `json:"require_column_index,omitempty"`
 	// Index of column, that FPS will fill when error happens
@@ -41,7 +43,7 @@ func (*ConfigMapping) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case configmapping.FieldID, configmapping.FieldClientID, configmapping.FieldTotalTasks, configmapping.FieldDataStartAtRow:
 			values[i] = new(sql.NullInt64)
-		case configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldCreatedBy:
+		case configmapping.FieldDataAtSheet, configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configmapping.FieldCreatedAt, configmapping.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -83,6 +85,12 @@ func (cm *ConfigMapping) assignValues(columns []string, values []interface{}) er
 				return fmt.Errorf("unexpected type %T for field data_start_at_row", values[i])
 			} else if value.Valid {
 				cm.DataStartAtRow = int32(value.Int64)
+			}
+		case configmapping.FieldDataAtSheet:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field data_at_sheet", values[i])
+			} else if value.Valid {
+				cm.DataAtSheet = value.String
 			}
 		case configmapping.FieldRequireColumnIndex:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -150,6 +158,9 @@ func (cm *ConfigMapping) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("data_start_at_row=")
 	builder.WriteString(fmt.Sprintf("%v", cm.DataStartAtRow))
+	builder.WriteString(", ")
+	builder.WriteString("data_at_sheet=")
+	builder.WriteString(cm.DataAtSheet)
 	builder.WriteString(", ")
 	builder.WriteString("require_column_index=")
 	builder.WriteString(cm.RequireColumnIndex)

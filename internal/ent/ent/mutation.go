@@ -51,6 +51,7 @@ type ConfigMappingMutation struct {
 	addtotal_tasks       *int32
 	data_start_at_row    *int32
 	adddata_start_at_row *int32
+	data_at_sheet        *string
 	require_column_index *string
 	error_column_index   *string
 	created_at           *time.Time
@@ -328,6 +329,42 @@ func (m *ConfigMappingMutation) ResetDataStartAtRow() {
 	m.adddata_start_at_row = nil
 }
 
+// SetDataAtSheet sets the "data_at_sheet" field.
+func (m *ConfigMappingMutation) SetDataAtSheet(s string) {
+	m.data_at_sheet = &s
+}
+
+// DataAtSheet returns the value of the "data_at_sheet" field in the mutation.
+func (m *ConfigMappingMutation) DataAtSheet() (r string, exists bool) {
+	v := m.data_at_sheet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDataAtSheet returns the old "data_at_sheet" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldDataAtSheet(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDataAtSheet is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDataAtSheet requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDataAtSheet: %w", err)
+	}
+	return oldValue.DataAtSheet, nil
+}
+
+// ResetDataAtSheet resets all changes to the "data_at_sheet" field.
+func (m *ConfigMappingMutation) ResetDataAtSheet() {
+	m.data_at_sheet = nil
+}
+
 // SetRequireColumnIndex sets the "require_column_index" field.
 func (m *ConfigMappingMutation) SetRequireColumnIndex(s string) {
 	m.require_column_index = &s
@@ -527,7 +564,7 @@ func (m *ConfigMappingMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigMappingMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.client_id != nil {
 		fields = append(fields, configmapping.FieldClientID)
 	}
@@ -536,6 +573,9 @@ func (m *ConfigMappingMutation) Fields() []string {
 	}
 	if m.data_start_at_row != nil {
 		fields = append(fields, configmapping.FieldDataStartAtRow)
+	}
+	if m.data_at_sheet != nil {
+		fields = append(fields, configmapping.FieldDataAtSheet)
 	}
 	if m.require_column_index != nil {
 		fields = append(fields, configmapping.FieldRequireColumnIndex)
@@ -566,6 +606,8 @@ func (m *ConfigMappingMutation) Field(name string) (ent.Value, bool) {
 		return m.TotalTasks()
 	case configmapping.FieldDataStartAtRow:
 		return m.DataStartAtRow()
+	case configmapping.FieldDataAtSheet:
+		return m.DataAtSheet()
 	case configmapping.FieldRequireColumnIndex:
 		return m.RequireColumnIndex()
 	case configmapping.FieldErrorColumnIndex:
@@ -591,6 +633,8 @@ func (m *ConfigMappingMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldTotalTasks(ctx)
 	case configmapping.FieldDataStartAtRow:
 		return m.OldDataStartAtRow(ctx)
+	case configmapping.FieldDataAtSheet:
+		return m.OldDataAtSheet(ctx)
 	case configmapping.FieldRequireColumnIndex:
 		return m.OldRequireColumnIndex(ctx)
 	case configmapping.FieldErrorColumnIndex:
@@ -630,6 +674,13 @@ func (m *ConfigMappingMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDataStartAtRow(v)
+		return nil
+	case configmapping.FieldDataAtSheet:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDataAtSheet(v)
 		return nil
 	case configmapping.FieldRequireColumnIndex:
 		v, ok := value.(string)
@@ -762,6 +813,9 @@ func (m *ConfigMappingMutation) ResetField(name string) error {
 		return nil
 	case configmapping.FieldDataStartAtRow:
 		m.ResetDataStartAtRow()
+		return nil
+	case configmapping.FieldDataAtSheet:
+		m.ResetDataAtSheet()
 		return nil
 	case configmapping.FieldRequireColumnIndex:
 		m.ResetRequireColumnIndex()

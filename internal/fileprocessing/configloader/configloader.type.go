@@ -10,6 +10,7 @@ import (
 type ConfigMappingMD struct {
 	// metadata get from file processing
 	DataStartAtRow     int      `json:"-"`
+	DataAtSheet        string   `json:"-"`
 	RequireColumnIndex []string `json:"-"`
 	ErrorColumnIndex   string   `json:"-"`
 

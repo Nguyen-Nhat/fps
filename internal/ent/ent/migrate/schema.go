@@ -15,6 +15,7 @@ var (
 		{Name: "client_id", Type: field.TypeInt32},
 		{Name: "total_tasks", Type: field.TypeInt32, Default: 0},
 		{Name: "data_start_at_row", Type: field.TypeInt32, Default: 0},
+		{Name: "data_at_sheet", Type: field.TypeString},
 		{Name: "require_column_index", Type: field.TypeString},
 		{Name: "error_column_index", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},

@@ -14,8 +14,13 @@ import (
 
 const prefixMappingRequest = "$"
 
-func LoadExcelByUrl(fileURL string) ([][]string, error) {
-	sheetMap, err := LoadSheetsInExcelByUrl(fileURL, []string{})
+func LoadExcelByUrl(fileURL string, sheetName string) ([][]string, error) {
+	var sheetNames []string
+	if len(sheetName) > 0 {
+		sheetNames = []string{sheetName}
+	}
+
+	sheetMap, err := LoadSheetsInExcelByUrl(fileURL, sheetNames)
 	if err != nil {
 		return nil, err
 	}

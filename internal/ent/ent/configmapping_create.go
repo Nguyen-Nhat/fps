@@ -54,6 +54,12 @@ func (cmc *ConfigMappingCreate) SetNillableDataStartAtRow(i *int32) *ConfigMappi
 	return cmc
 }
 
+// SetDataAtSheet sets the "data_at_sheet" field.
+func (cmc *ConfigMappingCreate) SetDataAtSheet(s string) *ConfigMappingCreate {
+	cmc.mutation.SetDataAtSheet(s)
+	return cmc
+}
+
 // SetRequireColumnIndex sets the "require_column_index" field.
 func (cmc *ConfigMappingCreate) SetRequireColumnIndex(s string) *ConfigMappingCreate {
 	cmc.mutation.SetRequireColumnIndex(s)
@@ -216,6 +222,9 @@ func (cmc *ConfigMappingCreate) check() error {
 			return &ValidationError{Name: "data_start_at_row", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.data_start_at_row": %w`, err)}
 		}
 	}
+	if _, ok := cmc.mutation.DataAtSheet(); !ok {
+		return &ValidationError{Name: "data_at_sheet", err: errors.New(`ent: missing required field "ConfigMapping.data_at_sheet"`)}
+	}
 	if _, ok := cmc.mutation.RequireColumnIndex(); !ok {
 		return &ValidationError{Name: "require_column_index", err: errors.New(`ent: missing required field "ConfigMapping.require_column_index"`)}
 	}
@@ -286,6 +295,14 @@ func (cmc *ConfigMappingCreate) createSpec() (*ConfigMapping, *sqlgraph.CreateSp
 			Column: configmapping.FieldDataStartAtRow,
 		})
 		_node.DataStartAtRow = value
+	}
+	if value, ok := cmc.mutation.DataAtSheet(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldDataAtSheet,
+		})
+		_node.DataAtSheet = value
 	}
 	if value, ok := cmc.mutation.RequireColumnIndex(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
