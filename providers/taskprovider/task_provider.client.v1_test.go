@@ -84,35 +84,28 @@ func Test_getResponseMessage(t *testing.T) {
 		responseMsg  configloader.ResponseMsg
 		httpStatus   int
 		responseBody string
-		isSuccess    bool
 	}
 	tests := []struct {
 		name            string
 		args            args
 		wantMsgContains string
 	}{
-		{"http 200, responseBody=empty, success=true --> empty",
-			args{configloader.ResponseMsg{Path: "message"}, 200, "", true},
-			""},
-		{"http 200, responseBody=empty, success=false --> default error",
-			args{configloader.ResponseMsg{Path: "message"}, 200, "", false},
+		{"http 200, responseBody=empty --> default error",
+			args{configloader.ResponseMsg{Path: "message"}, 200, ""},
 			errMsgByHttp},
-		{"http 400, responseBody={message: 'invalid data'}, success=false --> invalid data",
-			args{configloader.ResponseMsg{Path: "message"}, 400, `{"message":"invalid data"}`, false},
+		{"http 400, responseBody={message: 'invalid data'} --> invalid data",
+			args{configloader.ResponseMsg{Path: "message"}, 400, `{"message":"invalid data"}`},
 			"invalid data"},
-		{"http 400, responseBody={message: 'invalid data'}, success=true --> invalid data",
-			args{configloader.ResponseMsg{Path: "message"}, 400, `{"message":"invalid data"}`, true},
-			"invalid data"},
-		{"http 500, responseBody={message: 'system error'}, success=false --> system error",
-			args{configloader.ResponseMsg{Path: "message"}, 500, `{"message":"system error"}`, false},
+		{"http 500, responseBody={message: 'system error'} --> system error",
+			args{configloader.ResponseMsg{Path: "message"}, 500, `{"message":"system error"}`},
 			"system error"},
-		{"http 502, responseBody=empty, success=false --> default error",
-			args{configloader.ResponseMsg{Path: "message"}, 502, "", false},
+		{"http 502, responseBody=empty --> default error",
+			args{configloader.ResponseMsg{Path: "message"}, 502, ""},
 			errMsgByHttp},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := getResponseMessage(tt.args.responseMsg, tt.args.httpStatus, tt.args.responseBody, tt.args.isSuccess)
+			got := getResponseMessage(tt.args.responseMsg, tt.args.httpStatus, tt.args.responseBody)
 			if (len(got) == 0 && got != tt.wantMsgContains) || // no message
 				(len(got) != 0 && !strings.Contains(got, tt.wantMsgContains)) { // have message contains
 				t.Errorf("getResponseMessage() = %v, want contains %v", got, tt.wantMsgContains)
@@ -123,7 +116,6 @@ func Test_getResponseMessage(t *testing.T) {
 
 func Test_checkMustHaveValueInPath(t *testing.T) {
 	taskName := "this is task name"
-	defaultMessage := "this is default message"
 	messageContainTaskName := fmt.Sprintf("Không có dữ liệu khi %s", taskName)
 
 	taskNoRequireField := configloader.ConfigTaskMD{
@@ -148,76 +140,154 @@ func Test_checkMustHaveValueInPath(t *testing.T) {
 	}
 
 	type args struct {
-		responseBody   string
-		task           configloader.ConfigTaskMD
-		isSuccess      bool
-		defaultMessage string
+		responseBody string
+		task         configloader.ConfigTaskMD
 	}
 	tests := []struct {
-		name          string
-		args          args
-		wantMessage   string
-		wantIsSuccess bool
+		name                 string
+		args                 args
+		wantHasRequiredField bool
+		wantMessage          string
 	}{
-		// task is failed
-		{"responseBody=empty, taskNoRequireField, failed --> default message",
-			args{"", taskNoRequireField, false, defaultMessage},
-			defaultMessage, false},
-		{"responseBody contains required fields, taskWithDataIsObject, failed --> default message",
-			args{`{"data":{"name":"quy"}`, taskWithDataIsObject, false, defaultMessage},
-			defaultMessage, false},
-		{"responseBody not contain required fields, taskWithDataIsArray, failed --> default message",
-			args{`{"data":{"txns":[{"iddd":"123"}]}`, taskWithDataIsArray, false, defaultMessage},
-			defaultMessage, false},
-		{"responseBody not contain required fields, taskWithDataIsArrayAndPathHasFilter, failed --> default message",
-			args{`{"data":{"txns":[{"nameeee":"quy"}]}`, taskWithDataIsArrayAndPathHasFilter, false, defaultMessage},
-			defaultMessage, false},
+		// task no require field
+		{"responseBody=empty, taskNoRequireField --> no missing",
+			args{"", taskNoRequireField},
+			false, ""},
 
-		// no required field
-		{"responseBody=empty, taskNoRequireField, success --> default message",
-			args{"", taskNoRequireField, true, defaultMessage},
-			defaultMessage, true},
-		{"responseBody contains required fields, taskNoRequireField, success --> default message",
-			args{`{"data":{"name":"quy"}`, taskNoRequireField, true, defaultMessage},
-			defaultMessage, true},
-		{"responseBody not contain required fields, taskNoRequireField, success --> default message",
-			args{`{"data":{"txns":[{"iddd":"123"}]}`, taskNoRequireField, true, defaultMessage},
-			defaultMessage, true},
+		// require field but it is not existed
+		{"responseBody not contain required fields, taskWithDataIsArray --> missing",
+			args{`{"data":{"txns":[{"iddd":"123"}]}`, taskWithDataIsArray},
+			true, messageContainTaskName},
+		{"responseBody not contain required fields, taskWithDataIsArrayAndPathHasFilter --> missing",
+			args{`{"data":{"txns":[{"nameeee":"quy"}]}`, taskWithDataIsArrayAndPathHasFilter},
+			true, messageContainTaskName},
 
-		// success, response body empty
-		{"responseBody=empty, taskNoRequireField, success --> default message",
-			args{"", taskNoRequireField, true, defaultMessage},
-			defaultMessage, true},
-		{"responseBody=empty, taskWithDataIsObject, success --> message contains taskName",
-			args{"", taskWithDataIsObject, true, defaultMessage},
-			messageContainTaskName, false},
-		{"responseBody=empty, taskWithDataIsArray, success --> message contains taskName",
-			args{"", taskWithDataIsArray, true, defaultMessage},
-			messageContainTaskName, false},
-		{"responseBody=empty, taskWithDataIsArrayAndPathHasFilter, success --> message contains taskName",
-			args{"", taskWithDataIsArrayAndPathHasFilter, true, defaultMessage},
-			messageContainTaskName, false},
-
-		// success, response body contains required field
-		{"responseBody not empty, taskNoRequireField, success --> default message",
-			args{`{"data": "abc"}`, taskNoRequireField, true, defaultMessage},
-			defaultMessage, true},
-		{"responseBody contains required field, taskWithDataIsObject, success --> message contains taskName",
-			args{`{"data":{"name":"quy"}`, taskWithDataIsObject, true, defaultMessage},
-			defaultMessage, true},
-		{"responseBody contains required field, taskWithDataIsArray, success --> message contains taskName",
-			args{`{"data":{"txns":[{"id":"123"}]}`, taskWithDataIsArray, true, defaultMessage},
-			defaultMessage, true},
-		{"responseBody contains required field, taskWithDataIsArrayAndPathHasFilter, success --> message contains taskName",
-			args{`{"data":{"txns":[{"name":"123"},{"name":"quy"},{"name":"abc"}]}`, taskWithDataIsArrayAndPathHasFilter, true, defaultMessage},
-			defaultMessage, true},
+		// require field and it is existed
+		{"responseBody not empty, taskNoRequireField --> no missing",
+			args{`{"data": "abc"}`, taskNoRequireField},
+			false, ""},
+		{"responseBody contains required field, taskWithDataIsObject --> no missing",
+			args{`{"data":{"name":"quy"}`, taskWithDataIsObject},
+			false, ""},
+		{"responseBody contains required field, taskWithDataIsArray --> no missing",
+			args{`{"data":{"txns":[{"id":"123"}]}`, taskWithDataIsArray},
+			false, ""},
+		{"responseBody contains required field, taskWithDataIsArrayAndPathHasFilter --> no missing",
+			args{`{"data":{"txns":[{"name":"123"},{"name":"quy"},{"name":"abc"}]}`, taskWithDataIsArrayAndPathHasFilter},
+			false, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotMessage, gotIsSuccess := checkRequiredFieldWhenTaskSuccess(tt.args.responseBody, tt.args.task, tt.args.isSuccess, tt.args.defaultMessage)
-			if gotMessage != tt.wantMessage || gotIsSuccess != tt.wantIsSuccess {
+			gotHasRequiredField, gotMessage := checkMissingRequiredField(tt.args.responseBody, tt.args.task)
+			if gotMessage != tt.wantMessage || gotHasRequiredField != tt.wantHasRequiredField {
 				t.Errorf("checkMustHaveValueInPath() = %v,%v while want %v, %v",
-					gotMessage, gotIsSuccess, tt.wantMessage, tt.wantIsSuccess)
+					gotMessage, gotHasRequiredField, tt.wantMessage, tt.wantHasRequiredField)
+			}
+		})
+	}
+}
+
+func Test_transformMessage(t *testing.T) {
+	msgRes := "this is message response"
+	fileHeader := []string{"Header A", "Header B", "Header C"}
+	rowData := []string{"value A", "value B", "value C"}
+
+	emptyMsgTransforms := map[int]configloader.MessageTransformation{}
+
+	msgTransforms := map[int]configloader.MessageTransformation{
+		0:   {Message: "default message {{ $A }} abc"},
+		400: {HttpStatus: 400, Message: "message for http 400 {{ $header.B }} abc"},
+		500: {HttpStatus: 500, Message: "message for http 500 {{ $header.B }} {{ $A }} {{$response.message}} xyz"},
+	}
+
+	type args struct {
+		httpStatus      int
+		messageResponse string
+		msgTransforms   map[int]configloader.MessageTransformation
+		fileHeader      []string
+		rowData         []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"test transformMessage: no config Message Transformations -> empty message", args{400, msgRes, emptyMsgTransforms, fileHeader, rowData},
+			msgRes},
+		{"test transformMessage: httpStatus=400 -> correct message", args{400, msgRes, msgTransforms, fileHeader, rowData},
+			"message for http 400 Header B abc"},
+		{"test transformMessage: httpStatus=500 -> correct message", args{500, msgRes, msgTransforms, fileHeader, rowData},
+			fmt.Sprintf("message for http 500 %s %s %s xyz", "Header B", "value A", msgRes)},
+		{"test transformMessage: httpStatus = 401 (not in config) -> default message", args{401, msgRes, msgTransforms, fileHeader, rowData},
+			"default message value A abc"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := transformMessage(tt.args.httpStatus, tt.args.messageResponse, tt.args.msgTransforms, tt.args.fileHeader, tt.args.rowData); got != tt.want {
+				t.Errorf("transformMessage() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_matchMessagePattern(t *testing.T) {
+	fileHeader := []string{"Header A", "Header B", "Header C"}
+	rowData := []string{"value A", "value B", "value C"}
+	messageResponse := "this is message response"
+
+	type args struct {
+		messagePattern  string
+		fileHeader      []string
+		rowData         []string
+		messageResponse string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		// messagePattern empty or no replacement
+		{"test matchMessagePattern: messagePattern empty -> empty",
+			args{"", fileHeader, rowData, messageResponse},
+			""},
+		{"test matchMessagePattern: messagePattern no replacement -> empty",
+			args{"this is message", fileHeader, rowData, messageResponse},
+			"this is message"},
+
+		// messagePattern has 1 replacement, and it existed
+		{"test matchMessagePattern: messagePattern has 1 replacement, and it is column -> colum value",
+			args{"abc {{$A}} def", fileHeader, rowData, messageResponse},
+			"abc value A def"},
+		{"test matchMessagePattern: messagePattern has 1 replacement, and it is header -> header value",
+			args{"abc {{ $header.A }} def", fileHeader, rowData, messageResponse},
+			"abc Header A def"},
+		{"test matchMessagePattern: messagePattern has 1 replacement, and it is current response msg -> response message value",
+			args{"abc {{$response.message}} def", fileHeader, rowData, messageResponse},
+			fmt.Sprintf("abc %s def", messageResponse)},
+
+		// messagePattern has 1 replacement, and it is not existed
+		{"test matchMessagePattern: messagePattern has 1 replacement, and it is not existed column -> no replace",
+			args{"abc {{$Y}} def", fileHeader, rowData, messageResponse},
+			"abc {{$Y}} def"},
+		{"test matchMessagePattern: messagePattern has 1 replacement, and it is header -> no replace",
+			args{"abc {{ $header.M }} def", fileHeader, rowData, messageResponse},
+			"abc {{ $header.M }} def"},
+
+		// messagePattern has 1 replacement, and it wrong
+		{"test matchMessagePattern: messagePattern has 1 replacement, and it is not existed column -> no replace",
+			args{"abc {{$AA}} def", fileHeader, rowData, messageResponse},
+			"abc {{$AA}} def"},
+		{"test matchMessagePattern: messagePattern has 1 replacement, and it is header -> no replace",
+			args{"abc {{ $header.BB }} def", fileHeader, rowData, messageResponse},
+			"abc {{ $header.BB }} def"},
+		{"test matchMessagePattern: messagePattern has 1 replacement, and it is current response msg -> no replace",
+			args{"abc {{$response1.message}} def", fileHeader, rowData, messageResponse},
+			"abc {{$response1.message}} def"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := matchMessagePattern(tt.args.messagePattern, tt.args.fileHeader, tt.args.rowData, tt.args.messageResponse); got != tt.want {
+				t.Errorf("matchMessagePattern() = %v, want %v", got, tt.want)
 			}
 		})
 	}

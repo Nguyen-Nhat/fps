@@ -42,6 +42,7 @@ var (
 		{Name: "response_success_http_status", Type: field.TypeInt32},
 		{Name: "response_success_code_schema", Type: field.TypeString},
 		{Name: "response_message_schema", Type: field.TypeString},
+		{Name: "message_transformations", Type: field.TypeString},
 		{Name: "group_by_columns", Type: field.TypeString, Default: ""},
 		{Name: "group_by_size_limit", Type: field.TypeInt32, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},

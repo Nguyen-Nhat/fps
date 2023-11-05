@@ -38,6 +38,8 @@ type ConfigTask struct {
 	ResponseSuccessCodeSchema string `json:"response_success_code_schema,omitempty"`
 	// Format JSON, contains path
 	ResponseMessageSchema string `json:"response_message_schema,omitempty"`
+	// Format JSON, transform message for displaying in file result
+	MessageTransformations string `json:"message_transformations,omitempty"`
 	// Group by list columns name. Eg: A,B,C
 	GroupByColumns string `json:"group_by_columns,omitempty"`
 	// Max size of a Group. If exceed, reject file
@@ -57,7 +59,7 @@ func (*ConfigTask) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case configtask.FieldID, configtask.FieldConfigMappingID, configtask.FieldTaskIndex, configtask.FieldResponseSuccessHTTPStatus, configtask.FieldGroupBySizeLimit:
 			values[i] = new(sql.NullInt64)
-		case configtask.FieldName, configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldGroupByColumns, configtask.FieldCreatedBy:
+		case configtask.FieldName, configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldMessageTransformations, configtask.FieldGroupByColumns, configtask.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configtask.FieldCreatedAt, configtask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -147,6 +149,12 @@ func (ct *ConfigTask) assignValues(columns []string, values []interface{}) error
 				return fmt.Errorf("unexpected type %T for field response_message_schema", values[i])
 			} else if value.Valid {
 				ct.ResponseMessageSchema = value.String
+			}
+		case configtask.FieldMessageTransformations:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field message_transformations", values[i])
+			} else if value.Valid {
+				ct.MessageTransformations = value.String
 			}
 		case configtask.FieldGroupByColumns:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -238,6 +246,9 @@ func (ct *ConfigTask) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("response_message_schema=")
 	builder.WriteString(ct.ResponseMessageSchema)
+	builder.WriteString(", ")
+	builder.WriteString("message_transformations=")
+	builder.WriteString(ct.MessageTransformations)
 	builder.WriteString(", ")
 	builder.WriteString("group_by_columns=")
 	builder.WriteString(ct.GroupByColumns)

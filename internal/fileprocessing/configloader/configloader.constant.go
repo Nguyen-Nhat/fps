@@ -22,7 +22,10 @@ const (
 )
 
 const (
-	prefixMappingRequest          = "$"
-	prefixMappingRequestParameter = "$param"
-	prefixMappingRequestResponse  = "$response"
+	PrefixMappingRequest          = "$"
+	PrefixMappingRequestParameter = "$param"
+	PrefixMappingRequestResponse  = "$response"
+	PrefixMappingRequestHeader    = "$header"
+
+	PrefixMappingRequestCurrentResponseMessage = "$response.message"
 )

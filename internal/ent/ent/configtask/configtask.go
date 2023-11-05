@@ -33,6 +33,8 @@ const (
 	FieldResponseSuccessCodeSchema = "response_success_code_schema"
 	// FieldResponseMessageSchema holds the string denoting the response_message_schema field in the database.
 	FieldResponseMessageSchema = "response_message_schema"
+	// FieldMessageTransformations holds the string denoting the message_transformations field in the database.
+	FieldMessageTransformations = "message_transformations"
 	// FieldGroupByColumns holds the string denoting the group_by_columns field in the database.
 	FieldGroupByColumns = "group_by_columns"
 	// FieldGroupBySizeLimit holds the string denoting the group_by_size_limit field in the database.
@@ -61,6 +63,7 @@ var Columns = []string{
 	FieldResponseSuccessHTTPStatus,
 	FieldResponseSuccessCodeSchema,
 	FieldResponseMessageSchema,
+	FieldMessageTransformations,
 	FieldGroupByColumns,
 	FieldGroupBySizeLimit,
 	FieldCreatedAt,

@@ -235,7 +235,7 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 	}
 
 	// 3. Else, Enrich for valuePattern
-	if strings.HasPrefix(valuePattern, prefixMappingRequest) {
+	if strings.HasPrefix(valuePattern, PrefixMappingRequest) {
 		// 3.1. Case value depends on Excel Column
 		if len(valuePattern) == 2 {
 			columnIndex := string(valuePattern[1]) // if `$A` -> columnIndex = `A`
@@ -244,8 +244,8 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 			reqField.ValueDependsOnKey = columnIndex
 		} else
 		// 3.2. Else, case value depends on Previous Response
-		if len(valuePattern) > len(prefixMappingRequestResponse)+2 && strings.HasPrefix(valuePattern, prefixMappingRequestResponse) {
-			template := strings.TrimPrefix(valuePattern, prefixMappingRequestResponse) // $response1.field_abc -> template = 1.field_abc
+		if len(valuePattern) > len(PrefixMappingRequestResponse)+2 && strings.HasPrefix(valuePattern, PrefixMappingRequestResponse) {
+			template := strings.TrimPrefix(valuePattern, PrefixMappingRequestResponse) // $response1.field_abc -> template = 1.field_abc
 			dependOnTaskId, err := strconv.Atoi(string(template[0]))                   // 1.field_abc -> 1
 			if err != nil || template[1] != '.' {
 				logger.Infof("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
@@ -258,8 +258,8 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 			reqField.ValueDependsOnTaskID = dependOnTaskId
 		} else
 		// 3.3. Else, case value depends on Parameter
-		if len(valuePattern) > len(prefixMappingRequestParameter)+2 && strings.HasPrefix(valuePattern, prefixMappingRequestParameter) {
-			template := strings.TrimPrefix(valuePattern, prefixMappingRequestParameter) // $param.field_abc -> paramKey = .field_abc
+		if len(valuePattern) > len(PrefixMappingRequestParameter)+2 && strings.HasPrefix(valuePattern, PrefixMappingRequestParameter) {
+			template := strings.TrimPrefix(valuePattern, PrefixMappingRequestParameter) // $param.field_abc -> paramKey = .field_abc
 			if len(template) <= 1 || template[0] != '.' {
 				logger.Errorf("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
 				return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
@@ -297,11 +297,20 @@ func toResponseMD(task configtask.ConfigTask) (ResponseMD, error) {
 		return ResponseMD{}, fmt.Errorf("cannot convert ResponseMessageSchema")
 	}
 
-	// 3. Response
+	// 3. Message transformations
+	var messageTransforms []MessageTransformation
+	if err := json.Unmarshal([]byte(task.MessageTransformations), &messageTransforms); err != nil {
+		logger.Errorf("error when convert MessageTransformations: value=%v, err=%v", task.MessageTransformations, err)
+		return ResponseMD{}, fmt.Errorf("cannot convert MessageTransformations")
+	}
+	messageTransformMap := converter.ArrToMapIdentifyKeyInt(messageTransforms, func(mt MessageTransformation) int { return mt.HttpStatus })
+
+	// 4. Response
 	responseMD := ResponseMD{
 		HttpStatusSuccess: &task.ResponseSuccessHTTPStatus,
 		Code:              responseCode,
 		Message:           responseMsg,
+		MessageTransforms: messageTransformMap,
 	}
 	return responseMD, nil
 }

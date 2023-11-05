@@ -904,6 +904,7 @@ type ConfigTaskMutation struct {
 	addresponse_success_http_status *int32
 	response_success_code_schema    *string
 	response_message_schema         *string
+	message_transformations         *string
 	group_by_columns                *string
 	group_by_size_limit             *int32
 	addgroup_by_size_limit          *int32
@@ -1470,6 +1471,42 @@ func (m *ConfigTaskMutation) ResetResponseMessageSchema() {
 	m.response_message_schema = nil
 }
 
+// SetMessageTransformations sets the "message_transformations" field.
+func (m *ConfigTaskMutation) SetMessageTransformations(s string) {
+	m.message_transformations = &s
+}
+
+// MessageTransformations returns the value of the "message_transformations" field in the mutation.
+func (m *ConfigTaskMutation) MessageTransformations() (r string, exists bool) {
+	v := m.message_transformations
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMessageTransformations returns the old "message_transformations" field's value of the ConfigTask entity.
+// If the ConfigTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigTaskMutation) OldMessageTransformations(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMessageTransformations is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMessageTransformations requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMessageTransformations: %w", err)
+	}
+	return oldValue.MessageTransformations, nil
+}
+
+// ResetMessageTransformations resets all changes to the "message_transformations" field.
+func (m *ConfigTaskMutation) ResetMessageTransformations() {
+	m.message_transformations = nil
+}
+
 // SetGroupByColumns sets the "group_by_columns" field.
 func (m *ConfigTaskMutation) SetGroupByColumns(s string) {
 	m.group_by_columns = &s
@@ -1689,7 +1726,7 @@ func (m *ConfigTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigTaskMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.config_mapping_id != nil {
 		fields = append(fields, configtask.FieldConfigMappingID)
 	}
@@ -1722,6 +1759,9 @@ func (m *ConfigTaskMutation) Fields() []string {
 	}
 	if m.response_message_schema != nil {
 		fields = append(fields, configtask.FieldResponseMessageSchema)
+	}
+	if m.message_transformations != nil {
+		fields = append(fields, configtask.FieldMessageTransformations)
 	}
 	if m.group_by_columns != nil {
 		fields = append(fields, configtask.FieldGroupByColumns)
@@ -1768,6 +1808,8 @@ func (m *ConfigTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.ResponseSuccessCodeSchema()
 	case configtask.FieldResponseMessageSchema:
 		return m.ResponseMessageSchema()
+	case configtask.FieldMessageTransformations:
+		return m.MessageTransformations()
 	case configtask.FieldGroupByColumns:
 		return m.GroupByColumns()
 	case configtask.FieldGroupBySizeLimit:
@@ -1809,6 +1851,8 @@ func (m *ConfigTaskMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldResponseSuccessCodeSchema(ctx)
 	case configtask.FieldResponseMessageSchema:
 		return m.OldResponseMessageSchema(ctx)
+	case configtask.FieldMessageTransformations:
+		return m.OldMessageTransformations(ctx)
 	case configtask.FieldGroupByColumns:
 		return m.OldGroupByColumns(ctx)
 	case configtask.FieldGroupBySizeLimit:
@@ -1904,6 +1948,13 @@ func (m *ConfigTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetResponseMessageSchema(v)
+		return nil
+	case configtask.FieldMessageTransformations:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMessageTransformations(v)
 		return nil
 	case configtask.FieldGroupByColumns:
 		v, ok := value.(string)
@@ -2072,6 +2123,9 @@ func (m *ConfigTaskMutation) ResetField(name string) error {
 		return nil
 	case configtask.FieldResponseMessageSchema:
 		m.ResetResponseMessageSchema()
+		return nil
+	case configtask.FieldMessageTransformations:
+		m.ResetMessageTransformations()
 		return nil
 	case configtask.FieldGroupByColumns:
 		m.ResetGroupByColumns()

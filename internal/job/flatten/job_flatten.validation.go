@@ -26,6 +26,9 @@ const (
 	errConfigMissingParam = "thiếu cấu hình hệ thống cho"
 )
 
+// defaultFileHeaderAtRowID ... this value is hardcode, please move it to config_mapping in the future
+const defaultFileHeaderAtRowID = 0
+
 var regexDoubleBrace = regexp.MustCompile(`\{\{(.*?)}}`)
 
 // validateImportingData ...
@@ -40,6 +43,7 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 	if len(sheetData) == 0 || len(sheetData) < dataStartAt {
 		return nil, nil, errors.New(string(errFileNoData))
 	}
+	fileHeader := sheetData[defaultFileHeaderAtRowID]
 
 	// 2. Validate
 	var errorRows []ErrorRow
@@ -47,7 +51,7 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 
 	for id := dataStartAt - 1; id < len(sheetData); id++ {
 		rowID := id - dataStartAt + 1 // rowID is index of data (not include header), start from 1
-		cfgMappingWithConvertedData, errorRowsInRow := validateImportingDataRowAndCloneConfigMapping(rowID, sheetData[id], cfgMapping)
+		cfgMappingWithConvertedData, errorRowsInRow := validateImportingDataRowAndCloneConfigMapping(rowID, fileHeader, sheetData[id], cfgMapping)
 
 		// check error rows
 		if len(errorRowsInRow) > 0 {
@@ -61,7 +65,7 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 }
 
 // validateImportingDataRowAndCloneConfigMapping ...
-func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, configMapping configloader.ConfigMappingMD) (configloader.ConfigMappingMD, []ErrorRow) {
+func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []string, rowData []string, configMapping configloader.ConfigMappingMD) (configloader.ConfigMappingMD, []ErrorRow) {
 	var errorRows []ErrorRow
 
 	// 0. Check row empty
@@ -178,7 +182,8 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, rowData []string, 
 			task.Response.Code.MustHaveValueInPath = resultAfterMatch
 		}
 
-		// 1.4. Set value for remaining data
+		// 1.5. Set value for remaining data
+		task.ImportRowHeader = fileHeader
 		task.ImportRowData = rowData
 		task.ImportRowIndex = rowID
 		tasksUpdated = append(tasksUpdated, task)
