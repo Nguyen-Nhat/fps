@@ -207,3 +207,16 @@ func getColumnIndexInFile(exFile *excelize.File, sheetName string, columnName st
 	logger.ErrorT(errMsg)
 	return "", fmt.Errorf(errMsg)
 }
+
+// GetValueFromColumnKey ...
+func GetValueFromColumnKey(columnKey string, data []string) string {
+	if len(columnKey) != 1 {
+		return ""
+	}
+
+	columnIndex := int(strings.ToUpper(columnKey)[0]) - int('A')
+	if columnIndex < len(data) { // column request out of range
+		return strings.TrimSpace(data[columnIndex])
+	}
+	return ""
+}

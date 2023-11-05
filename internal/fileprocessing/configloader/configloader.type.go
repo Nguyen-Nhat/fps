@@ -62,8 +62,9 @@ type ConfigTaskMD struct {
 	// Group
 	RowGroup RowGroupMD
 	// Row data in importing file -> is injected in validation phase
-	ImportRowData  []string
-	ImportRowIndex int
+	ImportRowHeader []string
+	ImportRowData   []string
+	ImportRowIndex  int
 }
 
 // RequestFieldMD ... Metadata for Request Field, use for describing RequestParams, RequestBody
@@ -95,6 +96,7 @@ type ResponseMD struct {
 	HttpStatusSuccess *int32
 	Code              ResponseCode
 	Message           ResponseMsg
+	MessageTransforms map[int]MessageTransformation
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -110,6 +112,14 @@ type ResponseCode struct {
 // ResponseMsg ...
 type ResponseMsg struct {
 	Path string `json:"path"`
+}
+
+type MessageTransformation struct {
+	HttpStatus int    `json:"httpStatus"`
+	Message    string `json:"message"`
+	// We can support multi-language by using `messageTranslated`
+	// E.g: { "vi": "Đây là message", "en": "This is a message" }
+	MessageTranslated any `json:"messageTranslated"`
 }
 
 // RowGroupMD ...
@@ -164,8 +174,9 @@ func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 		RowGroup: ct.RowGroup,
 
 		// Row data in importing file -> is injected in validation phase
-		ImportRowData:  ct.ImportRowData,
-		ImportRowIndex: ct.ImportRowIndex,
+		ImportRowHeader: ct.ImportRowHeader,
+		ImportRowData:   ct.ImportRowData,
+		ImportRowIndex:  ct.ImportRowIndex,
 	}
 }
 

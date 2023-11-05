@@ -123,6 +123,12 @@ func (ctu *ConfigTaskUpdate) SetResponseMessageSchema(s string) *ConfigTaskUpdat
 	return ctu
 }
 
+// SetMessageTransformations sets the "message_transformations" field.
+func (ctu *ConfigTaskUpdate) SetMessageTransformations(s string) *ConfigTaskUpdate {
+	ctu.mutation.SetMessageTransformations(s)
+	return ctu
+}
+
 // SetGroupByColumns sets the "group_by_columns" field.
 func (ctu *ConfigTaskUpdate) SetGroupByColumns(s string) *ConfigTaskUpdate {
 	ctu.mutation.SetGroupByColumns(s)
@@ -414,6 +420,13 @@ func (ctu *ConfigTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: configtask.FieldResponseMessageSchema,
 		})
 	}
+	if value, ok := ctu.mutation.MessageTransformations(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldMessageTransformations,
+		})
+	}
 	if value, ok := ctu.mutation.GroupByColumns(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -567,6 +580,12 @@ func (ctuo *ConfigTaskUpdateOne) SetResponseSuccessCodeSchema(s string) *ConfigT
 // SetResponseMessageSchema sets the "response_message_schema" field.
 func (ctuo *ConfigTaskUpdateOne) SetResponseMessageSchema(s string) *ConfigTaskUpdateOne {
 	ctuo.mutation.SetResponseMessageSchema(s)
+	return ctuo
+}
+
+// SetMessageTransformations sets the "message_transformations" field.
+func (ctuo *ConfigTaskUpdateOne) SetMessageTransformations(s string) *ConfigTaskUpdateOne {
+	ctuo.mutation.SetMessageTransformations(s)
 	return ctuo
 }
 
@@ -889,6 +908,13 @@ func (ctuo *ConfigTaskUpdateOne) sqlSave(ctx context.Context) (_node *ConfigTask
 			Type:   field.TypeString,
 			Value:  value,
 			Column: configtask.FieldResponseMessageSchema,
+		})
+	}
+	if value, ok := ctuo.mutation.MessageTransformations(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldMessageTransformations,
 		})
 	}
 	if value, ok := ctuo.mutation.GroupByColumns(); ok {

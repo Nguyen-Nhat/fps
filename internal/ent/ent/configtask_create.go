@@ -94,6 +94,12 @@ func (ctc *ConfigTaskCreate) SetResponseMessageSchema(s string) *ConfigTaskCreat
 	return ctc
 }
 
+// SetMessageTransformations sets the "message_transformations" field.
+func (ctc *ConfigTaskCreate) SetMessageTransformations(s string) *ConfigTaskCreate {
+	ctc.mutation.SetMessageTransformations(s)
+	return ctc
+}
+
 // SetGroupByColumns sets the "group_by_columns" field.
 func (ctc *ConfigTaskCreate) SetGroupByColumns(s string) *ConfigTaskCreate {
 	ctc.mutation.SetGroupByColumns(s)
@@ -320,6 +326,9 @@ func (ctc *ConfigTaskCreate) check() error {
 	if _, ok := ctc.mutation.ResponseMessageSchema(); !ok {
 		return &ValidationError{Name: "response_message_schema", err: errors.New(`ent: missing required field "ConfigTask.response_message_schema"`)}
 	}
+	if _, ok := ctc.mutation.MessageTransformations(); !ok {
+		return &ValidationError{Name: "message_transformations", err: errors.New(`ent: missing required field "ConfigTask.message_transformations"`)}
+	}
 	if _, ok := ctc.mutation.GroupByColumns(); !ok {
 		return &ValidationError{Name: "group_by_columns", err: errors.New(`ent: missing required field "ConfigTask.group_by_columns"`)}
 	}
@@ -454,6 +463,14 @@ func (ctc *ConfigTaskCreate) createSpec() (*ConfigTask, *sqlgraph.CreateSpec) {
 			Column: configtask.FieldResponseMessageSchema,
 		})
 		_node.ResponseMessageSchema = value
+	}
+	if value, ok := ctc.mutation.MessageTransformations(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldMessageTransformations,
+		})
+		_node.MessageTransformations = value
 	}
 	if value, ok := ctc.mutation.GroupByColumns(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

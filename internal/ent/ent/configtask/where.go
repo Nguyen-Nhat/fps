@@ -157,6 +157,13 @@ func ResponseMessageSchema(v string) predicate.ConfigTask {
 	})
 }
 
+// MessageTransformations applies equality check predicate on the "message_transformations" field. It's identical to MessageTransformationsEQ.
+func MessageTransformations(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMessageTransformations), v))
+	})
+}
+
 // GroupByColumns applies equality check predicate on the "group_by_columns" field. It's identical to GroupByColumnsEQ.
 func GroupByColumns(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
@@ -1173,6 +1180,105 @@ func ResponseMessageSchemaEqualFold(v string) predicate.ConfigTask {
 func ResponseMessageSchemaContainsFold(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldResponseMessageSchema), v))
+	})
+}
+
+// MessageTransformationsEQ applies the EQ predicate on the "message_transformations" field.
+func MessageTransformationsEQ(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsNEQ applies the NEQ predicate on the "message_transformations" field.
+func MessageTransformationsNEQ(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsIn applies the In predicate on the "message_transformations" field.
+func MessageTransformationsIn(vs ...string) predicate.ConfigTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldMessageTransformations), v...))
+	})
+}
+
+// MessageTransformationsNotIn applies the NotIn predicate on the "message_transformations" field.
+func MessageTransformationsNotIn(vs ...string) predicate.ConfigTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldMessageTransformations), v...))
+	})
+}
+
+// MessageTransformationsGT applies the GT predicate on the "message_transformations" field.
+func MessageTransformationsGT(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsGTE applies the GTE predicate on the "message_transformations" field.
+func MessageTransformationsGTE(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsLT applies the LT predicate on the "message_transformations" field.
+func MessageTransformationsLT(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsLTE applies the LTE predicate on the "message_transformations" field.
+func MessageTransformationsLTE(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsContains applies the Contains predicate on the "message_transformations" field.
+func MessageTransformationsContains(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsHasPrefix applies the HasPrefix predicate on the "message_transformations" field.
+func MessageTransformationsHasPrefix(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsHasSuffix applies the HasSuffix predicate on the "message_transformations" field.
+func MessageTransformationsHasSuffix(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsEqualFold applies the EqualFold predicate on the "message_transformations" field.
+func MessageTransformationsEqualFold(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldMessageTransformations), v))
+	})
+}
+
+// MessageTransformationsContainsFold applies the ContainsFold predicate on the "message_transformations" field.
+func MessageTransformationsContainsFold(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldMessageTransformations), v))
 	})
 }
 
