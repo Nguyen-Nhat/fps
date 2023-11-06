@@ -90,7 +90,7 @@ func convertConfigMappingAndMapDataFromPreviousResponse(
 	}
 
 	// 2. Map data then Build request
-	configTask, err := mapDataByPreviousResponse(int(taskIndex), *configMapping, previousResponse)
+	configTask, err := mapDataByPreviousResponseAndCustomFunction(int(taskIndex), *configMapping, previousResponse)
 	if err != nil {
 		return "", configTask, err
 	} else {

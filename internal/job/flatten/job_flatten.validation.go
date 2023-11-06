@@ -11,6 +11,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 )
 
@@ -309,6 +310,9 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 			reqField.ValueDependsOnKey = valueDependsOnKeyMatched
 		}
 		valueStr = reqField.Value
+	case configloader.ValueDependsOnFunc:
+		isByPassField = true // If value depends on Function -> not get value, we will execute func later
+		reqField.ValueDependsOnFunc.ParamsMapped = mapValueForCustomFunctionParams(reqField.ValueDependsOnFunc.ParamsRaw, rowData, fileParameters)
 	default:
 		errMsg := fmt.Sprintf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
 		errorRows = append(errorRows, ErrorRow{rowID, errMsg})
@@ -416,4 +420,32 @@ func validateAndMatchJsonPath(rowID int, rowData []string, jsonPath string) (str
 
 	// 4. return
 	return jsonPath, nil
+}
+
+func mapValueForCustomFunctionParams(paramsRaw []string, rowData []string, fileParameters map[string]interface{}) []string {
+	// 1. Init value for ParamsMapped
+	paramsMapped := make([]string, len(paramsRaw))
+
+	// 2. Explore all raw params and map data if we can
+	for id, paramFuncPattern := range paramsRaw {
+		paramMapped := paramFuncPattern
+
+		// case get value column excel: $A, $B, ...
+		if len(paramFuncPattern) == 2 && strings.Contains(paramFuncPattern, configloader.PrefixMappingRequest) {
+			columnKey := string(paramFuncPattern[1])
+			paramMapped = excel.GetValueFromColumnKey(columnKey, rowData)
+		} else
+		// case get value from FileParameters
+		if strings.Contains(paramFuncPattern, configloader.PrefixMappingRequestParameter) {
+			paramKey := strings.TrimPrefix(paramFuncPattern, configloader.PrefixMappingRequestParameter+".")
+			if paramValue, existed := fileParameters[paramKey]; existed {
+				paramMapped = fmt.Sprintf("%+v", paramValue)
+			}
+		}
+
+		// override mapped value
+		paramsMapped[id] = paramMapped
+	}
+
+	return paramsMapped
 }
