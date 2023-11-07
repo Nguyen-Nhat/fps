@@ -19,6 +19,8 @@ const FuncReUploadFile = "reUploadFile"
 const (
 	googleDriveUrl = "drive.google.com"
 
+	// fileServiceUrl ... path is `/upload/image`
+	// api-doc: https://apidoc.teko.vn/project-doc/approved/core_logic_layer/file_service_retail/version/latest/operations/post_uploads
 	fileServiceUrl = "http://files-core-api.files-service/upload/image" // for calling internal service -> should move to env config
 	//fileServiceUrl = "https://files.dev.tekoapis.net/upload/image" // for testing local
 )
