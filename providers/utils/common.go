@@ -53,8 +53,10 @@ func HiddenString(input string, numberOfTailChar int) string {
 func SendHTTPRequest[REQ any, RES any](
 	client *http.Client,
 	method, url string,
-	header map[string]string, requestBody *REQ,
-) (*RES, error) {
+	header map[string]string,
+	requestParams map[string]string,
+	requestBody *REQ,
+) (int, *RES, error) {
 	// 1. Build body
 	var bodyIO *bytes.Buffer
 	if requestBody == nil {
@@ -67,7 +69,7 @@ func SendHTTPRequest[REQ any, RES any](
 	// 2. Build request
 	req, err := http.NewRequest(method, url, bodyIO)
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 
 	// 3. Set Header
@@ -77,11 +79,20 @@ func SendHTTPRequest[REQ any, RES any](
 		}
 	}
 
+	// 4. Set request params
+	if len(requestParams) > 0 {
+		query := req.URL.Query()
+		for paramField, paramValue := range requestParams {
+			query.Add(paramField, paramValue)
+		}
+		req.URL.RawQuery = query.Encode()
+	}
+
 	// 4. Send request
 	resp, err := client.Do(req)
 	if err != nil {
 		logger.Errorf("===== http: send request error: %+v\n", err.Error())
-		return nil, err
+		return 0, nil, err
 	}
 
 	// 5. Ready response body
@@ -91,16 +102,16 @@ func SendHTTPRequest[REQ any, RES any](
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		logger.Errorf("===== http: ready response body error: %+v\n", err.Error())
-		return nil, err
+		return resp.StatusCode, nil, err
 	}
 
 	// 6. Convert response body to Entity
 	var respBodyObj RES
 	if err := json.Unmarshal(respBody, &respBodyObj); err != nil {
 		logger.Errorf("===== http: Decode to entity error: %+v\n", err.Error())
-		return nil, err
+		return resp.StatusCode, nil, err
 	}
-	return &respBodyObj, nil
+	return resp.StatusCode, &respBodyObj, nil
 }
 
 // SendHTTPRequestRaw ... return (httpStatusCode, responseBody, curlCommand, error)
@@ -302,6 +313,29 @@ func BatchExecuting[T any](batchSize int, listData []T, execute func([]T) error)
 	}
 
 	return nil
+}
+
+func BatchExecutingReturn[T any, R any](batchSize int, listData []T, execute func([]T) ([]R, error)) ([]R, error) {
+	var result []R
+	for head := 0; head < len(listData); head += batchSize {
+		tail := head + batchSize
+		if tail > len(listData) {
+			tail = len(listData)
+		}
+
+		batch := listData[head:tail]
+
+		logger.Infof("Execute %v item (%v -> %v)\n", len(batch), head, tail)
+
+		res, err := execute(batch)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, res...)
+	}
+
+	return result, nil
 }
 
 func getCurlCommand(req *http.Request) string {
