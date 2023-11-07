@@ -25,12 +25,13 @@ const (
 	//fileServiceUrl = "https://files.dev.tekoapis.net/upload/image" // for testing local
 )
 
-var listDomainNoNeedToReUpload = []string{"lh3.googleusercontent.com", "storage.googleapis.com"}
+var listDomainNoNeedToReUpload = []string{"lh3.googleusercontent.com"}
 
 var errDefault = customFunc.FuncResult{ErrorMessage: "xảy ra lỗi với đường dẫn ảnh"}
 
 type uploadFileResponse struct {
-	Url string `json:"url"`
+	Url      string `json:"url"`
+	ImageUrl string `json:"image_url"`
 }
 
 // ReUploadFile ...
@@ -54,7 +55,7 @@ func ReUploadFile(fullURLFile string) customFunc.FuncResult {
 		return errDefault
 	}
 
-	return customFunc.FuncResult{Result: fileRes.Url}
+	return customFunc.FuncResult{Result: fileRes.ImageUrl}
 }
 
 // downloadFileStoreInMemoryBuffer ...
