@@ -51,3 +51,44 @@ func Test_validateAndMatchJsonPath(t *testing.T) {
 		})
 	}
 }
+
+func Test_mapValueForCustomFunctionParams(t *testing.T) {
+	rowData := []string{"value A", "value B", "value C"}
+	fileParameters := map[string]interface{}{
+		"field_num":   12,
+		"field_num_2": 23,
+		"field_str":   "abc_def",
+		"field_str_2": "abc_3209",
+	}
+
+	type args struct {
+		paramsRaw      []string
+		rowData        []string
+		fileParameters map[string]interface{}
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{"test mapValueForCustomFunctionParams: case raw params is empty",
+			args{[]string{}, rowData, fileParameters},
+			[]string{}},
+		{"test mapValueForCustomFunctionParams: case raw params contains number, string",
+			args{[]string{"1", "abc"}, rowData, fileParameters},
+			[]string{"1", "abc"}},
+		{"test mapValueForCustomFunctionParams: case raw params contains $A, $param",
+			args{[]string{"1", "abc", "$A", "$C", "$param.field_num", "$param.field_str"}, rowData, fileParameters},
+			[]string{"1", "abc", "value A", "value C", "12", "abc_def"}},
+		{"test mapValueForCustomFunctionParams: case raw params contains pattern not support are $response, $header",
+			args{[]string{"1", "abc", "$response1.data.id", "$header.A"}, rowData, fileParameters},
+			[]string{"1", "abc", "$response1.data.id", "$header.A"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := mapValueForCustomFunctionParams(tt.args.paramsRaw, tt.args.rowData, tt.args.fileParameters); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("mapValueForCustomFunctionParams() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

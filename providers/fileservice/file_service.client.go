@@ -3,12 +3,13 @@ package fileservice
 import (
 	"crypto/tls"
 	"fmt"
-	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"net/http"
 	"net/url"
 	"time"
+
+	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
 type (
@@ -57,9 +58,10 @@ func (c *Client) uploadFile(req uploadFileRequest) (uploadFileResponse, error) {
 
 	// 2. Build request body
 	fileContent := utils.FileContent{
-		FieldName: "file",
-		FileName:  req.FileName,
-		Data:      req.FileData,
+		FieldName:   "file",
+		FileName:    req.FileName,
+		Data:        req.FileData,
+		ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 	}
 
 	// 3. Send http request

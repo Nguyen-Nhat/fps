@@ -19,6 +19,7 @@ const (
 	ValueDependsOnExcel ValueDependsOn = "EXCEL" // Excel column in importing file
 	ValueDependsOnParam ValueDependsOn = "PARAM" // Parameters that is give when submit file
 	ValueDependsOnTask  ValueDependsOn = "TASK"  // Depends on response of previous task (request)
+	ValueDependsOnFunc  ValueDependsOn = "FUNC"  // Depends on function, and parameters of this function can be depended on Excel/Param
 )
 
 const (

@@ -10,6 +10,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
+	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
@@ -268,7 +269,18 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 			reqField.ValueDependsOn = ValueDependsOnParam
 			reqField.ValueDependsOnKey = template[1:]
 		} else
-		// 3.4. Else, Not match any supported pattern
+		// 3.4. Else, case value depends on Function
+		if customFunc.IsCustomFunction(valuePattern) {
+			function, err := customFunc.ToCustomFunction(valuePattern)
+			if err != nil {
+				logger.Errorf("----- task %v, field %v has invalid function is %v, err %v", taskID, fieldName, valuePattern, err)
+				return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
+			}
+
+			reqField.ValueDependsOn = ValueDependsOnFunc
+			reqField.ValueDependsOnFunc = function
+		} else
+		// 3.5. Else, Not match any supported pattern
 		{
 			logger.Errorf("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
 			return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)

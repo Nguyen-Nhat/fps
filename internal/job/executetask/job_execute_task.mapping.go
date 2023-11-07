@@ -9,11 +9,12 @@ import (
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
+	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
-// mapDataByPreviousResponse ...
-func mapDataByPreviousResponse(taskIndex int, configMapping configloader.ConfigMappingMD, previousResponses map[int32]string) (
+// mapDataByPreviousResponseAndCustomFunction ...
+func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping configloader.ConfigMappingMD, previousResponses map[int32]string) (
 	configloader.ConfigTaskMD, error) {
 	// 1. Get Task config
 	task, isTaskExisted := getTaskConfig(taskIndex, configMapping)
@@ -33,6 +34,7 @@ func mapDataByPreviousResponse(taskIndex int, configMapping configloader.ConfigM
 			return configloader.ConfigTaskMD{}, err
 		} else {
 			task.RequestParams[reqFieldName] = realValue
+			delete(task.RequestParamsMap, reqFieldName)
 		}
 	}
 
@@ -55,6 +57,7 @@ func mapDataByPreviousResponse(taskIndex int, configMapping configloader.ConfigM
 					return configloader.ConfigTaskMD{}, err
 				} else {
 					task.RequestBody[reqFieldName] = items
+					delete(task.RequestBodyMap, reqFieldName)
 				}
 			}
 
@@ -68,6 +71,7 @@ func mapDataByPreviousResponse(taskIndex int, configMapping configloader.ConfigM
 			return configloader.ConfigTaskMD{}, err
 		} else {
 			task.RequestBody[reqFieldName] = realValue
+			delete(task.RequestBodyMap, reqFieldName)
 		}
 	}
 
@@ -98,6 +102,15 @@ func getValueStringFromConfig(reqField *configloader.RequestFieldMD, previousRes
 			return "", err
 		}
 		valueStr = valueInTask
+	case configloader.ValueDependsOnFunc:
+		result, err := customFunc.ExecuteFunction(reqField.ValueDependsOnFunc)
+		if err != nil {
+			return nil, err
+		} else if len(result.ErrorMessage) > 0 {
+			return nil, fmt.Errorf(result.ErrorMessage)
+		} else {
+			return result.Result, nil
+		}
 	default:
 		return "", fmt.Errorf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
 	}
