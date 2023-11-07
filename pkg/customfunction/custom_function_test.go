@@ -3,6 +3,8 @@ package customFunc
 import (
 	"reflect"
 	"testing"
+
+	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
 )
 
 func TestIsCustomFunction(t *testing.T) {
@@ -37,31 +39,31 @@ func TestToCustomFunction(t *testing.T) {
 		name            string
 		functionPattern string
 		wantErr         bool
-		want            CustomFunction
+		want            customFunc.CustomFunction
 	}{
 		// not function
 		{"test ToCustomFunction: functionPattern is empty", "",
-			true, CustomFunction{}},
+			true, customFunc.CustomFunction{}},
 		{"test ToCustomFunction: functionPattern is number", "1234",
-			true, CustomFunction{}},
+			true, customFunc.CustomFunction{}},
 		{"test ToCustomFunction: functionPattern is string", "abcd",
-			true, CustomFunction{}},
+			true, customFunc.CustomFunction{}},
 		{"test ToCustomFunction: functionPattern is column value", "$A",
-			true, CustomFunction{}},
+			true, customFunc.CustomFunction{}},
 
 		// function wrong pattern
 		{"test ToCustomFunction: functionPattern is wrong pattern", "$funcc.randomInt",
-			true, CustomFunction{}},
+			true, customFunc.CustomFunction{}},
 
 		// function is correct
 		{"test ToCustomFunction: functionPattern is correct, with no param", "$func.randomInt",
-			false, CustomFunction{FunctionPattern: "$func.randomInt", Name: "randomInt", ParamsRaw: []string{}}},
+			false, customFunc.CustomFunction{FunctionPattern: "$func.randomInt", Name: "randomInt", ParamsRaw: []string{}}},
 		{"test ToCustomFunction: functionPattern is correct, with 1 param number", "$func.randomInt;123",
-			false, CustomFunction{FunctionPattern: "$func.randomInt;123", Name: "randomInt", ParamsRaw: []string{"123"}}},
+			false, customFunc.CustomFunction{FunctionPattern: "$func.randomInt;123", Name: "randomInt", ParamsRaw: []string{"123"}}},
 		{"test ToCustomFunction: functionPattern is correct, with 2 params number and string", "$func.randomInt;123;abce",
-			false, CustomFunction{FunctionPattern: "$func.randomInt;123;abce", Name: "randomInt", ParamsRaw: []string{"123", "abce"}}},
+			false, customFunc.CustomFunction{FunctionPattern: "$func.randomInt;123;abce", Name: "randomInt", ParamsRaw: []string{"123", "abce"}}},
 		{"test ToCustomFunction: functionPattern is correct, with param is column value", "$func.randomInt;{{$A}}",
-			false, CustomFunction{FunctionPattern: "$func.randomInt;{{$A}}", Name: "randomInt", ParamsRaw: []string{"{{$A}}"}}},
+			false, customFunc.CustomFunction{FunctionPattern: "$func.randomInt;{{$A}}", Name: "randomInt", ParamsRaw: []string{"{{$A}}"}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -80,33 +82,33 @@ func TestToCustomFunction(t *testing.T) {
 func TestExecuteFunction(t *testing.T) {
 	tests := []struct {
 		name    string
-		cusFunc CustomFunction
+		cusFunc customFunc.CustomFunction
 		wantErr bool
-		want    FuncResult
+		want    customFunc.FuncResult
 	}{
 		// not match function name
-		{"test ExecuteFunction: case not match function", CustomFunction{Name: "this is function that not existed"}, true, FuncResult{}},
+		{"test ExecuteFunction: case not match function", customFunc.CustomFunction{Name: "this is function that not existed"}, true, customFunc.FuncResult{}},
 
 		// funcTestError ...
-		{"test ExecuteFunction: case funcTestError", CustomFunction{Name: funcTestError},
-			false, FuncResult{nil, "this is testing error function"}},
+		{"test ExecuteFunction: case funcTestError", customFunc.CustomFunction{Name: customFunc.FuncTestError},
+			false, customFunc.FuncResult{nil, "this is testing error function"}},
 
 		// funcTest ...
 		{"test ExecuteFunction: case funcTest no params -> error",
-			CustomFunction{Name: funcTest, ParamsMapped: []string{}},
-			true, FuncResult{}},
+			customFunc.CustomFunction{Name: customFunc.FuncTest, ParamsMapped: []string{}},
+			true, customFunc.FuncResult{}},
 		{"test ExecuteFunction: case funcTest has 1 param",
-			CustomFunction{Name: funcTest, ParamsMapped: []string{"1"}},
-			true, FuncResult{}},
+			customFunc.CustomFunction{Name: customFunc.FuncTest, ParamsMapped: []string{"1"}},
+			true, customFunc.FuncResult{}},
 		{"test ExecuteFunction: case funcTest has 2 params but wrong type",
-			CustomFunction{Name: funcTest, ParamsMapped: []string{"1", "a"}},
-			true, FuncResult{}},
+			customFunc.CustomFunction{Name: customFunc.FuncTest, ParamsMapped: []string{"1", "a"}},
+			true, customFunc.FuncResult{}},
 		{"test ExecuteFunction: case funcTest has 2 params and all is valid",
-			CustomFunction{Name: funcTest, ParamsMapped: []string{"1", "20"}},
-			false, FuncResult{21, ""}},
+			customFunc.CustomFunction{Name: customFunc.FuncTest, ParamsMapped: []string{"1", "20"}},
+			false, customFunc.FuncResult{Result: 21}},
 		{"test ExecuteFunction: case funcTest has 3 params and all is valid",
-			CustomFunction{Name: funcTest, ParamsMapped: []string{"1", "2", "a"}},
-			false, FuncResult{3, ""}},
+			customFunc.CustomFunction{Name: customFunc.FuncTest, ParamsMapped: []string{"1", "2", "a"}},
+			false, customFunc.FuncResult{Result: 3}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

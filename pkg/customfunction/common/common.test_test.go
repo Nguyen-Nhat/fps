@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_testFunc(t *testing.T) {
+func Test_TestFunc(t *testing.T) {
 	type args struct {
 		a int
 		b int
@@ -20,14 +20,14 @@ func Test_testFunc(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := testFunc(tt.args.a, tt.args.b); !reflect.DeepEqual(got, tt.want) {
+			if got := TestFunc(tt.args.a, tt.args.b); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("testFunc() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_testFuncError(t *testing.T) {
+func Test_TestFuncError(t *testing.T) {
 	tests := []struct {
 		name string
 		want FuncResult
@@ -36,7 +36,7 @@ func Test_testFuncError(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := testFuncError(); !reflect.DeepEqual(got, tt.want) {
+			if got := TestFuncError(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("testFuncError() = %v, want %v", got, tt.want)
 			}
 		})
