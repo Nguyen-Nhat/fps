@@ -311,11 +311,14 @@ func toResponseMD(task configtask.ConfigTask) (ResponseMD, error) {
 
 	// 3. Message transformations
 	var messageTransforms []MessageTransformation
-	if err := json.Unmarshal([]byte(task.MessageTransformations), &messageTransforms); err != nil {
-		logger.Errorf("error when convert MessageTransformations: value=%v, err=%v", task.MessageTransformations, err)
-		return ResponseMD{}, fmt.Errorf("cannot convert MessageTransformations")
+	messageTransformMap := make(map[int]MessageTransformation)
+	if len(task.MessageTransformations) > 0 {
+		if err := json.Unmarshal([]byte(task.MessageTransformations), &messageTransforms); err != nil {
+			logger.Errorf("error when convert MessageTransformations: value=%v, err=%v", task.MessageTransformations, err)
+			return ResponseMD{}, fmt.Errorf("cannot convert MessageTransformations")
+		}
+		messageTransformMap = converter.ArrToMapIdentifyKeyInt(messageTransforms, func(mt MessageTransformation) int { return mt.HttpStatus })
 	}
-	messageTransformMap := converter.ArrToMapIdentifyKeyInt(messageTransforms, func(mt MessageTransformation) int { return mt.HttpStatus })
 
 	// 4. Response
 	responseMD := ResponseMD{
