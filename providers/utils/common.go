@@ -24,9 +24,10 @@ import (
 
 type (
 	FileContent struct {
-		FieldName string
-		FileName  string
-		Data      []byte
+		FieldName   string
+		FileName    string
+		Data        []byte
+		ContentType string
 	}
 
 	FileName struct {
@@ -167,7 +168,7 @@ func UploadFile[RES any](client *http.Client, urlPath string, content FileConten
 	// New multipart writer.
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	fw, err := createFormFile(writer, content.FieldName, content.FileName)
+	fw, err := createFormFile(writer, content.FieldName, content.FileName, content.ContentType)
 	if err != nil {
 		log.Printf("make request failed: %d", err)
 		return nil, err
@@ -212,10 +213,10 @@ func UploadFile[RES any](client *http.Client, urlPath string, content FileConten
 	return &respBodyObj, nil
 }
 
-func createFormFile(w *multipart.Writer, fieldName, fileName string) (io.Writer, error) {
+func createFormFile(w *multipart.Writer, fieldName, fileName string, contentType string) (io.Writer, error) {
 	h := make(textproto.MIMEHeader)
 	h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, fieldName, fileName))
-	h.Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	h.Set("Content-Type", contentType)
 	return w.CreatePart(h)
 }
 

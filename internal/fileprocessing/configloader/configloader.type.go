@@ -3,7 +3,7 @@ package configloader
 import (
 	"encoding/json"
 
-	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction"
+	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
