@@ -39,31 +39,31 @@ func TestToCustomFunction(t *testing.T) {
 		name            string
 		functionPattern string
 		wantErr         bool
-		want            customFunc.CustomFunction
+		want            *customFunc.CustomFunction
 	}{
 		// not function
 		{"test ToCustomFunction: functionPattern is empty", "",
-			true, customFunc.CustomFunction{}},
+			true, nil},
 		{"test ToCustomFunction: functionPattern is number", "1234",
-			true, customFunc.CustomFunction{}},
+			true, nil},
 		{"test ToCustomFunction: functionPattern is string", "abcd",
-			true, customFunc.CustomFunction{}},
+			true, nil},
 		{"test ToCustomFunction: functionPattern is column value", "$A",
-			true, customFunc.CustomFunction{}},
+			true, nil},
 
 		// function wrong pattern
 		{"test ToCustomFunction: functionPattern is wrong pattern", "$funcc.randomInt",
-			true, customFunc.CustomFunction{}},
+			true, nil},
 
 		// function is correct
 		{"test ToCustomFunction: functionPattern is correct, with no param", "$func.randomInt",
-			false, customFunc.CustomFunction{FunctionPattern: "$func.randomInt", Name: "randomInt", ParamsRaw: []string{}}},
+			false, &customFunc.CustomFunction{FunctionPattern: "$func.randomInt", Name: "randomInt", ParamsRaw: []string{}}},
 		{"test ToCustomFunction: functionPattern is correct, with 1 param number", "$func.randomInt;123",
-			false, customFunc.CustomFunction{FunctionPattern: "$func.randomInt;123", Name: "randomInt", ParamsRaw: []string{"123"}}},
+			false, &customFunc.CustomFunction{FunctionPattern: "$func.randomInt;123", Name: "randomInt", ParamsRaw: []string{"123"}}},
 		{"test ToCustomFunction: functionPattern is correct, with 2 params number and string", "$func.randomInt;123;abce",
-			false, customFunc.CustomFunction{FunctionPattern: "$func.randomInt;123;abce", Name: "randomInt", ParamsRaw: []string{"123", "abce"}}},
+			false, &customFunc.CustomFunction{FunctionPattern: "$func.randomInt;123;abce", Name: "randomInt", ParamsRaw: []string{"123", "abce"}}},
 		{"test ToCustomFunction: functionPattern is correct, with param is column value", "$func.randomInt;{{$A}}",
-			false, customFunc.CustomFunction{FunctionPattern: "$func.randomInt;{{$A}}", Name: "randomInt", ParamsRaw: []string{"{{$A}}"}}},
+			false, &customFunc.CustomFunction{FunctionPattern: "$func.randomInt;{{$A}}", Name: "randomInt", ParamsRaw: []string{"{{$A}}"}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
