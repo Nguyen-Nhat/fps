@@ -64,6 +64,7 @@ func (c *clientV1) Execute(task configloader.ConfigTaskMD) (string, string, bool
 	if isSuccess {
 		if isMissing, errMsgWhenNoRequiredField := checkMissingRequiredField(responseBody, task); isMissing {
 			messageDisplay = errMsgWhenNoRequiredField
+			isSuccess = false
 		} else {
 			messageDisplay = ""
 		}
