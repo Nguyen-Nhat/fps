@@ -67,7 +67,7 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 			}
 
 			// 2.1.1. Inject Error Display to file
-			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, "", cfgMapping.ErrorColumnIndex, int(cfgMapping.DataStartAtRow), stats.ErrorDisplays, false)
+			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, int(cfgMapping.DataStartAtRow), stats.ErrorDisplays, false)
 			if err != nil {
 				logger.ErrorT("Update file with Error Display failed, err=%v", err)
 				return

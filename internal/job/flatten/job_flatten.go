@@ -169,7 +169,7 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 	}
 
 	// 2. Inject error to importing file
-	fileDataBytes, err := excel.UpdateDataInColumnOfFile(fileURL, "", cfgMapping.ErrorColumnIndex, cfgMapping.DataStartAtRow, errorDisplays, false)
+	fileDataBytes, err := excel.UpdateDataInColumnOfFile(fileURL, cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, cfgMapping.DataStartAtRow, errorDisplays, false)
 	if err != nil {
 		logger.ErrorT("Update file with Error Display failed, err=%v", err)
 		return ""
