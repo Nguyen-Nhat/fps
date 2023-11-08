@@ -62,7 +62,7 @@ func (c *clientV1) Execute(task configloader.ConfigTaskMD) (string, string, bool
 	messageInResponse := getResponseMessage(task.Response.Message, httpStatus, responseBody)
 	var messageDisplay string
 	if isSuccess {
-		if checkPass, errMsgWhenNoRequiredField := checkMissingRequiredField(responseBody, task); !checkPass {
+		if isMissing, errMsgWhenNoRequiredField := checkMissingRequiredField(responseBody, task); isMissing {
 			messageDisplay = errMsgWhenNoRequiredField
 		} else {
 			messageDisplay = ""
