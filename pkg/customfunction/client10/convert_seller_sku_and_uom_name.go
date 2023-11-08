@@ -24,8 +24,8 @@ var (
 const (
 	// urlApiGetSkus ... has path is `/api/v2/skus`
 	// api-doc: https://apidoc.teko.vn/project-doc/approved/core_logic_layer/retail/catalog/version/latest/paths/api-v2-skus/get
-	// urlApiGetSkus = "http://catalog-core-v2-api.catalog/api/v2/skus" // url call service name
-	urlApiGetSkus = "http://localhost:10080/api/v2/skus" // url call local
+	urlApiGetSkus = "http://catalog-core-v2-api.catalog/api/v2/skus" // url call service name
+	//urlApiGetSkus = "http://localhost:10080/api/v2/skus" // url call local
 
 	batchSizeQuerySku = 50
 )
