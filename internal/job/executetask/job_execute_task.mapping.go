@@ -61,7 +61,7 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 			} else if len(childMap) == 0 { // childMap is empty -> remove field
 				delete(task.RequestBody, reqFieldName)
 			}
-			task.RequestBody[reqFieldName] = childMap
+			task.RequestBody[reqFieldName] = []map[string]interface{}{childMap}
 
 			// 4.1.2. Continue -> no convert realValue for Array Item
 			continue
