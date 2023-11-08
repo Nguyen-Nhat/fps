@@ -22,16 +22,16 @@ const (
 
 // ToCustomFunction ...
 // Conditional: functionPattern has to pass IsCustomFunction(...) function
-func ToCustomFunction(functionPattern string) (customFunc.CustomFunction, error) {
+func ToCustomFunction(functionPattern string) (*customFunc.CustomFunction, error) {
 	// 1. Check is function
 	if !IsCustomFunction(functionPattern) {
-		return customFunc.CustomFunction{}, fmt.Errorf("%s is not function", functionPattern)
+		return nil, fmt.Errorf("%s is not function", functionPattern)
 	}
 
 	// 2. Split to get function name and parameter
 	functionWithParams := strings.TrimPrefix(functionPattern, customFunctionPrefix)
 	splitRes := strings.Split(functionWithParams, paramSeparator)
-	return customFunc.CustomFunction{FunctionPattern: functionPattern, Name: splitRes[0], ParamsRaw: splitRes[1:]}, nil
+	return &customFunc.CustomFunction{FunctionPattern: functionPattern, Name: splitRes[0], ParamsRaw: splitRes[1:]}, nil
 }
 
 // IsCustomFunction ...

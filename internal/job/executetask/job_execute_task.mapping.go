@@ -11,6 +11,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
 
 // mapDataByPreviousResponseAndCustomFunction ...
@@ -43,23 +44,24 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 		// 4.1. Convert ArrayItem
 		if len(reqField.ArrayItemMap) > 0 {
 			// 4.1.1. For each child fields
-			for reqFieldChildName, reqFieldChild := range reqField.ArrayItemMap {
-				// get value
-				realChildValue, err := getValueStringFromConfig(reqFieldChild, previousResponses)
-				if err != nil {
-					return configloader.ConfigTaskMD{}, err
-				}
-
-				// set value to RequestBody, that will be used for requesting to api
-				// task.RequestBody[reqFieldName] is following format `array[map[string]interface{}]`
-				items, err := setValueForChild(realChildValue, task.RequestBody[reqFieldName], reqFieldName, reqFieldChildName)
-				if err != nil {
-					return configloader.ConfigTaskMD{}, err
-				} else {
-					task.RequestBody[reqFieldName] = items
-					delete(task.RequestBodyMap, reqFieldName)
-				}
+			childMap, err := getValueFromConfig(reqFieldName, reqField.ArrayItemMap, previousResponses)
+			if err != nil {
+				return configloader.ConfigTaskMD{}, err
 			}
+
+			if task.RequestBody[reqFieldName] != nil {
+				converter.Override([]map[string]interface{}{childMap}, task.RequestBody[reqFieldName])
+			} else {
+				task.RequestBody[reqFieldName] = []map[string]interface{}{childMap}
+			}
+			if len(childMap) == 1 { // in case int[], string[], ... -> remove key empty, then convert map to array
+				if val, ok := childMap[""]; ok {
+					task.RequestBody[reqFieldName] = []interface{}{val}
+				}
+			} else if len(childMap) == 0 { // childMap is empty -> remove field
+				delete(task.RequestBody, reqFieldName)
+			}
+			task.RequestBody[reqFieldName] = childMap
 
 			// 4.1.2. Continue -> no convert realValue for Array Item
 			continue
@@ -77,6 +79,65 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 
 	// 5. return
 	return task, nil
+}
+
+func getValueFromConfig(parentFieldName string, requestFieldList map[string]*configloader.RequestFieldMD, previousResponses map[int32]string) (
+	map[string]interface{}, error) {
+
+	childMap := make(map[string]interface{})
+
+	for fieldNameChild, reqFieldChild := range requestFieldList {
+		if len(reqFieldChild.ArrayItemMap) > 0 {
+			childMapInArr, err := getValueFromConfig(fieldNameChild, reqFieldChild.ArrayItemMap, previousResponses)
+			if err != nil {
+				return nil, err
+			}
+
+			childMap[fieldNameChild] = []map[string]interface{}{childMapInArr}
+			if len(childMapInArr) == 1 { // in case int[], string[], ... -> remove key empty, then convert map to array
+				if val, ok := childMapInArr[""]; ok {
+					childMap[fieldNameChild] = []interface{}{val}
+				}
+			} else if len(childMapInArr) == 0 { // childMapInArr is empty -> remove field
+				delete(childMap, fieldNameChild)
+			}
+
+			// Continue -> no convert realValue for Array Item
+			continue
+		}
+
+		if len(reqFieldChild.ItemsMap) > 0 {
+			childMapInObj, err := getValueFromConfig(fieldNameChild, reqFieldChild.ItemsMap, previousResponses)
+			if err != nil {
+				return nil, err
+			}
+
+			childMap[fieldNameChild] = childMapInObj
+
+			// Continue -> no convert realValue for Array Item
+			continue
+		}
+
+		// get value
+		realChildValue, err := getValueStringFromConfig(reqFieldChild, previousResponses)
+		if err != nil {
+			return nil, err
+		}
+
+		// set value to RequestBody, that will be used for requesting to api
+		// task.RequestBody[reqFieldName] is following format `array[map[string]interface{}]`
+		if reqFieldChild.Type == configloader.TypeArray {
+			if children, err := setValueForChild(realChildValue, childMap[fieldNameChild], parentFieldName, fieldNameChild); err != nil {
+				return nil, err
+			} else {
+				childMap[fieldNameChild] = children
+			}
+		} else {
+			childMap[fieldNameChild] = realChildValue
+		}
+	}
+
+	return childMap, nil
 }
 
 func getTaskConfig(taskIndex int, configMapping configloader.ConfigMappingMD) (configloader.ConfigTaskMD, bool) {
@@ -103,7 +164,7 @@ func getValueStringFromConfig(reqField *configloader.RequestFieldMD, previousRes
 		}
 		valueStr = valueInTask
 	case configloader.ValueDependsOnFunc:
-		result, err := customFunc.ExecuteFunction(reqField.ValueDependsOnFunc)
+		result, err := customFunc.ExecuteFunction(*reqField.ValueDependsOnFunc)
 		if err != nil {
 			return nil, err
 		} else if len(result.ErrorMessage) > 0 {

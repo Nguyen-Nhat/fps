@@ -197,14 +197,14 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 	return configMapping, errorRows
 }
 
-func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}) (
+func validateArrayItemMap(rowID int, rowData []string, requestFieldsMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}) (
 	map[string]*configloader.RequestFieldMD, map[string]interface{}, []ErrorRow) {
 	// 1. Init value
 	var errorRows []ErrorRow
 	childMap := make(map[string]interface{})
 
 	// 2. Explore each item in array
-	for fieldNameChild, reqFieldChild := range arrayItemMap {
+	for fieldNameChild, reqFieldChild := range requestFieldsMap {
 		// 2.1. Case field type is Array
 		if len(reqFieldChild.ArrayItemMap) > 0 {
 			// 2.1.1. Validate
@@ -225,7 +225,7 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 				delete(childMap, fieldNameChild)
 			}
 			if len(arrayItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove that field in arrayItemMap
-				delete(arrayItemMap, fieldNameChild)
+				delete(requestFieldsMap, fieldNameChild)
 			}
 
 			// 2.1.3. Continue
@@ -242,10 +242,10 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 			}
 
 			// 2.2.2. Update childMap and remove field if it was mapped data
-			reqFieldChild.ArrayItemMap = objectItemMapUpdated
+			reqFieldChild.ItemsMap = objectItemMapUpdated
 			childMap[fieldNameChild] = childMapInObj
-			if len(objectItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove that field in arrayItemMap
-				delete(arrayItemMap, fieldNameChild)
+			if len(objectItemMapUpdated) == 0 { // if no remaining item that hasn't mapped -> remove that field in ItemsMap
+				delete(requestFieldsMap, fieldNameChild)
 			}
 
 			// 2.2.3. Continue
@@ -271,12 +271,12 @@ func validateArrayItemMap(rowID int, rowData []string, arrayItemMap map[string]*
 				childMap[reqFieldChild.Field] = realValueChild
 			}
 			// config will be converted to Json string, then save to DB -> delete to reduce size of json string
-			delete(arrayItemMap, fieldNameChild)
+			delete(requestFieldsMap, fieldNameChild)
 		}
 	}
 
 	// 3. Return
-	return arrayItemMap, childMap, errorRows
+	return requestFieldsMap, childMap, errorRows
 }
 
 func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, bool, []ErrorRow) {
