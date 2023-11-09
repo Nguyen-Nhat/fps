@@ -13,7 +13,7 @@ func Test_reUploadFile(t *testing.T) {
 		url  string
 		want customFunc.FuncResult
 	}{
-		{"test reUploadFile with empty url", "", customFunc.FuncResult{Result: ""}},
+		{"test reUploadFile with empty url", "", customFunc.FuncResult{Result: nil}},
 		{"test reUploadFile", "https://abc.com/image.jpg", errDefault},
 	}
 	for _, tt := range tests {

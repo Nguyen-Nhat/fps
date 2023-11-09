@@ -38,7 +38,7 @@ type uploadFileResponse struct {
 func ReUploadFile(fullURLFile string) customFunc.FuncResult {
 	// 1. Check
 	if len(fullURLFile) == 0 {
-		return customFunc.FuncResult{Result: ""}
+		return customFunc.FuncResult{Result: nil}
 	}
 	if noNeedToReUpload(fullURLFile) {
 		return customFunc.FuncResult{Result: fullURLFile}

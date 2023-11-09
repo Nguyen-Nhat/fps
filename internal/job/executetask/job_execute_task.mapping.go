@@ -132,7 +132,7 @@ func getValueFromConfig(parentFieldName string, requestFieldList map[string]*con
 			} else {
 				childMap[fieldNameChild] = children
 			}
-		} else {
+		} else if realChildValue != nil { // ignore case value is nil
 			childMap[fieldNameChild] = realChildValue
 		}
 	}
