@@ -19,6 +19,9 @@ const FuncReUploadFile = "reUploadFile"
 const (
 	googleDriveUrl = "drive.google.com"
 
+	googleDriveUrlPrefixD = "https://drive.google.com/file/d/"
+	googleDriveUrlPrefixU = "https://drive.google.com/file/u/"
+
 	// fileServiceUrl ... path is `/upload/image`
 	// api-doc: https://apidoc.teko.vn/project-doc/approved/core_logic_layer/file_service_retail/version/latest/operations/post_uploads
 	fileServiceUrl = "http://files-core-api.files-service/upload/image" // for calling internal service -> should move to env config
@@ -76,18 +79,16 @@ func downloadFileStoreInMemoryBuffer(fullURLFile string) (string, []byte, error)
 	}
 
 	// 2. Get file url and file name
-	segments := strings.Split(fullURLFile, "/")
-	fileName := segments[len(segments)-1]
-	fixedUrl := fullURLFile
+	var fileName, fixedUrl string
 	if strings.Contains(fullURLFile, googleDriveUrl) {
-		if len(segments) >= 8 {
-			fileID := segments[7]
-			fixedUrl = fmt.Sprintf("https://drive.google.com/uc?id=%s&export=download", fileID)
-			fileName = fmt.Sprintf("%v.jpg", fileID)
-		} else {
-			logger.Errorf("Invalid url: %v", fullURLFile)
-			return "", nil, fmt.Errorf("đường dẫn lỗi")
+		var err error
+		if fixedUrl, fileName, err = extractGoogleDriveLink(fullURLFile); err != nil {
+			return "", nil, err
 		}
+	} else {
+		segments := strings.Split(fullURLFile, "/")
+		fileName = segments[len(segments)-1]
+		fixedUrl = fullURLFile
 	}
 
 	// 3. Get file
@@ -110,6 +111,35 @@ func downloadFileStoreInMemoryBuffer(fullURLFile string) (string, []byte, error)
 		return "", nil, err
 	}
 	return fileName, fileData, nil
+}
+
+func extractGoogleDriveLink(fileUrl string) (string, string, error) {
+	// 1. Extract file url
+	var fileID string
+	// E.g: https://drive.google.com/file/d/1SNtCNwVmN3Hvf5tbOnmvEIfqdB9utVeR/view?usp=drive_link
+	if strings.HasPrefix(fileUrl, googleDriveUrlPrefixD) {
+		tmpUrl := strings.TrimPrefix(fileUrl, googleDriveUrlPrefixD)
+		fileID = strings.Split(tmpUrl, "/")[0]
+	} else
+	// E.g: https://drive.google.com/file/u/1/d/1SNtCNwVmN3Hvf5tbOnmvEIfqdB9utVeR/view?usp=drive_link
+	if strings.HasPrefix(fileUrl, googleDriveUrlPrefixU) {
+		tmpUrl := strings.TrimPrefix(fileUrl, googleDriveUrlPrefixU)
+		segments := strings.Split(tmpUrl, "/")
+		if len(segments) >= 3 {
+			fileID = segments[2]
+		}
+	}
+
+	// 2. If no fileID -> return error
+	if len(fileID) == 0 {
+		logger.Errorf("Invalid url: %v", fileUrl)
+		return "", "", fmt.Errorf("đường dẫn lỗi")
+	}
+
+	// 3. return result
+	fixedUrl := fmt.Sprintf("https://drive.google.com/uc?id=%s&export=download", fileID)
+	fileName := fmt.Sprintf("%v.jpg", fileID)
+	return fixedUrl, fileName, nil
 }
 
 // uploadFile ...
