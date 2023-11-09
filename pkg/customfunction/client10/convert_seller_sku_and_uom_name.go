@@ -56,7 +56,7 @@ func ConvertSellerSkus(jsonItems string) customFunc.FuncResult {
 		existed := false
 		for _, product := range products {
 			if inputItem.SellerSku == product.SellerSku && inputItem.UomName == product.UomName {
-				itemOutput := ItemOutput{product.Sku, inputItem.RequestQty}
+				itemOutput := ItemOutput{product.Sku, inputItem.Quantity}
 				outputItems = append(outputItems, itemOutput)
 				existed = true
 				break
