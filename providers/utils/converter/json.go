@@ -23,16 +23,12 @@ func Override(input, common interface{}) {
 		case map[string]interface{}:
 			for k, v := range commonData {
 				switch reflect.TypeOf(v).Kind() {
-				case reflect.Slice:
-					if inputData[k] == nil {
-						inputData[k] = []interface{}{}
+				case reflect.Slice, reflect.Map:
+					if _, ok := inputData[k]; !ok {
+						inputData[k] = v
+					} else {
+						Override(inputData[k], v)
 					}
-					Override(inputData[k], v)
-				case reflect.Map:
-					if inputData[k] == nil {
-						inputData[k] = map[string]interface{}{}
-					}
-					Override(inputData[k], v)
 				default:
 					// do simply replacement for primitive type
 					_, ok := inputData[k]
@@ -43,11 +39,6 @@ func Override(input, common interface{}) {
 			}
 		default:
 			logger.Errorf("no support %v", commonData)
-		}
-	case []interface{}:
-		switch commonData := common.(type) {
-		case []interface{}:
-			inputData = commonData
 		}
 	default:
 		logger.Errorf("no support %v", inputData)
