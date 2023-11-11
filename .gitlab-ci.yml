@@ -28,4 +28,11 @@ test:unitest:
     - go test ./... -coverprofile=loyalty-file-processing-coverage.cov.tmp -coverpkg=./... -covermode count
     - cat loyalty-file-processing-coverage.cov.tmp | grep -v -e"internal/ent" -e"/cmd" -e "/configs" > loyalty-file-processing-coverage.cov
     - go tool cover -func=loyalty-file-processing-coverage.cov
+    - go get github.com/boumenot/gocover-cobertura
+    - go run github.com/boumenot/gocover-cobertura < loyalty-file-processing-coverage.cov > coverage.xml
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
   coverage: '/total:\t.*\(statements\)\t.*\d+(?:\.\d+)?/'
