@@ -28,3 +28,4 @@ test:unitest:
     - go test ./... -coverprofile=loyalty-file-processing-coverage.cov.tmp -coverpkg=./... -covermode count
     - cat loyalty-file-processing-coverage.cov.tmp | grep -v -e"internal/ent" -e"/cmd" -e "/configs" > loyalty-file-processing-coverage.cov
     - go tool cover -func=loyalty-file-processing-coverage.cov
+  coverage: '/total:\t.*\(statements\)\t.*\d+(?:\.\d+)?/'
