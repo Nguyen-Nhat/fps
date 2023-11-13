@@ -2,6 +2,7 @@ package fileprocessing
 
 import (
 	"context"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -52,6 +53,7 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 			ClientID:       req.ClientID,
 			DisplayName:    displayName,
 			FileURL:        req.FileURL,
+			ResultFileURL:  req.FileURL,
 			Status:         StatusInit,
 			CreatedBy:      req.CreatedBy,
 			FileParameters: req.FileParameters,
