@@ -13,6 +13,7 @@ func Test_isSuccess(t *testing.T) {
 		args args
 		want bool
 	}{
+		{name: "", args: args{0, 0, 0}, want: true},
 		{name: "", args: args{0, 0, 2}, want: false},
 		{name: "", args: args{1, 0, 2}, want: false},
 		{name: "", args: args{1, 1, 2}, want: true},

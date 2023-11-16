@@ -180,8 +180,7 @@ func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
 // private method ------------------------------------------------------------------------------------------------------
 
 func isFinished(totalSuccess int, totalFailed int, total int) bool {
-	isSuccess := !(totalSuccess == 0 && totalFailed == 0) && total == totalSuccess+totalFailed
-	return isSuccess
+	return total == totalSuccess+totalFailed
 }
 
 func createRows(ctx context.Context, subRequest []CreateProcessingFileRowJob, service *ServiceImpl) error {
