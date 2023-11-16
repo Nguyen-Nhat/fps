@@ -42,7 +42,7 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 		return nil, nil, errors.New(errConfigMapping)
 	}
 	if len(sheetData) == 0 || len(sheetData) < dataStartAt {
-		return nil, nil, errors.New(string(errFileNoData))
+		return []*configloader.ConfigMappingMD{}, nil, nil
 	}
 	fileHeader := sheetData[defaultFileHeaderAtRowID]
 
