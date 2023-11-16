@@ -1,0 +1,86 @@
+[
+  {
+    "field": "field_hardcode_string",
+    "type": "string",
+    "valuePattern": "abc",
+    "required": true
+  },
+  {
+    "field": "field_hardcode_int",
+    "type": "integer",
+    "valuePattern": "1",
+    "required": true
+  },
+  {
+    "field": "field_hardcode_number",
+    "type": "number",
+    "valuePattern": "1.23",
+    "required": true
+  },
+  {
+    "field": "field_hardcode_bool",
+    "type": "boolean",
+    "valuePattern": "true",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_param_string",
+    "type": "string",
+    "valuePattern": "$param.sellerName",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_param_int",
+    "type": "integer",
+    "valuePattern": "$param.sellerId",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_res",
+    "type": "integer",
+    "valuePattern": "$response1.data.code",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_res_and_param",
+    "type": "integer",
+    "valuePattern": "$response2.data.#(code==\"{{ $param.code }}\").id",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_res_and_column",
+    "type": "integer",
+    "valuePattern": "$response2.data.#(code==\"{{ $A }}\").name",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_func",
+    "type": "json",
+    "valuePattern": "$func.convertSellerSkuAndUomName",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_func_and_primitive_param",
+    "type": "json",
+    "valuePattern": "$func.convertSellerSkuAndUomName;1;abc",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_func_and_column",
+    "type": "json",
+    "valuePattern": "$func.convertSellerSkuAndUomName;$C",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_func_and_param",
+    "type": "json",
+    "valuePattern": "$func.convertSellerSkuAndUomName;$param.name",
+    "required": true
+  },
+  {
+    "field": "field_depend_on_func_and_column_param",
+    "type": "string",
+    "valuePattern": "$func.convertSellerSkuAndUomName;$param.name;$M",
+    "required": true
+  }
+]

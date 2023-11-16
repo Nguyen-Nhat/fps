@@ -160,11 +160,11 @@ func getValueStringFromConfig(reqField *configloader.RequestFieldMD, previousRes
 	case configloader.ValueDependsOnTask:
 		valueInTask, err := getValueByPreviousTaskResponse(reqField, previousResponses)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		valueStr = valueInTask
 	case configloader.ValueDependsOnFunc:
-		result, err := customFunc.ExecuteFunction(*reqField.ValueDependsOnFunc)
+		result, err := customFunc.ExecuteFunction(reqField.ValueDependsOnFunc)
 		if err != nil {
 			return nil, err
 		} else if len(result.ErrorMessage) > 0 {
@@ -173,7 +173,7 @@ func getValueStringFromConfig(reqField *configloader.RequestFieldMD, previousRes
 			return result.Result, nil
 		}
 	default:
-		return "", fmt.Errorf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
+		return nil, fmt.Errorf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
 	}
 
 	// 2. Get real value then return

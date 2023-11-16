@@ -4,21 +4,22 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/enttest"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
-	"github.com/stretchr/testify/assert"
-	"github.com/xo/dburl"
 	"log"
 	"os"
 	"testing"
 
 	entsql "entgo.io/ent/dialect/sql"
-	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/stretchr/testify/assert"
+	"github.com/xo/dburl"
+
+	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/enttest"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 func CreateEntClientFromDB(db *sql.DB) *ent.Client {

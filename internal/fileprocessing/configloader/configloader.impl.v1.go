@@ -83,7 +83,7 @@ func toFileParameters(rawJson string) map[string]interface{} {
 func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 	// 1. convert Header
 	headerMap, err := converter.StringToMapInterface("header", task.Header, true)
-	var headerMapFieldMD map[string]*RequestFieldMD
+	var headerMapFieldMD = make(map[string]*RequestFieldMD)
 	if err != nil {
 		headerMD, _ := toMapRequestFieldMD(task.TaskIndex, "configRequestHeader", task.Header)
 		if headerMD != nil {
@@ -272,13 +272,13 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 		// 3.4. Else, case value depends on Function
 		if customFunc.IsCustomFunction(valuePattern) {
 			function, err := customFunc.ToCustomFunction(valuePattern)
-			if err != nil {
+			if err != nil || function == nil {
 				logger.Errorf("----- task %v, field %v has invalid function is %v, err %v", taskID, fieldName, valuePattern, err)
 				return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
 			}
 
 			reqField.ValueDependsOn = ValueDependsOnFunc
-			reqField.ValueDependsOnFunc = function
+			reqField.ValueDependsOnFunc = *function
 		} else
 		// 3.5. Else, Not match any supported pattern
 		{

@@ -1,0 +1,143 @@
+package configloader
+
+import customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
+
+func wantRequestBody_1() map[string]*RequestFieldMD {
+	return map[string]*RequestFieldMD{
+		"field_hardcode_string": {
+			Field:          "field_hardcode_string",
+			Type:           "string",
+			ValuePattern:   "abc",
+			ValueDependsOn: "NONE",
+			Value:          "abc",
+			Required:       true,
+		},
+		"field_hardcode_int": {
+			Field:          "field_hardcode_int",
+			Type:           "integer",
+			ValuePattern:   "1",
+			ValueDependsOn: "NONE",
+			Value:          "1",
+			Required:       true,
+		},
+		"field_hardcode_number": {
+			Field:          "field_hardcode_number",
+			Type:           "number",
+			ValuePattern:   "1.23",
+			ValueDependsOn: "NONE",
+			Value:          "1.23",
+			Required:       true,
+		},
+		"field_hardcode_bool": {
+			Field:          "field_hardcode_bool",
+			Type:           "boolean",
+			ValuePattern:   "true",
+			ValueDependsOn: "NONE",
+			Value:          "true",
+			Required:       true,
+		},
+		"field_depend_on_param_string": {
+			Field:             "field_depend_on_param_string",
+			Type:              "string",
+			ValuePattern:      "$param.sellerName",
+			ValueDependsOn:    "PARAM",
+			ValueDependsOnKey: "sellerName",
+			Required:          true,
+		},
+		"field_depend_on_param_int": {
+			Field:             "field_depend_on_param_int",
+			Type:              "integer",
+			ValuePattern:      "$param.sellerId",
+			ValueDependsOn:    "PARAM",
+			ValueDependsOnKey: "sellerId",
+			Required:          true,
+		},
+		"field_depend_on_res": {
+			Field:                "field_depend_on_res",
+			Type:                 "integer",
+			ValuePattern:         "$response1.data.code",
+			ValueDependsOn:       "TASK",
+			ValueDependsOnKey:    "data.code",
+			ValueDependsOnTaskID: 1,
+			Required:             true,
+		},
+		"field_depend_on_res_and_param": {
+			Field:                "field_depend_on_res_and_param",
+			Type:                 "integer",
+			ValuePattern:         "$response2.data.#(code==\"{{ $param.code }}\").id",
+			ValueDependsOn:       "TASK",
+			ValueDependsOnKey:    "data.#(code==\"{{ $param.code }}\").id",
+			ValueDependsOnTaskID: 2,
+			Required:             true,
+		},
+		"field_depend_on_res_and_column": {
+			Field:                "field_depend_on_res_and_column",
+			Type:                 "integer",
+			ValuePattern:         "$response2.data.#(code==\"{{ $A }}\").name",
+			ValueDependsOn:       "TASK",
+			ValueDependsOnKey:    "data.#(code==\"{{ $A }}\").name",
+			ValueDependsOnTaskID: 2,
+			Required:             true,
+		},
+		"field_depend_on_func": {
+			Field:          "field_depend_on_func",
+			Type:           "json",
+			ValuePattern:   "$func.convertSellerSkuAndUomName",
+			ValueDependsOn: "FUNC",
+			ValueDependsOnFunc: customFunc.CustomFunction{
+				FunctionPattern: "$func.convertSellerSkuAndUomName",
+				Name:            "convertSellerSkuAndUomName",
+				ParamsRaw:       []string{},
+			},
+			Required: true,
+		},
+		"field_depend_on_func_and_primitive_param": {
+			Field:          "field_depend_on_func_and_primitive_param",
+			Type:           "json",
+			ValuePattern:   "$func.convertSellerSkuAndUomName;1;abc",
+			ValueDependsOn: "FUNC",
+			ValueDependsOnFunc: customFunc.CustomFunction{
+				FunctionPattern: "$func.convertSellerSkuAndUomName;1;abc",
+				Name:            "convertSellerSkuAndUomName",
+				ParamsRaw:       []string{"1", "abc"},
+			},
+			Required: true,
+		},
+		"field_depend_on_func_and_column": {
+			Field:          "field_depend_on_func_and_column",
+			Type:           "json",
+			ValuePattern:   "$func.convertSellerSkuAndUomName;$C",
+			ValueDependsOn: "FUNC",
+			ValueDependsOnFunc: customFunc.CustomFunction{
+				FunctionPattern: "$func.convertSellerSkuAndUomName;$C",
+				Name:            "convertSellerSkuAndUomName",
+				ParamsRaw:       []string{"$C"},
+			},
+			Required: true,
+		},
+		"field_depend_on_func_and_param": {
+			Field:          "field_depend_on_func_and_param",
+			Type:           "json",
+			ValuePattern:   "$func.convertSellerSkuAndUomName;$param.name",
+			ValueDependsOn: "FUNC",
+			ValueDependsOnFunc: customFunc.CustomFunction{
+				FunctionPattern: "$func.convertSellerSkuAndUomName;$param.name",
+				Name:            "convertSellerSkuAndUomName",
+				ParamsRaw:       []string{"$param.name"},
+			},
+			Required: true,
+		},
+		"field_depend_on_func_and_column_param": {
+			Field:          "field_depend_on_func_and_column_param",
+			Type:           "string",
+			ValuePattern:   "$func.convertSellerSkuAndUomName;$param.name;$M",
+			ValueDependsOn: "FUNC",
+			ValueDependsOnFunc: customFunc.CustomFunction{
+				FunctionPattern: "$func.convertSellerSkuAndUomName;$param.name;$M",
+				Name:            "convertSellerSkuAndUomName",
+				ParamsRaw:       []string{"$param.name", "$M"},
+			},
+			Required: true,
+		},
+	}
+}

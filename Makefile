@@ -18,6 +18,12 @@ jira-test:
 jira-test-push:
 	 /bin/zsh ./push-testcase.sh
 
+test-n-coverage:
+	go test ./... -coverprofile=fps.cov.tmp -coverpkg=./... -covermode count
+	cat fps.cov.tmp | grep -s -v -e"internal/ent" -e"/cmd" -e"/configs" -e"api/server/common" > fps.cov \
+    && go tool cover -func=fps.cov \
+	&& go tool cover -func fps.cov | grep ^total
+
 coverage:
 	go tool cover -func loyalty-file-processing-coverage.cov | grep ^total
 

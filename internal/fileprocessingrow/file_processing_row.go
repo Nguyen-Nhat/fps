@@ -67,10 +67,6 @@ func (s *CustomStatisticModel) IsSuccessAll() bool {
 	return tmp == s.Statuses
 }
 
-func (s *CustomStatisticModel) IsContainsFailed() bool {
-	statusFailedStr := strconv.Itoa(StatusFailed)
-	return strings.Contains(s.Statuses, statusFailedStr)
-}
 func (s *CustomStatisticModel) GetErrorDisplay() string {
 	errorDisplay := ""
 
@@ -90,6 +86,11 @@ func (s *CustomStatisticModel) GetErrorDisplay() string {
 	}
 
 	return errorDisplay
+}
+
+func (s *CustomStatisticModel) IsContainsFailed() bool {
+	statusFailedStr := strconv.Itoa(StatusFailed)
+	return strings.Contains(s.Statuses, statusFailedStr)
 }
 
 // IsProcessed ... TRUE when contains terminated status (Success/Failed)
