@@ -55,7 +55,9 @@ func ConvertSellerSkus(jsonItems string) customFunc.FuncResult {
 	for _, inputItem := range inputItems {
 		existed := false
 		for _, product := range products {
-			if inputItem.SellerSku == product.SellerSku && inputItem.UomName == product.UomName {
+			sellerSku := utils.TrimSpaceAndToLower(inputItem.SellerSku)
+			uomName := utils.TrimSpaceAndToLower(inputItem.UomName)
+			if sellerSku == product.SellerSku && uomName == product.UomName {
 				itemOutput := ItemOutput{product.Sku, inputItem.Quantity}
 				outputItems = append(outputItems, itemOutput)
 				existed = true
@@ -75,7 +77,6 @@ func callApiGetSkus(subItems []ItemInput) ([]Product, error) {
 	// 1. Convert input to param
 	sellerSkus := converter.Map(subItems, func(i ItemInput) string { return i.SellerSku })
 	sellerSkusStr := strings.Join(sellerSkus[:], ",")
-	// todo batch 50
 
 	// 2. Prepare call api
 	httpClient := initHttpClient()

@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/textproto"
 	"net/url"
+	"strings"
 
 	"moul.io/http2curl"
 
@@ -357,4 +358,10 @@ func CloneMap[D any](root map[string]D) map[string]D {
 
 func CloneArray[D any](root []D) []D {
 	return append([]D{}, root...)
+}
+
+func TrimSpaceAndToLower(input string) string {
+	out := strings.TrimSpace(input)
+	out = strings.ToLower(out)
+	return out
 }

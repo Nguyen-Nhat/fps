@@ -1,10 +1,11 @@
 package configloader
 
 import (
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"reflect"
 	"testing"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 )
 
 func Test_toRowGroupMD(t *testing.T) {

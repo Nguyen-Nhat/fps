@@ -275,3 +275,21 @@ func TestRandStringBytes(t *testing.T) {
 		})
 	}
 }
+
+func Test_TrimSpaceAndToLower(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{"test TrimSpaceAndToLower case empty", "", ""},
+		{"test TrimSpaceAndToLower case normal", "  This is    a string with space and UPPER and lower     ", "this is    a string with space and upper and lower"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := TrimSpaceAndToLower(tt.input); got != tt.want {
+				t.Errorf("TrimSpaceAndToLower() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
