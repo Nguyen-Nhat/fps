@@ -80,9 +80,6 @@ func (mgr *jobExecuteTaskManager) Execute() {
 	}
 
 	// 3. Execute Tasks in each file
-	jobExecuteTask := newJobExecuteTask(mgr.fprService)
-	workerPool := workers.NewWorkerPool(mgr.cfg.NumDigesters)
-	workerPool.Run()
 	for _, file := range fpList {
 		// 3.1. Get all task of file.ID, group by rowIndex
 		taskGroupByRow, _ := mgr.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, 5000)
@@ -91,14 +88,23 @@ func (mgr *jobExecuteTaskManager) Execute() {
 			continue
 		}
 
-		// 3.2. Handle tasks in each rowIndex
+		// 3.2. Init worker pool
+		numDigesters := mgr.cfg.GetNumDigesters(int(file.ClientID))
+		logger.Infof("----- Init worker pool with size %d for file %d, total taskGroupByRow is %d\n", numDigesters, file.ID, len(taskGroupByRow))
+		jobExecTask := newJobExecuteTask(mgr.fprService)
+		workerPool := workers.NewWorkerPool(numDigesters)
+		workerPool.Run()
+
+		// 3.3. Handle tasks in each rowIndex by adding it into worker
 		for rowId, tasks := range taskGroupByRow {
 			tmpRowId := rowId
 			tmpTasks := tasks
 			workerPool.AddTask(func() {
-				jobExecuteTask.ExecuteTask(ctx, file.ID, tmpRowId, tmpTasks)
+				jobExecTask.ExecuteTask(ctx, file.ID, tmpRowId, tmpTasks)
 			})
 		}
+
+		// 3.4. Close worker to stop receiving new tasks
+		workerPool.Close()
 	}
-	workerPool.Close()
 }
