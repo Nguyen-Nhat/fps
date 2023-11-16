@@ -293,3 +293,27 @@ func Test_TrimSpaceAndToLower(t *testing.T) {
 		})
 	}
 }
+
+func TestEqualsIgnoreCase(t *testing.T) {
+	type args struct {
+		s1 string
+		s2 string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"", args{"", ""}, true},
+		{"", args{"  abc  ", "abc   "}, true},
+		{"", args{"  abBDc  ", "abbDc   "}, true},
+		{"", args{"  this Is A test  ", "               this iS a TEST   "}, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := EqualsIgnoreCase(tt.args.s1, tt.args.s2); got != tt.want {
+				t.Errorf("EqualsIgnoreCase() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

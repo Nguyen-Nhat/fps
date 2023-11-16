@@ -365,3 +365,7 @@ func TrimSpaceAndToLower(input string) string {
 	out = strings.ToLower(out)
 	return out
 }
+
+func EqualsIgnoreCase(s1 string, s2 string) bool {
+	return TrimSpaceAndToLower(s1) == TrimSpaceAndToLower(s2)
+}
