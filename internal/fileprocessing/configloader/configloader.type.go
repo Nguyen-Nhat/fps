@@ -89,7 +89,7 @@ type RequestFieldMD struct {
 	ValueDependsOn       ValueDependsOn
 	ValueDependsOnKey    string
 	ValueDependsOnTaskID int
-	ValueDependsOnFunc   *customFunc.CustomFunction
+	ValueDependsOnFunc   customFunc.CustomFunction
 	Value                string // real value in string. RealValue = Value when Value is raw. RealValue is value after get from pattern in Value
 }
 

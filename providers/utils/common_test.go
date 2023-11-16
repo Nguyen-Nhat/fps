@@ -276,6 +276,36 @@ func TestRandStringBytes(t *testing.T) {
 	}
 }
 
+func TestFileName_FullNameWithSuffix(t *testing.T) {
+	type fields struct {
+		FullName  string
+		Name      string
+		Extension string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		suffix string
+		want   string
+	}{
+		{"test FullNameWithSuffix case normal", fields{"full_name", "name", "abc"}, "_result", "name_result.abc"},
+		{"test FullNameWithSuffix case name empty", fields{"", "", "abc"}, "_result", "_result.abc"},
+		{"test FullNameWithSuffix case suffix empty", fields{"full_name", "name", "abc"}, "", "name.abc"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := &FileName{
+				FullName:  tt.fields.FullName,
+				Name:      tt.fields.Name,
+				Extension: tt.fields.Extension,
+			}
+			if got := f.FullNameWithSuffix(tt.suffix); got != tt.want {
+				t.Errorf("FullNameWithSuffix() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_TrimSpaceAndToLower(t *testing.T) {
 	tests := []struct {
 		name  string
