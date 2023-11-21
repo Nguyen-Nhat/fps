@@ -22,6 +22,7 @@ type CreateFileProcessingRequest struct {
 	FileDisplayName string `json:"fileDisplayName"`
 	CreatedBy       string `json:"createdBy"`
 	Parameters      string `json:"parameters"`
+	SellerID        int32  `json:"sellerId"`
 }
 
 // Take from https://stackoverflow.com/a/36922225
@@ -69,6 +70,7 @@ func (c *CreateFileProcessingRequest) Bind(r *http.Request) error {
 
 type GetFileProcessHistoryRequest struct {
 	ClientID  int32  `json:"clientId"`
+	SellerID  int32  `json:"sellerId"`
 	CreatedBy string `json:"createdBy"`
 	Page      int    `json:"page"`
 	PageSize  int    `json:"size"`
@@ -133,6 +135,7 @@ type ProcessingHistoryFile struct {
 	FileUrl             string `json:"fileUrl"`
 	ResultFileUrl       string `json:"resultFileUrl"`
 	Status              string `json:"status"`
+	SellerID            int32  `json:"sellerId"`
 	StatsTotalRow       int32  `json:"statsTotalRow"`
 	StatsTotalProcessed int32  `json:"statsTotalProcessed"`
 	StatsTotalSuccess   int32  `json:"statsTotalSuccess"`

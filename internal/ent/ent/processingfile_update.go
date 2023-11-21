@@ -78,6 +78,19 @@ func (pfu *ProcessingFileUpdate) SetFileParameters(s string) *ProcessingFileUpda
 	return pfu
 }
 
+// SetSellerID sets the "seller_id" field.
+func (pfu *ProcessingFileUpdate) SetSellerID(i int32) *ProcessingFileUpdate {
+	pfu.mutation.ResetSellerID()
+	pfu.mutation.SetSellerID(i)
+	return pfu
+}
+
+// AddSellerID adds i to the "seller_id" field.
+func (pfu *ProcessingFileUpdate) AddSellerID(i int32) *ProcessingFileUpdate {
+	pfu.mutation.AddSellerID(i)
+	return pfu
+}
+
 // SetTotalMapping sets the "total_mapping" field.
 func (pfu *ProcessingFileUpdate) SetTotalMapping(i int32) *ProcessingFileUpdate {
 	pfu.mutation.ResetTotalMapping()
@@ -376,6 +389,20 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldFileParameters,
 		})
 	}
+	if value, ok := pfu.mutation.SellerID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldSellerID,
+		})
+	}
+	if value, ok := pfu.mutation.AddedSellerID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldSellerID,
+		})
+	}
 	if value, ok := pfu.mutation.TotalMapping(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt32,
@@ -533,6 +560,19 @@ func (pfuo *ProcessingFileUpdateOne) AddStatus(i int16) *ProcessingFileUpdateOne
 // SetFileParameters sets the "file_parameters" field.
 func (pfuo *ProcessingFileUpdateOne) SetFileParameters(s string) *ProcessingFileUpdateOne {
 	pfuo.mutation.SetFileParameters(s)
+	return pfuo
+}
+
+// SetSellerID sets the "seller_id" field.
+func (pfuo *ProcessingFileUpdateOne) SetSellerID(i int32) *ProcessingFileUpdateOne {
+	pfuo.mutation.ResetSellerID()
+	pfuo.mutation.SetSellerID(i)
+	return pfuo
+}
+
+// AddSellerID adds i to the "seller_id" field.
+func (pfuo *ProcessingFileUpdateOne) AddSellerID(i int32) *ProcessingFileUpdateOne {
+	pfuo.mutation.AddSellerID(i)
 	return pfuo
 }
 
@@ -862,6 +902,20 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldFileParameters,
+		})
+	}
+	if value, ok := pfuo.mutation.SellerID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldSellerID,
+		})
+	}
+	if value, ok := pfuo.mutation.AddedSellerID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldSellerID,
 		})
 	}
 	if value, ok := pfuo.mutation.TotalMapping(); ok {

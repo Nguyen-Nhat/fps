@@ -2879,6 +2879,8 @@ type ProcessingFileMutation struct {
 	status                   *int16
 	addstatus                *int16
 	file_parameters          *string
+	seller_id                *int32
+	addseller_id             *int32
 	total_mapping            *int32
 	addtotal_mapping         *int32
 	need_group_row           *bool
@@ -3250,6 +3252,62 @@ func (m *ProcessingFileMutation) OldFileParameters(ctx context.Context) (v strin
 // ResetFileParameters resets all changes to the "file_parameters" field.
 func (m *ProcessingFileMutation) ResetFileParameters() {
 	m.file_parameters = nil
+}
+
+// SetSellerID sets the "seller_id" field.
+func (m *ProcessingFileMutation) SetSellerID(i int32) {
+	m.seller_id = &i
+	m.addseller_id = nil
+}
+
+// SellerID returns the value of the "seller_id" field in the mutation.
+func (m *ProcessingFileMutation) SellerID() (r int32, exists bool) {
+	v := m.seller_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSellerID returns the old "seller_id" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldSellerID(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSellerID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSellerID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSellerID: %w", err)
+	}
+	return oldValue.SellerID, nil
+}
+
+// AddSellerID adds i to the "seller_id" field.
+func (m *ProcessingFileMutation) AddSellerID(i int32) {
+	if m.addseller_id != nil {
+		*m.addseller_id += i
+	} else {
+		m.addseller_id = &i
+	}
+}
+
+// AddedSellerID returns the value that was added to the "seller_id" field in this mutation.
+func (m *ProcessingFileMutation) AddedSellerID() (r int32, exists bool) {
+	v := m.addseller_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSellerID resets all changes to the "seller_id" field.
+func (m *ProcessingFileMutation) ResetSellerID() {
+	m.seller_id = nil
+	m.addseller_id = nil
 }
 
 // SetTotalMapping sets the "total_mapping" field.
@@ -3675,7 +3733,7 @@ func (m *ProcessingFileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.client_id != nil {
 		fields = append(fields, processingfile.FieldClientID)
 	}
@@ -3693,6 +3751,9 @@ func (m *ProcessingFileMutation) Fields() []string {
 	}
 	if m.file_parameters != nil {
 		fields = append(fields, processingfile.FieldFileParameters)
+	}
+	if m.seller_id != nil {
+		fields = append(fields, processingfile.FieldSellerID)
 	}
 	if m.total_mapping != nil {
 		fields = append(fields, processingfile.FieldTotalMapping)
@@ -3741,6 +3802,8 @@ func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
 		return m.Status()
 	case processingfile.FieldFileParameters:
 		return m.FileParameters()
+	case processingfile.FieldSellerID:
+		return m.SellerID()
 	case processingfile.FieldTotalMapping:
 		return m.TotalMapping()
 	case processingfile.FieldNeedGroupRow:
@@ -3780,6 +3843,8 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldStatus(ctx)
 	case processingfile.FieldFileParameters:
 		return m.OldFileParameters(ctx)
+	case processingfile.FieldSellerID:
+		return m.OldSellerID(ctx)
 	case processingfile.FieldTotalMapping:
 		return m.OldTotalMapping(ctx)
 	case processingfile.FieldNeedGroupRow:
@@ -3848,6 +3913,13 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetFileParameters(v)
+		return nil
+	case processingfile.FieldSellerID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSellerID(v)
 		return nil
 	case processingfile.FieldTotalMapping:
 		v, ok := value.(int32)
@@ -3926,6 +3998,9 @@ func (m *ProcessingFileMutation) AddedFields() []string {
 	if m.addstatus != nil {
 		fields = append(fields, processingfile.FieldStatus)
 	}
+	if m.addseller_id != nil {
+		fields = append(fields, processingfile.FieldSellerID)
+	}
 	if m.addtotal_mapping != nil {
 		fields = append(fields, processingfile.FieldTotalMapping)
 	}
@@ -3950,6 +4025,8 @@ func (m *ProcessingFileMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedClientID()
 	case processingfile.FieldStatus:
 		return m.AddedStatus()
+	case processingfile.FieldSellerID:
+		return m.AddedSellerID()
 	case processingfile.FieldTotalMapping:
 		return m.AddedTotalMapping()
 	case processingfile.FieldStatsTotalRow:
@@ -3980,6 +4057,13 @@ func (m *ProcessingFileMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddStatus(v)
+		return nil
+	case processingfile.FieldSellerID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSellerID(v)
 		return nil
 	case processingfile.FieldTotalMapping:
 		v, ok := value.(int32)
@@ -4053,6 +4137,9 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 		return nil
 	case processingfile.FieldFileParameters:
 		m.ResetFileParameters()
+		return nil
+	case processingfile.FieldSellerID:
+		m.ResetSellerID()
 		return nil
 	case processingfile.FieldTotalMapping:
 		m.ResetTotalMapping()

@@ -28,6 +28,7 @@ func toProcessHistoryFileFromEntity(pf *fileprocessing.ProcessingFile) Processin
 		FileUrl:             pf.FileURL,
 		ResultFileUrl:       pf.ResultFileURL,
 		Status:              mapStatus(pf.Status),
+		SellerID:            pf.SellerID,
 		StatsTotalRow:       pf.StatsTotalRow + totalErrorPlus,
 		StatsTotalProcessed: pf.StatsTotalProcessed + totalErrorPlus,
 		StatsTotalSuccess:   pf.StatsTotalSuccess,

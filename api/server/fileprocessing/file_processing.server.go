@@ -3,13 +3,14 @@ package fileprocessing
 import (
 	"context"
 	"database/sql"
+	"net/http"
+
 	commonError "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"github.com/go-chi/render"
-	"net/http"
 )
 
 type (
@@ -55,7 +56,6 @@ func (s *Server) GetFileProcessHistoryAPI() func(http.ResponseWriter, *http.Requ
 		}
 
 		// 3. Render response
-		logger.Infof("===== Response Get List Upload file: \n%v\n", utils.JsonString(resp))
 		err = render.Render(w, r, resp)
 		if err != nil {
 			logger.Errorf("===== GetFileProcessHistoryAPI render response error: %+v", err.Error())
@@ -69,6 +69,7 @@ func (s *Server) GetFileProcessHistory(ctx context.Context, req *GetFileProcessH
 	// 1. Map the request to internal DTO
 	input := &fileprocessing.GetFileProcessHistoryDTO{
 		ClientID:  req.ClientID,
+		SellerId:  req.SellerID,
 		CreatedBy: req.CreatedBy,
 		Page:      req.Page,
 		PageSize:  req.PageSize,
@@ -119,6 +120,7 @@ func (s *Server) CreateProcessingFile(ctx context.Context, request *CreateFilePr
 		DisplayName:    request.FileDisplayName,
 		CreatedBy:      request.CreatedBy,
 		FileParameters: request.Parameters,
+		SellerID:       request.SellerID,
 	})
 	if err != nil {
 		logger.Errorf("CreateProcessingFile: cannot create file processing, got: %v", err)

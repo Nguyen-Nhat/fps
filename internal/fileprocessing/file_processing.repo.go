@@ -3,10 +3,11 @@ package fileprocessing
 import (
 	"context"
 	"database/sql"
-	entsql "entgo.io/ent/dialect/sql"
 	"errors"
 	"fmt"
 	"time"
+
+	entsql "entgo.io/ent/dialect/sql"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
@@ -189,6 +190,7 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetResultFileURL(fp.ResultFileURL).
 		SetStatus(fp.Status).
 		SetFileParameters(fp.FileParameters).
+		SetSellerID(fp.SellerID).
 		SetTotalMapping(fp.TotalMapping).
 		SetStatsTotalRow(fp.StatsTotalRow).
 		SetStatsTotalProcessed(fp.StatsTotalProcessed).
@@ -204,6 +206,9 @@ func (r *repoImpl) FindByClientIdAndPagination(ctx context.Context, dto *GetFile
 
 	if dto.CreatedBy != constant.EmptyString {
 		query = query.Where(processingfile.CreatedBy(dto.CreatedBy))
+	}
+	if dto.SellerId > 0 {
+		query = query.Where(processingfile.SellerID(dto.SellerId))
 	}
 
 	total, err := query.Count(ctx)

@@ -81,6 +81,7 @@ var (
 		{Name: "result_file_url", Type: field.TypeString},
 		{Name: "status", Type: field.TypeInt16},
 		{Name: "file_parameters", Type: field.TypeString, Size: 2147483647},
+		{Name: "seller_id", Type: field.TypeInt32},
 		{Name: "total_mapping", Type: field.TypeInt32, Default: 0},
 		{Name: "need_group_row", Type: field.TypeBool, Default: false},
 		{Name: "stats_total_row", Type: field.TypeInt32, Default: 0},
