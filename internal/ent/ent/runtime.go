@@ -152,35 +152,35 @@ func init() {
 	// processingfile.FileURLValidator is a validator for the "file_url" field. It is called by the builders before save.
 	processingfile.FileURLValidator = processingfileDescFileURL.Validators[0].(func(string) error)
 	// processingfileDescTotalMapping is the schema descriptor for total_mapping field.
-	processingfileDescTotalMapping := processingfileFields[6].Descriptor()
+	processingfileDescTotalMapping := processingfileFields[7].Descriptor()
 	// processingfile.DefaultTotalMapping holds the default value on creation for the total_mapping field.
 	processingfile.DefaultTotalMapping = processingfileDescTotalMapping.Default.(int32)
 	// processingfileDescNeedGroupRow is the schema descriptor for need_group_row field.
-	processingfileDescNeedGroupRow := processingfileFields[7].Descriptor()
+	processingfileDescNeedGroupRow := processingfileFields[8].Descriptor()
 	// processingfile.DefaultNeedGroupRow holds the default value on creation for the need_group_row field.
 	processingfile.DefaultNeedGroupRow = processingfileDescNeedGroupRow.Default.(bool)
 	// processingfileDescStatsTotalRow is the schema descriptor for stats_total_row field.
-	processingfileDescStatsTotalRow := processingfileFields[8].Descriptor()
+	processingfileDescStatsTotalRow := processingfileFields[9].Descriptor()
 	// processingfile.DefaultStatsTotalRow holds the default value on creation for the stats_total_row field.
 	processingfile.DefaultStatsTotalRow = processingfileDescStatsTotalRow.Default.(int32)
 	// processingfileDescStatsTotalProcessed is the schema descriptor for stats_total_processed field.
-	processingfileDescStatsTotalProcessed := processingfileFields[9].Descriptor()
+	processingfileDescStatsTotalProcessed := processingfileFields[10].Descriptor()
 	// processingfile.DefaultStatsTotalProcessed holds the default value on creation for the stats_total_processed field.
 	processingfile.DefaultStatsTotalProcessed = processingfileDescStatsTotalProcessed.Default.(int32)
 	// processingfileDescStatsTotalSuccess is the schema descriptor for stats_total_success field.
-	processingfileDescStatsTotalSuccess := processingfileFields[10].Descriptor()
+	processingfileDescStatsTotalSuccess := processingfileFields[11].Descriptor()
 	// processingfile.DefaultStatsTotalSuccess holds the default value on creation for the stats_total_success field.
 	processingfile.DefaultStatsTotalSuccess = processingfileDescStatsTotalSuccess.Default.(int32)
 	// processingfileDescCreatedAt is the schema descriptor for created_at field.
-	processingfileDescCreatedAt := processingfileFields[12].Descriptor()
+	processingfileDescCreatedAt := processingfileFields[13].Descriptor()
 	// processingfile.DefaultCreatedAt holds the default value on creation for the created_at field.
 	processingfile.DefaultCreatedAt = processingfileDescCreatedAt.Default.(func() time.Time)
 	// processingfileDescCreatedBy is the schema descriptor for created_by field.
-	processingfileDescCreatedBy := processingfileFields[13].Descriptor()
+	processingfileDescCreatedBy := processingfileFields[14].Descriptor()
 	// processingfile.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	processingfile.CreatedByValidator = processingfileDescCreatedBy.Validators[0].(func(string) error)
 	// processingfileDescUpdatedAt is the schema descriptor for updated_at field.
-	processingfileDescUpdatedAt := processingfileFields[14].Descriptor()
+	processingfileDescUpdatedAt := processingfileFields[15].Descriptor()
 	// processingfile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	processingfile.DefaultUpdatedAt = processingfileDescUpdatedAt.Default.(func() time.Time)
 	// processingfile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

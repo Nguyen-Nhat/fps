@@ -23,6 +23,8 @@ const (
 	FieldStatus = "status"
 	// FieldFileParameters holds the string denoting the file_parameters field in the database.
 	FieldFileParameters = "file_parameters"
+	// FieldSellerID holds the string denoting the seller_id field in the database.
+	FieldSellerID = "seller_id"
 	// FieldTotalMapping holds the string denoting the total_mapping field in the database.
 	FieldTotalMapping = "total_mapping"
 	// FieldNeedGroupRow holds the string denoting the need_group_row field in the database.
@@ -54,6 +56,7 @@ var Columns = []string{
 	FieldResultFileURL,
 	FieldStatus,
 	FieldFileParameters,
+	FieldSellerID,
 	FieldTotalMapping,
 	FieldNeedGroupRow,
 	FieldStatsTotalRow,

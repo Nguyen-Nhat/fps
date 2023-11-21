@@ -56,6 +56,12 @@ func (pfc *ProcessingFileCreate) SetFileParameters(s string) *ProcessingFileCrea
 	return pfc
 }
 
+// SetSellerID sets the "seller_id" field.
+func (pfc *ProcessingFileCreate) SetSellerID(i int32) *ProcessingFileCreate {
+	pfc.mutation.SetSellerID(i)
+	return pfc
+}
+
 // SetTotalMapping sets the "total_mapping" field.
 func (pfc *ProcessingFileCreate) SetTotalMapping(i int32) *ProcessingFileCreate {
 	pfc.mutation.SetTotalMapping(i)
@@ -303,6 +309,9 @@ func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.FileParameters(); !ok {
 		return &ValidationError{Name: "file_parameters", err: errors.New(`ent: missing required field "ProcessingFile.file_parameters"`)}
 	}
+	if _, ok := pfc.mutation.SellerID(); !ok {
+		return &ValidationError{Name: "seller_id", err: errors.New(`ent: missing required field "ProcessingFile.seller_id"`)}
+	}
 	if _, ok := pfc.mutation.TotalMapping(); !ok {
 		return &ValidationError{Name: "total_mapping", err: errors.New(`ent: missing required field "ProcessingFile.total_mapping"`)}
 	}
@@ -409,6 +418,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 			Column: processingfile.FieldFileParameters,
 		})
 		_node.FileParameters = value
+	}
+	if value, ok := pfc.mutation.SellerID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: processingfile.FieldSellerID,
+		})
+		_node.SellerID = value
 	}
 	if value, ok := pfc.mutation.TotalMapping(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

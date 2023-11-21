@@ -122,6 +122,13 @@ func FileParameters(v string) predicate.ProcessingFile {
 	})
 }
 
+// SellerID applies equality check predicate on the "seller_id" field. It's identical to SellerIDEQ.
+func SellerID(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSellerID), v))
+	})
+}
+
 // TotalMapping applies equality check predicate on the "total_mapping" field. It's identical to TotalMappingEQ.
 func TotalMapping(v int32) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -706,6 +713,70 @@ func FileParametersEqualFold(v string) predicate.ProcessingFile {
 func FileParametersContainsFold(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldFileParameters), v))
+	})
+}
+
+// SellerIDEQ applies the EQ predicate on the "seller_id" field.
+func SellerIDEQ(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSellerID), v))
+	})
+}
+
+// SellerIDNEQ applies the NEQ predicate on the "seller_id" field.
+func SellerIDNEQ(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSellerID), v))
+	})
+}
+
+// SellerIDIn applies the In predicate on the "seller_id" field.
+func SellerIDIn(vs ...int32) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldSellerID), v...))
+	})
+}
+
+// SellerIDNotIn applies the NotIn predicate on the "seller_id" field.
+func SellerIDNotIn(vs ...int32) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldSellerID), v...))
+	})
+}
+
+// SellerIDGT applies the GT predicate on the "seller_id" field.
+func SellerIDGT(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSellerID), v))
+	})
+}
+
+// SellerIDGTE applies the GTE predicate on the "seller_id" field.
+func SellerIDGTE(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSellerID), v))
+	})
+}
+
+// SellerIDLT applies the LT predicate on the "seller_id" field.
+func SellerIDLT(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSellerID), v))
+	})
+}
+
+// SellerIDLTE applies the LTE predicate on the "seller_id" field.
+func SellerIDLTE(v int32) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSellerID), v))
 	})
 }
 
