@@ -119,7 +119,8 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
-				if realValue != nil {
+				if realValue != nil &&
+					len(fmt.Sprintf("%+v", realValue)) > 0 { // ignore case empty value
 					task.RequestParams[reqField.Field] = realValue
 				}
 				// config will be converted to Json string, then save to DB -> delete to reduce size of json string
