@@ -316,7 +316,7 @@ func BatchExecuting[T any](batchSize int, listData []T, execute func([]T) error)
 	return nil
 }
 
-func BatchExecutingReturn[T any, R any](batchSize int, listData []T, execute func([]T) ([]R, error)) ([]R, error) {
+func BatchExecutingReturn[T any, R any](batchSize int, listData []T, execute func([]T, ...interface{}) ([]R, error), extraData ...interface{}) ([]R, error) {
 	var result []R
 	for head := 0; head < len(listData); head += batchSize {
 		tail := head + batchSize
@@ -328,7 +328,7 @@ func BatchExecutingReturn[T any, R any](batchSize int, listData []T, execute fun
 
 		logger.Infof("Execute %v item (%v -> %v)\n", len(batch), head, tail)
 
-		res, err := execute(batch)
+		res, err := execute(batch, extraData...)
 		if err != nil {
 			return nil, err
 		}

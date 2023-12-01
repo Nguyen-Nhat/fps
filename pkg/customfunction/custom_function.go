@@ -70,10 +70,10 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 			return funcClient9.ReUploadFile(cf.ParamsMapped[0]), nil
 		}
 	case funcClient10.FuncConvertSellerSkuAndUomName:
-		if len(cf.ParamsMapped) < 1 {
+		if len(cf.ParamsMapped) < 2 {
 			return customFunc.FuncResult{}, fmt.Errorf(errMissingParameter)
 		} else {
-			return funcClient10.ConvertSellerSkus(cf.ParamsMapped[0]), nil
+			return funcClient10.ConvertSellerSkus(cf.ParamsMapped[0], cf.ParamsMapped[0]), nil
 		}
 	default:
 		return customFunc.FuncResult{}, fmt.Errorf(errFunctionNoSupport)

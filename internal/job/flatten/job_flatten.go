@@ -92,6 +92,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 	}
 
 	// 4. Validate importing data
+	configMapping.FileParameters[SellerIDKey] = file.SellerID // default, sellerId is inject to file_parameters for parsing data
 	configMappingsWithData, errorRows, err := validateImportingData(sheetData, configMapping)
 	if err != nil {
 		logger.ErrorT("Importing file is invalid, fileID = %v, error = %+v", file.ID, err)
