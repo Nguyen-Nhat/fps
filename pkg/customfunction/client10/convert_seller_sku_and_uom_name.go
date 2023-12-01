@@ -84,7 +84,7 @@ func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, 
 	// 2. Prepare call api
 	httpClient := initHttpClient()
 	reqHeader := map[string]string{"Content-Type": "application/json"}
-	reqParams := map[string]string{"sellerSkus": sellerSkusStr, "sellerIds": fmt.Sprintf("%v", sellerIds[0])}
+	reqParams := map[string]string{"sellerSkus": sellerSkusStr}
 	if len(sellerIds) > 0 {
 		sellerId := sellerIds[0]
 		if reflect.TypeOf(sellerId).Kind() == reflect.String {
