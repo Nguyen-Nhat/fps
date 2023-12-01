@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 
@@ -31,7 +32,7 @@ const (
 )
 
 // ConvertSellerSkus ...
-func ConvertSellerSkus(jsonItems string) customFunc.FuncResult {
+func ConvertSellerSkus(jsonItems string, sellerId string) customFunc.FuncResult {
 	// 1. Parse input
 	var inputItems []ItemInput
 	if err := json.Unmarshal([]byte(jsonItems), &inputItems); err != nil {
@@ -42,7 +43,7 @@ func ConvertSellerSkus(jsonItems string) customFunc.FuncResult {
 	}
 
 	// 2. Call api
-	products, err := utils.BatchExecutingReturn(batchSizeQuerySku, inputItems, callApiGetSkus)
+	products, err := utils.BatchExecutingReturn(batchSizeQuerySku, inputItems, callApiGetSkus, sellerId)
 	//products, err := callApiGetSkus(inputItems)
 	if err != nil {
 		return errDefault
@@ -73,7 +74,7 @@ func ConvertSellerSkus(jsonItems string) customFunc.FuncResult {
 	return customFunc.FuncResult{Result: outputItems}
 }
 
-func callApiGetSkus(subItems []ItemInput) ([]Product, error) {
+func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, error) {
 	// 1. Convert input to param
 	sellerSkus := converter.Map(subItems, func(i ItemInput) string { return i.SellerSku })
 	sellerSkusStr := strings.Join(sellerSkus[:], ",")
@@ -81,7 +82,13 @@ func callApiGetSkus(subItems []ItemInput) ([]Product, error) {
 	// 2. Prepare call api
 	httpClient := initHttpClient()
 	reqHeader := map[string]string{"Content-Type": "application/json"}
-	reqParams := map[string]string{"sellerSkus": sellerSkusStr}
+	reqParams := map[string]string{"sellerSkus": sellerSkusStr, "sellerIds": fmt.Sprintf("%v", sellerIds[0])}
+	if len(sellerIds) > 0 {
+		sellerId := sellerIds[0]
+		if reflect.TypeOf(sellerId).Kind() == reflect.String {
+			reqParams["sellerIds"] = sellerId.(string)
+		}
+	}
 
 	// 3. Call api
 	httpStatus, resBody, err := utils.SendHTTPRequest[any, GetSkuResponse](httpClient, http.MethodGet, urlApiGetSkus, reqHeader, reqParams, nil)

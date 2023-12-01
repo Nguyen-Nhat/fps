@@ -5,3 +5,5 @@ type ErrorRow struct {
 	Reason string
 	//RowData []string
 }
+
+const SellerIDKey = "sellerId"
