@@ -89,6 +89,9 @@ func SendHTTPRequest[REQ any, RES any](
 		req.URL.RawQuery = query.Encode()
 	}
 
+	curl := getCurlCommand(req)
+	logger.Infof("=====> curl %+v\n", curl) // for debugging, todo remove
+
 	// 4. Send request
 	resp, err := client.Do(req)
 	if err != nil {
