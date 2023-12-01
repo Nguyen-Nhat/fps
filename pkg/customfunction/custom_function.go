@@ -73,7 +73,7 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 		if len(cf.ParamsMapped) < 2 {
 			return customFunc.FuncResult{}, fmt.Errorf(errMissingParameter)
 		} else {
-			return funcClient10.ConvertSellerSkus(cf.ParamsMapped[0], cf.ParamsMapped[0]), nil
+			return funcClient10.ConvertSellerSkus(cf.ParamsMapped[0], cf.ParamsMapped[1]), nil
 		}
 	default:
 		return customFunc.FuncResult{}, fmt.Errorf(errFunctionNoSupport)
