@@ -7,7 +7,7 @@ import (
 )
 
 func Test_GetSkus(t *testing.T) {
-	res := ConvertSellerSkus(jsonStr)
+	res := ConvertSellerSkus(jsonStr, "12")
 	logger.Infof("Result = %+v", res)
 }
 
