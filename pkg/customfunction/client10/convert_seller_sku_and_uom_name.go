@@ -56,8 +56,10 @@ func ConvertSellerSkus(jsonItems string, sellerId string) customFunc.FuncResult 
 	for _, inputItem := range inputItems {
 		existed := false
 		for _, product := range products {
+			productSellerId := fmt.Sprintf("%d", product.SellerId)
 			if utils.EqualsIgnoreCase(inputItem.SellerSku, product.SellerSku) &&
-				utils.EqualsIgnoreCase(inputItem.UomName, product.UomName) {
+				utils.EqualsIgnoreCase(inputItem.UomName, product.UomName) &&
+				productSellerId == sellerId {
 
 				itemOutput := ItemOutput{product.Sku, inputItem.Quantity}
 				outputItems = append(outputItems, itemOutput)

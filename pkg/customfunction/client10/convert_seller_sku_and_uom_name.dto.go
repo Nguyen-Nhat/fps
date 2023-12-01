@@ -30,4 +30,5 @@ type Product struct {
 	Sku       string `json:"sku"`
 	SellerSku string `json:"sellerSku"`
 	UomName   string `json:"uomName"`
+	SellerId  int    `json:"sellerId"`
 }
