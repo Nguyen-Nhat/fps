@@ -59,7 +59,7 @@ func ConvertSellerSkus(jsonItems string, sellerId string) customFunc.FuncResult 
 			productSellerId := fmt.Sprintf("%d", product.SellerId)
 			if utils.EqualsIgnoreCase(inputItem.SellerSku, product.SellerSku) &&
 				utils.EqualsIgnoreCase(inputItem.UomName, product.UomName) &&
-				productSellerId == sellerId {
+				productSellerId == sellerId { // because api still return products that belong to other sellerIds, so we have to check sellerId -> todo remove
 
 				itemOutput := ItemOutput{product.Sku, inputItem.Quantity}
 				outputItems = append(outputItems, itemOutput)
