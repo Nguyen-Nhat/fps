@@ -56,8 +56,10 @@ func ConvertSellerSkus(jsonItems string, sellerId string) customFunc.FuncResult 
 	for _, inputItem := range inputItems {
 		existed := false
 		for _, product := range products {
+			productSellerId := fmt.Sprintf("%d", product.SellerId)
 			if utils.EqualsIgnoreCase(inputItem.SellerSku, product.SellerSku) &&
-				utils.EqualsIgnoreCase(inputItem.UomName, product.UomName) {
+				utils.EqualsIgnoreCase(inputItem.UomName, product.UomName) &&
+				productSellerId == sellerId { // because api still return products that belong to other sellerIds, so we have to check sellerId -> todo remove
 
 				itemOutput := ItemOutput{product.Sku, inputItem.Quantity}
 				outputItems = append(outputItems, itemOutput)
@@ -82,7 +84,7 @@ func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, 
 	// 2. Prepare call api
 	httpClient := initHttpClient()
 	reqHeader := map[string]string{"Content-Type": "application/json"}
-	reqParams := map[string]string{"sellerSkus": sellerSkusStr, "sellerIds": fmt.Sprintf("%v", sellerIds[0])}
+	reqParams := map[string]string{"sellerSkus": sellerSkusStr}
 	if len(sellerIds) > 0 {
 		sellerId := sellerIds[0]
 		if reflect.TypeOf(sellerId).Kind() == reflect.String {
