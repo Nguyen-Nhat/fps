@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"strings"
 
+	t "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customtype"
 	"moul.io/http2curl"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
@@ -123,7 +124,7 @@ func SendHTTPRequestRaw(
 	client *http.Client,
 	method, url string,
 	header map[string]interface{},
-	requestParams map[string]interface{},
+	requestParams []t.Pair[string, string],
 	requestBody map[string]interface{},
 ) (int, string, string, error) {
 	// 1. Build body
@@ -151,8 +152,8 @@ func SendHTTPRequestRaw(
 	// 4. Set request params
 	if len(requestParams) > 0 {
 		query := req.URL.Query()
-		for paramField, paramValue := range requestParams {
-			query.Add(paramField, fmt.Sprintf("%v", paramValue))
+		for _, param := range requestParams {
+			query.Add(param.Key, param.Value)
 		}
 		req.URL.RawQuery = query.Encode()
 	}

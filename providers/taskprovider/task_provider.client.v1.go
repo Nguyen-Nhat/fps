@@ -3,16 +3,18 @@ package taskprovider
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 	"regexp"
 	"strings"
 	"time"
 
-	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 	"github.com/tidwall/gjson"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	t "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customtype"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 )
 
 // var regexDoubleBrace = regexp.MustCompile(`{{([^{}]+)}}`)
@@ -44,11 +46,15 @@ func NewClientV1() IClientV1 {
 }
 
 func (c *clientV1) Execute(task configloader.ConfigTaskMD) (string, string, bool, string) {
-	// 1. Request
+	// 0. Init and convert input
 	reqHeader := task.RequestHeader
 	reqHeader["Content-Type"] = "application/json" // default header
-	logger.Infof("Prepare call %v with header=%v, requestParams=%+v, requestBody=%+v", task.Endpoint, reqHeader, task.RequestParams, task.RequestBody)
-	httpStatus, responseBody, curl, err := utils.SendHTTPRequestRaw(c.client, task.Method, task.Endpoint, reqHeader, task.RequestParams, task.RequestBody)
+	reqParams := task.RequestParams
+	listReqParams := convertRequestParams(reqParams)
+	logger.Infof("Prepare call %v with header=%v, requestParams=%+v, requestBody=%+v", task.Endpoint, reqHeader, listReqParams, task.RequestBody)
+
+	// 1. Request
+	httpStatus, responseBody, curl, err := utils.SendHTTPRequestRaw(c.client, task.Method, task.Endpoint, reqHeader, listReqParams, task.RequestBody)
 	if err != nil {
 		logger.Errorf("failed to call %v, got error=%v", task.Endpoint, err)
 		logger.Errorf("-----> curl:\n%s", curl)
@@ -76,6 +82,35 @@ func (c *clientV1) Execute(task configloader.ConfigTaskMD) (string, string, bool
 }
 
 // private method ------------------------------------------------------------------------------------------------------
+
+// convertRequestParams ...
+func convertRequestParams(reqParams map[string]interface{}) []t.Pair[string, string] {
+	// 1. Convert data to string
+	var listParams []t.Pair[string, string]
+	for k, v := range reqParams {
+		switch reflect.TypeOf(v).Kind() {
+		case reflect.Slice, reflect.Array:
+			if slice, ok := reflect.ValueOf(v).Interface().([]interface{}); ok {
+				for _, param := range slice {
+					listParams = append(listParams, t.Pair[string, string]{Key: k, Value: fmt.Sprintf("%v", param)})
+				}
+			}
+		default:
+			listParams = append(listParams, t.Pair[string, string]{Key: k, Value: fmt.Sprintf("%v", v)})
+		}
+	}
+
+	// 2. Ignore empty param
+	var listParamsIgnoreEmpty []t.Pair[string, string]
+	for _, pair := range listParams {
+		if len(pair.Key) > 0 && len(pair.Value) > 0 {
+			listParamsIgnoreEmpty = append(listParamsIgnoreEmpty, pair)
+		}
+	}
+
+	// 3. Return
+	return listParamsIgnoreEmpty
+}
 
 func isTaskSuccess(responseMD configloader.ResponseMD, httpStatus int, responseBody string) bool {
 	// 1. case check by httpStatus
