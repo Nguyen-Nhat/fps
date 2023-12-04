@@ -1,6 +1,7 @@
 package fileprocessingrow
 
 import (
+	"sort"
 	"time"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
@@ -25,13 +26,20 @@ func toProcessingFileRow(request CreateProcessingFileRowJob) ProcessingFileRow {
 	}
 }
 
-func toArrGetListFileRowsItem(taskMap map[int32][]*ProcessingFileRow, fileID int) []GetListFileRowsItem {
+func toArrGetListFileRowsItem(taskMap map[int][]*ProcessingFileRow, fileID int) []GetListFileRowsItem {
+	rowIndexes := make([]int, 0, len(taskMap))
+	for rowIndex := range taskMap {
+		rowIndexes = append(rowIndexes, rowIndex)
+	}
+	sort.Ints(rowIndexes) // order rowIndex
+
 	var result []GetListFileRowsItem
-	for rowIndex, tasksInRow := range taskMap {
+	for _, rowIndex := range rowIndexes {
+		tasksInRow := taskMap[rowIndex]
 		task := tasksInRow[0]
 		tmp := GetListFileRowsItem{
 			FileID:       fileID,
-			RowIndex:     int(rowIndex),
+			RowIndex:     rowIndex,
 			RowDataRaw:   task.RowDataRaw,
 			ExecutedTime: -1,
 			Tasks:        converter.Map(tasksInRow, toTaskInRowItem),
@@ -51,9 +59,12 @@ func toTaskInRowItem(taskInRow *ProcessingFileRow) TaskInRowItem {
 		TaskRequestCurl: taskInRow.TaskRequestCurl,
 		TaskResponseRaw: taskInRow.TaskResponseRaw,
 		TaskName:        taskName,
+		GroupByValue:    taskInRow.GroupByValue,
 		Status:          taskInRow.Status,
 		ErrorDisplay:    taskInRow.ErrorDisplay,
 		ExecutedTime:    int(taskInRow.ExecutedTime),
+		CreatedAt:       taskInRow.CreatedAt,
+		UpdatedAt:       taskInRow.UpdatedAt,
 	}
 }
 

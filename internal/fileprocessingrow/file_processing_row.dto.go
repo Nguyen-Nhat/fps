@@ -1,6 +1,10 @@
 package fileprocessingrow
 
-import "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/request"
+import (
+	"time"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/request"
+)
 
 type CreateProcessingFileRowJob struct {
 	FileID       int
@@ -45,11 +49,14 @@ type GetListFileRowsItem struct {
 }
 
 type TaskInRowItem struct {
-	TaskIndex       int    `json:"taskIndex"`
-	TaskRequestCurl string `json:"taskRequestCurl"`
-	TaskResponseRaw string `json:"taskResponseRaw"`
-	TaskName        string `json:"taskName"`
-	Status          int16  `json:"status"`
-	ErrorDisplay    string `json:"errorDisplay"`
-	ExecutedTime    int    `json:"executedTime"`
+	TaskIndex       int       `json:"taskIndex"`
+	TaskRequestCurl string    `json:"taskRequestCurl"`
+	TaskResponseRaw string    `json:"taskResponseRaw"`
+	TaskName        string    `json:"taskName"`
+	GroupByValue    string    `json:"groupByValue"`
+	Status          int16     `json:"status"`
+	ErrorDisplay    string    `json:"errorDisplay"`
+	ExecutedTime    int       `json:"executedTime"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
 }

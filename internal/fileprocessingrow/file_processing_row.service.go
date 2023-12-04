@@ -85,13 +85,14 @@ func (s *ServiceImpl) GetListFileRowsByFileID(ctx context.Context, fileID int, r
 
 	pagination := response.GetPaginationNew(total, req.PageRequest)
 
-	taskMap := make(map[int32][]*ProcessingFileRow)
+	taskMap := make(map[int][]*ProcessingFileRow)
 	for _, task := range tasks {
-		val, existed := taskMap[task.RowIndex]
+		rowIndex := int(task.RowIndex)
+		val, existed := taskMap[rowIndex]
 		if existed {
-			taskMap[task.RowIndex] = append(val, task)
+			taskMap[rowIndex] = append(val, task)
 		} else {
-			taskMap[task.RowIndex] = []*ProcessingFileRow{task}
+			taskMap[rowIndex] = []*ProcessingFileRow{task}
 		}
 	}
 
