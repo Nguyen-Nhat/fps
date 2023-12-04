@@ -63,8 +63,8 @@ func toTaskInRowItem(taskInRow *ProcessingFileRow) TaskInRowItem {
 		Status:          taskInRow.Status,
 		ErrorDisplay:    taskInRow.ErrorDisplay,
 		ExecutedTime:    int(taskInRow.ExecutedTime),
-		CreatedAt:       taskInRow.CreatedAt,
-		UpdatedAt:       taskInRow.UpdatedAt,
+		CreatedAt:       taskInRow.CreatedAt.UnixMilli(),
+		UpdatedAt:       taskInRow.UpdatedAt.UnixMilli(),
 	}
 }
 
