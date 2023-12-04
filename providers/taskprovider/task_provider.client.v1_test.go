@@ -2,12 +2,15 @@ package taskprovider
 
 import (
 	"fmt"
+	"reflect"
+	"sort"
 	"strings"
 	"testing"
 
 	"github.com/tidwall/gjson"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	ct "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customtype"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
@@ -338,3 +341,49 @@ var responseTest = `
   }
 }
 `
+
+func Test_convertRequestParams(t *testing.T) {
+	tests := []struct {
+		name      string
+		reqParams map[string]interface{}
+		want      []ct.Pair[string, string]
+	}{
+		{"test case normal with all primitive type and case empty value",
+			map[string]interface{}{
+				"param_int":    123,
+				"param_float":  123.567,
+				"param_string": "abc",
+				"param_bool":   true,
+				"param_empty":  "", // expect ignore
+			},
+			[]ct.Pair[string, string]{
+				{Key: "param_bool", Value: "true"},
+				{Key: "param_float", Value: "123.567"},
+				{Key: "param_int", Value: "123"},
+				{Key: "param_string", Value: "abc"},
+			}},
+		{"test case has param that is array",
+			map[string]interface{}{
+				"param_array":   []interface{}{1, 2, 3},
+				"param_array_2": []interface{}{"1", "2", "3"},
+			},
+			[]ct.Pair[string, string]{
+				{Key: "param_array", Value: "1"},
+				{Key: "param_array", Value: "2"},
+				{Key: "param_array", Value: "3"},
+				{Key: "param_array_2", Value: "1"},
+				{Key: "param_array_2", Value: "2"},
+				{Key: "param_array_2", Value: "3"},
+			}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := convertRequestParams(tt.reqParams)
+			sort.Slice(got, func(i, j int) bool { return got[i].Key < got[j].Key })
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("convertRequestParams() = \n%v, \nwant \n%v", got, tt.want)
+			}
+		})
+	}
+}
