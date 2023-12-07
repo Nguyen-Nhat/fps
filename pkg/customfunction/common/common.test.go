@@ -7,10 +7,10 @@ const (
 
 // TestFunc ... return (a + b)
 func TestFunc(a int, b int) FuncResult {
-	return FuncResult{a + b, ""}
+	return FuncResult{Result: a + b}
 }
 
 // TestFuncError ... return nil, error
 func TestFuncError() FuncResult {
-	return FuncResult{nil, "this is testing error function"}
+	return FuncResult{ErrorMessage: "this is testing error function"}
 }

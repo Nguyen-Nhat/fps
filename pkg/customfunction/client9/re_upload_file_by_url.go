@@ -1,7 +1,6 @@
 package funcClient9
 
 import (
-	"crypto/tls"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,6 +9,8 @@ import (
 	"time"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/constants"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/helpers"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
@@ -21,11 +22,6 @@ const (
 
 	googleDriveUrlPrefixD = "https://drive.google.com/file/d/"
 	googleDriveUrlPrefixU = "https://drive.google.com/file/u/"
-
-	// fileServiceUrl ... path is `/upload/image`
-	// api-doc: https://apidoc.teko.vn/project-doc/approved/core_logic_layer/file_service_retail/version/latest/operations/post_uploads
-	fileServiceUrl = "http://files-core-api.files-service/upload/image" // for calling internal service -> should move to env config
-	//fileServiceUrl = "https://files.dev.tekoapis.net/upload/image" // for testing local
 )
 
 var listDomainNoNeedToReUpload = []string{"lh3.googleusercontent.com"}
@@ -149,7 +145,7 @@ func uploadFile(fileData []byte, fileName string) (uploadFileResponse, error) {
 	params.Add("fileName", fileName)
 	params.Add("cloud", "true")
 
-	requestUrl := fmt.Sprintf("%s?%s", fileServiceUrl, params.Encode())
+	requestUrl := fmt.Sprintf("%s?%s", constants.UrlFileServiceUploadImage, params.Encode())
 
 	// 2. Build request body
 	fileContent := utils.FileContent{
@@ -160,7 +156,7 @@ func uploadFile(fileData []byte, fileName string) (uploadFileResponse, error) {
 	}
 
 	// 3. Send http request
-	client := initHttpClient()
+	client := helpers.InitHttpClient()
 	httpResp, err := utils.UploadFile[uploadFileResponse](client, requestUrl, fileContent)
 	if err != nil {
 		logger.Errorf("===== reUploadFile: Call File Service Error: %s", err.Error())
@@ -169,20 +165,6 @@ func uploadFile(fileData []byte, fileName string) (uploadFileResponse, error) {
 
 	// 5. Response
 	return *httpResp, nil
-}
-
-// initHttpClient...
-func initHttpClient() *http.Client {
-	transportCfg := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true,
-		},
-	}
-	client := &http.Client{
-		Timeout:   20 * time.Second,
-		Transport: transportCfg,
-	}
-	return client
 }
 
 // noNeedToReUpload ...

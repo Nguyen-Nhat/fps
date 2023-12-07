@@ -9,13 +9,12 @@ import (
 	funcClient10 "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/client10"
 	funcClient9 "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/client9"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/constants"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/errorz"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 const (
-	errMissingParameter  = "missing parameter"
-	errFunctionNoSupport = "not support function"
-
 	customFunctionPrefix = "$func."
 	paramSeparator       = ";"
 )
@@ -53,30 +52,32 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 		return customFunc.TestFuncError(), nil
 	case customFunc.FuncTest:
 		if len(cf.ParamsMapped) < 2 {
-			return customFunc.FuncResult{}, fmt.Errorf(errMissingParameter)
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrMissingParameter)
+		}
+		first, err1 := strconv.Atoi(cf.ParamsMapped[0])
+		second, err2 := strconv.Atoi(cf.ParamsMapped[1])
+		if err1 != nil || err2 != nil {
+			return customFunc.FuncResult{}, fmt.Errorf("%v or %v is not number", cf.ParamsMapped[0], cf.ParamsMapped[1])
 		} else {
-			first, err1 := strconv.Atoi(cf.ParamsMapped[0])
-			second, err2 := strconv.Atoi(cf.ParamsMapped[1])
-			if err1 != nil || err2 != nil {
-				return customFunc.FuncResult{}, fmt.Errorf("%v or %v is not number", cf.ParamsMapped[0], cf.ParamsMapped[1])
-			} else {
-				return customFunc.TestFunc(first, second), nil
-			}
+			return customFunc.TestFunc(first, second), nil
 		}
 	case funcClient9.FuncReUploadFile:
 		if len(cf.ParamsMapped) < 1 {
-			return customFunc.FuncResult{}, fmt.Errorf(errMissingParameter)
-		} else {
-			return funcClient9.ReUploadFile(cf.ParamsMapped[0]), nil
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrMissingParameter)
 		}
-	case funcClient10.FuncConvertSellerSkuAndUomName:
+		return funcClient9.ReUploadFile(cf.ParamsMapped[0]), nil
+	case constants.FuncConvertSellerSkuAndUomName:
 		if len(cf.ParamsMapped) < 2 {
-			return customFunc.FuncResult{}, fmt.Errorf(errMissingParameter)
-		} else {
-			return funcClient10.ConvertSellerSkus(cf.ParamsMapped[0], cf.ParamsMapped[1]), nil
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrMissingParameter)
 		}
+		return funcClient10.ConvertSellerSkus(cf.ParamsMapped[0], cf.ParamsMapped[1]), nil
+	case constants.FuncConvertSiteCode2SiteId:
+		if len(cf.ParamsMapped) != 2 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
+		}
+		return customFunc.ConvertSiteCode2SiteId(cf.ParamsMapped[0], cf.ParamsMapped[1]), nil
 	default:
-		return customFunc.FuncResult{}, fmt.Errorf(errFunctionNoSupport)
+		return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrFunctionNoSupport)
 	}
 
 }

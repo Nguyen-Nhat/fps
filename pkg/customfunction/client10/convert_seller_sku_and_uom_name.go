@@ -1,34 +1,19 @@
 package funcClient10
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
-	"time"
 
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/constants"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/errorz"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/helpers"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
-)
-
-const FuncConvertSellerSkuAndUomName = "convertSellerSkuAndUomName"
-
-var (
-	errDefault = customFunc.FuncResult{ErrorMessage: "xảy ra lỗi"}
-	errNoSkus  = customFunc.FuncResult{ErrorMessage: "không tìm thấy thông tin sku"}
-)
-
-const (
-	// urlApiGetSkus ... has path is `/api/v2/skus`
-	// api-doc: https://apidoc.teko.vn/project-doc/approved/core_logic_layer/retail/catalog/version/latest/paths/api-v2-skus/get
-	urlApiGetSkus = "http://catalog-core-v2-api.catalog/api/v2/skus" // url call service name
-	//urlApiGetSkus = "http://localhost:10080/api/v2/skus" // url call local
-
-	batchSizeQuerySku = 50
 )
 
 // ConvertSellerSkus ...
@@ -36,19 +21,20 @@ func ConvertSellerSkus(jsonItems string, sellerId string) customFunc.FuncResult 
 	// 1. Parse input
 	var inputItems []ItemInput
 	if err := json.Unmarshal([]byte(jsonItems), &inputItems); err != nil {
-		return errDefault
+		return customFunc.FuncResult{ErrorMessage: errorz.ErrDefault}
 	}
 	if len(inputItems) == 0 {
 		return customFunc.FuncResult{} // return (nil, "") value
 	}
 
 	// 2. Call api
-	products, err := utils.BatchExecutingReturn(batchSizeQuerySku, inputItems, callApiGetSkus, sellerId)
+	products, err := utils.BatchExecutingReturn(constants.BatchSizeQuerySku, inputItems, callApiGetSkus, sellerId)
 	//products, err := callApiGetSkus(inputItems)
 	if err != nil {
-		return errDefault
-	} else if len(products) == 0 {
-		return errNoSkus
+		return customFunc.FuncResult{ErrorMessage: errorz.ErrDefault}
+	}
+	if len(products) == 0 {
+		return customFunc.FuncResult{ErrorMessage: errorz.ErrNoSkus()}
 	}
 
 	// 3. Convert response
@@ -82,7 +68,7 @@ func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, 
 	sellerSkusStr := strings.Join(sellerSkus[:], ",")
 
 	// 2. Prepare call api
-	httpClient := initHttpClient()
+	httpClient := helpers.InitHttpClient()
 	reqHeader := map[string]string{"Content-Type": "application/json"}
 	reqParams := map[string]string{"sellerSkus": sellerSkusStr}
 	if len(sellerIds) > 0 {
@@ -93,26 +79,12 @@ func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, 
 	}
 
 	// 3. Call api
-	httpStatus, resBody, err := utils.SendHTTPRequest[any, GetSkuResponse](httpClient, http.MethodGet, urlApiGetSkus, reqHeader, reqParams, nil)
+	httpStatus, resBody, err := utils.SendHTTPRequest[any, GetSkuResponse](httpClient, http.MethodGet, constants.UrlApiGetSkus, reqHeader, reqParams, nil)
 	if err != nil || httpStatus != http.StatusOK {
-		logger.Errorf("failed to call %v, got error=%v, httpStatus=%d, resBody=%+v", urlApiGetSkus, err, httpStatus, resBody)
+		logger.Errorf("failed to call %v, got error=%v, httpStatus=%d, resBody=%+v", constants.UrlApiGetSkus, err, httpStatus, resBody)
 		return nil, err
 	}
 
 	// 4. Return data
 	return resBody.Data.Products, nil
-}
-
-// initHttpClient...
-func initHttpClient() *http.Client {
-	transportCfg := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true,
-		},
-	}
-	client := &http.Client{
-		Timeout:   20 * time.Second,
-		Transport: transportCfg,
-	}
-	return client
 }
