@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
 )
 
 func TestIsCustomFunction(t *testing.T) {
@@ -91,7 +91,7 @@ func TestExecuteFunction(t *testing.T) {
 
 		// funcTestError ...
 		{"test ExecuteFunction: case funcTestError", customFunc.CustomFunction{Name: customFunc.FuncTestError},
-			false, customFunc.FuncResult{nil, "this is testing error function"}},
+			false, customFunc.FuncResult{ErrorMessage: "this is testing error function"}},
 
 		// funcTest ...
 		{"test ExecuteFunction: case funcTest no params -> error",
