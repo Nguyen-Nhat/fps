@@ -13,6 +13,7 @@ import (
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 )
 
 // databaseConfigLoaderV1 ...
@@ -238,8 +239,8 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 	// 3. Else, Enrich for valuePattern
 	if strings.HasPrefix(valuePattern, PrefixMappingRequest) {
 		// 3.1. Case value depends on Excel Column
-		if len(valuePattern) == 2 {
-			columnIndex := string(valuePattern[1]) // if `$A` -> columnIndex = `A`
+		if excel.IsColumnIndex(valuePattern) {
+			columnIndex := valuePattern[1:] // if `$A` -> columnIndex = `A`
 			logger.Infof("----- task %v, field %v is mapping with column %v, type=%s, required=%v", taskID, fieldName, columnIndex, reqField.Type, reqField.Required)
 			reqField.ValueDependsOn = ValueDependsOnExcel
 			reqField.ValueDependsOnKey = columnIndex

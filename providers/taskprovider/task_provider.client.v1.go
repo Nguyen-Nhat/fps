@@ -213,8 +213,8 @@ func matchMessagePattern(messagePattern string, fileHeader []string, rowData []s
 
 		// 3.2. Get replacement from value pattern
 		replacement := ""
-		if len(valuePattern) == 2 {
-			columnKey := string(valuePattern[1]) // if `$A` -> columnIndex = `A`
+		if excel.IsColumnIndex(valuePattern) {
+			columnKey := valuePattern[1:] // if `$A` -> columnIndex = `A`
 			replacement = excel.GetValueFromColumnKey(columnKey, rowData)
 		} else if strings.HasPrefix(valuePattern, configloader.PrefixMappingRequestHeader) {
 			headerName := strings.TrimPrefix(valuePattern, configloader.PrefixMappingRequestHeader+".")

@@ -41,3 +41,37 @@ func Test_getValueFromColumnKey(t *testing.T) {
 		})
 	}
 }
+
+func Test_IsColumnIndex(t *testing.T) {
+	tests := []struct {
+		name       string
+		columnName string
+		want       bool
+	}{
+		// case invalid -> empty
+		{"test IsColumnIndex: when columnName none then return false",
+			"", false},
+		{"test IsColumnIndex: when columnName has 1 character, missing prefix then return false",
+			"A", false},
+		{"test IsColumnIndex: when columnName has 3 character, missing prefix then return false",
+			"ABC", false},
+		{"test IsColumnIndex: when columnName has only prefix then return false",
+			"$", false},
+		{"test IsColumnIndex: when columnName has 2 character, missing prefix then return false",
+			"A$", false},
+		{"test IsColumnIndex: when columnName has 3 character but one of them is not from A-Z then return false",
+			"$A1", false},
+		// case valid -> return correct value
+		{"test IsColumnIndex: when columnName has 2 character, start with prefix then return true",
+			"$A", true},
+		{"test IsColumnIndex: when columnName has 3 character, start with prefix then return true",
+			"$AB", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsColumnIndex(tt.columnName); got != tt.want {
+				t.Errorf("IsColumnIndex() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
