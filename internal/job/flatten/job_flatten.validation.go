@@ -7,12 +7,13 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/xuri/excelize/v2"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
 )
 
 const (
@@ -402,17 +403,22 @@ func validateAndMatchJsonPath(rowID int, rowData []string, jsonPath string) (str
 		valuePattern := strings.TrimSpace(matchers[1])
 
 		// 3.1. Get column key: $A -> A
-		if !strings.HasPrefix(valuePattern, dto.PrefixMappingRequest) || len(valuePattern) != 2 {
+		if !excel.IsColumnIndex(valuePattern) {
 			errorRow := ErrorRow{RowId: rowID, Reason: errConfigMapping}
 			logger.Errorf("validateResponseCode ... error %s -> %s", errConfigMapping, valuePatternWithDoubleBrace)
 			return "", &errorRow
 		}
-		columnKey := string(valuePattern[1]) // if `$A` -> columnIndex = `A`
-		columnIndex := int(strings.ToUpper(columnKey)[0]) - int('A')
+		columnKey := valuePattern[1:] // if `$A` -> columnIndex = `A`
+		columnIndex, err := excelize.ColumnNameToNumber(columnKey)
+		if err != nil {
+			errorRow := ErrorRow{RowId: rowID, Reason: err.Error()}
+			logger.Errorf("validateResponseCode ... error %+v", err)
+			return "", &errorRow
+		}
 
 		// 3.2. Validate value
-		if columnIndex >= len(rowData) || // column request out of range
-			len(strings.TrimSpace(rowData[columnIndex])) == 0 { // column is required by value is empty
+		if columnIndex > len(rowData) || // column request out of range
+			len(strings.TrimSpace(rowData[columnIndex-1])) == 0 { // column is required by value is empty
 			reason := fmt.Sprintf("%s %s", errRowMissingDataColumn, columnKey)
 			errorRow := ErrorRow{RowId: rowID, Reason: reason}
 			logger.Errorf("validateResponseCode ... error %+v", reason)
@@ -420,7 +426,7 @@ func validateAndMatchJsonPath(rowID int, rowData []string, jsonPath string) (str
 		}
 
 		// 3.3. Replace value
-		cellValue := strings.TrimSpace(rowData[columnIndex])
+		cellValue := strings.TrimSpace(rowData[columnIndex-1])
 		jsonPath = strings.ReplaceAll(jsonPath, valuePatternWithDoubleBrace, cellValue)
 	}
 
@@ -437,8 +443,8 @@ func mapValueForCustomFunctionParams(paramsRaw []string, rowData []string, fileP
 		paramMapped := paramFuncPattern
 
 		// case get value column excel: $A, $B, ...
-		if len(paramFuncPattern) == 2 && strings.Contains(paramFuncPattern, configloader.PrefixMappingRequest) {
-			columnKey := string(paramFuncPattern[1])
+		if excel.IsColumnIndex(paramFuncPattern) {
+			columnKey := paramFuncPattern[1:]
 			paramMapped = excel.GetValueFromColumnKey(columnKey, rowData)
 		} else
 		// case get value from FileParameters

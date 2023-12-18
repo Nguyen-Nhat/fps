@@ -94,7 +94,7 @@ func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName strin
 
 	// 3. Get column index
 	var columnIndex string
-	if isColumnIndex(columnName) {
+	if IsColumnIndex(columnName) {
 		columnIndex = columnName[1:]
 	} else {
 		columnIndex, err = getColumnIndexInFile(exFile, sheetName, columnName)
@@ -171,10 +171,18 @@ func loadDataFromUrl(url string) ([]byte, error) {
 	return io.ReadAll(r.Body)
 }
 
-// isColumnIndex ... return TRUE if columnName start with `$` and only support column index from A-Z
+// IsColumnIndex ... return TRUE if columnName start with `$` another character is from A-Z
 // Eg: $A, $D, ... -> TRUE
-func isColumnIndex(columnName string) bool {
-	return len(columnName) == 2 && strings.HasPrefix(columnName, prefixMappingRequest)
+func IsColumnIndex(columnName string) bool {
+	if len(columnName) < 2 || !strings.HasPrefix(columnName, prefixMappingRequest) {
+		return false
+	}
+	for _, c := range columnName[1:] {
+		if c < 'A' || c > 'Z' {
+			return false
+		}
+	}
+	return true
 }
 
 // getColumnIndexInFile ... return the position of column by name
@@ -213,10 +221,12 @@ func GetValueFromColumnKey(columnKey string, data []string) string {
 	if len(columnKey) != 1 {
 		return ""
 	}
-
-	columnIndex := int(strings.ToUpper(columnKey)[0]) - int('A')
-	if columnIndex < len(data) { // column request out of range
-		return strings.TrimSpace(data[columnIndex])
+	columnIndex, err := excelize.ColumnNameToNumber(strings.ToUpper(columnKey))
+	if err != nil {
+		return ""
+	}
+	if columnIndex <= len(data) { // column request out of range
+		return strings.TrimSpace(data[columnIndex-1])
 	}
 	return ""
 }
