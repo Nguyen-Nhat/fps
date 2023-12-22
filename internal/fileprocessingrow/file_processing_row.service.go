@@ -153,9 +153,8 @@ func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
 			totalSuccess++
 		} else if stats.IsContainsFailed() {
 			totalFailed++
-			errorDisplay := stats.GetErrorDisplay()
-			errorDisplays[stats.RowIndex] = errorDisplay
 		}
+		errorDisplays[stats.RowIndex] = stats.ErrorDisplays
 
 		if stats.IsProcessed() {
 			totalProcessed++

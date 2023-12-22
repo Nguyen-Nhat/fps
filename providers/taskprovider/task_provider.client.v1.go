@@ -72,7 +72,7 @@ func (c *clientV1) Execute(task configloader.ConfigTaskMD) (string, string, bool
 			messageDisplay = transformMessage(httpStatusWhenMissingField, defaultErrMsgWhenFieldMissing, task.Response.MessageTransforms, task.ImportRowHeader, task.ImportRowData)
 			isSuccess = false
 		} else {
-			messageDisplay = ""
+			messageDisplay = transformMessage(httpStatus, messageInResponse, task.Response.MessageTransforms, task.ImportRowHeader, task.ImportRowData)
 		}
 	} else {
 		messageDisplay = transformMessage(httpStatus, messageInResponse, task.Response.MessageTransforms, task.ImportRowHeader, task.ImportRowData)
