@@ -59,7 +59,15 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 		status = fileprocessing.StatusFinished
 
 		// 2.1. Build and Upload result file to FileService
-		if stats.TotalFailed > 0 {
+		isNeedToUploadResultFile := false
+		for _, result := range stats.ErrorDisplays {
+			if result != "" {
+				isNeedToUploadResultFile = true
+				break
+			}
+		}
+
+		if isNeedToUploadResultFile {
 			cfgMapping, err := job.cfgMappingService.FindByClientID(ctx, file.ClientID)
 			if err != nil {
 				logger.ErrorT("Cannot find config mapping by clientID %v, err=%v", file.ClientID, err)

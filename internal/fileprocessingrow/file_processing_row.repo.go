@@ -251,7 +251,7 @@ func (r *repoImpl) Statistics(fileId int64) ([]CustomStatisticModel, error) {
 	rows, err := r.sqlDB.Query(
 		`
 			SELECT 
-				row_index, GROUP_CONCAT(status), COUNT(*), GROUP_CONCAT(error_display) 
+				row_index, GROUP_CONCAT(status), COUNT(*), IFNULL(GROUP_CONCAT(IF(error_display='', null, error_display)),'') 
 			FROM processing_file_row 
 			WHERE file_id = ? 
 			GROUP BY row_index

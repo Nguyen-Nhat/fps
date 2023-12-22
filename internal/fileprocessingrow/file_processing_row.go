@@ -67,27 +67,6 @@ func (s *CustomStatisticModel) IsSuccessAll() bool {
 	return tmp == s.Statuses
 }
 
-func (s *CustomStatisticModel) GetErrorDisplay() string {
-	errorDisplay := ""
-
-	taskErrorDisplays := strings.Split(s.ErrorDisplays, ",")
-	taskStatuses := strings.Split(s.Statuses, ",")
-
-	for i := 0; i < len(taskStatuses); i++ {
-		status := taskStatuses[i]
-		statusInt, _ := strconv.Atoi(status)
-		if statusInt == StatusFailed {
-			if len(errorDisplay) == 0 {
-				errorDisplay = taskErrorDisplays[i]
-			} else {
-				errorDisplay = errorDisplay + ", " + taskErrorDisplays[i]
-			}
-		}
-	}
-
-	return errorDisplay
-}
-
 func (s *CustomStatisticModel) IsContainsFailed() bool {
 	statusFailedStr := strconv.Itoa(StatusFailed)
 	return strings.Contains(s.Statuses, statusFailedStr)
