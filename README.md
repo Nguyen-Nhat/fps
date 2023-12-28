@@ -1,4 +1,4 @@
-# loyalty-file-processing
+# File Processing Service (FPS)
 
 File Processing Service for Loyalty.
 
