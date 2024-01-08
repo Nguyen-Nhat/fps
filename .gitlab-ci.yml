@@ -9,6 +9,10 @@ variables:
 # Unitest cases
 test:unitest:
   stage: pretest
+  rules:
+    - if: $CI_PIPELINE_SOURCE =~ /merge_request_event|parent_pipeline/
+    - if: $CI_PIPELINE_SOURCE =~ /web|push|parent_pipeline/ && $CI_COMMIT_REF_NAME =~ /master|main|^releases\/(\d+\.\d+\.\d+)(-.*)?/ && $CI_COMMIT_MESSAGE !~ /^Merge branch.*/
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   image: golang:1.19-buster
   services:
     - mysql:8.0
