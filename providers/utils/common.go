@@ -22,6 +22,11 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
+const (
+	isPrivateStr   = "isPrivate"
+	isPrivateValue = "true"
+)
+
 // Type ----------------------------------------------------------------------------------------------------------------
 
 type (
@@ -184,6 +189,11 @@ func UploadFile[RES any](client *http.Client, urlPath string, content FileConten
 	// New multipart writer.
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
+	err := writer.WriteField(isPrivateStr, isPrivateValue)
+	if err != nil {
+		log.Printf("make request failed: %d", err)
+		return nil, err
+	}
 	fw, err := createFormFile(writer, content.FieldName, content.FileName, content.ContentType)
 	if err != nil {
 		log.Printf("make request failed: %d", err)
