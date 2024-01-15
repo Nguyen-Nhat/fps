@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"github.com/tidwall/gjson"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
@@ -36,6 +37,7 @@ func ConvertToRealValue(fieldType string, valueStr string, dependsOnKey string) 
 		if valueFloat64, err := strconv.ParseFloat(valueStr, 64); err == nil {
 			realValue = valueFloat64
 		} else {
+			logger.Debugf("wrong data type: expect type %s but data is %+v", fieldType, valueStr)
 			return nil, fmt.Errorf("%s (%s)", errTypeWrong, dependsOnKey)
 		}
 	case configloader.TypeBoolean:
