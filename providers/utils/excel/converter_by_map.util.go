@@ -2,7 +2,8 @@ package excel
 
 import (
 	"fmt"
-	"strings"
+
+	"github.com/xuri/excelize/v2"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel/dto"
@@ -83,14 +84,11 @@ func mappingHeader(columnsData []dto.CellData[string]) (map[string]int, error) {
 	for _, data := range columnsData {
 		columnName := data.ColumnName
 
-		if len(columnName) != 1 {
-			return nil, fmt.Errorf("only support column has 1 character, such as {A, B, C, ...}, invalid value is %v", columnName)
+		columnIndex, err := excelize.ColumnNameToNumber(columnName)
+		if err != nil {
+			return nil, fmt.Errorf("wrong config, column %v is wrong", columnName)
 		}
-
-		columnIndex := int(strings.ToUpper(columnName)[0]) - int('A') // get first character then
 		headerMapping[columnName] = columnIndex
-
 	}
-
 	return headerMapping, nil
 }
