@@ -368,6 +368,8 @@ func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqFie
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: err.Error()})
 		return "", errorRows
 	}
+	// ColumnNameToNumber return value in range {1...}, but we expect columnIndex belongs to {0...}
+	columnIndex--
 
 	// Validate Require
 	if reqField.Required &&

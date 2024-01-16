@@ -88,7 +88,7 @@ func mappingHeader(columnsData []dto.CellData[string]) (map[string]int, error) {
 		if err != nil {
 			return nil, fmt.Errorf("wrong config, column %v is wrong", columnName)
 		}
-		headerMapping[columnName] = columnIndex
+		headerMapping[columnName] = columnIndex - 1
 	}
 	return headerMapping, nil
 }
