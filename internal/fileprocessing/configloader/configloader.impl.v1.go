@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/xuri/excelize/v2"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
@@ -145,8 +147,11 @@ func toRowGroupMD(task configtask.ConfigTask) RowGroupMD {
 	groupByColumns := strings.Split(task.GroupByColumns, ",")
 	var groupByColumnsIndex []int
 	for _, columnName := range groupByColumns {
-		columnIndex := int(strings.ToUpper(columnName)[0]) - int('A')
-		groupByColumnsIndex = append(groupByColumnsIndex, columnIndex)
+		columnIndex, err := excelize.ColumnNameToNumber(columnName)
+		if err == nil {
+			// have to minus 1 because we expect value from {0...} while `ColumnNameToNumber()` return value belongs to range {1...}
+			groupByColumnsIndex = append(groupByColumnsIndex, columnIndex-1)
+		}
 	}
 
 	return RowGroupMD{
@@ -240,10 +245,10 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 	if strings.HasPrefix(valuePattern, PrefixMappingRequest) {
 		// 3.1. Case value depends on Excel Column
 		if excel.IsColumnIndex(valuePattern) {
-			columnIndex := valuePattern[1:] // if `$A` -> columnIndex = `A`
-			logger.Infof("----- task %v, field %v is mapping with column %v, type=%s, required=%v", taskID, fieldName, columnIndex, reqField.Type, reqField.Required)
+			columnKey := valuePattern[1:] // if `$A` -> columnIndex = `A`
+			logger.Infof("----- task %v, field %v is mapping with column %v, type=%s, required=%v", taskID, fieldName, columnKey, reqField.Type, reqField.Required)
 			reqField.ValueDependsOn = ValueDependsOnExcel
-			reqField.ValueDependsOnKey = columnIndex
+			reqField.ValueDependsOnKey = columnKey
 		} else
 		// 3.2. Else, case value depends on Previous Response
 		if len(valuePattern) > len(PrefixMappingRequestResponse)+2 && strings.HasPrefix(valuePattern, PrefixMappingRequestResponse) {

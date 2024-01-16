@@ -362,7 +362,12 @@ func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestF
 func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqField *configloader.RequestFieldMD) (string, []ErrorRow) {
 	var errorRows []ErrorRow
 	columnKey := reqField.ValueDependsOnKey
-	columnIndex := int(strings.ToUpper(columnKey)[0]) - int('A') // get first character then
+	columnIndex, err := excelize.ColumnNameToNumber(columnKey)
+	if err != nil {
+		logger.Errorf("validateResponseCode ... error %+v", err)
+		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: err.Error()})
+		return "", errorRows
+	}
 
 	// Validate Require
 	if reqField.Required &&
