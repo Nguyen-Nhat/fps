@@ -86,6 +86,12 @@ func (ctu *ConfigTaskUpdate) SetHeader(s string) *ConfigTaskUpdate {
 	return ctu
 }
 
+// SetPathParams sets the "path_params" field.
+func (ctu *ConfigTaskUpdate) SetPathParams(s string) *ConfigTaskUpdate {
+	ctu.mutation.SetPathParams(s)
+	return ctu
+}
+
 // SetRequestParams sets the "request_params" field.
 func (ctu *ConfigTaskUpdate) SetRequestParams(s string) *ConfigTaskUpdate {
 	ctu.mutation.SetRequestParams(s)
@@ -286,6 +292,11 @@ func (ctu *ConfigTaskUpdate) check() error {
 			return &ValidationError{Name: "method", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.method": %w`, err)}
 		}
 	}
+	if v, ok := ctu.mutation.PathParams(); ok {
+		if err := configtask.PathParamsValidator(v); err != nil {
+			return &ValidationError{Name: "path_params", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.path_params": %w`, err)}
+		}
+	}
 	if v, ok := ctu.mutation.RequestParams(); ok {
 		if err := configtask.RequestParamsValidator(v); err != nil {
 			return &ValidationError{Name: "request_params", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.request_params": %w`, err)}
@@ -376,6 +387,13 @@ func (ctu *ConfigTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: configtask.FieldHeader,
+		})
+	}
+	if value, ok := ctu.mutation.PathParams(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldPathParams,
 		})
 	}
 	if value, ok := ctu.mutation.RequestParams(); ok {
@@ -543,6 +561,12 @@ func (ctuo *ConfigTaskUpdateOne) SetMethod(s string) *ConfigTaskUpdateOne {
 // SetHeader sets the "header" field.
 func (ctuo *ConfigTaskUpdateOne) SetHeader(s string) *ConfigTaskUpdateOne {
 	ctuo.mutation.SetHeader(s)
+	return ctuo
+}
+
+// SetPathParams sets the "path_params" field.
+func (ctuo *ConfigTaskUpdateOne) SetPathParams(s string) *ConfigTaskUpdateOne {
+	ctuo.mutation.SetPathParams(s)
 	return ctuo
 }
 
@@ -759,6 +783,11 @@ func (ctuo *ConfigTaskUpdateOne) check() error {
 			return &ValidationError{Name: "method", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.method": %w`, err)}
 		}
 	}
+	if v, ok := ctuo.mutation.PathParams(); ok {
+		if err := configtask.PathParamsValidator(v); err != nil {
+			return &ValidationError{Name: "path_params", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.path_params": %w`, err)}
+		}
+	}
 	if v, ok := ctuo.mutation.RequestParams(); ok {
 		if err := configtask.RequestParamsValidator(v); err != nil {
 			return &ValidationError{Name: "request_params", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.request_params": %w`, err)}
@@ -866,6 +895,13 @@ func (ctuo *ConfigTaskUpdateOne) sqlSave(ctx context.Context) (_node *ConfigTask
 			Type:   field.TypeString,
 			Value:  value,
 			Column: configtask.FieldHeader,
+		})
+	}
+	if value, ok := ctuo.mutation.PathParams(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldPathParams,
 		})
 	}
 	if value, ok := ctuo.mutation.RequestParams(); ok {

@@ -83,32 +83,36 @@ func init() {
 	configtaskDescMethod := configtaskFields[4].Descriptor()
 	// configtask.MethodValidator is a validator for the "method" field. It is called by the builders before save.
 	configtask.MethodValidator = configtaskDescMethod.Validators[0].(func(string) error)
+	// configtaskDescPathParams is the schema descriptor for path_params field.
+	configtaskDescPathParams := configtaskFields[6].Descriptor()
+	// configtask.PathParamsValidator is a validator for the "path_params" field. It is called by the builders before save.
+	configtask.PathParamsValidator = configtaskDescPathParams.Validators[0].(func(string) error)
 	// configtaskDescRequestParams is the schema descriptor for request_params field.
-	configtaskDescRequestParams := configtaskFields[6].Descriptor()
+	configtaskDescRequestParams := configtaskFields[7].Descriptor()
 	// configtask.RequestParamsValidator is a validator for the "request_params" field. It is called by the builders before save.
 	configtask.RequestParamsValidator = configtaskDescRequestParams.Validators[0].(func(string) error)
 	// configtaskDescRequestBody is the schema descriptor for request_body field.
-	configtaskDescRequestBody := configtaskFields[7].Descriptor()
+	configtaskDescRequestBody := configtaskFields[8].Descriptor()
 	// configtask.RequestBodyValidator is a validator for the "request_body" field. It is called by the builders before save.
 	configtask.RequestBodyValidator = configtaskDescRequestBody.Validators[0].(func(string) error)
 	// configtaskDescGroupByColumns is the schema descriptor for group_by_columns field.
-	configtaskDescGroupByColumns := configtaskFields[12].Descriptor()
+	configtaskDescGroupByColumns := configtaskFields[13].Descriptor()
 	// configtask.DefaultGroupByColumns holds the default value on creation for the group_by_columns field.
 	configtask.DefaultGroupByColumns = configtaskDescGroupByColumns.Default.(string)
 	// configtaskDescGroupBySizeLimit is the schema descriptor for group_by_size_limit field.
-	configtaskDescGroupBySizeLimit := configtaskFields[13].Descriptor()
+	configtaskDescGroupBySizeLimit := configtaskFields[14].Descriptor()
 	// configtask.DefaultGroupBySizeLimit holds the default value on creation for the group_by_size_limit field.
 	configtask.DefaultGroupBySizeLimit = configtaskDescGroupBySizeLimit.Default.(int32)
 	// configtaskDescCreatedAt is the schema descriptor for created_at field.
-	configtaskDescCreatedAt := configtaskFields[14].Descriptor()
+	configtaskDescCreatedAt := configtaskFields[15].Descriptor()
 	// configtask.DefaultCreatedAt holds the default value on creation for the created_at field.
 	configtask.DefaultCreatedAt = configtaskDescCreatedAt.Default.(func() time.Time)
 	// configtaskDescCreatedBy is the schema descriptor for created_by field.
-	configtaskDescCreatedBy := configtaskFields[15].Descriptor()
+	configtaskDescCreatedBy := configtaskFields[16].Descriptor()
 	// configtask.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	configtask.CreatedByValidator = configtaskDescCreatedBy.Validators[0].(func(string) error)
 	// configtaskDescUpdatedAt is the schema descriptor for updated_at field.
-	configtaskDescUpdatedAt := configtaskFields[16].Descriptor()
+	configtaskDescUpdatedAt := configtaskFields[17].Descriptor()
 	// configtask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	configtask.DefaultUpdatedAt = configtaskDescUpdatedAt.Default.(func() time.Time)
 	// configtask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

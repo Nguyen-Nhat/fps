@@ -37,6 +37,7 @@ var (
 		{Name: "end_point", Type: field.TypeString},
 		{Name: "method", Type: field.TypeString},
 		{Name: "header", Type: field.TypeString, Size: 2147483647},
+		{Name: "path_params", Type: field.TypeString, Size: 2147483647},
 		{Name: "request_params", Type: field.TypeString, Size: 2147483647},
 		{Name: "request_body", Type: field.TypeString, Size: 2147483647},
 		{Name: "response_success_http_status", Type: field.TypeInt32},

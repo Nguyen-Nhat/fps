@@ -29,6 +29,7 @@ func (ConfigTask) Fields() []ent.Field {
 		field.String("end_point").NotEmpty().Comment("For example: http://loyalty-core-api.loyalty-service/api/v1/grant"),
 		field.String("method").NotEmpty().Comment("GET, POST, PUT, ..."),
 		field.Text("header").Comment("Format JSON"),
+		field.Text("path_params").NotEmpty().Comment("Format JSON"),
 		field.Text("request_params").NotEmpty().Comment("Format JSON"),
 		field.Text("request_body").NotEmpty().Comment("Format JSON"),
 		field.Int32("response_success_http_status").Comment("For example: http 200"),

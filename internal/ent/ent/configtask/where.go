@@ -122,6 +122,13 @@ func Header(v string) predicate.ConfigTask {
 	})
 }
 
+// PathParams applies equality check predicate on the "path_params" field. It's identical to PathParamsEQ.
+func PathParams(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPathParams), v))
+	})
+}
+
 // RequestParams applies equality check predicate on the "request_params" field. It's identical to RequestParamsEQ.
 func RequestParams(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
@@ -720,6 +727,105 @@ func HeaderEqualFold(v string) predicate.ConfigTask {
 func HeaderContainsFold(v string) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldHeader), v))
+	})
+}
+
+// PathParamsEQ applies the EQ predicate on the "path_params" field.
+func PathParamsEQ(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsNEQ applies the NEQ predicate on the "path_params" field.
+func PathParamsNEQ(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsIn applies the In predicate on the "path_params" field.
+func PathParamsIn(vs ...string) predicate.ConfigTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldPathParams), v...))
+	})
+}
+
+// PathParamsNotIn applies the NotIn predicate on the "path_params" field.
+func PathParamsNotIn(vs ...string) predicate.ConfigTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldPathParams), v...))
+	})
+}
+
+// PathParamsGT applies the GT predicate on the "path_params" field.
+func PathParamsGT(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsGTE applies the GTE predicate on the "path_params" field.
+func PathParamsGTE(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsLT applies the LT predicate on the "path_params" field.
+func PathParamsLT(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsLTE applies the LTE predicate on the "path_params" field.
+func PathParamsLTE(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsContains applies the Contains predicate on the "path_params" field.
+func PathParamsContains(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsHasPrefix applies the HasPrefix predicate on the "path_params" field.
+func PathParamsHasPrefix(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsHasSuffix applies the HasSuffix predicate on the "path_params" field.
+func PathParamsHasSuffix(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsEqualFold applies the EqualFold predicate on the "path_params" field.
+func PathParamsEqualFold(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldPathParams), v))
+	})
+}
+
+// PathParamsContainsFold applies the ContainsFold predicate on the "path_params" field.
+func PathParamsContainsFold(v string) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldPathParams), v))
 	})
 }
 

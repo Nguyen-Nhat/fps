@@ -898,6 +898,7 @@ type ConfigTaskMutation struct {
 	end_point                       *string
 	method                          *string
 	header                          *string
+	path_params                     *string
 	request_params                  *string
 	request_body                    *string
 	response_success_http_status    *int32
@@ -1269,6 +1270,42 @@ func (m *ConfigTaskMutation) OldHeader(ctx context.Context) (v string, err error
 // ResetHeader resets all changes to the "header" field.
 func (m *ConfigTaskMutation) ResetHeader() {
 	m.header = nil
+}
+
+// SetPathParams sets the "path_params" field.
+func (m *ConfigTaskMutation) SetPathParams(s string) {
+	m.path_params = &s
+}
+
+// PathParams returns the value of the "path_params" field in the mutation.
+func (m *ConfigTaskMutation) PathParams() (r string, exists bool) {
+	v := m.path_params
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPathParams returns the old "path_params" field's value of the ConfigTask entity.
+// If the ConfigTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigTaskMutation) OldPathParams(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPathParams is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPathParams requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPathParams: %w", err)
+	}
+	return oldValue.PathParams, nil
+}
+
+// ResetPathParams resets all changes to the "path_params" field.
+func (m *ConfigTaskMutation) ResetPathParams() {
+	m.path_params = nil
 }
 
 // SetRequestParams sets the "request_params" field.
@@ -1726,7 +1763,7 @@ func (m *ConfigTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigTaskMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.config_mapping_id != nil {
 		fields = append(fields, configtask.FieldConfigMappingID)
 	}
@@ -1744,6 +1781,9 @@ func (m *ConfigTaskMutation) Fields() []string {
 	}
 	if m.header != nil {
 		fields = append(fields, configtask.FieldHeader)
+	}
+	if m.path_params != nil {
+		fields = append(fields, configtask.FieldPathParams)
 	}
 	if m.request_params != nil {
 		fields = append(fields, configtask.FieldRequestParams)
@@ -1798,6 +1838,8 @@ func (m *ConfigTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.Method()
 	case configtask.FieldHeader:
 		return m.Header()
+	case configtask.FieldPathParams:
+		return m.PathParams()
 	case configtask.FieldRequestParams:
 		return m.RequestParams()
 	case configtask.FieldRequestBody:
@@ -1841,6 +1883,8 @@ func (m *ConfigTaskMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldMethod(ctx)
 	case configtask.FieldHeader:
 		return m.OldHeader(ctx)
+	case configtask.FieldPathParams:
+		return m.OldPathParams(ctx)
 	case configtask.FieldRequestParams:
 		return m.OldRequestParams(ctx)
 	case configtask.FieldRequestBody:
@@ -1913,6 +1957,13 @@ func (m *ConfigTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetHeader(v)
+		return nil
+	case configtask.FieldPathParams:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPathParams(v)
 		return nil
 	case configtask.FieldRequestParams:
 		v, ok := value.(string)
@@ -2108,6 +2159,9 @@ func (m *ConfigTaskMutation) ResetField(name string) error {
 		return nil
 	case configtask.FieldHeader:
 		m.ResetHeader()
+		return nil
+	case configtask.FieldPathParams:
+		m.ResetPathParams()
 		return nil
 	case configtask.FieldRequestParams:
 		m.ResetRequestParams()

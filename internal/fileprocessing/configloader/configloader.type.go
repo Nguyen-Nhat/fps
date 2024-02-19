@@ -52,10 +52,12 @@ type ConfigTaskMD struct {
 	Endpoint         string
 	Method           string
 	RequestHeaderMap map[string]*RequestFieldMD
+	PathParamsMap    map[string]*RequestFieldMD
 	RequestParamsMap map[string]*RequestFieldMD
 	RequestBodyMap   map[string]*RequestFieldMD
 	// Request that filled converted field's value
 	RequestHeader map[string]interface{}
+	PathParams    map[string]interface{}
 	RequestParams map[string]interface{}
 	RequestBody   map[string]interface{}
 	// Response
@@ -142,6 +144,12 @@ func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 		headerMap[key] = &reqField
 	}
 
+	pathParamsMap := make(map[string]*RequestFieldMD)
+	for key, value := range ct.PathParamsMap {
+		reqField := value.Clone()
+		pathParamsMap[key] = &reqField
+	}
+
 	requestParamsMap := make(map[string]*RequestFieldMD)
 	for key, value := range ct.RequestParamsMap {
 		reqField := value.Clone()
@@ -162,10 +170,12 @@ func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 		Method:           ct.Method,
 		RequestHeader:    utils.CloneMap(ct.RequestHeader),
 		RequestHeaderMap: headerMap,
+		PathParamsMap:    pathParamsMap,
 		RequestParamsMap: requestParamsMap,
 		RequestBodyMap:   requestBodyMap,
 
 		// Request that filled converted field's value
+		PathParams:    utils.CloneMap(ct.PathParams),
 		RequestParams: utils.CloneMap(ct.RequestParams),
 		RequestBody:   utils.CloneMap(ct.RequestBody),
 

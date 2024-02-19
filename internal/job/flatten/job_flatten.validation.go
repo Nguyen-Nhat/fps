@@ -80,7 +80,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 	fileParameters := configMapping.FileParameters
 	for _, orgTask := range configMapping.Tasks {
 		task := orgTask.Clone()
-		// 1.1. RequestField in Request Params
+		// 1.1. RequestField in Request Header
 		for fieldName, reqField := range task.RequestHeaderMap {
 			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
@@ -104,7 +104,32 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 			}
 		}
 
-		// 1.2. RequestField in Request Params
+		// 1.2. RequestField in Path Params
+		for fieldName, reqField := range task.PathParamsMap {
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			if len(errorRowsAfterGet) > 0 {
+				errorRows = append(errorRows, errorRowsAfterGet...)
+				continue
+			}
+			if isByPassField { // no need to convert
+				continue
+			}
+
+			// 1.2.2. Get real value
+			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			if err != nil {
+				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
+			} else {
+				if realValue != nil &&
+					len(fmt.Sprintf("%+v", realValue)) > 0 { // ignore case empty value
+					task.PathParams[reqField.Field] = realValue
+				}
+				// config will be converted to Json string, then save to DB -> delete to reduce size of json string
+				delete(task.PathParamsMap, fieldName)
+			}
+		}
+
+		// 1.3. RequestField in Request Params
 		for fieldName, reqField := range task.RequestParamsMap {
 			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
@@ -115,7 +140,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 				continue
 			}
 
-			// 1.1.2. Get real value
+			// 1.3.1. Get real value
 			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
@@ -129,9 +154,9 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 			}
 		}
 
-		// 1.3. RequestField in Request Body (support ArrayItem)
+		// 1.4. RequestField in Request Body (support ArrayItem)
 		for fieldName, reqField := range task.RequestBodyMap {
-			// 1.3.1. Validate ArrayItemMap
+			// 1.4.1. Validate ArrayItemMap
 			if len(reqField.ArrayItemMap) > 0 {
 				arrayItemMapUpdated, childMap, errorRowsForArrayItem := validateArrayItemMap(rowID, rowData, reqField.ArrayItemMap, fileParameters)
 				if len(errorRowsForArrayItem) > 0 {
@@ -154,7 +179,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 				}
 			}
 
-			// 1.3.2. Validate field
+			// 1.4.2. Validate field
 			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
@@ -164,7 +189,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 				continue
 			}
 
-			// 1.3.2. Get real value
+			// 1.4.2. Get real value
 			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
@@ -177,7 +202,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 			}
 		}
 
-		// 1.4. Validate ResponseCode config
+		// 1.5. Validate ResponseCode config
 		resultAfterMatch, errorRow := validateAndMatchJsonPath(rowID, rowData, task.Response.Code.MustHaveValueInPath)
 		if errorRow != nil {
 			errorRows = append(errorRows, *errorRow)
@@ -185,7 +210,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 			task.Response.Code.MustHaveValueInPath = resultAfterMatch
 		}
 
-		// 1.5. Set value for remaining data
+		// 1.6. Set value for remaining data
 		task.ImportRowHeader = fileHeader
 		task.ImportRowData = rowData
 		task.ImportRowIndex = rowID
