@@ -96,13 +96,16 @@ func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 		}
 	}
 
-	// 2. convert Request Params
+	// 2.1. convert Path Params
+	pathParamsMap, err := toMapRequestFieldMD(task.TaskIndex, "configPathParam", task.PathParams)
+
+	// 2.2. convert Request Params
 	requestParamsMap, err := toMapRequestFieldMD(task.TaskIndex, "configRequestParam", task.RequestParams)
 	if err != nil {
 		return ConfigTaskMD{}, err
 	}
 
-	// 2. convert Request Body
+	// 2.3. convert Request Body
 	requestBodyMap, err := toMapRequestFieldMD(task.TaskIndex, "configRequestBody", task.RequestBody)
 	if err != nil {
 		return ConfigTaskMD{}, err
@@ -126,6 +129,7 @@ func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 		Method:           task.Method,
 		RequestHeader:    headerMap,
 		RequestHeaderMap: headerMapFieldMD,
+		PathParamsMap:    pathParamsMap,
 		RequestParamsMap: requestParamsMap,
 		RequestBodyMap:   requestBodyMap,
 		RequestParams:    map[string]interface{}{},

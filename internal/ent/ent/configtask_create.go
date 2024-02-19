@@ -64,6 +64,12 @@ func (ctc *ConfigTaskCreate) SetHeader(s string) *ConfigTaskCreate {
 	return ctc
 }
 
+// SetPathParams sets the "path_params" field.
+func (ctc *ConfigTaskCreate) SetPathParams(s string) *ConfigTaskCreate {
+	ctc.mutation.SetPathParams(s)
+	return ctc
+}
+
 // SetRequestParams sets the "request_params" field.
 func (ctc *ConfigTaskCreate) SetRequestParams(s string) *ConfigTaskCreate {
 	ctc.mutation.SetRequestParams(s)
@@ -301,6 +307,14 @@ func (ctc *ConfigTaskCreate) check() error {
 	if _, ok := ctc.mutation.Header(); !ok {
 		return &ValidationError{Name: "header", err: errors.New(`ent: missing required field "ConfigTask.header"`)}
 	}
+	if _, ok := ctc.mutation.PathParams(); !ok {
+		return &ValidationError{Name: "path_params", err: errors.New(`ent: missing required field "ConfigTask.path_params"`)}
+	}
+	if v, ok := ctc.mutation.PathParams(); ok {
+		if err := configtask.PathParamsValidator(v); err != nil {
+			return &ValidationError{Name: "path_params", err: fmt.Errorf(`ent: validator failed for field "ConfigTask.path_params": %w`, err)}
+		}
+	}
 	if _, ok := ctc.mutation.RequestParams(); !ok {
 		return &ValidationError{Name: "request_params", err: errors.New(`ent: missing required field "ConfigTask.request_params"`)}
 	}
@@ -423,6 +437,14 @@ func (ctc *ConfigTaskCreate) createSpec() (*ConfigTask, *sqlgraph.CreateSpec) {
 			Column: configtask.FieldHeader,
 		})
 		_node.Header = value
+	}
+	if value, ok := ctc.mutation.PathParams(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configtask.FieldPathParams,
+		})
+		_node.PathParams = value
 	}
 	if value, ok := ctc.mutation.RequestParams(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

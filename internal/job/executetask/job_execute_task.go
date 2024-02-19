@@ -93,10 +93,15 @@ func convertConfigMappingAndMapDataFromPreviousResponse(
 	configTask, err := mapDataByPreviousResponseAndCustomFunction(int(taskIndex), *configMapping, previousResponse)
 	if err != nil {
 		return "", configTask, err
-	} else {
-		configMapping.Tasks = []configloader.ConfigTaskMD{configTask}
-		return utils.JsonString(configMapping), configTask, nil
 	}
+
+	// 3. Replace path params in endpoint
+	for reqFieldName, realValue := range configTask.PathParams {
+		configTask.Endpoint = taskprovider.ReplacePathParams(configTask.Endpoint, reqFieldName, realValue)
+	}
+
+	configMapping.Tasks = []configloader.ConfigTaskMD{configTask}
+	return utils.JsonString(configMapping), configTask, nil
 }
 
 func toResponseResult(task fileprocessingrow.ProcessingFileRow,

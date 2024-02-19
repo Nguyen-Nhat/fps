@@ -24,8 +24,18 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 	}
 
 	// 2. If no remaining request field that need to convert data -> do nothing
-	if len(task.RequestParamsMap) == 0 && len(task.RequestBodyMap) == 0 {
+	if len(task.RequestParamsMap) == 0 && len(task.RequestBodyMap) == 0 && len(task.PathParamsMap) == 0 {
 		return task, nil
+	}
+
+	// 3. Convert path params
+	for reqFieldName, reqField := range task.PathParamsMap {
+		realValue, err := getValueStringFromConfig(reqField, previousResponses)
+		if err != nil {
+			return configloader.ConfigTaskMD{}, err
+		}
+		task.PathParams[reqFieldName] = realValue
+		delete(task.PathParamsMap, reqFieldName)
 	}
 
 	// 3. Convert request params

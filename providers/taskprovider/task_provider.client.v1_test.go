@@ -387,3 +387,30 @@ func Test_convertRequestParams(t *testing.T) {
 		})
 	}
 }
+
+func Test_replacePathParams(t *testing.T) {
+	type args struct {
+		endpoint     string
+		reqFieldName string
+		realValue    string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"test case normal",
+			args{"http://localhost:8080/api/v1/abc/{$param1}", "param1", "123"},
+			"http://localhost:8080/api/v1/abc/123"},
+		{"test case normal not full param",
+			args{"http://localhost:8080/api/v1/abc/{$param1}/def/{$param2}", "param2", "456"},
+			"http://localhost:8080/api/v1/abc/{$param1}/def/456"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ReplacePathParams(tt.args.endpoint, tt.args.reqFieldName, tt.args.realValue); got != tt.want {
+				t.Errorf("ReplacePathParams() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

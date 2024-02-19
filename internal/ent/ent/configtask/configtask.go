@@ -23,6 +23,8 @@ const (
 	FieldMethod = "method"
 	// FieldHeader holds the string denoting the header field in the database.
 	FieldHeader = "header"
+	// FieldPathParams holds the string denoting the path_params field in the database.
+	FieldPathParams = "path_params"
 	// FieldRequestParams holds the string denoting the request_params field in the database.
 	FieldRequestParams = "request_params"
 	// FieldRequestBody holds the string denoting the request_body field in the database.
@@ -58,6 +60,7 @@ var Columns = []string{
 	FieldEndPoint,
 	FieldMethod,
 	FieldHeader,
+	FieldPathParams,
 	FieldRequestParams,
 	FieldRequestBody,
 	FieldResponseSuccessHTTPStatus,
@@ -92,6 +95,8 @@ var (
 	EndPointValidator func(string) error
 	// MethodValidator is a validator for the "method" field. It is called by the builders before save.
 	MethodValidator func(string) error
+	// PathParamsValidator is a validator for the "path_params" field. It is called by the builders before save.
+	PathParamsValidator func(string) error
 	// RequestParamsValidator is a validator for the "request_params" field. It is called by the builders before save.
 	RequestParamsValidator func(string) error
 	// RequestBodyValidator is a validator for the "request_body" field. It is called by the builders before save.

@@ -29,6 +29,8 @@ type ConfigTask struct {
 	// Format JSON
 	Header string `json:"header,omitempty"`
 	// Format JSON
+	PathParams string `json:"path_params,omitempty"`
+	// Format JSON
 	RequestParams string `json:"request_params,omitempty"`
 	// Format JSON
 	RequestBody string `json:"request_body,omitempty"`
@@ -59,7 +61,7 @@ func (*ConfigTask) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case configtask.FieldID, configtask.FieldConfigMappingID, configtask.FieldTaskIndex, configtask.FieldResponseSuccessHTTPStatus, configtask.FieldGroupBySizeLimit:
 			values[i] = new(sql.NullInt64)
-		case configtask.FieldName, configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldMessageTransformations, configtask.FieldGroupByColumns, configtask.FieldCreatedBy:
+		case configtask.FieldName, configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldPathParams, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldMessageTransformations, configtask.FieldGroupByColumns, configtask.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configtask.FieldCreatedAt, configtask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -119,6 +121,12 @@ func (ct *ConfigTask) assignValues(columns []string, values []interface{}) error
 				return fmt.Errorf("unexpected type %T for field header", values[i])
 			} else if value.Valid {
 				ct.Header = value.String
+			}
+		case configtask.FieldPathParams:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field path_params", values[i])
+			} else if value.Valid {
+				ct.PathParams = value.String
 			}
 		case configtask.FieldRequestParams:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -231,6 +239,9 @@ func (ct *ConfigTask) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("header=")
 	builder.WriteString(ct.Header)
+	builder.WriteString(", ")
+	builder.WriteString("path_params=")
+	builder.WriteString(ct.PathParams)
 	builder.WriteString(", ")
 	builder.WriteString("request_params=")
 	builder.WriteString(ct.RequestParams)

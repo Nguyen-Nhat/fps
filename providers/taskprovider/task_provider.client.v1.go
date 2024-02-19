@@ -18,7 +18,10 @@ import (
 )
 
 // var regexDoubleBrace = regexp.MustCompile(`{{([^{}]+)}}`)
-var regexDoubleBrace = regexp.MustCompile(`\{\{(.*?)}}`)
+var (
+	regexDoubleBrace = regexp.MustCompile(`\{\{(.*?)}}`)
+	regexPathParams  = regexp.MustCompile(`\{\$([a-zA-Z0-9_]+)\}`)
+)
 
 type (
 	// IClientV1 ...
@@ -231,4 +234,14 @@ func matchMessagePattern(messagePattern string, fileHeader []string, rowData []s
 
 	// 4. return
 	return messagePattern
+}
+
+// ReplacePathParams ...
+func ReplacePathParams(endpoint string, key string, value interface{}) string {
+	return regexPathParams.ReplaceAllStringFunc(endpoint, func(match string) string {
+		if strings.Contains(match, key) {
+			return fmt.Sprintf("%v", value)
+		}
+		return match
+	})
 }
