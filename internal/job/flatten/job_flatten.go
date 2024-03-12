@@ -106,7 +106,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 		logger.ErrorT("Importing file is invalid, fileID = %v, error in %v row(s)", file.ID, len(errorRows))
 		logger.ErrorT("Error rows = \n%v\n", utils.JsonString(errorRows))
 		// Update file result
-		resultFileUrl := job.updateFileResult(configMapping, file.FileURL, errorRows)
+		resultFileUrl := job.updateFileResult(configMapping, file, errorRows)
 		// Update file processing
 		job.updateFileProcessingToFailed(ctx, file, errFileInvalid, &resultFileUrl)
 		return
@@ -127,7 +127,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 			logger.ErrorT("Importing file is invalid, fileID = %v, unknown error", file.ID)
 		}
 		// Update file result
-		resultFileUrl := job.updateFileResult(configMapping, file.FileURL, errorRows)
+		resultFileUrl := job.updateFileResult(configMapping, file, errorRows)
 		// Update file processing
 		job.updateFileProcessingToFailed(ctx, file, errFileInvalid, &resultFileUrl)
 		return
@@ -159,7 +159,7 @@ func (job *jobFlatten) updateFileProcessingToFailed(ctx context.Context, file fi
 }
 
 // updateFileResult ...
-func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD, fileURL string, errorRows []ErrorRow) string {
+func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD, file fileprocessing.ProcessingFile, errorRows []ErrorRow) string {
 	// 1. Convert errorRows to errorDisplays
 	errorDisplays := make(map[int]string)
 	for _, errorRow := range errorRows {
@@ -172,15 +172,14 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 	}
 
 	// 2. Inject error to importing file
-	fileDataBytes, err := excel.UpdateDataInColumnOfFile(fileURL, cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, cfgMapping.DataStartAtRow, errorDisplays, false)
+	fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, cfgMapping.DataStartAtRow, errorDisplays, false)
 	if err != nil {
 		logger.ErrorT("Update file with Error Display failed, err=%v", err)
 		return ""
 	}
 
 	// 3. Gen result file name then Upload to file service
-	fileName := utils.ExtractFileName(fileURL)
-	resultFileName := fileName.FullNameWithSuffix("_result")
+	resultFileName := utils.GetResultFileName(file.DisplayName)
 	resultFileUrl, err := job.fileService.UploadFileWithBytesData(fileDataBytes, resultFileName)
 	if err != nil {
 		logger.ErrorT("Upload result file %v failed, err=%v", resultFileName, err)
