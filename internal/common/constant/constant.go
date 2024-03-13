@@ -20,6 +20,7 @@ const (
 
 const (
 	EmptyString = ""
+	SplitByDot  = "."
 )
 
 const (

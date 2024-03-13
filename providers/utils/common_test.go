@@ -149,6 +149,7 @@ func TestExtractFileName(t *testing.T) {
 		name string
 		args args
 		want FileName
+		skip bool
 	}{
 		{
 			name: "get file name from path",
@@ -231,9 +232,22 @@ func TestExtractFileName(t *testing.T) {
 				Extension: "xlsx",
 			},
 		},
+		{
+			name: "get file name from private url",
+			args: args{"https://files.dev.tekoapis.net/files/a4c7aca4-a6bb-4ce6-b4be-c5c411da5fca"},
+			want: FileName{
+				FullName:  "sc_export_specialist_05032024205328.xlsx",
+				Name:      "sc_export_specialist_05032024205328",
+				Extension: "xlsx",
+			},
+			skip: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.skip {
+				t.Skip()
+			}
 			got := ExtractFileName(tt.args.filePath)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Filename = %#v, want %#v", got, tt.want)
@@ -343,6 +357,28 @@ func TestEqualsIgnoreCase(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := EqualsIgnoreCase(tt.args.s1, tt.args.s2); got != tt.want {
 				t.Errorf("EqualsIgnoreCase() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetResultFileName(t *testing.T) {
+	type args struct {
+		fileName string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"file name with mime type", args{"abc.xlsx"}, "abc_result.xlsx"},
+		{"file name without mime type", args{"abc"}, "abc_result"},
+		{"file name empty", args{""}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetResultFileName(tt.args.fileName); got != tt.want {
+				t.Errorf("GetResultFileName() = %v, want %v", got, tt.want)
 			}
 		})
 	}

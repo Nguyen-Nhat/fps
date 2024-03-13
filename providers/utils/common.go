@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	mr "math/rand"
+	"mime"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -25,6 +26,7 @@ import (
 const (
 	isPrivateStr   = "isPrivate"
 	isPrivateValue = "true"
+	suffixResult   = "_result"
 )
 
 // Type ----------------------------------------------------------------------------------------------------------------
@@ -288,7 +290,44 @@ func ExtractFileName(filePath string) FileName {
 			Extension: matches[3],
 		}
 	}
+	// get file name from private url
+	fileName, err := extractFileNameFromPrivateUrl(filePath)
+	if err == nil {
+		return fileName
+	}
 	return FileName{"unknown", "unknown", "unknown"}
+}
+
+func extractFileNameFromPrivateUrl(url string) (f FileName, err error) {
+	r, err := http.Get(url)
+	if err != nil {
+		return f, err
+	}
+	defer func() {
+		_ = r.Body.Close()
+	}()
+
+	// Get content from Content-Disposition
+	contentDisposition := r.Header.Get("Content-Disposition")
+	if contentDisposition == constant.EmptyString {
+		return f, nil
+	}
+
+	// Parse Content-Disposition
+	_, params, err := mime.ParseMediaType(contentDisposition)
+	if err != nil {
+		return f, err
+	}
+
+	// Get file name
+	f.FullName = urlDecoded(params["filename"])
+	items := strings.Split(f.FullName, constant.SplitByDot)
+	if len(items) == 0 {
+		return f, nil
+	}
+	f.Extension = items[len(items)-1]
+	f.Name = strings.Join(items[:len(items)-1], constant.SplitByDot)
+	return f, nil
 }
 
 func urlDecoded(filePath string) string {
@@ -382,4 +421,13 @@ func TrimSpaceAndToLower(input string) string {
 
 func EqualsIgnoreCase(s1 string, s2 string) bool {
 	return TrimSpaceAndToLower(s1) == TrimSpaceAndToLower(s2)
+}
+
+func GetResultFileName(fileName string) string {
+	if len(fileName) == 0 {
+		return constant.EmptyString
+	}
+	fileNameExtract := strings.Split(fileName, constant.SplitByDot)
+	fileNameExtract[0] += suffixResult
+	return strings.Join(fileNameExtract, constant.SplitByDot)
 }

@@ -82,8 +82,7 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 			}
 
 			// 2.1.2. Gen result file name then Upload to file service
-			fileName := utils.ExtractFileName(file.FileURL)
-			resultFileName := fileName.FullNameWithSuffix("_result")
+			resultFileName := utils.GetResultFileName(file.DisplayName)
 			res, err := job.fileService.UploadFileWithBytesData(fileDataBytes, resultFileName)
 			if err != nil {
 				logger.ErrorT("Upload result file %v failed, err=%v", resultFileName, err)
