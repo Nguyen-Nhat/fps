@@ -9,4 +9,7 @@ const (
 
 	// api-doc: https://apidoc.teko.vn/project-doc/approved/core_logic_layer/retail/catalog/version/latest/paths/api-v2-skus/get
 	UrlApiGetSkus = "http://catalog-core-v2-api.catalog/api/v2/skus" // url call service name
+
+	// api-doc: https://apidoc.teko.vn/project-doc/approved/core_logic_layer/retail/6_purchase_management/supply_chain/version/a52c8328/operations/SMService_GetSuppliers
+	UrlGetSuppliers = "http://supplier-service.supply-chain/api/v1/suppliers"
 )
