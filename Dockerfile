@@ -1,8 +1,11 @@
 FROM golang:1.19-buster as builder
 WORKDIR /loyalty_file_processing
 
+ARG CI_JOB_TOKEN
+RUN git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@git.teko.vn".insteadOf "https://git.teko.vn"
 COPY go.mod go.sum ./
-ENV GOPRIVATE="git.teko.vn,go.tekoapis.com"
+ENV GOPRIVATE="git.teko.vn,*.tekoapis.com"
+ENV GOSUMDB="off"
 RUN go mod download
 COPY ./ ./
 
