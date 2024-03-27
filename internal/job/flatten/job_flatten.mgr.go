@@ -7,6 +7,7 @@ import (
 	"github.com/robfig/cron/v3"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/adapter/flagsup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
@@ -29,6 +30,7 @@ type jobFlattenManager struct {
 	// services config
 	cfgMappingService configmapping.Service
 	cfgTaskService    configtask.Service
+	flagSupClient     flagsup.ClientAdapter
 }
 
 var jobFlattenMgr *jobFlattenManager
@@ -36,7 +38,7 @@ var once sync.Once
 
 // NewJobFlattenManager ...
 func NewJobFlattenManager(
-	cfg config.SchedulerConfig,
+	cfg config.Config,
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
 	fpRowGroupService fpRowGroup.Service,
@@ -46,14 +48,17 @@ func NewJobFlattenManager(
 ) basejobmanager.CronJobManager {
 	if jobFlattenMgr == nil {
 		once.Do(func() {
+			flagSupClient := flagsup.New(cfg.FlagSupHost)
+
 			jobFlattenMgr = &jobFlattenManager{
-				cfg:               cfg,
+				cfg:               cfg.JobConfig.FlattenConfig,
 				fpService:         fpService,
 				fprService:        fprService,
 				fpRowGroupService: fpRowGroupService,
 				fileService:       fileService,
 				cfgMappingService: cfgMappingService,
 				cfgTaskService:    cfgTaskService,
+				flagSupClient:     flagSupClient,
 			}
 		})
 	}
@@ -98,7 +103,8 @@ func (mgr *jobFlattenManager) Execute() {
 	jobFlatten := newJobFlatten(
 		mgr.fpService, mgr.fprService, mgr.fpRowGroupService,
 		mgr.fileService,
-		mgr.cfgMappingService, mgr.cfgTaskService)
+		mgr.cfgMappingService, mgr.cfgTaskService,
+		mgr.flagSupClient)
 	for _, fp := range fpList {
 		jobFlatten.Flatten(ctx, *fp)
 	}

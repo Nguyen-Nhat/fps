@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/adapter/flagsup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
@@ -25,6 +26,7 @@ type jobFlatten struct {
 	// services config
 	cfgMappingService configmapping.Service
 	cfgTaskService    configtask.Service
+	flagSupClient     flagsup.ClientAdapter
 }
 
 func newJobFlatten(
@@ -34,6 +36,7 @@ func newJobFlatten(
 	fileService fileservice.IService,
 	cfgMappingService configmapping.Service,
 	cfgTaskService configtask.Service,
+	flagSupClient flagsup.ClientAdapter,
 ) *jobFlatten {
 	return &jobFlatten{
 		fpService:         fpService,
@@ -42,6 +45,7 @@ func newJobFlatten(
 		fileService:       fileService,
 		cfgMappingService: cfgMappingService,
 		cfgTaskService:    cfgTaskService,
+		flagSupClient:     flagSupClient,
 	}
 }
 
@@ -67,6 +71,10 @@ func newJobFlatten(
 //  7. Update processing_file: status=Processing, total_mapping, stats_total_row
 func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.ProcessingFile) {
 	logger.Infof("----- Start flattening ProcessingFile with ID = %v \nFile = %+v", file.ID, file)
+
+	if job.flagSupClient.IsEpicMa175Enabled(ctx) {
+		logger.Info("==================== Epic MA175 is enabled ======================\n")
+	}
 
 	// 1. Check status
 	if file.Status != fileprocessing.StatusInit {

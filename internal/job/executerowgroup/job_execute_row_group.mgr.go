@@ -29,7 +29,7 @@ var once sync.Once
 
 // NewJobExecuteRowGroupManager ...
 func NewJobExecuteRowGroupManager(
-	cfg config.SchedulerConfig,
+	cfg config.Config,
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
 	fpRowGroupService fpRowGroup.Service,
@@ -37,7 +37,7 @@ func NewJobExecuteRowGroupManager(
 	if jobExecuteRowGroupMgr == nil {
 		once.Do(func() {
 			jobExecuteRowGroupMgr = &jobExecuteRowGroupManager{
-				cfg:               cfg,
+				cfg:               cfg.JobConfig.ExecuteGroupTaskConfig,
 				fpService:         fpService,
 				fprService:        fprService,
 				fpRowGroupService: fpRowGroupService,

@@ -78,7 +78,7 @@ func Command(cfg config.Config) *cli.Command {
 						Name:  "flatten",
 						Usage: "flatten data in file processing",
 						Action: func(*cli.Context) error {
-							job := flatten.NewJobFlattenManager(cfg.JobConfig.FlattenConfig,
+							job := flatten.NewJobFlattenManager(cfg,
 								fpService, fprService, fpRowGroupService, fileService,
 								cmService, ctService)
 							job.Start()
@@ -91,7 +91,7 @@ func Command(cfg config.Config) *cli.Command {
 						Name:  "execute-task",
 						Usage: "execute task for file processing",
 						Action: func(*cli.Context) error {
-							job := executetask.NewJobExecuteTaskManager(cfg.JobConfig.ExecuteTaskConfig,
+							job := executetask.NewJobExecuteTaskManager(cfg,
 								fpService, fprService)
 							job.Start()
 
@@ -103,7 +103,7 @@ func Command(cfg config.Config) *cli.Command {
 						Name:  "execute-row-group",
 						Usage: "execute group task for file processing",
 						Action: func(*cli.Context) error {
-							job := executerowgroup.NewJobExecuteRowGroupManager(cfg.JobConfig.ExecuteGroupTaskConfig,
+							job := executerowgroup.NewJobExecuteRowGroupManager(cfg,
 								fpService, fprService, fpRowGroupService)
 							job.Start()
 
@@ -115,7 +115,7 @@ func Command(cfg config.Config) *cli.Command {
 						Name:  "update-status",
 						Usage: "update status for file processing",
 						Action: func(*cli.Context) error {
-							job := updatestatus.NewJobUpdateStatusManager(cfg.JobConfig.UpdateStatusConfig,
+							job := updatestatus.NewJobUpdateStatusManager(cfg,
 								fpService, fprService, fileService,
 								cmService)
 							job.Start()

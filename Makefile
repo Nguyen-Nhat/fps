@@ -28,7 +28,14 @@ coverage:
 	go tool cover -func loyalty-file-processing-coverage.cov | grep ^total
 
 migrate:
-	go run cmd/migrate/main.go start
+	echo \# make migrate name="$(name)"
+	go run cmd/server/main.go migrate create $(name)
+
+migrate-up:
+	go run cmd/server/main.go migrate up
+
+migrate-down-1:
+	go run cmd/server/main.go migrate down 1
 
 jobs:
 	go run cmd/server/main.go jobs

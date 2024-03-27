@@ -31,7 +31,7 @@ var once sync.Once
 
 // NewJobUpdateStatusManager ...
 func NewJobUpdateStatusManager(
-	cfg config.SchedulerConfig,
+	cfg config.Config,
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
 	fileService fileservice.IService,
@@ -40,7 +40,7 @@ func NewJobUpdateStatusManager(
 	if jobUpdateStatusMgr == nil {
 		once.Do(func() {
 			jobUpdateStatusMgr = &jobUpdateStatusManager{
-				cfg:               cfg,
+				cfg:               cfg.JobConfig.UpdateStatusConfig,
 				fpService:         fpService,
 				fprService:        fprService,
 				fileService:       fileService,

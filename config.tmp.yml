@@ -69,3 +69,6 @@ provider_config:
     rest_key: ""
     endpoint: "https://f-alt-server.dev.tekoapis.net/parse"
     is_enable: true
+
+FLAG_SUP_HOST: "flagsup-server.experiment:443"
+MIGRATION_FOLDER: file://migrations

@@ -8,6 +8,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/database/migrate"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/faltservice"
 )
@@ -38,6 +39,11 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			job.Command(cfg),
+			{
+				Name:        "migrate",
+				Usage:       "doing database migration",
+				Subcommands: migrate.CliCommand(cfg.MigrationFolder, cfg.Database.MySQL.DatabaseTcpURI()),
+			},
 		},
 	}
 

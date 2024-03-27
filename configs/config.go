@@ -32,11 +32,13 @@ type ServerConfig struct {
 
 // Config for app configuration
 type Config struct {
-	Server         ServerConfig   `mapstructure:"server"`
-	Database       DatabaseConfig `mapstructure:"database"`
-	Logger         LoggerConfig   `mapstructure:"logger"`
-	JobConfig      JobConfig      `mapstructure:"job"`
-	ProviderConfig ProviderConfig `mapstructure:"provider_config"`
+	Server          ServerConfig   `mapstructure:"server"`
+	Database        DatabaseConfig `mapstructure:"database"`
+	Logger          LoggerConfig   `mapstructure:"logger"`
+	JobConfig       JobConfig      `mapstructure:"job"`
+	ProviderConfig  ProviderConfig `mapstructure:"provider_config"`
+	FlagSupHost     string         `mapstructure:"flag_sup_host"`
+	MigrationFolder string         `mapstructure:"migration_folder"`
 }
 
 type ProviderConfig struct {

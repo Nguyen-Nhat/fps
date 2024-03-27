@@ -28,14 +28,14 @@ var once sync.Once
 
 // NewJobExecuteTaskManager ...
 func NewJobExecuteTaskManager(
-	cfg config.SchedulerConfig,
+	cfg config.Config,
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
 ) basejobmanager.CronJobManager {
 	if jobExecuteTaskMgr == nil {
 		once.Do(func() {
 			jobExecuteTaskMgr = &jobExecuteTaskManager{
-				cfg:        cfg,
+				cfg:        cfg.JobConfig.ExecuteTaskConfig,
 				fpService:  fpService,
 				fprService: fprService,
 			}
