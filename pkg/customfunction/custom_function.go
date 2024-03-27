@@ -76,6 +76,20 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
 		}
 		return customFunc.ConvertSiteCode2SiteId(cf.ParamsMapped[0], cf.ParamsMapped[1]), nil
+	case constants.FuncConvertSiteCodes2SiteIds:
+		if len(cf.ParamsMapped) > 3 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
+		}
+		var separator string
+		if len(cf.ParamsMapped) == 3 {
+			separator = cf.ParamsMapped[2]
+		}
+		return customFunc.ConvertSiteCodes2SiteIds(cf.ParamsMapped[0], cf.ParamsMapped[1], separator), nil
+	case constants.FuncConvertSupplierCode2SupplierId:
+		if len(cf.ParamsMapped) != 2 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
+		}
+		return customFunc.ConvertSupplierCode2SupplierId(cf.ParamsMapped[0], cf.ParamsMapped[1]), nil
 	default:
 		return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrFunctionNoSupport)
 	}

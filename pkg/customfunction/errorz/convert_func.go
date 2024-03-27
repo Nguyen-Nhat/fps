@@ -13,6 +13,9 @@ var (
 	ErrNoSkus = func(sku ...string) string {
 		return fmt.Sprintf("không tìm thấy thông tin sku %s", sku)
 	}
+	ErrNoSupplier = func(supplierCode string) string {
+		return fmt.Sprintf("không tìm thấy thông tin supplier %s", supplierCode)
+	}
 )
 
 // Error show on Debug

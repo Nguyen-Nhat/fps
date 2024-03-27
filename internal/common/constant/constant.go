@@ -19,8 +19,9 @@ const (
 )
 
 const (
-	EmptyString = ""
-	SplitByDot  = "."
+	EmptyString    = ""
+	SplitByDot     = "."
+	SplitByNewLine = "\n"
 )
 
 const (
