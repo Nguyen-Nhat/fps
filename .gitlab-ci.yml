@@ -7,6 +7,7 @@ variables:
   IMAGE_REPOSITORY: asia.gcr.io/teko-registry/loyalty-system/loyalty-file-processing
   GOPRIVATE: git.teko.vn,*.tekoapis.com
   GOSUMDB: "off"
+  DOCKER_BUILD_OPTS: --build-arg CI_JOB_TOKEN=${CI_JOB_TOKEN}
 
 # Unitest cases
 test:unitest:
