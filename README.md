@@ -5,9 +5,18 @@ File Processing Service for Loyalty.
 Guide line:
 1. Clone repository
 2. Duplicate file `config.tmp.yml` with new name is `config.yml`
-3. Run
+3. Setup database file_process_service and run make migrate-up to sync database structure
+4. Check in cmd/server/main.go to see all command in project.
+5. Run the project with make run
 ```
+// sync go library in project 
 go mod tidy
+
+// migrate database
+make migrate-up
+
+// to create migrate file
+make migrate name="sample_migration"
 ```
 
 <details>

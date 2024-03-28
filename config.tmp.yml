@@ -4,13 +4,14 @@ server:
     port: 10080
   api_key: '_api_key_' # should replace api key by K8S Env
 
+#LOCAL
 database:
   mysql:
-    db_name: loyalty_file_process_service
+    db_name: file_process_service
     host: localhost
     port: 3306
-    username: loyalty_file_process_service
-    password: 1
+    username: file_process_service
+    password: secret
     options: parseTime=true
   debug:
     enable: false
@@ -35,6 +36,7 @@ job:
   execute_task:
     schedule: '15 */1 * * * *' # every 1 minutes
     num_digesters: 2
+# remove if run local
     num_digesters_custom:
       - client_id: 1
         value: 2
