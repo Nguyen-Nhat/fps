@@ -3,14 +3,18 @@ package fileprocessing
 import (
 	"context"
 	"fmt"
+	"testing"
+	"time"
+
+	"github.com/sebdah/goldie/v2"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc/codes"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	fileprocessing2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/tests/common"
-	"github.com/stretchr/testify/assert"
-	"google.golang.org/grpc/codes"
-	"testing"
 )
 
 const issue1296 = "LOY-1296"
@@ -30,6 +34,8 @@ var jiraTestDetailsForSample = jiratest.Detail{
 	WebLinks:        []string{"https://jira.teko.vn/browse/HN5-173"},
 	ConfluenceLinks: []string{"https://confluence.teko.vn/pages/viewpage.action?spaceKey=PAYMS&title=%5BOMNI-1101%5D%5BSub-TDD%5D+Improve+File+Processing+Service"},
 }
+
+var fixedTime = time.Date(2021, 8, 30, 0, 0, 0, 0, time.UTC)
 
 func TestGetFileProcessHistory_Parameter_empty__Should_return_code_400(t *testing.T) {
 	detail := jiraTestDetailsForListFileAwardPoint
@@ -421,4 +427,97 @@ func TestGetFileProcessHistory_Input_createdBy_is_not_exist__Should_return_code_
 		TotalPage:   common.PageCalculator(dbRowCount, req.PageSize),
 	}
 	assert.Equal(t, expectedPagination, fpRes.Data.Pagination)
+}
+
+func TestGetFileProcessHistory_Input_createdByEmails_is_valid__Should_return_code_200(t *testing.T) {
+	detail := jiraTestDetailsForSample
+	detail.Name = "[GetFileProcessHistory] Return code = 200 when createdBy is valid"
+	defer detail.Setup(t)()
+
+	ctx := context.Background()
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
+	fpServer := fileprocessing2.InitFileProcessingServer(db)
+
+	req := fileprocessing2.GetFileProcessHistoryRequest{
+		ClientID:        12,
+		Page:            1,
+		PageSize:        5,
+		CreatedByEmails: []string{"tan.hm@teko.vn"},
+	}
+	req.InitDefaultValue()
+
+	fpRes, err := fpServer.GetFileProcessHistory(ctx, &req)
+	if err != nil {
+		t.Errorf("Error get list file processing: %v", err)
+	}
+	assert.Equal(t, codes.OK, fpRes.Error)
+	respData := make([]fileprocessing2.ProcessingHistoryFile, 0, len(fpRes.Data.ProcessingFiles))
+	for _, data := range fpRes.Data.ProcessingFiles {
+		data.CreatedAt = fixedTime.UnixMilli()
+		data.FinishedAt = fixedTime.UnixMilli()
+		respData = append(respData, data)
+	}
+	goldie.New(t).AssertJson(t, "filter_by_created_by_emails", respData)
+}
+
+func TestGetFileProcessHistory_Input_processFileIds_is_valid__Should_return_code_200(t *testing.T) {
+	detail := jiraTestDetailsForSample
+	detail.Name = "[GetFileProcessHistory] Return code = 200 when createdBy is valid"
+	defer detail.Setup(t)()
+
+	ctx := context.Background()
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
+	fpServer := fileprocessing2.InitFileProcessingServer(db)
+
+	req := fileprocessing2.GetFileProcessHistoryRequest{
+		ClientID:       12,
+		Page:           1,
+		PageSize:       2,
+		ProcessFileIds: []int{6, 4},
+	}
+	req.InitDefaultValue()
+
+	fpRes, err := fpServer.GetFileProcessHistory(ctx, &req)
+	if err != nil {
+		t.Errorf("Error get list file processing: %v", err)
+	}
+	assert.Equal(t, codes.OK, fpRes.Error)
+	respData := make([]fileprocessing2.ProcessingHistoryFile, 0, len(fpRes.Data.ProcessingFiles))
+	for _, data := range fpRes.Data.ProcessingFiles {
+		data.CreatedAt = fixedTime.UnixMilli()
+		data.FinishedAt = fixedTime.UnixMilli()
+		respData = append(respData, data)
+	}
+	goldie.New(t).AssertJson(t, "filter_by_process_file_ids", respData)
+}
+
+func TestGetFileProcessHistory_Input_searchFileName_is_valid__Should_return_code_200(t *testing.T) {
+	detail := jiraTestDetailsForSample
+	detail.Name = "[GetFileProcessHistory] Return code = 200 when createdBy is valid"
+	defer detail.Setup(t)()
+
+	ctx := context.Background()
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
+	fpServer := fileprocessing2.InitFileProcessingServer(db)
+
+	req := fileprocessing2.GetFileProcessHistoryRequest{
+		ClientID:       12,
+		Page:           1,
+		PageSize:       5,
+		SearchFileName: "process",
+	}
+	req.InitDefaultValue()
+
+	fpRes, err := fpServer.GetFileProcessHistory(ctx, &req)
+	if err != nil {
+		t.Errorf("Error get list file processing: %v", err)
+	}
+	assert.Equal(t, codes.OK, fpRes.Error)
+	respData := make([]fileprocessing2.ProcessingHistoryFile, 0, len(fpRes.Data.ProcessingFiles))
+	for _, data := range fpRes.Data.ProcessingFiles {
+		data.CreatedAt = fixedTime.UnixMilli()
+		data.FinishedAt = fixedTime.UnixMilli()
+		respData = append(respData, data)
+	}
+	goldie.New(t).AssertJson(t, "filter_by_search_file_name", respData)
 }

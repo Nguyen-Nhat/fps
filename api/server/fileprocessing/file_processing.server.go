@@ -68,11 +68,14 @@ func (s *Server) GetFileProcessHistoryAPI() func(http.ResponseWriter, *http.Requ
 func (s *Server) GetFileProcessHistory(ctx context.Context, req *GetFileProcessHistoryRequest) (*res.BaseResponse[GetFileProcessHistoryData], error) {
 	// 1. Map the request to internal DTO
 	input := &fileprocessing.GetFileProcessHistoryDTO{
-		ClientID:  req.ClientID,
-		SellerId:  req.SellerID,
-		CreatedBy: req.CreatedBy,
-		Page:      req.Page,
-		PageSize:  req.PageSize,
+		ClientID:        req.ClientID,
+		SellerId:        req.SellerID,
+		CreatedBy:       req.CreatedBy,
+		Page:            req.Page,
+		PageSize:        req.PageSize,
+		CreatedByEmails: req.CreatedByEmails,
+		ProcessFileIds:  req.ProcessFileIds,
+		SearchFileName:  req.SearchFileName,
 	}
 
 	// 2. Handle request

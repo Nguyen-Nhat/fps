@@ -69,11 +69,14 @@ func (c *CreateFileProcessingRequest) Bind(r *http.Request) error {
 }
 
 type GetFileProcessHistoryRequest struct {
-	ClientID  int32  `json:"clientId"`
-	SellerID  int32  `json:"sellerId"`
-	CreatedBy string `json:"createdBy"`
-	Page      int    `json:"page"`
-	PageSize  int    `json:"size"`
+	ClientID        int32    `json:"clientId"`
+	SellerID        int32    `json:"sellerId"`
+	CreatedBy       string   `json:"createdBy"`
+	Page            int      `json:"page"`
+	PageSize        int      `json:"size"`
+	CreatedByEmails []string `json:"createdByEmails"`
+	ProcessFileIds  []int    `json:"processFileIds"`
+	SearchFileName  string   `json:"searchFileName"`
 }
 
 func bindAndValidateRequestParams(r *http.Request, data *GetFileProcessHistoryRequest) error {
@@ -142,6 +145,7 @@ type ProcessingHistoryFile struct {
 	ErrorDisplay        string `json:"errorDisplay"`
 	CreatedAt           int64  `json:"createdAt"`
 	CreatedBy           string `json:"createdBy"`
+	FinishedAt          int64  `json:"finishedAt"`
 }
 
 // Error ===============================================================================================================
