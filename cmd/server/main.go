@@ -38,7 +38,9 @@ func main() {
 			return srv.Serve(cfg.Server.HTTP)
 		},
 		Commands: []*cli.Command{
+			// all job config in here
 			job.Command(cfg),
+			// migrate database
 			{
 				Name:        "migrate",
 				Usage:       "doing database migration",

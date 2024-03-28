@@ -60,7 +60,7 @@ func Command(cfg config.Config) *cli.Command {
 		Subcommands: []*cli.Command{
 			{
 				Name:  "old",
-				Usage: "old job",
+				Usage: "old job deprecated",
 				Action: func(*cli.Context) error {
 					// Init Job
 					handlefileprocessing.InitJobHandleProcessingFileAll(cfg.JobConfig.FileProcessingConfig,
@@ -72,11 +72,11 @@ func Command(cfg config.Config) *cli.Command {
 			},
 			{
 				Name:  "process-file",
-				Usage: "Consumer handle consume message from kafka",
+				Usage: "Handle process file uploaded, with many sub command",
 				Subcommands: []*cli.Command{
 					{
 						Name:  "flatten",
-						Usage: "flatten data in file processing",
+						Usage: "Read file in processing_file table and flatten data in file upload to each task in row to processing_file_row or processing_file_row_group table",
 						Action: func(*cli.Context) error {
 							job := flatten.NewJobFlattenManager(cfg,
 								fpService, fprService, fpRowGroupService, fileService,
@@ -89,7 +89,7 @@ func Command(cfg config.Config) *cli.Command {
 					},
 					{
 						Name:  "execute-task",
-						Usage: "execute task for file processing",
+						Usage: "Read processing_file_row table and execute task and update status",
 						Action: func(*cli.Context) error {
 							job := executetask.NewJobExecuteTaskManager(cfg,
 								fpService, fprService)
@@ -101,7 +101,7 @@ func Command(cfg config.Config) *cli.Command {
 					},
 					{
 						Name:  "execute-row-group",
-						Usage: "execute group task for file processing",
+						Usage: "If config task has config group will read processing_file_row_group table to execute group task for file processing and update status",
 						Action: func(*cli.Context) error {
 							job := executerowgroup.NewJobExecuteRowGroupManager(cfg,
 								fpService, fprService, fpRowGroupService)
@@ -113,7 +113,7 @@ func Command(cfg config.Config) *cli.Command {
 					},
 					{
 						Name:  "update-status",
-						Usage: "update status for file processing",
+						Usage: "Checking status of each task in processing_file_row table and gen file result",
 						Action: func(*cli.Context) error {
 							job := updatestatus.NewJobUpdateStatusManager(cfg,
 								fpService, fprService, fileService,
