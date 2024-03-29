@@ -103,16 +103,20 @@ func init() {
 	configtaskDescGroupBySizeLimit := configtaskFields[14].Descriptor()
 	// configtask.DefaultGroupBySizeLimit holds the default value on creation for the group_by_size_limit field.
 	configtask.DefaultGroupBySizeLimit = configtaskDescGroupBySizeLimit.Default.(int32)
+	// configtaskDescIsAsync is the schema descriptor for is_async field.
+	configtaskDescIsAsync := configtaskFields[15].Descriptor()
+	// configtask.DefaultIsAsync holds the default value on creation for the is_async field.
+	configtask.DefaultIsAsync = configtaskDescIsAsync.Default.(bool)
 	// configtaskDescCreatedAt is the schema descriptor for created_at field.
-	configtaskDescCreatedAt := configtaskFields[15].Descriptor()
+	configtaskDescCreatedAt := configtaskFields[16].Descriptor()
 	// configtask.DefaultCreatedAt holds the default value on creation for the created_at field.
 	configtask.DefaultCreatedAt = configtaskDescCreatedAt.Default.(func() time.Time)
 	// configtaskDescCreatedBy is the schema descriptor for created_by field.
-	configtaskDescCreatedBy := configtaskFields[16].Descriptor()
+	configtaskDescCreatedBy := configtaskFields[17].Descriptor()
 	// configtask.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	configtask.CreatedByValidator = configtaskDescCreatedBy.Validators[0].(func(string) error)
 	// configtaskDescUpdatedAt is the schema descriptor for updated_at field.
-	configtaskDescUpdatedAt := configtaskFields[17].Descriptor()
+	configtaskDescUpdatedAt := configtaskFields[18].Descriptor()
 	// configtask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	configtask.DefaultUpdatedAt = configtaskDescUpdatedAt.Default.(func() time.Time)
 	// configtask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

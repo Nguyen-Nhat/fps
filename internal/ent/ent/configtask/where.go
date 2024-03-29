@@ -185,6 +185,13 @@ func GroupBySizeLimit(v int32) predicate.ConfigTask {
 	})
 }
 
+// IsAsync applies equality check predicate on the "is_async" field. It's identical to IsAsyncEQ.
+func IsAsync(v bool) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsAsync), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
@@ -1548,6 +1555,20 @@ func GroupBySizeLimitLT(v int32) predicate.ConfigTask {
 func GroupBySizeLimitLTE(v int32) predicate.ConfigTask {
 	return predicate.ConfigTask(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldGroupBySizeLimit), v))
+	})
+}
+
+// IsAsyncEQ applies the EQ predicate on the "is_async" field.
+func IsAsyncEQ(v bool) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsAsync), v))
+	})
+}
+
+// IsAsyncNEQ applies the NEQ predicate on the "is_async" field.
+func IsAsyncNEQ(v bool) predicate.ConfigTask {
+	return predicate.ConfigTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsAsync), v))
 	})
 }
 

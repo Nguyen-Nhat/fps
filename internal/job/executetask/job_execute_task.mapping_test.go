@@ -10,7 +10,7 @@ import (
 
 func Test_getTaskConfig(t *testing.T) {
 	configMapping := configloader.ConfigMappingMD{
-		Tasks: []configloader.ConfigTaskMD{{TaskIndex: 1}, {TaskIndex: 2}, {TaskIndex: 3}},
+		Tasks: []configloader.ConfigTaskMD{{TaskIndex: 1}, {TaskIndex: 2}, {TaskIndex: 3}, {TaskIndex: 4, IsAsync: true}},
 	}
 
 	type args struct {
@@ -32,6 +32,8 @@ func Test_getTaskConfig(t *testing.T) {
 		{"test getTaskConfig case task index is 3 -> existed", args{3, configMapping},
 			configloader.ConfigTaskMD{TaskIndex: 3}, true},
 		{"test getTaskConfig case task index is 4 -> not existed", args{4, configMapping},
+			configloader.ConfigTaskMD{TaskIndex: 4, IsAsync: true}, true},
+		{"test getTaskConfig case task index is 5 -> not existed", args{5, configMapping},
 			configloader.ConfigTaskMD{}, false},
 	}
 	for _, tt := range tests {

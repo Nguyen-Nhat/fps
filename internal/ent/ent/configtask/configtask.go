@@ -41,6 +41,8 @@ const (
 	FieldGroupByColumns = "group_by_columns"
 	// FieldGroupBySizeLimit holds the string denoting the group_by_size_limit field in the database.
 	FieldGroupBySizeLimit = "group_by_size_limit"
+	// FieldIsAsync holds the string denoting the is_async field in the database.
+	FieldIsAsync = "is_async"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -69,6 +71,7 @@ var Columns = []string{
 	FieldMessageTransformations,
 	FieldGroupByColumns,
 	FieldGroupBySizeLimit,
+	FieldIsAsync,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -105,6 +108,8 @@ var (
 	DefaultGroupByColumns string
 	// DefaultGroupBySizeLimit holds the default value on creation for the "group_by_size_limit" field.
 	DefaultGroupBySizeLimit int32
+	// DefaultIsAsync holds the default value on creation for the "is_async" field.
+	DefaultIsAsync bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.

@@ -62,7 +62,11 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 		// 5. Update task status and save raw data for tracing
 		statusTask := fileprocessingrow.StatusFailed
 		if isSuccess {
-			statusTask = fileprocessingrow.StatusSuccess
+			if configTask.IsAsync {
+				statusTask = fileprocessingrow.StatusWaitForAsync
+			} else {
+				statusTask = fileprocessingrow.StatusSuccess
+			}
 		}
 		updateRequest := toResponseResult(*task, taskMappingUpdated, curl, responseBody, messageRes, int16(statusTask), startAt)
 		_, err = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)

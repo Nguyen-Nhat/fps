@@ -68,6 +68,7 @@ type ConfigTaskMD struct {
 	ImportRowHeader []string
 	ImportRowData   []string
 	ImportRowIndex  int
+	IsAsync         bool
 }
 
 // RequestFieldMD ... Metadata for Request Field, use for describing RequestParams, RequestBody
@@ -189,6 +190,7 @@ func (ct ConfigTaskMD) Clone() ConfigTaskMD {
 		ImportRowHeader: ct.ImportRowHeader,
 		ImportRowData:   ct.ImportRowData,
 		ImportRowIndex:  ct.ImportRowIndex,
+		IsAsync:         ct.IsAsync,
 	}
 }
 

@@ -14,6 +14,7 @@ const (
 	StatusSuccess         = 4
 	StatusWaitForGrouping = 5
 	StatusRejected        = 6
+	StatusWaitForAsync    = 7
 )
 
 type ProcessingFileRow struct {
