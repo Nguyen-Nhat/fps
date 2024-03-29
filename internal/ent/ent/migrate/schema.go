@@ -46,6 +46,7 @@ var (
 		{Name: "message_transformations", Type: field.TypeString},
 		{Name: "group_by_columns", Type: field.TypeString, Default: ""},
 		{Name: "group_by_size_limit", Type: field.TypeInt32, Default: 0},
+		{Name: "is_async", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},

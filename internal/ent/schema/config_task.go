@@ -38,6 +38,7 @@ func (ConfigTask) Fields() []ent.Field {
 		field.String("message_transformations").Comment("Format JSON, transform message for displaying in file result"),
 		field.String("group_by_columns").Default("").Comment("Group by list columns name. Eg: A,B,C"),
 		field.Int32("group_by_size_limit").Default(0).Comment("Max size of a Group. If exceed, reject file"),
+		field.Bool("is_async").Default(false).Comment("Is async task"),
 		// default fields
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),

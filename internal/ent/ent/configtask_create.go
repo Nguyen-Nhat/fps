@@ -134,6 +134,20 @@ func (ctc *ConfigTaskCreate) SetNillableGroupBySizeLimit(i *int32) *ConfigTaskCr
 	return ctc
 }
 
+// SetIsAsync sets the "is_async" field.
+func (ctc *ConfigTaskCreate) SetIsAsync(b bool) *ConfigTaskCreate {
+	ctc.mutation.SetIsAsync(b)
+	return ctc
+}
+
+// SetNillableIsAsync sets the "is_async" field if the given value is not nil.
+func (ctc *ConfigTaskCreate) SetNillableIsAsync(b *bool) *ConfigTaskCreate {
+	if b != nil {
+		ctc.SetIsAsync(*b)
+	}
+	return ctc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ctc *ConfigTaskCreate) SetCreatedAt(t time.Time) *ConfigTaskCreate {
 	ctc.mutation.SetCreatedAt(t)
@@ -257,6 +271,10 @@ func (ctc *ConfigTaskCreate) defaults() {
 		v := configtask.DefaultGroupBySizeLimit
 		ctc.mutation.SetGroupBySizeLimit(v)
 	}
+	if _, ok := ctc.mutation.IsAsync(); !ok {
+		v := configtask.DefaultIsAsync
+		ctc.mutation.SetIsAsync(v)
+	}
 	if _, ok := ctc.mutation.CreatedAt(); !ok {
 		v := configtask.DefaultCreatedAt()
 		ctc.mutation.SetCreatedAt(v)
@@ -348,6 +366,9 @@ func (ctc *ConfigTaskCreate) check() error {
 	}
 	if _, ok := ctc.mutation.GroupBySizeLimit(); !ok {
 		return &ValidationError{Name: "group_by_size_limit", err: errors.New(`ent: missing required field "ConfigTask.group_by_size_limit"`)}
+	}
+	if _, ok := ctc.mutation.IsAsync(); !ok {
+		return &ValidationError{Name: "is_async", err: errors.New(`ent: missing required field "ConfigTask.is_async"`)}
 	}
 	if _, ok := ctc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ConfigTask.created_at"`)}
@@ -509,6 +530,14 @@ func (ctc *ConfigTaskCreate) createSpec() (*ConfigTask, *sqlgraph.CreateSpec) {
 			Column: configtask.FieldGroupBySizeLimit,
 		})
 		_node.GroupBySizeLimit = value
+	}
+	if value, ok := ctc.mutation.IsAsync(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: configtask.FieldIsAsync,
+		})
+		_node.IsAsync = value
 	}
 	if value, ok := ctc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

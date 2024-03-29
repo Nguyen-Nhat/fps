@@ -170,6 +170,20 @@ func (ctu *ConfigTaskUpdate) AddGroupBySizeLimit(i int32) *ConfigTaskUpdate {
 	return ctu
 }
 
+// SetIsAsync sets the "is_async" field.
+func (ctu *ConfigTaskUpdate) SetIsAsync(b bool) *ConfigTaskUpdate {
+	ctu.mutation.SetIsAsync(b)
+	return ctu
+}
+
+// SetNillableIsAsync sets the "is_async" field if the given value is not nil.
+func (ctu *ConfigTaskUpdate) SetNillableIsAsync(b *bool) *ConfigTaskUpdate {
+	if b != nil {
+		ctu.SetIsAsync(*b)
+	}
+	return ctu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ctu *ConfigTaskUpdate) SetCreatedAt(t time.Time) *ConfigTaskUpdate {
 	ctu.mutation.SetCreatedAt(t)
@@ -466,6 +480,13 @@ func (ctu *ConfigTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: configtask.FieldGroupBySizeLimit,
 		})
 	}
+	if value, ok := ctu.mutation.IsAsync(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: configtask.FieldIsAsync,
+		})
+	}
 	if value, ok := ctu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -645,6 +666,20 @@ func (ctuo *ConfigTaskUpdateOne) SetNillableGroupBySizeLimit(i *int32) *ConfigTa
 // AddGroupBySizeLimit adds i to the "group_by_size_limit" field.
 func (ctuo *ConfigTaskUpdateOne) AddGroupBySizeLimit(i int32) *ConfigTaskUpdateOne {
 	ctuo.mutation.AddGroupBySizeLimit(i)
+	return ctuo
+}
+
+// SetIsAsync sets the "is_async" field.
+func (ctuo *ConfigTaskUpdateOne) SetIsAsync(b bool) *ConfigTaskUpdateOne {
+	ctuo.mutation.SetIsAsync(b)
+	return ctuo
+}
+
+// SetNillableIsAsync sets the "is_async" field if the given value is not nil.
+func (ctuo *ConfigTaskUpdateOne) SetNillableIsAsync(b *bool) *ConfigTaskUpdateOne {
+	if b != nil {
+		ctuo.SetIsAsync(*b)
+	}
 	return ctuo
 }
 
@@ -972,6 +1007,13 @@ func (ctuo *ConfigTaskUpdateOne) sqlSave(ctx context.Context) (_node *ConfigTask
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: configtask.FieldGroupBySizeLimit,
+		})
+	}
+	if value, ok := ctuo.mutation.IsAsync(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: configtask.FieldIsAsync,
 		})
 	}
 	if value, ok := ctuo.mutation.CreatedAt(); ok {

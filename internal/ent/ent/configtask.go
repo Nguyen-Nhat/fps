@@ -46,6 +46,8 @@ type ConfigTask struct {
 	GroupByColumns string `json:"group_by_columns,omitempty"`
 	// Max size of a Group. If exceed, reject file
 	GroupBySizeLimit int32 `json:"group_by_size_limit,omitempty"`
+	// Is async task
+	IsAsync bool `json:"is_async,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -59,6 +61,8 @@ func (*ConfigTask) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case configtask.FieldIsAsync:
+			values[i] = new(sql.NullBool)
 		case configtask.FieldID, configtask.FieldConfigMappingID, configtask.FieldTaskIndex, configtask.FieldResponseSuccessHTTPStatus, configtask.FieldGroupBySizeLimit:
 			values[i] = new(sql.NullInt64)
 		case configtask.FieldName, configtask.FieldEndPoint, configtask.FieldMethod, configtask.FieldHeader, configtask.FieldPathParams, configtask.FieldRequestParams, configtask.FieldRequestBody, configtask.FieldResponseSuccessCodeSchema, configtask.FieldResponseMessageSchema, configtask.FieldMessageTransformations, configtask.FieldGroupByColumns, configtask.FieldCreatedBy:
@@ -176,6 +180,12 @@ func (ct *ConfigTask) assignValues(columns []string, values []interface{}) error
 			} else if value.Valid {
 				ct.GroupBySizeLimit = int32(value.Int64)
 			}
+		case configtask.FieldIsAsync:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_async", values[i])
+			} else if value.Valid {
+				ct.IsAsync = value.Bool
+			}
 		case configtask.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -266,6 +276,9 @@ func (ct *ConfigTask) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("group_by_size_limit=")
 	builder.WriteString(fmt.Sprintf("%v", ct.GroupBySizeLimit))
+	builder.WriteString(", ")
+	builder.WriteString("is_async=")
+	builder.WriteString(fmt.Sprintf("%v", ct.IsAsync))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ct.CreatedAt.Format(time.ANSIC))

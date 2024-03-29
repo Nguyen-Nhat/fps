@@ -138,6 +138,7 @@ func toConfigTaskMD(task configtask.ConfigTask) (ConfigTaskMD, error) {
 		Response: responseMD,
 		// Row Group
 		RowGroup: rowGroup,
+		IsAsync:  task.IsAsync,
 	}, nil
 }
 

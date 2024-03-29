@@ -909,6 +909,7 @@ type ConfigTaskMutation struct {
 	group_by_columns                *string
 	group_by_size_limit             *int32
 	addgroup_by_size_limit          *int32
+	is_async                        *bool
 	created_at                      *time.Time
 	created_by                      *string
 	updated_at                      *time.Time
@@ -1636,6 +1637,42 @@ func (m *ConfigTaskMutation) ResetGroupBySizeLimit() {
 	m.addgroup_by_size_limit = nil
 }
 
+// SetIsAsync sets the "is_async" field.
+func (m *ConfigTaskMutation) SetIsAsync(b bool) {
+	m.is_async = &b
+}
+
+// IsAsync returns the value of the "is_async" field in the mutation.
+func (m *ConfigTaskMutation) IsAsync() (r bool, exists bool) {
+	v := m.is_async
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsAsync returns the old "is_async" field's value of the ConfigTask entity.
+// If the ConfigTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigTaskMutation) OldIsAsync(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsAsync is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsAsync requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsAsync: %w", err)
+	}
+	return oldValue.IsAsync, nil
+}
+
+// ResetIsAsync resets all changes to the "is_async" field.
+func (m *ConfigTaskMutation) ResetIsAsync() {
+	m.is_async = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ConfigTaskMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1763,7 +1800,7 @@ func (m *ConfigTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigTaskMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.config_mapping_id != nil {
 		fields = append(fields, configtask.FieldConfigMappingID)
 	}
@@ -1808,6 +1845,9 @@ func (m *ConfigTaskMutation) Fields() []string {
 	}
 	if m.group_by_size_limit != nil {
 		fields = append(fields, configtask.FieldGroupBySizeLimit)
+	}
+	if m.is_async != nil {
+		fields = append(fields, configtask.FieldIsAsync)
 	}
 	if m.created_at != nil {
 		fields = append(fields, configtask.FieldCreatedAt)
@@ -1856,6 +1896,8 @@ func (m *ConfigTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.GroupByColumns()
 	case configtask.FieldGroupBySizeLimit:
 		return m.GroupBySizeLimit()
+	case configtask.FieldIsAsync:
+		return m.IsAsync()
 	case configtask.FieldCreatedAt:
 		return m.CreatedAt()
 	case configtask.FieldCreatedBy:
@@ -1901,6 +1943,8 @@ func (m *ConfigTaskMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldGroupByColumns(ctx)
 	case configtask.FieldGroupBySizeLimit:
 		return m.OldGroupBySizeLimit(ctx)
+	case configtask.FieldIsAsync:
+		return m.OldIsAsync(ctx)
 	case configtask.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case configtask.FieldCreatedBy:
@@ -2020,6 +2064,13 @@ func (m *ConfigTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetGroupBySizeLimit(v)
+		return nil
+	case configtask.FieldIsAsync:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsAsync(v)
 		return nil
 	case configtask.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -2186,6 +2237,9 @@ func (m *ConfigTaskMutation) ResetField(name string) error {
 		return nil
 	case configtask.FieldGroupBySizeLimit:
 		m.ResetGroupBySizeLimit()
+		return nil
+	case configtask.FieldIsAsync:
+		m.ResetIsAsync()
 		return nil
 	case configtask.FieldCreatedAt:
 		m.ResetCreatedAt()
