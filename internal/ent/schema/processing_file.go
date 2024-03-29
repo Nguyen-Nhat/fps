@@ -25,6 +25,7 @@ func (ProcessingFile) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int32("client_id"),
 		field.String("display_name").NotEmpty(),
+		field.String("ext_file_request").Optional(),
 		field.String("file_url").NotEmpty(),
 		field.String("result_file_url"),
 		field.Int16("status").Comment("Init=1; Processing=2; Failed=3; Finished=4"),

@@ -47,6 +47,26 @@ func (pfu *ProcessingFileUpdate) SetDisplayName(s string) *ProcessingFileUpdate 
 	return pfu
 }
 
+// SetExtFileRequest sets the "ext_file_request" field.
+func (pfu *ProcessingFileUpdate) SetExtFileRequest(s string) *ProcessingFileUpdate {
+	pfu.mutation.SetExtFileRequest(s)
+	return pfu
+}
+
+// SetNillableExtFileRequest sets the "ext_file_request" field if the given value is not nil.
+func (pfu *ProcessingFileUpdate) SetNillableExtFileRequest(s *string) *ProcessingFileUpdate {
+	if s != nil {
+		pfu.SetExtFileRequest(*s)
+	}
+	return pfu
+}
+
+// ClearExtFileRequest clears the value of the "ext_file_request" field.
+func (pfu *ProcessingFileUpdate) ClearExtFileRequest() *ProcessingFileUpdate {
+	pfu.mutation.ClearExtFileRequest()
+	return pfu
+}
+
 // SetFileURL sets the "file_url" field.
 func (pfu *ProcessingFileUpdate) SetFileURL(s string) *ProcessingFileUpdate {
 	pfu.mutation.SetFileURL(s)
@@ -354,6 +374,19 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldDisplayName,
 		})
 	}
+	if value, ok := pfu.mutation.ExtFileRequest(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldExtFileRequest,
+		})
+	}
+	if pfu.mutation.ExtFileRequestCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: processingfile.FieldExtFileRequest,
+		})
+	}
 	if value, ok := pfu.mutation.FileURL(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -529,6 +562,26 @@ func (pfuo *ProcessingFileUpdateOne) AddClientID(i int32) *ProcessingFileUpdateO
 // SetDisplayName sets the "display_name" field.
 func (pfuo *ProcessingFileUpdateOne) SetDisplayName(s string) *ProcessingFileUpdateOne {
 	pfuo.mutation.SetDisplayName(s)
+	return pfuo
+}
+
+// SetExtFileRequest sets the "ext_file_request" field.
+func (pfuo *ProcessingFileUpdateOne) SetExtFileRequest(s string) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetExtFileRequest(s)
+	return pfuo
+}
+
+// SetNillableExtFileRequest sets the "ext_file_request" field if the given value is not nil.
+func (pfuo *ProcessingFileUpdateOne) SetNillableExtFileRequest(s *string) *ProcessingFileUpdateOne {
+	if s != nil {
+		pfuo.SetExtFileRequest(*s)
+	}
+	return pfuo
+}
+
+// ClearExtFileRequest clears the value of the "ext_file_request" field.
+func (pfuo *ProcessingFileUpdateOne) ClearExtFileRequest() *ProcessingFileUpdateOne {
+	pfuo.mutation.ClearExtFileRequest()
 	return pfuo
 }
 
@@ -867,6 +920,19 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldDisplayName,
+		})
+	}
+	if value, ok := pfuo.mutation.ExtFileRequest(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldExtFileRequest,
+		})
+	}
+	if pfuo.mutation.ExtFileRequestCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: processingfile.FieldExtFileRequest,
 		})
 	}
 	if value, ok := pfuo.mutation.FileURL(); ok {

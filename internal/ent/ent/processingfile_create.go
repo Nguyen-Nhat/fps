@@ -32,6 +32,20 @@ func (pfc *ProcessingFileCreate) SetDisplayName(s string) *ProcessingFileCreate 
 	return pfc
 }
 
+// SetExtFileRequest sets the "ext_file_request" field.
+func (pfc *ProcessingFileCreate) SetExtFileRequest(s string) *ProcessingFileCreate {
+	pfc.mutation.SetExtFileRequest(s)
+	return pfc
+}
+
+// SetNillableExtFileRequest sets the "ext_file_request" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableExtFileRequest(s *string) *ProcessingFileCreate {
+	if s != nil {
+		pfc.SetExtFileRequest(*s)
+	}
+	return pfc
+}
+
 // SetFileURL sets the "file_url" field.
 func (pfc *ProcessingFileCreate) SetFileURL(s string) *ProcessingFileCreate {
 	pfc.mutation.SetFileURL(s)
@@ -386,6 +400,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 			Column: processingfile.FieldDisplayName,
 		})
 		_node.DisplayName = value
+	}
+	if value, ok := pfc.mutation.ExtFileRequest(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldExtFileRequest,
+		})
+		_node.ExtFileRequest = value
 	}
 	if value, ok := pfc.mutation.FileURL(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

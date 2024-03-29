@@ -79,6 +79,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "client_id", Type: field.TypeInt32},
 		{Name: "display_name", Type: field.TypeString},
+		{Name: "ext_file_request", Type: field.TypeString, Nullable: true},
 		{Name: "file_url", Type: field.TypeString},
 		{Name: "result_file_url", Type: field.TypeString},
 		{Name: "status", Type: field.TypeInt16},

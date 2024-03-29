@@ -15,6 +15,8 @@ const (
 	FieldClientID = "client_id"
 	// FieldDisplayName holds the string denoting the display_name field in the database.
 	FieldDisplayName = "display_name"
+	// FieldExtFileRequest holds the string denoting the ext_file_request field in the database.
+	FieldExtFileRequest = "ext_file_request"
 	// FieldFileURL holds the string denoting the file_url field in the database.
 	FieldFileURL = "file_url"
 	// FieldResultFileURL holds the string denoting the result_file_url field in the database.
@@ -52,6 +54,7 @@ var Columns = []string{
 	FieldID,
 	FieldClientID,
 	FieldDisplayName,
+	FieldExtFileRequest,
 	FieldFileURL,
 	FieldResultFileURL,
 	FieldStatus,

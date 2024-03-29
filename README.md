@@ -17,6 +17,9 @@ make migrate-up
 
 // to create migrate file
 make migrate name="sample_migration"
+
+// to change ent need to edit in schema in loyalty-file-processing/internal/ent/schema 
+// and excute the generate in /loyalty-file-processing/internal/ent/generate.go
 ```
 
 <details>

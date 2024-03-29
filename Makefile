@@ -51,3 +51,6 @@ jobs-process-file-execute-row-group:
 
 jobs-process-file-update-status:
 	go run cmd/server/main.go jobs process-file update-status
+
+ent:
+	go run -mod=mod entgo.io/ent/cmd/ent generate --target ./internal/ent/ent --feature sql/versioned-migration ./internal/ent/schema
