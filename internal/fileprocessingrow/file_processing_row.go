@@ -82,6 +82,6 @@ func (s *CustomStatisticModel) IsProcessed() bool {
 
 // IsWaiting ... TRUE when contains waiting status
 func (s *CustomStatisticModel) IsWaiting() bool {
-	statusFailedStr := strconv.Itoa(StatusWaitForGrouping)
-	return strings.Contains(s.Statuses, statusFailedStr)
+	return strings.Contains(s.Statuses, strconv.Itoa(StatusWaitForGrouping)) ||
+		strings.Contains(s.Statuses, strconv.Itoa(StatusWaitForAsync))
 }

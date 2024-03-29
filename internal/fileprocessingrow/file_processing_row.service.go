@@ -135,31 +135,34 @@ func (s *ServiceImpl) UpdateAfterExecutingByJobForListIDs(ctx context.Context, i
 // Statistics ...
 func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
 	startAt := time.Now()
-	statistics, err := s.repo.Statistics(int64(fileID))
+	// Statistic group task by row
+	statisticGroupByRows, err := s.repo.Statistics(int64(fileID))
 	logger.Infof("----- Statistics: executed time is %s", time.Since(startAt))
 	if err != nil {
 		logger.Errorf("Error when get Statistics, err = %v", err)
 		return StatisticData{}, err
 	}
 
-	total := len(statistics)
+	total := len(statisticGroupByRows)
 	totalSuccess := 0
 	totalFailed := 0
 	totalProcessed := 0
 	totalWaiting := 0
 	errorDisplays := make(map[int]string)
-	for _, stats := range statistics {
-		if stats.IsSuccessAll() {
+	for _, row := range statisticGroupByRows {
+		if row.IsSuccessAll() {
 			totalSuccess++
-		} else if stats.IsContainsFailed() {
+		} else if row.IsContainsFailed() {
 			totalFailed++
 		}
-		errorDisplays[stats.RowIndex] = stats.ErrorDisplays
+		errorDisplays[row.RowIndex] = row.ErrorDisplays
 
-		if stats.IsProcessed() {
-			totalProcessed++
-		} else if stats.IsWaiting() {
+		// Ex: row[success,wait_for_async] => waiting
+		//     row[success,fail] => processed
+		if row.IsWaiting() {
 			totalWaiting++
+		} else if row.IsProcessed() {
+			totalProcessed++
 		}
 	}
 
