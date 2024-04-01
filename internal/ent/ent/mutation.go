@@ -2982,6 +2982,7 @@ type ProcessingFileMutation struct {
 	client_id                *int32
 	addclient_id             *int32
 	display_name             *string
+	ext_file_request         *string
 	file_url                 *string
 	result_file_url          *string
 	status                   *int16
@@ -3196,6 +3197,55 @@ func (m *ProcessingFileMutation) OldDisplayName(ctx context.Context) (v string, 
 // ResetDisplayName resets all changes to the "display_name" field.
 func (m *ProcessingFileMutation) ResetDisplayName() {
 	m.display_name = nil
+}
+
+// SetExtFileRequest sets the "ext_file_request" field.
+func (m *ProcessingFileMutation) SetExtFileRequest(s string) {
+	m.ext_file_request = &s
+}
+
+// ExtFileRequest returns the value of the "ext_file_request" field in the mutation.
+func (m *ProcessingFileMutation) ExtFileRequest() (r string, exists bool) {
+	v := m.ext_file_request
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExtFileRequest returns the old "ext_file_request" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldExtFileRequest(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExtFileRequest is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExtFileRequest requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExtFileRequest: %w", err)
+	}
+	return oldValue.ExtFileRequest, nil
+}
+
+// ClearExtFileRequest clears the value of the "ext_file_request" field.
+func (m *ProcessingFileMutation) ClearExtFileRequest() {
+	m.ext_file_request = nil
+	m.clearedFields[processingfile.FieldExtFileRequest] = struct{}{}
+}
+
+// ExtFileRequestCleared returns if the "ext_file_request" field was cleared in this mutation.
+func (m *ProcessingFileMutation) ExtFileRequestCleared() bool {
+	_, ok := m.clearedFields[processingfile.FieldExtFileRequest]
+	return ok
+}
+
+// ResetExtFileRequest resets all changes to the "ext_file_request" field.
+func (m *ProcessingFileMutation) ResetExtFileRequest() {
+	m.ext_file_request = nil
+	delete(m.clearedFields, processingfile.FieldExtFileRequest)
 }
 
 // SetFileURL sets the "file_url" field.
@@ -3841,12 +3891,15 @@ func (m *ProcessingFileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.client_id != nil {
 		fields = append(fields, processingfile.FieldClientID)
 	}
 	if m.display_name != nil {
 		fields = append(fields, processingfile.FieldDisplayName)
+	}
+	if m.ext_file_request != nil {
+		fields = append(fields, processingfile.FieldExtFileRequest)
 	}
 	if m.file_url != nil {
 		fields = append(fields, processingfile.FieldFileURL)
@@ -3902,6 +3955,8 @@ func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
 		return m.ClientID()
 	case processingfile.FieldDisplayName:
 		return m.DisplayName()
+	case processingfile.FieldExtFileRequest:
+		return m.ExtFileRequest()
 	case processingfile.FieldFileURL:
 		return m.FileURL()
 	case processingfile.FieldResultFileURL:
@@ -3943,6 +3998,8 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldClientID(ctx)
 	case processingfile.FieldDisplayName:
 		return m.OldDisplayName(ctx)
+	case processingfile.FieldExtFileRequest:
+		return m.OldExtFileRequest(ctx)
 	case processingfile.FieldFileURL:
 		return m.OldFileURL(ctx)
 	case processingfile.FieldResultFileURL:
@@ -3993,6 +4050,13 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDisplayName(v)
+		return nil
+	case processingfile.FieldExtFileRequest:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExtFileRequest(v)
 		return nil
 	case processingfile.FieldFileURL:
 		v, ok := value.(string)
@@ -4208,7 +4272,11 @@ func (m *ProcessingFileMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ProcessingFileMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(processingfile.FieldExtFileRequest) {
+		fields = append(fields, processingfile.FieldExtFileRequest)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -4221,6 +4289,11 @@ func (m *ProcessingFileMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ProcessingFileMutation) ClearField(name string) error {
+	switch name {
+	case processingfile.FieldExtFileRequest:
+		m.ClearExtFileRequest()
+		return nil
+	}
 	return fmt.Errorf("unknown ProcessingFile nullable field %s", name)
 }
 
@@ -4233,6 +4306,9 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 		return nil
 	case processingfile.FieldDisplayName:
 		m.ResetDisplayName()
+		return nil
+	case processingfile.FieldExtFileRequest:
+		m.ResetExtFileRequest()
 		return nil
 	case processingfile.FieldFileURL:
 		m.ResetFileURL()

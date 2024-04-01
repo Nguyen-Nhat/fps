@@ -42,9 +42,10 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 	// 1. Preprocess data
 	// Get file name from file URL in case display name was not provided
 	displayName := req.DisplayName
+	fileReq := utils.ExtractFileName(req.FileURL)
 	if displayName == "" {
 		logger.Warnf("Not receive display name from request. Extract from file URL %s", req.FileURL)
-		displayName = utils.ExtractFileName(req.FileURL).FullName
+		displayName = fileReq.FullName
 	}
 
 	// 2. Create new file processing
@@ -52,6 +53,7 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 		ProcessingFile: ent.ProcessingFile{
 			ClientID:       req.ClientID,
 			DisplayName:    displayName,
+			ExtFileRequest: fileReq.Extension,
 			FileURL:        req.FileURL,
 			ResultFileURL:  req.FileURL,
 			Status:         StatusInit,

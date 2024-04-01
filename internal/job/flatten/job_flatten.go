@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/adapter/flagsup"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
@@ -92,7 +93,15 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 	}
 
 	// 3. Get file by URL -> data in first sheet
-	sheetData, err := excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
+	var sheetData [][]string
+	switch file.ExtFileRequest {
+	case constant.ExtFileCSV:
+		sheetData, err = excel.LoadCSVByUrl(file.FileURL)
+	case constant.ExtFileXLSX:
+		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
+	default:
+		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
+	}
 	if err != nil {
 		logger.ErrorT("Cannot get data from fileURL, fileID = %v, url = %v, got error %v", file.ID, file.FileURL, err)
 		job.updateFileProcessingToFailed(ctx, file, errFileCannotLoad, nil)

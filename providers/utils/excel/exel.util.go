@@ -62,17 +62,8 @@ func LoadSheetsInExcelByUrl(fileURL string, sheetNameArr []string) (map[string][
 	return sheetMap, nil
 }
 
-func LoadFileByUrl(fileURL string) (*excelize.File, error) {
-	data, err := loadDataFromUrl(fileURL)
-	if err != nil {
-		return nil, err
-	}
-
-	return excelize.OpenReader(bytes.NewReader(data))
-}
-
 // UpdateDataInColumnOfFile ...
-// sheetName = ” => use first sheet instead of sheetName
+// sheetName = "" => use first sheet instead of sheetName
 func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName string, dataIndexStart int,
 	columnData map[int]string, allowRemoveRemainingSheet bool) (*bytes.Buffer, error) {
 	// 1. Load file

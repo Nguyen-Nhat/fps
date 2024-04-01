@@ -22,7 +22,7 @@ func Test_getValueFromColumnKey(t *testing.T) {
 		{"test getValueFromColumnKey: when columnKey wrong then return empty",
 			args{"A.", []string{"value_A", "value_B"}}, ""},
 		{"test getValueFromColumnKey: when columnKey wrong then return empty",
-			args{"A.asdlkfj", []string{"value_A", "value_B"}}, ""},
+			args{"A.wrongKey", []string{"value_A", "value_B"}}, ""},
 		{"test getValueFromColumnKey: when columnKey not existed then return empty",
 			args{"Z", []string{"value_A", "value_B"}}, ""},
 		// case valid -> return correct value

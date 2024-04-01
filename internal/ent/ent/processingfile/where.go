@@ -94,6 +94,13 @@ func DisplayName(v string) predicate.ProcessingFile {
 	})
 }
 
+// ExtFileRequest applies equality check predicate on the "ext_file_request" field. It's identical to ExtFileRequestEQ.
+func ExtFileRequest(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldExtFileRequest), v))
+	})
+}
+
 // FileURL applies equality check predicate on the "file_url" field. It's identical to FileURLEQ.
 func FileURL(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -352,6 +359,119 @@ func DisplayNameEqualFold(v string) predicate.ProcessingFile {
 func DisplayNameContainsFold(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldDisplayName), v))
+	})
+}
+
+// ExtFileRequestEQ applies the EQ predicate on the "ext_file_request" field.
+func ExtFileRequestEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestNEQ applies the NEQ predicate on the "ext_file_request" field.
+func ExtFileRequestNEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestIn applies the In predicate on the "ext_file_request" field.
+func ExtFileRequestIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldExtFileRequest), v...))
+	})
+}
+
+// ExtFileRequestNotIn applies the NotIn predicate on the "ext_file_request" field.
+func ExtFileRequestNotIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldExtFileRequest), v...))
+	})
+}
+
+// ExtFileRequestGT applies the GT predicate on the "ext_file_request" field.
+func ExtFileRequestGT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestGTE applies the GTE predicate on the "ext_file_request" field.
+func ExtFileRequestGTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestLT applies the LT predicate on the "ext_file_request" field.
+func ExtFileRequestLT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestLTE applies the LTE predicate on the "ext_file_request" field.
+func ExtFileRequestLTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestContains applies the Contains predicate on the "ext_file_request" field.
+func ExtFileRequestContains(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestHasPrefix applies the HasPrefix predicate on the "ext_file_request" field.
+func ExtFileRequestHasPrefix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestHasSuffix applies the HasSuffix predicate on the "ext_file_request" field.
+func ExtFileRequestHasSuffix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestIsNil applies the IsNil predicate on the "ext_file_request" field.
+func ExtFileRequestIsNil() predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldExtFileRequest)))
+	})
+}
+
+// ExtFileRequestNotNil applies the NotNil predicate on the "ext_file_request" field.
+func ExtFileRequestNotNil() predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldExtFileRequest)))
+	})
+}
+
+// ExtFileRequestEqualFold applies the EqualFold predicate on the "ext_file_request" field.
+func ExtFileRequestEqualFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldExtFileRequest), v))
+	})
+}
+
+// ExtFileRequestContainsFold applies the ContainsFold predicate on the "ext_file_request" field.
+func ExtFileRequestContainsFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldExtFileRequest), v))
 	})
 }
 

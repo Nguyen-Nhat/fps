@@ -27,3 +27,9 @@ const (
 const (
 	ParseInvalidSessionTokenCode = 209
 )
+
+const (
+	ExtFileCSV     = "csv"
+	ExtFileXLSX    = "xlsx"
+	ExtFileUnknown = "unknown"
+)

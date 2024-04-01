@@ -20,6 +20,8 @@ type ProcessingFile struct {
 	ClientID int32 `json:"client_id,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"display_name,omitempty"`
+	// ExtFileRequest holds the value of the "ext_file_request" field.
+	ExtFileRequest string `json:"ext_file_request,omitempty"`
 	// FileURL holds the value of the "file_url" field.
 	FileURL string `json:"file_url,omitempty"`
 	// ResultFileURL holds the value of the "result_file_url" field.
@@ -59,7 +61,7 @@ func (*ProcessingFile) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldSellerID, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalProcessed, processingfile.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
-		case processingfile.FieldDisplayName, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldFileParameters, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
+		case processingfile.FieldDisplayName, processingfile.FieldExtFileRequest, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldFileParameters, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case processingfile.FieldCreatedAt, processingfile.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -95,6 +97,12 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 				return fmt.Errorf("unexpected type %T for field display_name", values[i])
 			} else if value.Valid {
 				pf.DisplayName = value.String
+			}
+		case processingfile.FieldExtFileRequest:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ext_file_request", values[i])
+			} else if value.Valid {
+				pf.ExtFileRequest = value.String
 			}
 		case processingfile.FieldFileURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -213,6 +221,9 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(pf.DisplayName)
+	builder.WriteString(", ")
+	builder.WriteString("ext_file_request=")
+	builder.WriteString(pf.ExtFileRequest)
 	builder.WriteString(", ")
 	builder.WriteString("file_url=")
 	builder.WriteString(pf.FileURL)
