@@ -35,6 +35,7 @@ func toProcessHistoryFileFromEntity(pf *fileprocessing.ProcessingFile) Processin
 		ErrorDisplay:        pf.ErrorDisplay,
 		CreatedAt:           pf.CreatedAt.UnixMilli(),
 		CreatedBy:           pf.CreatedBy,
+		FinishedAt:          pf.UpdatedAt.UnixMilli(),
 	}
 }
 

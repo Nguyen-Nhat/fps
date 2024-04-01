@@ -9,6 +9,7 @@ shared/
 rpcimpl/server/*
 *.out
 tmp/
+/vendor
 
 # Environments
 .env

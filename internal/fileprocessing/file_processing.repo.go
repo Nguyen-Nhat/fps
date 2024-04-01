@@ -210,6 +210,15 @@ func (r *repoImpl) FindByClientIdAndPagination(ctx context.Context, dto *GetFile
 	if dto.SellerId > 0 {
 		query = query.Where(processingfile.SellerID(dto.SellerId))
 	}
+	if len(dto.CreatedByEmails) > 0 {
+		query = query.Where(processingfile.CreatedByIn(dto.CreatedByEmails...))
+	}
+	if len(dto.ProcessFileIds) > 0 {
+		query = query.Where(processingfile.IDIn(dto.ProcessFileIds...))
+	}
+	if len(dto.SearchFileName) > 0 {
+		query = query.Where(processingfile.DisplayNameContains(dto.SearchFileName))
+	}
 
 	total, err := query.Count(ctx)
 	if err != nil {

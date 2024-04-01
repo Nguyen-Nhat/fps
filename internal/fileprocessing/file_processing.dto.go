@@ -1,11 +1,14 @@
 package fileprocessing
 
 type GetFileProcessHistoryDTO struct {
-	ClientID  int32
-	SellerId  int32
-	CreatedBy string
-	Page      int
-	PageSize  int
+	ClientID        int32
+	SellerId        int32
+	CreatedBy       string
+	Page            int
+	PageSize        int
+	CreatedByEmails []string
+	ProcessFileIds  []int
+	SearchFileName  string
 }
 
 type CreateFileProcessingReqDTO struct {
