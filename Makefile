@@ -54,3 +54,8 @@ jobs-process-file-update-status:
 
 ent:
 	go run -mod=mod entgo.io/ent/cmd/ent generate --target ./internal/ent/ent --feature sql/versioned-migration ./internal/ent/schema
+
+
+update-tekone:
+	echo \# make update-tekone commit="$(commit)"
+	GOSUMDB=off go get go.tekoapis.com/tekone/library/teka@$(commit)

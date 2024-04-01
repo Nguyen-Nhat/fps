@@ -19,9 +19,10 @@ const (
 )
 
 const (
-	EmptyString    = ""
-	SplitByDot     = "."
-	SplitByNewLine = "\n"
+	EmptyString          = ""
+	SplitByDot           = "."
+	SplitByNewLine       = "\n"
+	SplitByCommaAndSpace = ", "
 )
 
 const (
@@ -32,4 +33,9 @@ const (
 	ExtFileCSV     = "csv"
 	ExtFileXLSX    = "xlsx"
 	ExtFileUnknown = "unknown"
+)
+
+const (
+	KafkaConsumerWithRetry               = "with-retry"
+	KafkaConsumeTypeForUpdateResultAsync = "update-result-async"
 )

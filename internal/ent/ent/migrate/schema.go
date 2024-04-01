@@ -117,6 +117,10 @@ var (
 		{Name: "status", Type: field.TypeInt16},
 		{Name: "error_display", Type: field.TypeString},
 		{Name: "executed_time", Type: field.TypeInt64},
+		{Name: "result_async", Type: field.TypeString, Nullable: true},
+		{Name: "start_at", Type: field.TypeTime, Nullable: true},
+		{Name: "receive_response_at", Type: field.TypeTime, Nullable: true},
+		{Name: "receive_result_async_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}

@@ -39,11 +39,20 @@ type Config struct {
 	ProviderConfig  ProviderConfig `mapstructure:"provider_config"`
 	FlagSupHost     string         `mapstructure:"flag_sup_host"`
 	MigrationFolder string         `mapstructure:"migration_folder"`
+	Kafka           KafkaConfig    `mapstructure:"kafka"`
 }
 
 type ProviderConfig struct {
 	FileService FileServiceConfig `mapstructure:"file_service"`
 	FAltService FAltService       `mapstructure:"f_alt_service"`
+}
+
+type KafkaConfig struct {
+	ConnectionHost     string `mapstructure:"connection_host"`
+	ConsumerPrefixName string `mapstructure:"consumer_prefix_name"`
+
+	// Topic
+	UpdateResultAsyncTopic string `mapstructure:"update_result_async_topic"`
 }
 
 const (

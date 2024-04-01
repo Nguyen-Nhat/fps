@@ -4407,33 +4407,37 @@ func (m *ProcessingFileMutation) ResetEdge(name string) error {
 // ProcessingFileRowMutation represents an operation that mutates the ProcessingFileRow nodes in the graph.
 type ProcessingFileRowMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int
-	file_id           *int64
-	addfile_id        *int64
-	row_index         *int32
-	addrow_index      *int32
-	row_data_raw      *string
-	task_index        *int32
-	addtask_index     *int32
-	task_mapping      *string
-	task_depends_on   *string
-	group_by_value    *string
-	task_request_curl *string
-	task_request_raw  *string
-	task_response_raw *string
-	status            *int16
-	addstatus         *int16
-	error_display     *string
-	executed_time     *int64
-	addexecuted_time  *int64
-	created_at        *time.Time
-	updated_at        *time.Time
-	clearedFields     map[string]struct{}
-	done              bool
-	oldValue          func(context.Context) (*ProcessingFileRow, error)
-	predicates        []predicate.ProcessingFileRow
+	op                      Op
+	typ                     string
+	id                      *int
+	file_id                 *int64
+	addfile_id              *int64
+	row_index               *int32
+	addrow_index            *int32
+	row_data_raw            *string
+	task_index              *int32
+	addtask_index           *int32
+	task_mapping            *string
+	task_depends_on         *string
+	group_by_value          *string
+	task_request_curl       *string
+	task_request_raw        *string
+	task_response_raw       *string
+	status                  *int16
+	addstatus               *int16
+	error_display           *string
+	executed_time           *int64
+	addexecuted_time        *int64
+	result_async            *string
+	start_at                *time.Time
+	receive_response_at     *time.Time
+	receive_result_async_at *time.Time
+	created_at              *time.Time
+	updated_at              *time.Time
+	clearedFields           map[string]struct{}
+	done                    bool
+	oldValue                func(context.Context) (*ProcessingFileRow, error)
+	predicates              []predicate.ProcessingFileRow
 }
 
 var _ ent.Mutation = (*ProcessingFileRowMutation)(nil)
@@ -5102,6 +5106,202 @@ func (m *ProcessingFileRowMutation) ResetExecutedTime() {
 	m.addexecuted_time = nil
 }
 
+// SetResultAsync sets the "result_async" field.
+func (m *ProcessingFileRowMutation) SetResultAsync(s string) {
+	m.result_async = &s
+}
+
+// ResultAsync returns the value of the "result_async" field in the mutation.
+func (m *ProcessingFileRowMutation) ResultAsync() (r string, exists bool) {
+	v := m.result_async
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResultAsync returns the old "result_async" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldResultAsync(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResultAsync is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResultAsync requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResultAsync: %w", err)
+	}
+	return oldValue.ResultAsync, nil
+}
+
+// ClearResultAsync clears the value of the "result_async" field.
+func (m *ProcessingFileRowMutation) ClearResultAsync() {
+	m.result_async = nil
+	m.clearedFields[processingfilerow.FieldResultAsync] = struct{}{}
+}
+
+// ResultAsyncCleared returns if the "result_async" field was cleared in this mutation.
+func (m *ProcessingFileRowMutation) ResultAsyncCleared() bool {
+	_, ok := m.clearedFields[processingfilerow.FieldResultAsync]
+	return ok
+}
+
+// ResetResultAsync resets all changes to the "result_async" field.
+func (m *ProcessingFileRowMutation) ResetResultAsync() {
+	m.result_async = nil
+	delete(m.clearedFields, processingfilerow.FieldResultAsync)
+}
+
+// SetStartAt sets the "start_at" field.
+func (m *ProcessingFileRowMutation) SetStartAt(t time.Time) {
+	m.start_at = &t
+}
+
+// StartAt returns the value of the "start_at" field in the mutation.
+func (m *ProcessingFileRowMutation) StartAt() (r time.Time, exists bool) {
+	v := m.start_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartAt returns the old "start_at" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldStartAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartAt: %w", err)
+	}
+	return oldValue.StartAt, nil
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (m *ProcessingFileRowMutation) ClearStartAt() {
+	m.start_at = nil
+	m.clearedFields[processingfilerow.FieldStartAt] = struct{}{}
+}
+
+// StartAtCleared returns if the "start_at" field was cleared in this mutation.
+func (m *ProcessingFileRowMutation) StartAtCleared() bool {
+	_, ok := m.clearedFields[processingfilerow.FieldStartAt]
+	return ok
+}
+
+// ResetStartAt resets all changes to the "start_at" field.
+func (m *ProcessingFileRowMutation) ResetStartAt() {
+	m.start_at = nil
+	delete(m.clearedFields, processingfilerow.FieldStartAt)
+}
+
+// SetReceiveResponseAt sets the "receive_response_at" field.
+func (m *ProcessingFileRowMutation) SetReceiveResponseAt(t time.Time) {
+	m.receive_response_at = &t
+}
+
+// ReceiveResponseAt returns the value of the "receive_response_at" field in the mutation.
+func (m *ProcessingFileRowMutation) ReceiveResponseAt() (r time.Time, exists bool) {
+	v := m.receive_response_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReceiveResponseAt returns the old "receive_response_at" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldReceiveResponseAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReceiveResponseAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReceiveResponseAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReceiveResponseAt: %w", err)
+	}
+	return oldValue.ReceiveResponseAt, nil
+}
+
+// ClearReceiveResponseAt clears the value of the "receive_response_at" field.
+func (m *ProcessingFileRowMutation) ClearReceiveResponseAt() {
+	m.receive_response_at = nil
+	m.clearedFields[processingfilerow.FieldReceiveResponseAt] = struct{}{}
+}
+
+// ReceiveResponseAtCleared returns if the "receive_response_at" field was cleared in this mutation.
+func (m *ProcessingFileRowMutation) ReceiveResponseAtCleared() bool {
+	_, ok := m.clearedFields[processingfilerow.FieldReceiveResponseAt]
+	return ok
+}
+
+// ResetReceiveResponseAt resets all changes to the "receive_response_at" field.
+func (m *ProcessingFileRowMutation) ResetReceiveResponseAt() {
+	m.receive_response_at = nil
+	delete(m.clearedFields, processingfilerow.FieldReceiveResponseAt)
+}
+
+// SetReceiveResultAsyncAt sets the "receive_result_async_at" field.
+func (m *ProcessingFileRowMutation) SetReceiveResultAsyncAt(t time.Time) {
+	m.receive_result_async_at = &t
+}
+
+// ReceiveResultAsyncAt returns the value of the "receive_result_async_at" field in the mutation.
+func (m *ProcessingFileRowMutation) ReceiveResultAsyncAt() (r time.Time, exists bool) {
+	v := m.receive_result_async_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReceiveResultAsyncAt returns the old "receive_result_async_at" field's value of the ProcessingFileRow entity.
+// If the ProcessingFileRow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileRowMutation) OldReceiveResultAsyncAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReceiveResultAsyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReceiveResultAsyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReceiveResultAsyncAt: %w", err)
+	}
+	return oldValue.ReceiveResultAsyncAt, nil
+}
+
+// ClearReceiveResultAsyncAt clears the value of the "receive_result_async_at" field.
+func (m *ProcessingFileRowMutation) ClearReceiveResultAsyncAt() {
+	m.receive_result_async_at = nil
+	m.clearedFields[processingfilerow.FieldReceiveResultAsyncAt] = struct{}{}
+}
+
+// ReceiveResultAsyncAtCleared returns if the "receive_result_async_at" field was cleared in this mutation.
+func (m *ProcessingFileRowMutation) ReceiveResultAsyncAtCleared() bool {
+	_, ok := m.clearedFields[processingfilerow.FieldReceiveResultAsyncAt]
+	return ok
+}
+
+// ResetReceiveResultAsyncAt resets all changes to the "receive_result_async_at" field.
+func (m *ProcessingFileRowMutation) ResetReceiveResultAsyncAt() {
+	m.receive_result_async_at = nil
+	delete(m.clearedFields, processingfilerow.FieldReceiveResultAsyncAt)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ProcessingFileRowMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -5193,7 +5393,7 @@ func (m *ProcessingFileRowMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileRowMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 19)
 	if m.file_id != nil {
 		fields = append(fields, processingfilerow.FieldFileID)
 	}
@@ -5232,6 +5432,18 @@ func (m *ProcessingFileRowMutation) Fields() []string {
 	}
 	if m.executed_time != nil {
 		fields = append(fields, processingfilerow.FieldExecutedTime)
+	}
+	if m.result_async != nil {
+		fields = append(fields, processingfilerow.FieldResultAsync)
+	}
+	if m.start_at != nil {
+		fields = append(fields, processingfilerow.FieldStartAt)
+	}
+	if m.receive_response_at != nil {
+		fields = append(fields, processingfilerow.FieldReceiveResponseAt)
+	}
+	if m.receive_result_async_at != nil {
+		fields = append(fields, processingfilerow.FieldReceiveResultAsyncAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, processingfilerow.FieldCreatedAt)
@@ -5273,6 +5485,14 @@ func (m *ProcessingFileRowMutation) Field(name string) (ent.Value, bool) {
 		return m.ErrorDisplay()
 	case processingfilerow.FieldExecutedTime:
 		return m.ExecutedTime()
+	case processingfilerow.FieldResultAsync:
+		return m.ResultAsync()
+	case processingfilerow.FieldStartAt:
+		return m.StartAt()
+	case processingfilerow.FieldReceiveResponseAt:
+		return m.ReceiveResponseAt()
+	case processingfilerow.FieldReceiveResultAsyncAt:
+		return m.ReceiveResultAsyncAt()
 	case processingfilerow.FieldCreatedAt:
 		return m.CreatedAt()
 	case processingfilerow.FieldUpdatedAt:
@@ -5312,6 +5532,14 @@ func (m *ProcessingFileRowMutation) OldField(ctx context.Context, name string) (
 		return m.OldErrorDisplay(ctx)
 	case processingfilerow.FieldExecutedTime:
 		return m.OldExecutedTime(ctx)
+	case processingfilerow.FieldResultAsync:
+		return m.OldResultAsync(ctx)
+	case processingfilerow.FieldStartAt:
+		return m.OldStartAt(ctx)
+	case processingfilerow.FieldReceiveResponseAt:
+		return m.OldReceiveResponseAt(ctx)
+	case processingfilerow.FieldReceiveResultAsyncAt:
+		return m.OldReceiveResultAsyncAt(ctx)
 	case processingfilerow.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case processingfilerow.FieldUpdatedAt:
@@ -5415,6 +5643,34 @@ func (m *ProcessingFileRowMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetExecutedTime(v)
+		return nil
+	case processingfilerow.FieldResultAsync:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResultAsync(v)
+		return nil
+	case processingfilerow.FieldStartAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartAt(v)
+		return nil
+	case processingfilerow.FieldReceiveResponseAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReceiveResponseAt(v)
+		return nil
+	case processingfilerow.FieldReceiveResultAsyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReceiveResultAsyncAt(v)
 		return nil
 	case processingfilerow.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -5522,7 +5778,20 @@ func (m *ProcessingFileRowMutation) AddField(name string, value ent.Value) error
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ProcessingFileRowMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(processingfilerow.FieldResultAsync) {
+		fields = append(fields, processingfilerow.FieldResultAsync)
+	}
+	if m.FieldCleared(processingfilerow.FieldStartAt) {
+		fields = append(fields, processingfilerow.FieldStartAt)
+	}
+	if m.FieldCleared(processingfilerow.FieldReceiveResponseAt) {
+		fields = append(fields, processingfilerow.FieldReceiveResponseAt)
+	}
+	if m.FieldCleared(processingfilerow.FieldReceiveResultAsyncAt) {
+		fields = append(fields, processingfilerow.FieldReceiveResultAsyncAt)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -5535,6 +5804,20 @@ func (m *ProcessingFileRowMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ProcessingFileRowMutation) ClearField(name string) error {
+	switch name {
+	case processingfilerow.FieldResultAsync:
+		m.ClearResultAsync()
+		return nil
+	case processingfilerow.FieldStartAt:
+		m.ClearStartAt()
+		return nil
+	case processingfilerow.FieldReceiveResponseAt:
+		m.ClearReceiveResponseAt()
+		return nil
+	case processingfilerow.FieldReceiveResultAsyncAt:
+		m.ClearReceiveResultAsyncAt()
+		return nil
+	}
 	return fmt.Errorf("unknown ProcessingFileRow nullable field %s", name)
 }
 
@@ -5580,6 +5863,18 @@ func (m *ProcessingFileRowMutation) ResetField(name string) error {
 		return nil
 	case processingfilerow.FieldExecutedTime:
 		m.ResetExecutedTime()
+		return nil
+	case processingfilerow.FieldResultAsync:
+		m.ResetResultAsync()
+		return nil
+	case processingfilerow.FieldStartAt:
+		m.ResetStartAt()
+		return nil
+	case processingfilerow.FieldReceiveResponseAt:
+		m.ResetReceiveResponseAt()
+		return nil
+	case processingfilerow.FieldReceiveResultAsyncAt:
+		m.ResetReceiveResultAsyncAt()
 		return nil
 	case processingfilerow.FieldCreatedAt:
 		m.ResetCreatedAt()

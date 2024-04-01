@@ -42,6 +42,14 @@ type ProcessingFileRow struct {
 	ErrorDisplay string `json:"error_display,omitempty"`
 	// ExecutedTime holds the value of the "executed_time" field.
 	ExecutedTime int64 `json:"executed_time,omitempty"`
+	// ResultAsync holds the value of the "result_async" field.
+	ResultAsync *string `json:"result_async,omitempty"`
+	// StartAt holds the value of the "start_at" field.
+	StartAt *time.Time `json:"start_at,omitempty"`
+	// ReceiveResponseAt holds the value of the "receive_response_at" field.
+	ReceiveResponseAt *time.Time `json:"receive_response_at,omitempty"`
+	// ReceiveResultAsyncAt holds the value of the "receive_result_async_at" field.
+	ReceiveResultAsyncAt *time.Time `json:"receive_result_async_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -55,9 +63,9 @@ func (*ProcessingFileRow) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case processingfilerow.FieldID, processingfilerow.FieldFileID, processingfilerow.FieldRowIndex, processingfilerow.FieldTaskIndex, processingfilerow.FieldStatus, processingfilerow.FieldExecutedTime:
 			values[i] = new(sql.NullInt64)
-		case processingfilerow.FieldRowDataRaw, processingfilerow.FieldTaskMapping, processingfilerow.FieldTaskDependsOn, processingfilerow.FieldGroupByValue, processingfilerow.FieldTaskRequestCurl, processingfilerow.FieldTaskRequestRaw, processingfilerow.FieldTaskResponseRaw, processingfilerow.FieldErrorDisplay:
+		case processingfilerow.FieldRowDataRaw, processingfilerow.FieldTaskMapping, processingfilerow.FieldTaskDependsOn, processingfilerow.FieldGroupByValue, processingfilerow.FieldTaskRequestCurl, processingfilerow.FieldTaskRequestRaw, processingfilerow.FieldTaskResponseRaw, processingfilerow.FieldErrorDisplay, processingfilerow.FieldResultAsync:
 			values[i] = new(sql.NullString)
-		case processingfilerow.FieldCreatedAt, processingfilerow.FieldUpdatedAt:
+		case processingfilerow.FieldStartAt, processingfilerow.FieldReceiveResponseAt, processingfilerow.FieldReceiveResultAsyncAt, processingfilerow.FieldCreatedAt, processingfilerow.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type ProcessingFileRow", columns[i])
@@ -158,6 +166,34 @@ func (pfr *ProcessingFileRow) assignValues(columns []string, values []interface{
 			} else if value.Valid {
 				pfr.ExecutedTime = value.Int64
 			}
+		case processingfilerow.FieldResultAsync:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field result_async", values[i])
+			} else if value.Valid {
+				pfr.ResultAsync = new(string)
+				*pfr.ResultAsync = value.String
+			}
+		case processingfilerow.FieldStartAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field start_at", values[i])
+			} else if value.Valid {
+				pfr.StartAt = new(time.Time)
+				*pfr.StartAt = value.Time
+			}
+		case processingfilerow.FieldReceiveResponseAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field receive_response_at", values[i])
+			} else if value.Valid {
+				pfr.ReceiveResponseAt = new(time.Time)
+				*pfr.ReceiveResponseAt = value.Time
+			}
+		case processingfilerow.FieldReceiveResultAsyncAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field receive_result_async_at", values[i])
+			} else if value.Valid {
+				pfr.ReceiveResultAsyncAt = new(time.Time)
+				*pfr.ReceiveResultAsyncAt = value.Time
+			}
 		case processingfilerow.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -236,6 +272,26 @@ func (pfr *ProcessingFileRow) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("executed_time=")
 	builder.WriteString(fmt.Sprintf("%v", pfr.ExecutedTime))
+	builder.WriteString(", ")
+	if v := pfr.ResultAsync; v != nil {
+		builder.WriteString("result_async=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := pfr.StartAt; v != nil {
+		builder.WriteString("start_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := pfr.ReceiveResponseAt; v != nil {
+		builder.WriteString("receive_response_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := pfr.ReceiveResultAsyncAt; v != nil {
+		builder.WriteString("receive_result_async_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(pfr.CreatedAt.Format(time.ANSIC))
