@@ -37,12 +37,12 @@ func PrepareDatabase(ctx context.Context) *sql.DB {
 	entClient := CreateEntClientFromDB(db)
 
 	// 3. Mock data
-	clearDataDbAndInsertMockData(ctx, db, entClient)
+	clearDataDbAndInsertMockData(ctx, db, entClient, false)
 
 	return db
 }
 
-func PrepareDatabaseSqlite(ctx context.Context, t *testing.T) (*sql.DB, *ent.Client) {
+func PrepareDatabaseSqlite(ctx context.Context, t *testing.T, notUseDataDefault ...bool) (*sql.DB, *ent.Client) {
 	// 1. Set `RUN_PROFILE=TEST` for testing
 	_ = os.Setenv(config.EnvKeyRunProfile, config.ProfileTest)
 
@@ -54,12 +54,28 @@ func PrepareDatabaseSqlite(ctx context.Context, t *testing.T) (*sql.DB, *ent.Cli
 	entClient := enttest.NewClient(t, enttest.WithOptions(ent.Driver(drv)))
 
 	// 3. Mock data
-	clearDataDbAndInsertMockData(ctx, db, entClient)
+	isNotUseDataDefault := len(notUseDataDefault) > 0 && notUseDataDefault[0]
+	clearDataDbAndInsertMockData(ctx, db, entClient, isNotUseDataDefault)
 
 	return db, entClient
 }
 
-func clearDataDbAndInsertMockData(ctx context.Context, db *sql.DB, entClient *ent.Client) {
+func TruncateAllTables(ctx context.Context, db *sql.DB, entClient *ent.Client) {
+	// 3. Drop tables in DB
+	_, _ = db.ExecContext(ctx, "DROP TABLE users")
+	_, _ = db.ExecContext(ctx, "DROP TABLE processing_file")
+	_, _ = db.ExecContext(ctx, "DROP TABLE processing_file_row")
+	_, _ = db.ExecContext(ctx, "DROP TABLE fps_client")
+	_, _ = db.ExecContext(ctx, "DROP TABLE config_mapping")
+	_, _ = db.ExecContext(ctx, "DROP TABLE config_task")
+
+	// 4. Migration DB Schema
+	if err := entClient.Schema.Create(ctx); err != nil {
+		log.Fatalf("Failed Creating Schema Resources: %v", err)
+	}
+}
+
+func clearDataDbAndInsertMockData(ctx context.Context, db *sql.DB, entClient *ent.Client, isNotUseDataDefault bool) {
 	// 3. Drop tables in DB
 	_, _ = db.ExecContext(ctx, "DROP TABLE users")
 	_, _ = db.ExecContext(ctx, "DROP TABLE processing_file")
@@ -74,14 +90,17 @@ func clearDataDbAndInsertMockData(ctx context.Context, db *sql.DB, entClient *en
 	}
 
 	// 5. Mocking data to database
-	mockProcessingFile(ctx, entClient)
-	mockProcessingFileRow(ctx, entClient)
+	if isNotUseDataDefault {
+		return
+	}
+	MockProcessingFile(ctx, entClient)
+	MockProcessingFileRow(ctx, entClient, processingFileRows)
 	mockXXX(ctx, entClient) // will mock data for other models
 
 	fmt.Println() // new line in console => don't care about it
 }
 
-func mockProcessingFile(ctx context.Context, dbClient *ent.Client) {
+func MockProcessingFile(ctx context.Context, dbClient *ent.Client) {
 	logger.Infof("Mock Processing File ...")
 	_, err := fileprocessing.SaveAll(ctx, dbClient, processingFiles, false)
 	if err != nil {
@@ -91,7 +110,7 @@ func mockProcessingFile(ctx context.Context, dbClient *ent.Client) {
 	logger.Infof("Mock Processing File ... Finished")
 }
 
-func mockProcessingFileRow(ctx context.Context, dbClient *ent.Client) {
+func MockProcessingFileRow(ctx context.Context, dbClient *ent.Client, processingFileRows []fileprocessingrow.ProcessingFileRow) {
 	logger.Infof("Mock Processing File Row...")
 	_, err := fileprocessingrow.SaveAll(ctx, dbClient, processingFileRows, false)
 	if err != nil {

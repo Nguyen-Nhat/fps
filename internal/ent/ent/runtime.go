@@ -200,11 +200,11 @@ func init() {
 	// processingfilerow.DefaultGroupByValue holds the default value on creation for the group_by_value field.
 	processingfilerow.DefaultGroupByValue = processingfilerowDescGroupByValue.Default.(string)
 	// processingfilerowDescCreatedAt is the schema descriptor for created_at field.
-	processingfilerowDescCreatedAt := processingfilerowFields[13].Descriptor()
+	processingfilerowDescCreatedAt := processingfilerowFields[17].Descriptor()
 	// processingfilerow.DefaultCreatedAt holds the default value on creation for the created_at field.
 	processingfilerow.DefaultCreatedAt = processingfilerowDescCreatedAt.Default.(func() time.Time)
 	// processingfilerowDescUpdatedAt is the schema descriptor for updated_at field.
-	processingfilerowDescUpdatedAt := processingfilerowFields[14].Descriptor()
+	processingfilerowDescUpdatedAt := processingfilerowFields[18].Descriptor()
 	// processingfilerow.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	processingfilerow.DefaultUpdatedAt = processingfilerowDescUpdatedAt.Default.(func() time.Time)
 	// processingfilerow.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

@@ -74,3 +74,7 @@ provider_config:
 
 FLAG_SUP_HOST: "flagsup-server.experiment:443"
 MIGRATION_FOLDER: file://migrations
+KAFKA:
+  CONNECTION_HOST: "confluent-kafka-cp-kafka.confluent-kafka:9092"
+  CONSUMER_PREFIX_NAME: "fps-consumer"
+  UPDATE_RESULT_ASYNC_TOPIC: "fps-update-result-async"

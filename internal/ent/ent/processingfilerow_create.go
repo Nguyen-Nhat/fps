@@ -106,6 +106,62 @@ func (pfrc *ProcessingFileRowCreate) SetExecutedTime(i int64) *ProcessingFileRow
 	return pfrc
 }
 
+// SetResultAsync sets the "result_async" field.
+func (pfrc *ProcessingFileRowCreate) SetResultAsync(s string) *ProcessingFileRowCreate {
+	pfrc.mutation.SetResultAsync(s)
+	return pfrc
+}
+
+// SetNillableResultAsync sets the "result_async" field if the given value is not nil.
+func (pfrc *ProcessingFileRowCreate) SetNillableResultAsync(s *string) *ProcessingFileRowCreate {
+	if s != nil {
+		pfrc.SetResultAsync(*s)
+	}
+	return pfrc
+}
+
+// SetStartAt sets the "start_at" field.
+func (pfrc *ProcessingFileRowCreate) SetStartAt(t time.Time) *ProcessingFileRowCreate {
+	pfrc.mutation.SetStartAt(t)
+	return pfrc
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (pfrc *ProcessingFileRowCreate) SetNillableStartAt(t *time.Time) *ProcessingFileRowCreate {
+	if t != nil {
+		pfrc.SetStartAt(*t)
+	}
+	return pfrc
+}
+
+// SetReceiveResponseAt sets the "receive_response_at" field.
+func (pfrc *ProcessingFileRowCreate) SetReceiveResponseAt(t time.Time) *ProcessingFileRowCreate {
+	pfrc.mutation.SetReceiveResponseAt(t)
+	return pfrc
+}
+
+// SetNillableReceiveResponseAt sets the "receive_response_at" field if the given value is not nil.
+func (pfrc *ProcessingFileRowCreate) SetNillableReceiveResponseAt(t *time.Time) *ProcessingFileRowCreate {
+	if t != nil {
+		pfrc.SetReceiveResponseAt(*t)
+	}
+	return pfrc
+}
+
+// SetReceiveResultAsyncAt sets the "receive_result_async_at" field.
+func (pfrc *ProcessingFileRowCreate) SetReceiveResultAsyncAt(t time.Time) *ProcessingFileRowCreate {
+	pfrc.mutation.SetReceiveResultAsyncAt(t)
+	return pfrc
+}
+
+// SetNillableReceiveResultAsyncAt sets the "receive_result_async_at" field if the given value is not nil.
+func (pfrc *ProcessingFileRowCreate) SetNillableReceiveResultAsyncAt(t *time.Time) *ProcessingFileRowCreate {
+	if t != nil {
+		pfrc.SetReceiveResultAsyncAt(*t)
+	}
+	return pfrc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pfrc *ProcessingFileRowCreate) SetCreatedAt(t time.Time) *ProcessingFileRowCreate {
 	pfrc.mutation.SetCreatedAt(t)
@@ -402,6 +458,38 @@ func (pfrc *ProcessingFileRowCreate) createSpec() (*ProcessingFileRow, *sqlgraph
 			Column: processingfilerow.FieldExecutedTime,
 		})
 		_node.ExecutedTime = value
+	}
+	if value, ok := pfrc.mutation.ResultAsync(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldResultAsync,
+		})
+		_node.ResultAsync = &value
+	}
+	if value, ok := pfrc.mutation.StartAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldStartAt,
+		})
+		_node.StartAt = &value
+	}
+	if value, ok := pfrc.mutation.ReceiveResponseAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldReceiveResponseAt,
+		})
+		_node.ReceiveResponseAt = &value
+	}
+	if value, ok := pfrc.mutation.ReceiveResultAsyncAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldReceiveResultAsyncAt,
+		})
+		_node.ReceiveResultAsyncAt = &value
 	}
 	if value, ok := pfrc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

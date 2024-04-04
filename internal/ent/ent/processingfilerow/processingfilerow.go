@@ -37,6 +37,14 @@ const (
 	FieldErrorDisplay = "error_display"
 	// FieldExecutedTime holds the string denoting the executed_time field in the database.
 	FieldExecutedTime = "executed_time"
+	// FieldResultAsync holds the string denoting the result_async field in the database.
+	FieldResultAsync = "result_async"
+	// FieldStartAt holds the string denoting the start_at field in the database.
+	FieldStartAt = "start_at"
+	// FieldReceiveResponseAt holds the string denoting the receive_response_at field in the database.
+	FieldReceiveResponseAt = "receive_response_at"
+	// FieldReceiveResultAsyncAt holds the string denoting the receive_result_async_at field in the database.
+	FieldReceiveResultAsyncAt = "receive_result_async_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -61,6 +69,10 @@ var Columns = []string{
 	FieldStatus,
 	FieldErrorDisplay,
 	FieldExecutedTime,
+	FieldResultAsync,
+	FieldStartAt,
+	FieldReceiveResponseAt,
+	FieldReceiveResultAsyncAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }

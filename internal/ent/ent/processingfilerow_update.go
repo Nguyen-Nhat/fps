@@ -149,6 +149,86 @@ func (pfru *ProcessingFileRowUpdate) AddExecutedTime(i int64) *ProcessingFileRow
 	return pfru
 }
 
+// SetResultAsync sets the "result_async" field.
+func (pfru *ProcessingFileRowUpdate) SetResultAsync(s string) *ProcessingFileRowUpdate {
+	pfru.mutation.SetResultAsync(s)
+	return pfru
+}
+
+// SetNillableResultAsync sets the "result_async" field if the given value is not nil.
+func (pfru *ProcessingFileRowUpdate) SetNillableResultAsync(s *string) *ProcessingFileRowUpdate {
+	if s != nil {
+		pfru.SetResultAsync(*s)
+	}
+	return pfru
+}
+
+// ClearResultAsync clears the value of the "result_async" field.
+func (pfru *ProcessingFileRowUpdate) ClearResultAsync() *ProcessingFileRowUpdate {
+	pfru.mutation.ClearResultAsync()
+	return pfru
+}
+
+// SetStartAt sets the "start_at" field.
+func (pfru *ProcessingFileRowUpdate) SetStartAt(t time.Time) *ProcessingFileRowUpdate {
+	pfru.mutation.SetStartAt(t)
+	return pfru
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (pfru *ProcessingFileRowUpdate) SetNillableStartAt(t *time.Time) *ProcessingFileRowUpdate {
+	if t != nil {
+		pfru.SetStartAt(*t)
+	}
+	return pfru
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (pfru *ProcessingFileRowUpdate) ClearStartAt() *ProcessingFileRowUpdate {
+	pfru.mutation.ClearStartAt()
+	return pfru
+}
+
+// SetReceiveResponseAt sets the "receive_response_at" field.
+func (pfru *ProcessingFileRowUpdate) SetReceiveResponseAt(t time.Time) *ProcessingFileRowUpdate {
+	pfru.mutation.SetReceiveResponseAt(t)
+	return pfru
+}
+
+// SetNillableReceiveResponseAt sets the "receive_response_at" field if the given value is not nil.
+func (pfru *ProcessingFileRowUpdate) SetNillableReceiveResponseAt(t *time.Time) *ProcessingFileRowUpdate {
+	if t != nil {
+		pfru.SetReceiveResponseAt(*t)
+	}
+	return pfru
+}
+
+// ClearReceiveResponseAt clears the value of the "receive_response_at" field.
+func (pfru *ProcessingFileRowUpdate) ClearReceiveResponseAt() *ProcessingFileRowUpdate {
+	pfru.mutation.ClearReceiveResponseAt()
+	return pfru
+}
+
+// SetReceiveResultAsyncAt sets the "receive_result_async_at" field.
+func (pfru *ProcessingFileRowUpdate) SetReceiveResultAsyncAt(t time.Time) *ProcessingFileRowUpdate {
+	pfru.mutation.SetReceiveResultAsyncAt(t)
+	return pfru
+}
+
+// SetNillableReceiveResultAsyncAt sets the "receive_result_async_at" field if the given value is not nil.
+func (pfru *ProcessingFileRowUpdate) SetNillableReceiveResultAsyncAt(t *time.Time) *ProcessingFileRowUpdate {
+	if t != nil {
+		pfru.SetReceiveResultAsyncAt(*t)
+	}
+	return pfru
+}
+
+// ClearReceiveResultAsyncAt clears the value of the "receive_result_async_at" field.
+func (pfru *ProcessingFileRowUpdate) ClearReceiveResultAsyncAt() *ProcessingFileRowUpdate {
+	pfru.mutation.ClearReceiveResultAsyncAt()
+	return pfru
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pfru *ProcessingFileRowUpdate) SetCreatedAt(t time.Time) *ProcessingFileRowUpdate {
 	pfru.mutation.SetCreatedAt(t)
@@ -381,6 +461,58 @@ func (pfru *ProcessingFileRowUpdate) sqlSave(ctx context.Context) (n int, err er
 			Column: processingfilerow.FieldExecutedTime,
 		})
 	}
+	if value, ok := pfru.mutation.ResultAsync(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldResultAsync,
+		})
+	}
+	if pfru.mutation.ResultAsyncCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: processingfilerow.FieldResultAsync,
+		})
+	}
+	if value, ok := pfru.mutation.StartAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldStartAt,
+		})
+	}
+	if pfru.mutation.StartAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: processingfilerow.FieldStartAt,
+		})
+	}
+	if value, ok := pfru.mutation.ReceiveResponseAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldReceiveResponseAt,
+		})
+	}
+	if pfru.mutation.ReceiveResponseAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: processingfilerow.FieldReceiveResponseAt,
+		})
+	}
+	if value, ok := pfru.mutation.ReceiveResultAsyncAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldReceiveResultAsyncAt,
+		})
+	}
+	if pfru.mutation.ReceiveResultAsyncAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: processingfilerow.FieldReceiveResultAsyncAt,
+		})
+	}
 	if value, ok := pfru.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -532,6 +664,86 @@ func (pfruo *ProcessingFileRowUpdateOne) SetExecutedTime(i int64) *ProcessingFil
 // AddExecutedTime adds i to the "executed_time" field.
 func (pfruo *ProcessingFileRowUpdateOne) AddExecutedTime(i int64) *ProcessingFileRowUpdateOne {
 	pfruo.mutation.AddExecutedTime(i)
+	return pfruo
+}
+
+// SetResultAsync sets the "result_async" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetResultAsync(s string) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetResultAsync(s)
+	return pfruo
+}
+
+// SetNillableResultAsync sets the "result_async" field if the given value is not nil.
+func (pfruo *ProcessingFileRowUpdateOne) SetNillableResultAsync(s *string) *ProcessingFileRowUpdateOne {
+	if s != nil {
+		pfruo.SetResultAsync(*s)
+	}
+	return pfruo
+}
+
+// ClearResultAsync clears the value of the "result_async" field.
+func (pfruo *ProcessingFileRowUpdateOne) ClearResultAsync() *ProcessingFileRowUpdateOne {
+	pfruo.mutation.ClearResultAsync()
+	return pfruo
+}
+
+// SetStartAt sets the "start_at" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetStartAt(t time.Time) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetStartAt(t)
+	return pfruo
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (pfruo *ProcessingFileRowUpdateOne) SetNillableStartAt(t *time.Time) *ProcessingFileRowUpdateOne {
+	if t != nil {
+		pfruo.SetStartAt(*t)
+	}
+	return pfruo
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (pfruo *ProcessingFileRowUpdateOne) ClearStartAt() *ProcessingFileRowUpdateOne {
+	pfruo.mutation.ClearStartAt()
+	return pfruo
+}
+
+// SetReceiveResponseAt sets the "receive_response_at" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetReceiveResponseAt(t time.Time) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetReceiveResponseAt(t)
+	return pfruo
+}
+
+// SetNillableReceiveResponseAt sets the "receive_response_at" field if the given value is not nil.
+func (pfruo *ProcessingFileRowUpdateOne) SetNillableReceiveResponseAt(t *time.Time) *ProcessingFileRowUpdateOne {
+	if t != nil {
+		pfruo.SetReceiveResponseAt(*t)
+	}
+	return pfruo
+}
+
+// ClearReceiveResponseAt clears the value of the "receive_response_at" field.
+func (pfruo *ProcessingFileRowUpdateOne) ClearReceiveResponseAt() *ProcessingFileRowUpdateOne {
+	pfruo.mutation.ClearReceiveResponseAt()
+	return pfruo
+}
+
+// SetReceiveResultAsyncAt sets the "receive_result_async_at" field.
+func (pfruo *ProcessingFileRowUpdateOne) SetReceiveResultAsyncAt(t time.Time) *ProcessingFileRowUpdateOne {
+	pfruo.mutation.SetReceiveResultAsyncAt(t)
+	return pfruo
+}
+
+// SetNillableReceiveResultAsyncAt sets the "receive_result_async_at" field if the given value is not nil.
+func (pfruo *ProcessingFileRowUpdateOne) SetNillableReceiveResultAsyncAt(t *time.Time) *ProcessingFileRowUpdateOne {
+	if t != nil {
+		pfruo.SetReceiveResultAsyncAt(*t)
+	}
+	return pfruo
+}
+
+// ClearReceiveResultAsyncAt clears the value of the "receive_result_async_at" field.
+func (pfruo *ProcessingFileRowUpdateOne) ClearReceiveResultAsyncAt() *ProcessingFileRowUpdateOne {
+	pfruo.mutation.ClearReceiveResultAsyncAt()
 	return pfruo
 }
 
@@ -795,6 +1007,58 @@ func (pfruo *ProcessingFileRowUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 			Type:   field.TypeInt64,
 			Value:  value,
 			Column: processingfilerow.FieldExecutedTime,
+		})
+	}
+	if value, ok := pfruo.mutation.ResultAsync(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfilerow.FieldResultAsync,
+		})
+	}
+	if pfruo.mutation.ResultAsyncCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: processingfilerow.FieldResultAsync,
+		})
+	}
+	if value, ok := pfruo.mutation.StartAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldStartAt,
+		})
+	}
+	if pfruo.mutation.StartAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: processingfilerow.FieldStartAt,
+		})
+	}
+	if value, ok := pfruo.mutation.ReceiveResponseAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldReceiveResponseAt,
+		})
+	}
+	if pfruo.mutation.ReceiveResponseAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: processingfilerow.FieldReceiveResponseAt,
+		})
+	}
+	if value, ok := pfruo.mutation.ReceiveResultAsyncAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: processingfilerow.FieldReceiveResultAsyncAt,
+		})
+	}
+	if pfruo.mutation.ReceiveResultAsyncAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: processingfilerow.FieldReceiveResultAsyncAt,
 		})
 	}
 	if value, ok := pfruo.mutation.CreatedAt(); ok {

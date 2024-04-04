@@ -171,6 +171,34 @@ func ExecutedTime(v int64) predicate.ProcessingFileRow {
 	})
 }
 
+// ResultAsync applies equality check predicate on the "result_async" field. It's identical to ResultAsyncEQ.
+func ResultAsync(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldResultAsync), v))
+	})
+}
+
+// StartAt applies equality check predicate on the "start_at" field. It's identical to StartAtEQ.
+func StartAt(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStartAt), v))
+	})
+}
+
+// ReceiveResponseAt applies equality check predicate on the "receive_response_at" field. It's identical to ReceiveResponseAtEQ.
+func ReceiveResponseAt(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReceiveResponseAt), v))
+	})
+}
+
+// ReceiveResultAsyncAt applies equality check predicate on the "receive_result_async_at" field. It's identical to ReceiveResultAsyncAtEQ.
+func ReceiveResultAsyncAt(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReceiveResultAsyncAt), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ProcessingFileRow {
 	return predicate.ProcessingFileRow(func(s *sql.Selector) {
@@ -1294,6 +1322,353 @@ func ExecutedTimeLT(v int64) predicate.ProcessingFileRow {
 func ExecutedTimeLTE(v int64) predicate.ProcessingFileRow {
 	return predicate.ProcessingFileRow(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldExecutedTime), v))
+	})
+}
+
+// ResultAsyncEQ applies the EQ predicate on the "result_async" field.
+func ResultAsyncEQ(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncNEQ applies the NEQ predicate on the "result_async" field.
+func ResultAsyncNEQ(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncIn applies the In predicate on the "result_async" field.
+func ResultAsyncIn(vs ...string) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldResultAsync), v...))
+	})
+}
+
+// ResultAsyncNotIn applies the NotIn predicate on the "result_async" field.
+func ResultAsyncNotIn(vs ...string) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldResultAsync), v...))
+	})
+}
+
+// ResultAsyncGT applies the GT predicate on the "result_async" field.
+func ResultAsyncGT(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncGTE applies the GTE predicate on the "result_async" field.
+func ResultAsyncGTE(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncLT applies the LT predicate on the "result_async" field.
+func ResultAsyncLT(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncLTE applies the LTE predicate on the "result_async" field.
+func ResultAsyncLTE(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncContains applies the Contains predicate on the "result_async" field.
+func ResultAsyncContains(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncHasPrefix applies the HasPrefix predicate on the "result_async" field.
+func ResultAsyncHasPrefix(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncHasSuffix applies the HasSuffix predicate on the "result_async" field.
+func ResultAsyncHasSuffix(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncIsNil applies the IsNil predicate on the "result_async" field.
+func ResultAsyncIsNil() predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldResultAsync)))
+	})
+}
+
+// ResultAsyncNotNil applies the NotNil predicate on the "result_async" field.
+func ResultAsyncNotNil() predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldResultAsync)))
+	})
+}
+
+// ResultAsyncEqualFold applies the EqualFold predicate on the "result_async" field.
+func ResultAsyncEqualFold(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldResultAsync), v))
+	})
+}
+
+// ResultAsyncContainsFold applies the ContainsFold predicate on the "result_async" field.
+func ResultAsyncContainsFold(v string) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldResultAsync), v))
+	})
+}
+
+// StartAtEQ applies the EQ predicate on the "start_at" field.
+func StartAtEQ(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtNEQ applies the NEQ predicate on the "start_at" field.
+func StartAtNEQ(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtIn applies the In predicate on the "start_at" field.
+func StartAtIn(vs ...time.Time) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldStartAt), v...))
+	})
+}
+
+// StartAtNotIn applies the NotIn predicate on the "start_at" field.
+func StartAtNotIn(vs ...time.Time) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldStartAt), v...))
+	})
+}
+
+// StartAtGT applies the GT predicate on the "start_at" field.
+func StartAtGT(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtGTE applies the GTE predicate on the "start_at" field.
+func StartAtGTE(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtLT applies the LT predicate on the "start_at" field.
+func StartAtLT(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtLTE applies the LTE predicate on the "start_at" field.
+func StartAtLTE(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtIsNil applies the IsNil predicate on the "start_at" field.
+func StartAtIsNil() predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStartAt)))
+	})
+}
+
+// StartAtNotNil applies the NotNil predicate on the "start_at" field.
+func StartAtNotNil() predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStartAt)))
+	})
+}
+
+// ReceiveResponseAtEQ applies the EQ predicate on the "receive_response_at" field.
+func ReceiveResponseAtEQ(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReceiveResponseAt), v))
+	})
+}
+
+// ReceiveResponseAtNEQ applies the NEQ predicate on the "receive_response_at" field.
+func ReceiveResponseAtNEQ(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldReceiveResponseAt), v))
+	})
+}
+
+// ReceiveResponseAtIn applies the In predicate on the "receive_response_at" field.
+func ReceiveResponseAtIn(vs ...time.Time) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldReceiveResponseAt), v...))
+	})
+}
+
+// ReceiveResponseAtNotIn applies the NotIn predicate on the "receive_response_at" field.
+func ReceiveResponseAtNotIn(vs ...time.Time) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldReceiveResponseAt), v...))
+	})
+}
+
+// ReceiveResponseAtGT applies the GT predicate on the "receive_response_at" field.
+func ReceiveResponseAtGT(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldReceiveResponseAt), v))
+	})
+}
+
+// ReceiveResponseAtGTE applies the GTE predicate on the "receive_response_at" field.
+func ReceiveResponseAtGTE(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldReceiveResponseAt), v))
+	})
+}
+
+// ReceiveResponseAtLT applies the LT predicate on the "receive_response_at" field.
+func ReceiveResponseAtLT(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldReceiveResponseAt), v))
+	})
+}
+
+// ReceiveResponseAtLTE applies the LTE predicate on the "receive_response_at" field.
+func ReceiveResponseAtLTE(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldReceiveResponseAt), v))
+	})
+}
+
+// ReceiveResponseAtIsNil applies the IsNil predicate on the "receive_response_at" field.
+func ReceiveResponseAtIsNil() predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldReceiveResponseAt)))
+	})
+}
+
+// ReceiveResponseAtNotNil applies the NotNil predicate on the "receive_response_at" field.
+func ReceiveResponseAtNotNil() predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldReceiveResponseAt)))
+	})
+}
+
+// ReceiveResultAsyncAtEQ applies the EQ predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtEQ(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReceiveResultAsyncAt), v))
+	})
+}
+
+// ReceiveResultAsyncAtNEQ applies the NEQ predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtNEQ(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldReceiveResultAsyncAt), v))
+	})
+}
+
+// ReceiveResultAsyncAtIn applies the In predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtIn(vs ...time.Time) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldReceiveResultAsyncAt), v...))
+	})
+}
+
+// ReceiveResultAsyncAtNotIn applies the NotIn predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtNotIn(vs ...time.Time) predicate.ProcessingFileRow {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldReceiveResultAsyncAt), v...))
+	})
+}
+
+// ReceiveResultAsyncAtGT applies the GT predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtGT(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldReceiveResultAsyncAt), v))
+	})
+}
+
+// ReceiveResultAsyncAtGTE applies the GTE predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtGTE(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldReceiveResultAsyncAt), v))
+	})
+}
+
+// ReceiveResultAsyncAtLT applies the LT predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtLT(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldReceiveResultAsyncAt), v))
+	})
+}
+
+// ReceiveResultAsyncAtLTE applies the LTE predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtLTE(v time.Time) predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldReceiveResultAsyncAt), v))
+	})
+}
+
+// ReceiveResultAsyncAtIsNil applies the IsNil predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtIsNil() predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldReceiveResultAsyncAt)))
+	})
+}
+
+// ReceiveResultAsyncAtNotNil applies the NotNil predicate on the "receive_result_async_at" field.
+func ReceiveResultAsyncAtNotNil() predicate.ProcessingFileRow {
+	return predicate.ProcessingFileRow(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldReceiveResultAsyncAt)))
 	})
 }
 

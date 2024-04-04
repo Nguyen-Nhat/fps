@@ -2,10 +2,9 @@ package fileprocessingrow
 
 import (
 	"context"
+	dbsql "database/sql"
 	"errors"
 	"fmt"
-
-	dbsql "database/sql"
 
 	"entgo.io/ent/dialect/sql"
 
@@ -21,12 +20,14 @@ type (
 		FindByFileIdAndTaskIndexAndGroupValueAndStatus(context.Context, int64, int32, string, []int16) ([]*ProcessingFileRow, error)
 		FindRowIdsByFileIdAndFilter(context.Context, int64, GetListFileRowsRequest) ([]int, int, error)
 		FindRowsByIDsAndOffsetLimit(context.Context, int64, []int) ([]*ProcessingFileRow, error)
+		FindByID(ctx context.Context, id int) (*ProcessingFileRow, error)
 
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
 		UpdateByJob(context.Context, int, string, string, string, int16, string, int64) (*ProcessingFileRow, error)
 		UpdateByJobForListIDs(context.Context, []int, string, int16, string, int64) error
 		UpdateStatusFromTask(context.Context, int64, int32, int32) (int, error)
+		Update(ctx context.Context, data *ProcessingFileRow) error
 
 		DeleteByFileId(context.Context, int64) error
 
@@ -277,6 +278,30 @@ func (r *repoImpl) Statistics(fileId int64) ([]CustomStatisticModel, error) {
 	}
 
 	return statistics, nil
+}
+
+func (r *repoImpl) Update(ctx context.Context, data *ProcessingFileRow) error {
+	query := r.client.ProcessingFileRow.Update()
+
+	query = query.Where(processingfilerow.ID(data.ID))
+
+	if data.ReceiveResultAsyncAt != nil {
+		query.Where(processingfilerow.Or(
+			processingfilerow.ReceiveResultAsyncAtIsNil(),
+			processingfilerow.ReceiveResultAsyncAtLT(*data.ReceiveResultAsyncAt),
+		))
+	}
+
+	if data.ResultAsync != nil {
+		query = query.SetNillableResultAsync(data.ResultAsync)
+	}
+	if data.ReceiveResultAsyncAt != nil {
+		query = query.SetNillableReceiveResultAsyncAt(data.ReceiveResultAsyncAt)
+	}
+	if data.Status != 0 {
+		query = query.SetStatus(data.Status)
+	}
+	return query.Exec(ctx)
 }
 
 // private function ---------------------------------------------------------------------------------------------

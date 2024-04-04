@@ -35,6 +35,10 @@ func (ProcessingFileRow) Fields() []ent.Field {
 		field.Int16("status").Comment("Init=1; ; Failed=3; Success=4; Timeout=5"),
 		field.String("error_display"),
 		field.Int64("executed_time"),
+		field.String("result_async").Optional().Nillable(),
+		field.Time("start_at").Optional().Nillable(),
+		field.Time("receive_response_at").Optional().Nillable(),
+		field.Time("receive_result_async_at").Optional().Nillable(),
 		field.Time("created_at").Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
