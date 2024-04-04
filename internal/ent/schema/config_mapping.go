@@ -30,6 +30,7 @@ func (ConfigMapping) Fields() []ent.Field {
 		field.String("data_at_sheet").Comment("Default is first sheet in file"),
 		field.String("require_column_index").Comment("For example: A,B,C"),
 		field.String("error_column_index").Comment("Index of column, that FPS will fill when error happens"),
+		field.Int32("timeout").Default(86400).Comment("Time out of template in seconds (default 24h as 86400 seconds)"),
 		// default fields
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),

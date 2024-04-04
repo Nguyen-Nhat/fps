@@ -49,16 +49,20 @@ func init() {
 			return nil
 		}
 	}()
+	// configmappingDescTimeout is the schema descriptor for timeout field.
+	configmappingDescTimeout := configmappingFields[6].Descriptor()
+	// configmapping.DefaultTimeout holds the default value on creation for the timeout field.
+	configmapping.DefaultTimeout = configmappingDescTimeout.Default.(int32)
 	// configmappingDescCreatedAt is the schema descriptor for created_at field.
-	configmappingDescCreatedAt := configmappingFields[6].Descriptor()
+	configmappingDescCreatedAt := configmappingFields[7].Descriptor()
 	// configmapping.DefaultCreatedAt holds the default value on creation for the created_at field.
 	configmapping.DefaultCreatedAt = configmappingDescCreatedAt.Default.(func() time.Time)
 	// configmappingDescCreatedBy is the schema descriptor for created_by field.
-	configmappingDescCreatedBy := configmappingFields[7].Descriptor()
+	configmappingDescCreatedBy := configmappingFields[8].Descriptor()
 	// configmapping.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	configmapping.CreatedByValidator = configmappingDescCreatedBy.Validators[0].(func(string) error)
 	// configmappingDescUpdatedAt is the schema descriptor for updated_at field.
-	configmappingDescUpdatedAt := configmappingFields[8].Descriptor()
+	configmappingDescUpdatedAt := configmappingFields[9].Descriptor()
 	// configmapping.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	configmapping.DefaultUpdatedAt = configmappingDescUpdatedAt.Default.(func() time.Time)
 	// configmapping.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

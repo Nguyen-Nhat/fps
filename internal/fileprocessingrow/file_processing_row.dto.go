@@ -26,6 +26,7 @@ type UpdateAfterExecutingByJob struct {
 
 type StatisticData struct {
 	IsFinished    bool
+	IsTimeout     bool
 	ErrorDisplays map[int]string
 
 	TotalProcessed int

@@ -23,6 +23,8 @@ const (
 	FieldRequireColumnIndex = "require_column_index"
 	// FieldErrorColumnIndex holds the string denoting the error_column_index field in the database.
 	FieldErrorColumnIndex = "error_column_index"
+	// FieldTimeout holds the string denoting the timeout field in the database.
+	FieldTimeout = "timeout"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -42,6 +44,7 @@ var Columns = []string{
 	FieldDataAtSheet,
 	FieldRequireColumnIndex,
 	FieldErrorColumnIndex,
+	FieldTimeout,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -66,6 +69,8 @@ var (
 	DefaultDataStartAtRow int32
 	// DataStartAtRowValidator is a validator for the "data_start_at_row" field. It is called by the builders before save.
 	DataStartAtRowValidator func(int32) error
+	// DefaultTimeout holds the default value on creation for the "timeout" field.
+	DefaultTimeout int32
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.

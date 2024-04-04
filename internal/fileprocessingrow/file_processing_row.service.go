@@ -20,6 +20,8 @@ type (
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
 		UpdateAfterExecutingByJobForListIDs(context.Context, []int, UpdateAfterExecutingByJob) error
 
+		ForceTimeout(ctx context.Context, fileID int) error
+
 		Statistics(int) (StatisticData, error)
 	}
 
@@ -127,6 +129,15 @@ func (s *ServiceImpl) UpdateAfterExecutingByJobForListIDs(ctx context.Context, i
 	err := s.repo.UpdateByJobForListIDs(ctx, ids, request.ResponseRaw, request.Status, request.ErrorDisplay, request.ExecutedTime)
 	if err != nil {
 		logger.Errorf("Failed to update %v, error=%v, ids=%+v, request=%+v", Name(), err, ids, request)
+		return err
+	}
+	return nil
+}
+
+func (s *ServiceImpl) ForceTimeout(ctx context.Context, fileID int) error {
+	err := s.repo.ForceTimeout(ctx, int64(fileID))
+	if err != nil {
+		logger.Errorf("Failed to force timeout fileID=%v, error=%v", fileID, err)
 		return err
 	}
 	return nil

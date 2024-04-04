@@ -28,6 +28,8 @@ type ConfigMapping struct {
 	RequireColumnIndex string `json:"require_column_index,omitempty"`
 	// Index of column, that FPS will fill when error happens
 	ErrorColumnIndex string `json:"error_column_index,omitempty"`
+	// Time out of template in seconds (default 24h as 86400 seconds)
+	Timeout int32 `json:"timeout,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -41,7 +43,7 @@ func (*ConfigMapping) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case configmapping.FieldID, configmapping.FieldClientID, configmapping.FieldTotalTasks, configmapping.FieldDataStartAtRow:
+		case configmapping.FieldID, configmapping.FieldClientID, configmapping.FieldTotalTasks, configmapping.FieldDataStartAtRow, configmapping.FieldTimeout:
 			values[i] = new(sql.NullInt64)
 		case configmapping.FieldDataAtSheet, configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldCreatedBy:
 			values[i] = new(sql.NullString)
@@ -103,6 +105,12 @@ func (cm *ConfigMapping) assignValues(columns []string, values []interface{}) er
 				return fmt.Errorf("unexpected type %T for field error_column_index", values[i])
 			} else if value.Valid {
 				cm.ErrorColumnIndex = value.String
+			}
+		case configmapping.FieldTimeout:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field timeout", values[i])
+			} else if value.Valid {
+				cm.Timeout = int32(value.Int64)
 			}
 		case configmapping.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -167,6 +175,9 @@ func (cm *ConfigMapping) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("error_column_index=")
 	builder.WriteString(cm.ErrorColumnIndex)
+	builder.WriteString(", ")
+	builder.WriteString("timeout=")
+	builder.WriteString(fmt.Sprintf("%v", cm.Timeout))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(cm.CreatedAt.Format(time.ANSIC))

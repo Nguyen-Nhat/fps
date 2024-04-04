@@ -39,3 +39,7 @@ const (
 	KafkaConsumerWithRetry               = "with-retry"
 	KafkaConsumeTypeForUpdateResultAsync = "update-result-async"
 )
+
+const (
+	Timeout = "timeout"
+)
