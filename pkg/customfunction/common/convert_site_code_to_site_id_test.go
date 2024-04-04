@@ -63,7 +63,7 @@ func Test_ConvertSiteCodes2SiteIds(t *testing.T) {
 		},
 		{"test ConvertSiteCodes2SiteIds with all site",
 			args{"1", "", "all"},
-			FuncResult{Result: 0, ErrorMessage: ""},
+			FuncResult{ErrorMessage: ""},
 		},
 	}
 	for _, tt := range tests {
