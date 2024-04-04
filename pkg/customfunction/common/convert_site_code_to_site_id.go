@@ -85,7 +85,7 @@ func callApiGetSites(siteCode string, sellerId string) ([]SiteInfo, error) {
 // ConvertSiteCodes2SiteIds ...
 func ConvertSiteCodes2SiteIds(sellerId string, inputSiteCodes string, separator string) FuncResult {
 	if inputSiteCodes == constant.EmptyString || inputSiteCodes == allSite {
-		return ConvertSiteCode2SiteId(allSite, sellerId)
+		return FuncResult{}
 	}
 
 	if separator == constant.EmptyString {
