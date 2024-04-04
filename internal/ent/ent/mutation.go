@@ -54,6 +54,8 @@ type ConfigMappingMutation struct {
 	data_at_sheet        *string
 	require_column_index *string
 	error_column_index   *string
+	timeout              *int32
+	addtimeout           *int32
 	created_at           *time.Time
 	created_by           *string
 	updated_at           *time.Time
@@ -437,6 +439,62 @@ func (m *ConfigMappingMutation) ResetErrorColumnIndex() {
 	m.error_column_index = nil
 }
 
+// SetTimeout sets the "timeout" field.
+func (m *ConfigMappingMutation) SetTimeout(i int32) {
+	m.timeout = &i
+	m.addtimeout = nil
+}
+
+// Timeout returns the value of the "timeout" field in the mutation.
+func (m *ConfigMappingMutation) Timeout() (r int32, exists bool) {
+	v := m.timeout
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTimeout returns the old "timeout" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldTimeout(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTimeout is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTimeout requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTimeout: %w", err)
+	}
+	return oldValue.Timeout, nil
+}
+
+// AddTimeout adds i to the "timeout" field.
+func (m *ConfigMappingMutation) AddTimeout(i int32) {
+	if m.addtimeout != nil {
+		*m.addtimeout += i
+	} else {
+		m.addtimeout = &i
+	}
+}
+
+// AddedTimeout returns the value that was added to the "timeout" field in this mutation.
+func (m *ConfigMappingMutation) AddedTimeout() (r int32, exists bool) {
+	v := m.addtimeout
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTimeout resets all changes to the "timeout" field.
+func (m *ConfigMappingMutation) ResetTimeout() {
+	m.timeout = nil
+	m.addtimeout = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ConfigMappingMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -564,7 +622,7 @@ func (m *ConfigMappingMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigMappingMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.client_id != nil {
 		fields = append(fields, configmapping.FieldClientID)
 	}
@@ -582,6 +640,9 @@ func (m *ConfigMappingMutation) Fields() []string {
 	}
 	if m.error_column_index != nil {
 		fields = append(fields, configmapping.FieldErrorColumnIndex)
+	}
+	if m.timeout != nil {
+		fields = append(fields, configmapping.FieldTimeout)
 	}
 	if m.created_at != nil {
 		fields = append(fields, configmapping.FieldCreatedAt)
@@ -612,6 +673,8 @@ func (m *ConfigMappingMutation) Field(name string) (ent.Value, bool) {
 		return m.RequireColumnIndex()
 	case configmapping.FieldErrorColumnIndex:
 		return m.ErrorColumnIndex()
+	case configmapping.FieldTimeout:
+		return m.Timeout()
 	case configmapping.FieldCreatedAt:
 		return m.CreatedAt()
 	case configmapping.FieldCreatedBy:
@@ -639,6 +702,8 @@ func (m *ConfigMappingMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldRequireColumnIndex(ctx)
 	case configmapping.FieldErrorColumnIndex:
 		return m.OldErrorColumnIndex(ctx)
+	case configmapping.FieldTimeout:
+		return m.OldTimeout(ctx)
 	case configmapping.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case configmapping.FieldCreatedBy:
@@ -696,6 +761,13 @@ func (m *ConfigMappingMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetErrorColumnIndex(v)
 		return nil
+	case configmapping.FieldTimeout:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTimeout(v)
+		return nil
 	case configmapping.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -734,6 +806,9 @@ func (m *ConfigMappingMutation) AddedFields() []string {
 	if m.adddata_start_at_row != nil {
 		fields = append(fields, configmapping.FieldDataStartAtRow)
 	}
+	if m.addtimeout != nil {
+		fields = append(fields, configmapping.FieldTimeout)
+	}
 	return fields
 }
 
@@ -748,6 +823,8 @@ func (m *ConfigMappingMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTotalTasks()
 	case configmapping.FieldDataStartAtRow:
 		return m.AddedDataStartAtRow()
+	case configmapping.FieldTimeout:
+		return m.AddedTimeout()
 	}
 	return nil, false
 }
@@ -777,6 +854,13 @@ func (m *ConfigMappingMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDataStartAtRow(v)
+		return nil
+	case configmapping.FieldTimeout:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTimeout(v)
 		return nil
 	}
 	return fmt.Errorf("unknown ConfigMapping numeric field %s", name)
@@ -822,6 +906,9 @@ func (m *ConfigMappingMutation) ResetField(name string) error {
 		return nil
 	case configmapping.FieldErrorColumnIndex:
 		m.ResetErrorColumnIndex()
+		return nil
+	case configmapping.FieldTimeout:
+		m.ResetTimeout()
 		return nil
 	case configmapping.FieldCreatedAt:
 		m.ResetCreatedAt()

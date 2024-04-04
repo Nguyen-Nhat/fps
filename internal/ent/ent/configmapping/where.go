@@ -122,6 +122,13 @@ func ErrorColumnIndex(v string) predicate.ConfigMapping {
 	})
 }
 
+// Timeout applies equality check predicate on the "timeout" field. It's identical to TimeoutEQ.
+func Timeout(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTimeout), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
@@ -629,6 +636,70 @@ func ErrorColumnIndexEqualFold(v string) predicate.ConfigMapping {
 func ErrorColumnIndexContainsFold(v string) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldErrorColumnIndex), v))
+	})
+}
+
+// TimeoutEQ applies the EQ predicate on the "timeout" field.
+func TimeoutEQ(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTimeout), v))
+	})
+}
+
+// TimeoutNEQ applies the NEQ predicate on the "timeout" field.
+func TimeoutNEQ(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTimeout), v))
+	})
+}
+
+// TimeoutIn applies the In predicate on the "timeout" field.
+func TimeoutIn(vs ...int32) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldTimeout), v...))
+	})
+}
+
+// TimeoutNotIn applies the NotIn predicate on the "timeout" field.
+func TimeoutNotIn(vs ...int32) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldTimeout), v...))
+	})
+}
+
+// TimeoutGT applies the GT predicate on the "timeout" field.
+func TimeoutGT(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTimeout), v))
+	})
+}
+
+// TimeoutGTE applies the GTE predicate on the "timeout" field.
+func TimeoutGTE(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTimeout), v))
+	})
+}
+
+// TimeoutLT applies the LT predicate on the "timeout" field.
+func TimeoutLT(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTimeout), v))
+	})
+}
+
+// TimeoutLTE applies the LTE predicate on the "timeout" field.
+func TimeoutLTE(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTimeout), v))
 	})
 }
 

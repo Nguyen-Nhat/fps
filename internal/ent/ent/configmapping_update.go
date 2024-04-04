@@ -101,6 +101,27 @@ func (cmu *ConfigMappingUpdate) SetErrorColumnIndex(s string) *ConfigMappingUpda
 	return cmu
 }
 
+// SetTimeout sets the "timeout" field.
+func (cmu *ConfigMappingUpdate) SetTimeout(i int32) *ConfigMappingUpdate {
+	cmu.mutation.ResetTimeout()
+	cmu.mutation.SetTimeout(i)
+	return cmu
+}
+
+// SetNillableTimeout sets the "timeout" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableTimeout(i *int32) *ConfigMappingUpdate {
+	if i != nil {
+		cmu.SetTimeout(*i)
+	}
+	return cmu
+}
+
+// AddTimeout adds i to the "timeout" field.
+func (cmu *ConfigMappingUpdate) AddTimeout(i int32) *ConfigMappingUpdate {
+	cmu.mutation.AddTimeout(i)
+	return cmu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cmu *ConfigMappingUpdate) SetCreatedAt(t time.Time) *ConfigMappingUpdate {
 	cmu.mutation.SetCreatedAt(t)
@@ -302,6 +323,20 @@ func (cmu *ConfigMappingUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: configmapping.FieldErrorColumnIndex,
 		})
 	}
+	if value, ok := cmu.mutation.Timeout(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldTimeout,
+		})
+	}
+	if value, ok := cmu.mutation.AddedTimeout(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldTimeout,
+		})
+	}
 	if value, ok := cmu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -412,6 +447,27 @@ func (cmuo *ConfigMappingUpdateOne) SetRequireColumnIndex(s string) *ConfigMappi
 // SetErrorColumnIndex sets the "error_column_index" field.
 func (cmuo *ConfigMappingUpdateOne) SetErrorColumnIndex(s string) *ConfigMappingUpdateOne {
 	cmuo.mutation.SetErrorColumnIndex(s)
+	return cmuo
+}
+
+// SetTimeout sets the "timeout" field.
+func (cmuo *ConfigMappingUpdateOne) SetTimeout(i int32) *ConfigMappingUpdateOne {
+	cmuo.mutation.ResetTimeout()
+	cmuo.mutation.SetTimeout(i)
+	return cmuo
+}
+
+// SetNillableTimeout sets the "timeout" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableTimeout(i *int32) *ConfigMappingUpdateOne {
+	if i != nil {
+		cmuo.SetTimeout(*i)
+	}
+	return cmuo
+}
+
+// AddTimeout adds i to the "timeout" field.
+func (cmuo *ConfigMappingUpdateOne) AddTimeout(i int32) *ConfigMappingUpdateOne {
+	cmuo.mutation.AddTimeout(i)
 	return cmuo
 }
 
@@ -644,6 +700,20 @@ func (cmuo *ConfigMappingUpdateOne) sqlSave(ctx context.Context) (_node *ConfigM
 			Type:   field.TypeString,
 			Value:  value,
 			Column: configmapping.FieldErrorColumnIndex,
+		})
+	}
+	if value, ok := cmuo.mutation.Timeout(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldTimeout,
+		})
+	}
+	if value, ok := cmuo.mutation.AddedTimeout(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldTimeout,
 		})
 	}
 	if value, ok := cmuo.mutation.CreatedAt(); ok {

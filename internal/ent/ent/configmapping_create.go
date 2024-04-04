@@ -72,6 +72,20 @@ func (cmc *ConfigMappingCreate) SetErrorColumnIndex(s string) *ConfigMappingCrea
 	return cmc
 }
 
+// SetTimeout sets the "timeout" field.
+func (cmc *ConfigMappingCreate) SetTimeout(i int32) *ConfigMappingCreate {
+	cmc.mutation.SetTimeout(i)
+	return cmc
+}
+
+// SetNillableTimeout sets the "timeout" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableTimeout(i *int32) *ConfigMappingCreate {
+	if i != nil {
+		cmc.SetTimeout(*i)
+	}
+	return cmc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cmc *ConfigMappingCreate) SetCreatedAt(t time.Time) *ConfigMappingCreate {
 	cmc.mutation.SetCreatedAt(t)
@@ -191,6 +205,10 @@ func (cmc *ConfigMappingCreate) defaults() {
 		v := configmapping.DefaultDataStartAtRow
 		cmc.mutation.SetDataStartAtRow(v)
 	}
+	if _, ok := cmc.mutation.Timeout(); !ok {
+		v := configmapping.DefaultTimeout
+		cmc.mutation.SetTimeout(v)
+	}
 	if _, ok := cmc.mutation.CreatedAt(); !ok {
 		v := configmapping.DefaultCreatedAt()
 		cmc.mutation.SetCreatedAt(v)
@@ -230,6 +248,9 @@ func (cmc *ConfigMappingCreate) check() error {
 	}
 	if _, ok := cmc.mutation.ErrorColumnIndex(); !ok {
 		return &ValidationError{Name: "error_column_index", err: errors.New(`ent: missing required field "ConfigMapping.error_column_index"`)}
+	}
+	if _, ok := cmc.mutation.Timeout(); !ok {
+		return &ValidationError{Name: "timeout", err: errors.New(`ent: missing required field "ConfigMapping.timeout"`)}
 	}
 	if _, ok := cmc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ConfigMapping.created_at"`)}
@@ -319,6 +340,14 @@ func (cmc *ConfigMappingCreate) createSpec() (*ConfigMapping, *sqlgraph.CreateSp
 			Column: configmapping.FieldErrorColumnIndex,
 		})
 		_node.ErrorColumnIndex = value
+	}
+	if value, ok := cmc.mutation.Timeout(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldTimeout,
+		})
+		_node.Timeout = value
 	}
 	if value, ok := cmc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

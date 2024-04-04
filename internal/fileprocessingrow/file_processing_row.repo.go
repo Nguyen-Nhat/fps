@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -28,6 +29,7 @@ type (
 		UpdateByJobForListIDs(context.Context, []int, string, int16, string, int64) error
 		UpdateStatusFromTask(context.Context, int64, int32, int32) (int, error)
 		Update(ctx context.Context, data *ProcessingFileRow) error
+		ForceTimeout(ctx context.Context, fileId int64) error
 
 		DeleteByFileId(context.Context, int64) error
 
@@ -235,6 +237,16 @@ func (r *repoImpl) UpdateStatusFromTask(ctx context.Context, fileID int64, rowIn
 			processingfilerow.TaskIndexGT(fromTaskIndex),
 		).
 		Save(ctx)
+}
+
+func (r *repoImpl) ForceTimeout(ctx context.Context, fileId int64) error {
+	_, err := r.client.ProcessingFileRow.Update().
+		Where(processingfilerow.FileID(fileId)).
+		Where(processingfilerow.StatusNotIn(StatusSuccess, StatusFailed, StatusRejected)).
+		SetStatus(StatusFailed).
+		SetErrorDisplay(constant.Timeout).
+		Save(ctx)
+	return err
 }
 
 func (r *repoImpl) DeleteByFileId(ctx context.Context, fileId int64) error {
