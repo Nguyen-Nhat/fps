@@ -345,6 +345,9 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 	case configloader.ValueDependsOnFunc:
 		isByPassField = true // If value depends on Function -> not get value, we will execute func later
 		reqField.ValueDependsOnFunc.ParamsMapped = mapValueForCustomFunctionParams(reqField.ValueDependsOnFunc.ParamsRaw, rowData, fileParameters)
+	case configloader.ValueDependsOnDb:
+		isByPassField = true // If value depends on DB -> not get value, we will get after inserted task to DB
+		valueStr = reqField.Value
 	default:
 		errMsg := fmt.Sprintf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
 		errorRows = append(errorRows, ErrorRow{rowID, errMsg})

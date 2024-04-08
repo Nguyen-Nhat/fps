@@ -42,7 +42,7 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 
 		// 2. Build & Map request
 		logger.Infof("---------- Execute fileID=%v, rowID=%v, taskID=%v", fileID, rowID, task.TaskIndex)
-		taskMappingUpdated, configTask, err := convertConfigMappingAndMapDataFromPreviousResponse(task.TaskIndex, task.TaskMapping, previousResponse)
+		taskMappingUpdated, configTask, err := convertConfigMappingAndMapDataFromPreviousResponse(task, previousResponse)
 		if err != nil {
 			updateRequest := toResponseResult(*task, task.TaskMapping, "", "", err.Error(), fileprocessingrow.StatusFailed, startAt)
 			_, _ = job.fprService.UpdateAfterExecutingByJob(ctx, task.ID, updateRequest)
@@ -86,15 +86,15 @@ func (job *jobExecuteTask) ExecuteTask(ctx context.Context, fileID int, rowID in
 // ---------------------------------------------------------------------------------------------------------------------
 
 func convertConfigMappingAndMapDataFromPreviousResponse(
-	taskIndex int32, taskMapping string, previousResponse map[int32]string) (string, configloader.ConfigTaskMD, error) {
+	task *fileprocessingrow.ProcessingFileRow, previousResponse map[int32]string) (string, configloader.ConfigTaskMD, error) {
 	// 1. Load Data and Mapping
-	configMapping, err := converter.StringJsonToStruct("config mapping", taskMapping, configloader.ConfigMappingMD{})
+	configMapping, err := converter.StringJsonToStruct("config mapping", task.TaskMapping, configloader.ConfigMappingMD{})
 	if err != nil {
 		return "", configloader.ConfigTaskMD{}, fmt.Errorf("failed to load config map")
 	}
 
 	// 2. Map data then Build request
-	configTask, err := mapDataByPreviousResponseAndCustomFunction(int(taskIndex), *configMapping, previousResponse)
+	configTask, err := mapDataByPreviousResponseAndCustomFunction(task, *configMapping, previousResponse)
 	if err != nil {
 		return "", configTask, err
 	}

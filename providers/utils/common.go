@@ -431,3 +431,13 @@ func GetResultFileName(fileName string) string {
 	fileNameExtract[0] += suffixResult
 	return strings.Join(fileNameExtract, constant.SplitByDot)
 }
+
+func Contains[T comparable](arr []T, val T) bool {
+	for _, e := range arr {
+		if e == val {
+			return true
+		}
+	}
+
+	return false
+}

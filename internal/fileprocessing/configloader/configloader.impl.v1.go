@@ -14,6 +14,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 )
@@ -291,12 +292,27 @@ func enrichRequestFieldMD(taskID int32, reqField RequestFieldMD) (RequestFieldMD
 			reqField.ValueDependsOn = ValueDependsOnFunc
 			reqField.ValueDependsOnFunc = *function
 		} else
-		// 3.5. Else, Not match any supported pattern
+		// 3.5. Else, case value depends on Database
+		if strings.HasPrefix(valuePattern, PrefixMappingFieldInDb) {
+			template := strings.TrimPrefix(valuePattern, PrefixMappingFieldInDb) // $fps.field_abc -> .field_abc
+			dependOnField := template[1:]                                        // .field_abc -> field_abc
+			if !utils.Contains([]string{
+				ValueDependsOnDbFieldTaskId,
+				ValueDependsOnDbFieldFileId,
+			}, dependOnField) {
+				logger.Errorf("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
+				return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
+			}
+			reqField.ValueDependsOn = ValueDependsOnDb
+			reqField.ValueDependsOnKey = dependOnField
+
+		} else
+		// 3.6. Else, Not match any supported pattern
 		{
 			logger.Errorf("----- task %v, field %v has invalid value is %v", taskID, fieldName, valuePattern)
 			return RequestFieldMD{}, fmt.Errorf("mapping request is invalid: %v", valuePattern)
 		}
-	} else { // 3.5. Else, case value is strict / hardcode
+	} else { // 3.7. Else, case value is strict / hardcode
 		reqField.Value = valuePattern // raw data
 		reqField.ValueDependsOn = ValueDependsOnNone
 	}
