@@ -8,6 +8,7 @@ import (
 	"github.com/tidwall/gjson"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -15,10 +16,10 @@ import (
 )
 
 // mapDataByPreviousResponseAndCustomFunction ...
-func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping configloader.ConfigMappingMD, previousResponses map[int32]string) (
+func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessingrow.ProcessingFileRow, configMapping configloader.ConfigMappingMD, previousResponses map[int32]string) (
 	configloader.ConfigTaskMD, error) {
 	// 1. Get Task config
-	task, isTaskExisted := getTaskConfig(taskIndex, configMapping)
+	task, isTaskExisted := getTaskConfig(int(processingFileRow.TaskIndex), configMapping)
 	if !isTaskExisted {
 		return configloader.ConfigTaskMD{}, fmt.Errorf("wrong config")
 	}
@@ -30,7 +31,7 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 
 	// 3. Convert path params
 	for reqFieldName, reqField := range task.PathParamsMap {
-		realValue, err := getValueStringFromConfig(reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(processingFileRow, reqField, previousResponses)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		}
@@ -40,7 +41,7 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 
 	// 3. Convert request params
 	for reqFieldName, reqField := range task.RequestParamsMap {
-		realValue, err := getValueStringFromConfig(reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(processingFileRow, reqField, previousResponses)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		} else {
@@ -54,7 +55,7 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 		// 4.1. Convert ArrayItem
 		if len(reqField.ArrayItemMap) > 0 {
 			// 4.1.1. For each child fields
-			childMap, err := getValueFromConfig(reqFieldName, reqField.ArrayItemMap, previousResponses)
+			childMap, err := getValueFromConfig(processingFileRow, reqFieldName, reqField.ArrayItemMap, previousResponses)
 			if err != nil {
 				return configloader.ConfigTaskMD{}, err
 			}
@@ -78,7 +79,7 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 		}
 
 		// 4.2. Get value
-		realValue, err := getValueStringFromConfig(reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(processingFileRow, reqField, previousResponses)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		} else {
@@ -91,14 +92,14 @@ func mapDataByPreviousResponseAndCustomFunction(taskIndex int, configMapping con
 	return task, nil
 }
 
-func getValueFromConfig(parentFieldName string, requestFieldList map[string]*configloader.RequestFieldMD, previousResponses map[int32]string) (
+func getValueFromConfig(processingFileRow *fileprocessingrow.ProcessingFileRow, parentFieldName string, requestFieldList map[string]*configloader.RequestFieldMD, previousResponses map[int32]string) (
 	map[string]interface{}, error) {
 
 	childMap := make(map[string]interface{})
 
 	for fieldNameChild, reqFieldChild := range requestFieldList {
 		if len(reqFieldChild.ArrayItemMap) > 0 {
-			childMapInArr, err := getValueFromConfig(fieldNameChild, reqFieldChild.ArrayItemMap, previousResponses)
+			childMapInArr, err := getValueFromConfig(processingFileRow, fieldNameChild, reqFieldChild.ArrayItemMap, previousResponses)
 			if err != nil {
 				return nil, err
 			}
@@ -117,7 +118,7 @@ func getValueFromConfig(parentFieldName string, requestFieldList map[string]*con
 		}
 
 		if len(reqFieldChild.ItemsMap) > 0 {
-			childMapInObj, err := getValueFromConfig(fieldNameChild, reqFieldChild.ItemsMap, previousResponses)
+			childMapInObj, err := getValueFromConfig(processingFileRow, fieldNameChild, reqFieldChild.ItemsMap, previousResponses)
 			if err != nil {
 				return nil, err
 			}
@@ -129,7 +130,7 @@ func getValueFromConfig(parentFieldName string, requestFieldList map[string]*con
 		}
 
 		// get value
-		realChildValue, err := getValueStringFromConfig(reqFieldChild, previousResponses)
+		realChildValue, err := getValueStringFromConfig(processingFileRow, reqFieldChild, previousResponses)
 		if err != nil {
 			return nil, err
 		}
@@ -163,7 +164,7 @@ func getTaskConfig(taskIndex int, configMapping configloader.ConfigMappingMD) (c
 	return configloader.ConfigTaskMD{}, false
 }
 
-func getValueStringFromConfig(reqField *configloader.RequestFieldMD, previousResponses map[int32]string) (interface{}, error) {
+func getValueStringFromConfig(processingFileRow *fileprocessingrow.ProcessingFileRow, reqField *configloader.RequestFieldMD, previousResponses map[int32]string) (interface{}, error) {
 	// 1. Get value in String type
 	var valueStr string
 	switch reqField.ValueDependsOn {
@@ -182,6 +183,12 @@ func getValueStringFromConfig(reqField *configloader.RequestFieldMD, previousRes
 		} else {
 			return result.Result, nil
 		}
+	case configloader.ValueDependsOnDb:
+		valueInDb, err := getValueFromFieldInDb(processingFileRow, reqField)
+		if err != nil {
+			return nil, err
+		}
+		return valueInDb, nil
 	default:
 		return nil, fmt.Errorf("cannot convert ValueDependsOn=%s", reqField.ValueDependsOn)
 	}
@@ -245,5 +252,17 @@ func setValueForChild(realChildValue interface{}, items interface{}, reqFieldNam
 	default:
 		logger.Errorf("`%v` is not array, raw=%+v", reqFieldName, itemsType)
 		return nil, errors.New("system error")
+	}
+}
+
+func getValueFromFieldInDb(processingFileRow *fileprocessingrow.ProcessingFileRow, reqField *configloader.RequestFieldMD) (interface{}, error) {
+	dependOnField := reqField.ValueDependsOnKey
+	switch dependOnField {
+	case configloader.ValueDependsOnDbFieldTaskId:
+		return processingFileRow.ID, nil
+	case configloader.ValueDependsOnDbFieldFileId:
+		return processingFileRow.FileID, nil
+	default:
+		return nil, fmt.Errorf("cannot get value from field %v", dependOnField)
 	}
 }

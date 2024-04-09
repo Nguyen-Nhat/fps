@@ -4,7 +4,9 @@ import (
 	"reflect"
 	"testing"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
 )
 
@@ -57,6 +59,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 	}
 
 	type args struct {
+		processingFileRow *fileprocessingrow.ProcessingFileRow
 		reqField          *configloader.RequestFieldMD
 		previousResponses map[int32]string
 	}
@@ -68,6 +71,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 	}{
 		// ValueDependsOn not support
 		{"test getValueStringFromConfig case depend on not support type", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn:       configloader.ValueDependsOnNone,
 				ValueDependsOnTaskID: 1,
@@ -77,6 +81,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 			}, previousResponses},
 			nil, true},
 		{"test getValueStringFromConfig case depend on not support type", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn:       configloader.ValueDependsOnExcel,
 				ValueDependsOnTaskID: 1,
@@ -86,6 +91,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 			}, previousResponses},
 			nil, true},
 		{"test getValueStringFromConfig case depend on not support type", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn:       configloader.ValueDependsOnParam,
 				ValueDependsOnTaskID: 1,
@@ -97,6 +103,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 
 		// ValueDependsOn = TASK
 		{"test getValueStringFromConfig case depend on existed task, key is not required, existed and empty", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn:       configloader.ValueDependsOnTask,
 				ValueDependsOnTaskID: 1,
@@ -107,6 +114,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 			nil, false},
 		// case has key
 		{"test getValueByPreviousTaskResponse case depend on existed task, key is existed with type int", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn:       configloader.ValueDependsOnTask,
 				ValueDependsOnTaskID: 2,
@@ -116,6 +124,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 			}, previousResponses},
 			int64(12), false},
 		{"test getValueByPreviousTaskResponse case depend on existed task, key is existed with type bool", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn:       configloader.ValueDependsOnTask,
 				ValueDependsOnTaskID: 3,
@@ -127,6 +136,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 
 		// ValueDependsOn = FUNC
 		{"test getValueByPreviousTaskResponse case depend on not existed func", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn: configloader.ValueDependsOnFunc,
 				ValueDependsOnFunc: customFunc.CustomFunction{
@@ -139,6 +149,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 			}, previousResponses},
 			nil, true},
 		{"test getValueByPreviousTaskResponse case depend on existed func, but func run error", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn: configloader.ValueDependsOnFunc,
 				ValueDependsOnFunc: customFunc.CustomFunction{
@@ -151,6 +162,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 			}, previousResponses},
 			nil, true},
 		{"test getValueByPreviousTaskResponse case depend on existed func, but missing param", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn: configloader.ValueDependsOnFunc,
 				ValueDependsOnFunc: customFunc.CustomFunction{
@@ -163,6 +175,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 			}, previousResponses},
 			nil, true},
 		{"test getValueByPreviousTaskResponse case depend on existed func, and func run success", args{
+			nil,
 			&configloader.RequestFieldMD{
 				ValueDependsOn:    configloader.ValueDependsOnFunc,
 				ValueDependsOnKey: "$func.testFunc;1;5",
@@ -175,10 +188,56 @@ func Test_getValueStringFromConfig(t *testing.T) {
 				Type:     "integer",
 			}, previousResponses},
 			6, false},
+		// ValueDependsOn = DB
+		{"test getValueByPreviousTaskResponse case depend on not existed db", args{
+			&fileprocessingrow.ProcessingFileRow{
+				ProcessingFileRow: ent.ProcessingFileRow{
+					ID:     1,
+					FileID: 10,
+				},
+			},
+			&configloader.RequestFieldMD{
+				ValueDependsOn:    configloader.ValueDependsOnDb,
+				ValueDependsOnKey: "testDbField",
+				Required:          true,
+				Type:              "string",
+			},
+			nil,
+		}, nil, true},
+		{"test getValueByPreviousTaskResponse case depend on task id", args{
+			&fileprocessingrow.ProcessingFileRow{
+				ProcessingFileRow: ent.ProcessingFileRow{
+					ID:     1,
+					FileID: 10,
+				},
+			},
+			&configloader.RequestFieldMD{
+				ValueDependsOn:    configloader.ValueDependsOnDb,
+				ValueDependsOnKey: configloader.ValueDependsOnDbFieldTaskId,
+				Required:          true,
+				Type:              "string",
+			},
+			nil,
+		}, 1, false},
+		{"test getValueByPreviousTaskResponse case depend on file id", args{
+			&fileprocessingrow.ProcessingFileRow{
+				ProcessingFileRow: ent.ProcessingFileRow{
+					ID:     1,
+					FileID: 10,
+				},
+			},
+			&configloader.RequestFieldMD{
+				ValueDependsOn:    configloader.ValueDependsOnDb,
+				ValueDependsOnKey: configloader.ValueDependsOnDbFieldFileId,
+				Required:          true,
+				Type:              "string",
+			},
+			nil,
+		}, int64(10), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getValueStringFromConfig(tt.args.reqField, tt.args.previousResponses)
+			got, err := getValueStringFromConfig(tt.args.processingFileRow, tt.args.reqField, tt.args.previousResponses)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getValueStringFromConfig() error = %v, wantErr %v", err, tt.wantErr)
 				return
