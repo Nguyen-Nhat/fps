@@ -3,13 +3,15 @@ package handlefileprocessing
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
-	"net/http"
-	"net/http/httptest"
 )
 
 const (
@@ -75,8 +77,10 @@ func initJobExecutor(db *sql.DB) *jobHandleProcessingFileImpl {
 	fileServiceClient := fileservice.NewClient(fileServiceConfig)
 	fileService := fileservice.NewService(fileServiceClient)
 
+	configMappingService := configmapping.NewService(configmapping.NewRepo(db))
+
 	// job executor
-	return newJobHandleProcessingFile(fpService, fprService, fileService)
+	return newJobHandleProcessingFile(fpService, fprService, fileService, configMappingService)
 }
 
 func mockServer(httpStatus int, payload string) (*httptest.Server, string) {

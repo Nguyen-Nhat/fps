@@ -53,16 +53,20 @@ func init() {
 	configmappingDescTimeout := configmappingFields[6].Descriptor()
 	// configmapping.DefaultTimeout holds the default value on creation for the timeout field.
 	configmapping.DefaultTimeout = configmappingDescTimeout.Default.(int32)
+	// configmappingDescInputFileType is the schema descriptor for input_file_type field.
+	configmappingDescInputFileType := configmappingFields[7].Descriptor()
+	// configmapping.DefaultInputFileType holds the default value on creation for the input_file_type field.
+	configmapping.DefaultInputFileType = configmappingDescInputFileType.Default.(string)
 	// configmappingDescCreatedAt is the schema descriptor for created_at field.
-	configmappingDescCreatedAt := configmappingFields[7].Descriptor()
+	configmappingDescCreatedAt := configmappingFields[9].Descriptor()
 	// configmapping.DefaultCreatedAt holds the default value on creation for the created_at field.
 	configmapping.DefaultCreatedAt = configmappingDescCreatedAt.Default.(func() time.Time)
 	// configmappingDescCreatedBy is the schema descriptor for created_by field.
-	configmappingDescCreatedBy := configmappingFields[8].Descriptor()
+	configmappingDescCreatedBy := configmappingFields[10].Descriptor()
 	// configmapping.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	configmapping.CreatedByValidator = configmappingDescCreatedBy.Validators[0].(func(string) error)
 	// configmappingDescUpdatedAt is the schema descriptor for updated_at field.
-	configmappingDescUpdatedAt := configmappingFields[9].Descriptor()
+	configmappingDescUpdatedAt := configmappingFields[11].Descriptor()
 	// configmapping.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	configmapping.DefaultUpdatedAt = configmappingDescUpdatedAt.Default.(func() time.Time)
 	// configmapping.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

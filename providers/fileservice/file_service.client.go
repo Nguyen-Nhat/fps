@@ -61,7 +61,7 @@ func (c *Client) uploadFile(req uploadFileRequest) (uploadFileResponse, error) {
 		FieldName:   "file",
 		FileName:    req.FileName,
 		Data:        req.FileData,
-		ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		ContentType: req.FileType,
 	}
 
 	// 3. Send http request

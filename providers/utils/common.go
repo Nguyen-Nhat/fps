@@ -29,6 +29,11 @@ const (
 	suffixResult   = "_result"
 )
 
+const (
+	XlsxContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	CsvContentType  = "text/csv"
+)
+
 // Type ----------------------------------------------------------------------------------------------------------------
 
 type (
@@ -430,4 +435,14 @@ func GetResultFileName(fileName string) string {
 	fileNameExtract := strings.Split(fileName, constant.SplitByDot)
 	fileNameExtract[0] += suffixResult
 	return strings.Join(fileNameExtract, constant.SplitByDot)
+}
+
+func Contains[T comparable](arr []T, val T) bool {
+	for _, e := range arr {
+		if e == val {
+			return true
+		}
+	}
+
+	return false
 }

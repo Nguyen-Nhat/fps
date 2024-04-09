@@ -3,6 +3,7 @@
 package configmapping
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -25,6 +26,10 @@ const (
 	FieldErrorColumnIndex = "error_column_index"
 	// FieldTimeout holds the string denoting the timeout field in the database.
 	FieldTimeout = "timeout"
+	// FieldInputFileType holds the string denoting the input_file_type field in the database.
+	FieldInputFileType = "input_file_type"
+	// FieldOutputFileType holds the string denoting the output_file_type field in the database.
+	FieldOutputFileType = "output_file_type"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -45,6 +50,8 @@ var Columns = []string{
 	FieldRequireColumnIndex,
 	FieldErrorColumnIndex,
 	FieldTimeout,
+	FieldInputFileType,
+	FieldOutputFileType,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -71,6 +78,8 @@ var (
 	DataStartAtRowValidator func(int32) error
 	// DefaultTimeout holds the default value on creation for the "timeout" field.
 	DefaultTimeout int32
+	// DefaultInputFileType holds the default value on creation for the "input_file_type" field.
+	DefaultInputFileType string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
@@ -80,3 +89,29 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
+
+// OutputFileType defines the type for the "output_file_type" enum field.
+type OutputFileType string
+
+// OutputFileTypeXLSX is the default value of the OutputFileType enum.
+const DefaultOutputFileType = OutputFileTypeXLSX
+
+// OutputFileType values.
+const (
+	OutputFileTypeXLSX OutputFileType = "XLSX"
+	OutputFileTypeCSV  OutputFileType = "CSV"
+)
+
+func (oft OutputFileType) String() string {
+	return string(oft)
+}
+
+// OutputFileTypeValidator is a validator for the "output_file_type" field enum values. It is called by the builders before save.
+func OutputFileTypeValidator(oft OutputFileType) error {
+	switch oft {
+	case OutputFileTypeXLSX, OutputFileTypeCSV:
+		return nil
+	default:
+		return fmt.Errorf("configmapping: invalid enum value for output_file_type field: %q", oft)
+	}
+}

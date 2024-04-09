@@ -2,10 +2,12 @@ package handlefileprocessing
 
 import (
 	"context"
-	"github.com/robfig/cron/v3"
 	"sync"
 
+	"github.com/robfig/cron/v3"
+
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -13,10 +15,11 @@ import (
 )
 
 type JobHandleProcessingFileAll struct {
-	cfg         config.FileProcessingConfig
-	fpService   fileprocessing.Service
-	fprService  fileprocessingrow.Service
-	fileService fileservice.IService
+	cfg               config.FileProcessingConfig
+	fpService         fileprocessing.Service
+	fprService        fileprocessingrow.Service
+	fileService       fileservice.IService
+	cfgMappingService configmapping.Service
 }
 
 var fileProcessingJob *JobHandleProcessingFileAll
@@ -27,14 +30,16 @@ func InitJobHandleProcessingFileAll(
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
 	fileService fileservice.IService,
+	cfgMappingService configmapping.Service,
 ) *JobHandleProcessingFileAll {
 	if fileProcessingJob == nil {
 		once.Do(func() {
 			fileProcessingJob = &JobHandleProcessingFileAll{
-				cfg:         cfg,
-				fpService:   fpService,
-				fprService:  fprService,
-				fileService: fileService,
+				cfg:               cfg,
+				fpService:         fpService,
+				fprService:        fprService,
+				fileService:       fileService,
+				cfgMappingService: cfgMappingService,
 			}
 			fileProcessingJob.initCron()
 		})
@@ -87,7 +92,7 @@ func (j *JobHandleProcessingFileAll) start() {
 
 	// III. Execute each Processing File
 	for _, file := range processingFiles {
-		jobExecutor := newJobHandleProcessingFile(j.fpService, j.fprService, j.fileService)
+		jobExecutor := newJobHandleProcessingFile(j.fpService, j.fprService, j.fileService, j.cfgMappingService)
 		jobExecutor.Execute(ctx, file)
 	}
 }

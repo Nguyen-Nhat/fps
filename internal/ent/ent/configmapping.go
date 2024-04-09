@@ -30,6 +30,10 @@ type ConfigMapping struct {
 	ErrorColumnIndex string `json:"error_column_index,omitempty"`
 	// Time out of template in seconds (default 24h as 86400 seconds)
 	Timeout int32 `json:"timeout,omitempty"`
+	// Các định dạng cho phép của file input, cách nhau bằng dấu phẩy (ex: "XLSX,CSV")
+	InputFileType string `json:"input_file_type,omitempty"`
+	// Type of file output
+	OutputFileType configmapping.OutputFileType `json:"output_file_type,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -45,7 +49,7 @@ func (*ConfigMapping) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case configmapping.FieldID, configmapping.FieldClientID, configmapping.FieldTotalTasks, configmapping.FieldDataStartAtRow, configmapping.FieldTimeout:
 			values[i] = new(sql.NullInt64)
-		case configmapping.FieldDataAtSheet, configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldCreatedBy:
+		case configmapping.FieldDataAtSheet, configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldInputFileType, configmapping.FieldOutputFileType, configmapping.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configmapping.FieldCreatedAt, configmapping.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -111,6 +115,18 @@ func (cm *ConfigMapping) assignValues(columns []string, values []interface{}) er
 				return fmt.Errorf("unexpected type %T for field timeout", values[i])
 			} else if value.Valid {
 				cm.Timeout = int32(value.Int64)
+			}
+		case configmapping.FieldInputFileType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field input_file_type", values[i])
+			} else if value.Valid {
+				cm.InputFileType = value.String
+			}
+		case configmapping.FieldOutputFileType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field output_file_type", values[i])
+			} else if value.Valid {
+				cm.OutputFileType = configmapping.OutputFileType(value.String)
 			}
 		case configmapping.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -178,6 +194,12 @@ func (cm *ConfigMapping) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("timeout=")
 	builder.WriteString(fmt.Sprintf("%v", cm.Timeout))
+	builder.WriteString(", ")
+	builder.WriteString("input_file_type=")
+	builder.WriteString(cm.InputFileType)
+	builder.WriteString(", ")
+	builder.WriteString("output_file_type=")
+	builder.WriteString(fmt.Sprintf("%v", cm.OutputFileType))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(cm.CreatedAt.Format(time.ANSIC))
