@@ -3,11 +3,13 @@ package flatten
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/adapter/flagsup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
+	configmapping2 "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
@@ -91,13 +93,34 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 		job.updateFileProcessingToFailed(ctx, file, errConfigMapping, nil)
 		return
 	}
+	allowedInputFileTypes := strings.Split(configMapping.InputFileType, constant.SplitByComma)
 
 	// 3. Get file by URL -> data in first sheet
 	var sheetData [][]string
-	switch file.ExtFileRequest {
+	switch strings.ToUpper(file.ExtFileRequest) {
 	case constant.ExtFileCSV:
+		if !utils.Contains(allowedInputFileTypes, constant.ExtFileCSV) {
+			logger.ErrorT("InputFileType %v is not supported", constant.ExtFileCSV)
+			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
+			return
+		}
+		if configMapping.OutputFileType != configmapping2.OutputFileTypeCSV {
+			logger.ErrorT("InputFileType %v and OutputFileType %v are not same", constant.ExtFileCSV, configMapping.OutputFileType.String())
+			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
+			return
+		}
 		sheetData, err = excel.LoadCSVByUrl(file.FileURL)
 	case constant.ExtFileXLSX:
+		if !utils.Contains(allowedInputFileTypes, constant.ExtFileXLSX) {
+			logger.ErrorT("InputFileType %v is not supported", constant.ExtFileXLSX)
+			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
+			return
+		}
+		if configMapping.OutputFileType != configmapping2.OutputFileTypeXLSX {
+			logger.ErrorT("InputFileType %v and OutputFileType %v are not same", constant.ExtFileXLSX, configMapping.OutputFileType.String())
+			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
+			return
+		}
 		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
 	default:
 		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
@@ -189,7 +212,17 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 	}
 
 	// 2. Inject error to importing file
-	fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, cfgMapping.DataStartAtRow, errorDisplays, false)
+	outputFileType := constant.EmptyString
+	switch cfgMapping.OutputFileType {
+	case configmapping2.OutputFileTypeCSV:
+		outputFileType = utils.CsvContentType
+	case configmapping2.OutputFileTypeXLSX:
+		outputFileType = utils.XlsxContentType
+	default:
+		logger.ErrorT("OutputFileType %v is not supported", cfgMapping.OutputFileType)
+		return ""
+	}
+	fileDataBytes, err := excel.UpdateDataInColumn(file.FileURL, file.ExtFileRequest, cfgMapping.OutputFileType.String(), cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, cfgMapping.DataStartAtRow, errorDisplays)
 	if err != nil {
 		logger.ErrorT("Update file with Error Display failed, err=%v", err)
 		return ""
@@ -197,7 +230,7 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 
 	// 3. Gen result file name then Upload to file service
 	resultFileName := utils.GetResultFileName(file.DisplayName)
-	resultFileUrl, err := job.fileService.UploadFileWithBytesData(fileDataBytes, resultFileName)
+	resultFileUrl, err := job.fileService.UploadFileWithBytesData(fileDataBytes, outputFileType, resultFileName)
 	if err != nil {
 		logger.ErrorT("Upload result file %v failed, err=%v", resultFileName, err)
 		return ""

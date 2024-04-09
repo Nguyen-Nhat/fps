@@ -3,6 +3,7 @@ package configloader
 import (
 	"encoding/json"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
@@ -10,11 +11,12 @@ import (
 // ConfigMappingMD ...
 type ConfigMappingMD struct {
 	// metadata get from file processing
-	DataStartAtRow     int      `json:"-"`
-	DataAtSheet        string   `json:"-"`
-	RequireColumnIndex []string `json:"-"`
-	ErrorColumnIndex   string   `json:"-"`
-
+	DataStartAtRow     int                          `json:"-"`
+	DataAtSheet        string                       `json:"-"`
+	RequireColumnIndex []string                     `json:"-"`
+	ErrorColumnIndex   string                       `json:"-"`
+	InputFileType      string                       `json:"-"`
+	OutputFileType     configmapping.OutputFileType `json:"-"`
 	// parameter in file
 	FileParameters map[string]interface{} `json:"-"`
 

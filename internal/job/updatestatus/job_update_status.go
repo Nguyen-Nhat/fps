@@ -4,7 +4,9 @@ import (
 	"context"
 	"time"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
+	configmapping2 "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -83,7 +85,17 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 
 		if isNeedToUploadResultFile {
 			// 2.1.1. Inject Error Display to file
-			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, int(cfgMapping.DataStartAtRow), stats.ErrorDisplays, false)
+			outputFileType := constant.EmptyString
+			switch cfgMapping.OutputFileType {
+			case configmapping2.OutputFileTypeCSV:
+				outputFileType = utils.CsvContentType
+			case configmapping2.OutputFileTypeXLSX:
+				outputFileType = utils.XlsxContentType
+			default:
+				logger.ErrorT("OutputFileType %v is not supported", cfgMapping.OutputFileType)
+				return
+			}
+			fileDataBytes, err := excel.UpdateDataInColumn(file.FileURL, file.ExtFileRequest, cfgMapping.OutputFileType.String(), cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, int(cfgMapping.DataStartAtRow), stats.ErrorDisplays)
 			if err != nil {
 				logger.ErrorT("Update file with Error Display failed, err=%v", err)
 				return
@@ -91,7 +103,7 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 
 			// 2.1.2. Gen result file name then Upload to file service
 			resultFileName := utils.GetResultFileName(file.DisplayName)
-			res, err := job.fileService.UploadFileWithBytesData(fileDataBytes, resultFileName)
+			res, err := job.fileService.UploadFileWithBytesData(fileDataBytes, outputFileType, resultFileName)
 			if err != nil {
 				logger.ErrorT("Upload result file %v failed, err=%v", resultFileName, err)
 				return

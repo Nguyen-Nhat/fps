@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
+	configmapping2 "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -21,9 +24,10 @@ type (
 	}
 
 	jobHandleProcessingFileImpl struct {
-		fpService   fileprocessing.Service
-		fprService  fileprocessingrow.Service
-		fileService fileservice.IService
+		fpService         fileprocessing.Service
+		fprService        fileprocessingrow.Service
+		fileService       fileservice.IService
+		cfgMappingService configmapping.Service
 	}
 )
 
@@ -37,11 +41,13 @@ func newJobHandleProcessingFile(
 	fpService fileprocessing.Service,
 	fprService fileprocessingrow.Service,
 	fileService fileservice.IService,
+	cfgMappingService configmapping.Service,
 ) *jobHandleProcessingFileImpl {
 	job := &jobHandleProcessingFileImpl{
-		fpService:   fpService,
-		fprService:  fprService,
-		fileService: fileService,
+		fpService:         fpService,
+		fprService:        fprService,
+		fileService:       fileService,
+		cfgMappingService: cfgMappingService,
 	}
 	return job
 }
@@ -322,8 +328,23 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 
 		// 2. Create Result File if has error row
 		if stats.TotalFailed > 0 {
+			cfgMapping, err := j.cfgMappingService.FindByClientID(ctx, file.ClientID)
+			if err != nil {
+				logger.ErrorT("Cannot find config mapping by clientID %v, err=%v", file.ClientID, err)
+				return
+			}
 			// 2.1 Inject Error Display to file
-			fileDataBytes, err := excel.UpdateDataInColumnOfFile(file.FileURL, sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, stats.ErrorDisplays, false)
+			outputFileType := constant.EmptyString
+			switch cfgMapping.OutputFileType {
+			case configmapping2.OutputFileTypeCSV:
+				outputFileType = utils.CsvContentType
+			case configmapping2.OutputFileTypeXLSX:
+				outputFileType = utils.XlsxContentType
+			default:
+				logger.ErrorT("OutputFileType %v is not supported", cfgMapping.OutputFileType)
+				return
+			}
+			fileDataBytes, err := excel.UpdateDataInColumn(file.FileURL, file.ExtFileRequest, cfgMapping.OutputFileType.String(), sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, stats.ErrorDisplays)
 			if err != nil {
 				logger.ErrorT("Update file with Error Display failed, err=%v", err)
 				return
@@ -332,7 +353,7 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 			// 2.2. Gen result file name then Upload to file service
 			fileName := utils.ExtractFileName(file.FileURL)
 			resultFileName := fileName.FullNameWithSuffix("_result")
-			res, err := j.fileService.UploadFileWithBytesData(fileDataBytes, resultFileName)
+			res, err := j.fileService.UploadFileWithBytesData(fileDataBytes, outputFileType, resultFileName)
 			if err != nil {
 				logger.ErrorT("Upload result file %v failed, err=%v", resultFileName, err)
 				return

@@ -122,6 +122,34 @@ func (cmu *ConfigMappingUpdate) AddTimeout(i int32) *ConfigMappingUpdate {
 	return cmu
 }
 
+// SetInputFileType sets the "input_file_type" field.
+func (cmu *ConfigMappingUpdate) SetInputFileType(s string) *ConfigMappingUpdate {
+	cmu.mutation.SetInputFileType(s)
+	return cmu
+}
+
+// SetNillableInputFileType sets the "input_file_type" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableInputFileType(s *string) *ConfigMappingUpdate {
+	if s != nil {
+		cmu.SetInputFileType(*s)
+	}
+	return cmu
+}
+
+// SetOutputFileType sets the "output_file_type" field.
+func (cmu *ConfigMappingUpdate) SetOutputFileType(cft configmapping.OutputFileType) *ConfigMappingUpdate {
+	cmu.mutation.SetOutputFileType(cft)
+	return cmu
+}
+
+// SetNillableOutputFileType sets the "output_file_type" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableOutputFileType(cft *configmapping.OutputFileType) *ConfigMappingUpdate {
+	if cft != nil {
+		cmu.SetOutputFileType(*cft)
+	}
+	return cmu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cmu *ConfigMappingUpdate) SetCreatedAt(t time.Time) *ConfigMappingUpdate {
 	cmu.mutation.SetCreatedAt(t)
@@ -234,6 +262,11 @@ func (cmu *ConfigMappingUpdate) check() error {
 			return &ValidationError{Name: "data_start_at_row", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.data_start_at_row": %w`, err)}
 		}
 	}
+	if v, ok := cmu.mutation.OutputFileType(); ok {
+		if err := configmapping.OutputFileTypeValidator(v); err != nil {
+			return &ValidationError{Name: "output_file_type", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.output_file_type": %w`, err)}
+		}
+	}
 	if v, ok := cmu.mutation.CreatedBy(); ok {
 		if err := configmapping.CreatedByValidator(v); err != nil {
 			return &ValidationError{Name: "created_by", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.created_by": %w`, err)}
@@ -335,6 +368,20 @@ func (cmu *ConfigMappingUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: configmapping.FieldTimeout,
+		})
+	}
+	if value, ok := cmu.mutation.InputFileType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldInputFileType,
+		})
+	}
+	if value, ok := cmu.mutation.OutputFileType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: configmapping.FieldOutputFileType,
 		})
 	}
 	if value, ok := cmu.mutation.CreatedAt(); ok {
@@ -471,6 +518,34 @@ func (cmuo *ConfigMappingUpdateOne) AddTimeout(i int32) *ConfigMappingUpdateOne 
 	return cmuo
 }
 
+// SetInputFileType sets the "input_file_type" field.
+func (cmuo *ConfigMappingUpdateOne) SetInputFileType(s string) *ConfigMappingUpdateOne {
+	cmuo.mutation.SetInputFileType(s)
+	return cmuo
+}
+
+// SetNillableInputFileType sets the "input_file_type" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableInputFileType(s *string) *ConfigMappingUpdateOne {
+	if s != nil {
+		cmuo.SetInputFileType(*s)
+	}
+	return cmuo
+}
+
+// SetOutputFileType sets the "output_file_type" field.
+func (cmuo *ConfigMappingUpdateOne) SetOutputFileType(cft configmapping.OutputFileType) *ConfigMappingUpdateOne {
+	cmuo.mutation.SetOutputFileType(cft)
+	return cmuo
+}
+
+// SetNillableOutputFileType sets the "output_file_type" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableOutputFileType(cft *configmapping.OutputFileType) *ConfigMappingUpdateOne {
+	if cft != nil {
+		cmuo.SetOutputFileType(*cft)
+	}
+	return cmuo
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cmuo *ConfigMappingUpdateOne) SetCreatedAt(t time.Time) *ConfigMappingUpdateOne {
 	cmuo.mutation.SetCreatedAt(t)
@@ -596,6 +671,11 @@ func (cmuo *ConfigMappingUpdateOne) check() error {
 			return &ValidationError{Name: "data_start_at_row", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.data_start_at_row": %w`, err)}
 		}
 	}
+	if v, ok := cmuo.mutation.OutputFileType(); ok {
+		if err := configmapping.OutputFileTypeValidator(v); err != nil {
+			return &ValidationError{Name: "output_file_type", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.output_file_type": %w`, err)}
+		}
+	}
 	if v, ok := cmuo.mutation.CreatedBy(); ok {
 		if err := configmapping.CreatedByValidator(v); err != nil {
 			return &ValidationError{Name: "created_by", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.created_by": %w`, err)}
@@ -714,6 +794,20 @@ func (cmuo *ConfigMappingUpdateOne) sqlSave(ctx context.Context) (_node *ConfigM
 			Type:   field.TypeInt32,
 			Value:  value,
 			Column: configmapping.FieldTimeout,
+		})
+	}
+	if value, ok := cmuo.mutation.InputFileType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldInputFileType,
+		})
+	}
+	if value, ok := cmuo.mutation.OutputFileType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: configmapping.FieldOutputFileType,
 		})
 	}
 	if value, ok := cmuo.mutation.CreatedAt(); ok {

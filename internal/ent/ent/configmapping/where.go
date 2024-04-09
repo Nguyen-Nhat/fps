@@ -129,6 +129,13 @@ func Timeout(v int32) predicate.ConfigMapping {
 	})
 }
 
+// InputFileType applies equality check predicate on the "input_file_type" field. It's identical to InputFileTypeEQ.
+func InputFileType(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldInputFileType), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
@@ -700,6 +707,141 @@ func TimeoutLT(v int32) predicate.ConfigMapping {
 func TimeoutLTE(v int32) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldTimeout), v))
+	})
+}
+
+// InputFileTypeEQ applies the EQ predicate on the "input_file_type" field.
+func InputFileTypeEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeNEQ applies the NEQ predicate on the "input_file_type" field.
+func InputFileTypeNEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeIn applies the In predicate on the "input_file_type" field.
+func InputFileTypeIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldInputFileType), v...))
+	})
+}
+
+// InputFileTypeNotIn applies the NotIn predicate on the "input_file_type" field.
+func InputFileTypeNotIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldInputFileType), v...))
+	})
+}
+
+// InputFileTypeGT applies the GT predicate on the "input_file_type" field.
+func InputFileTypeGT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeGTE applies the GTE predicate on the "input_file_type" field.
+func InputFileTypeGTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeLT applies the LT predicate on the "input_file_type" field.
+func InputFileTypeLT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeLTE applies the LTE predicate on the "input_file_type" field.
+func InputFileTypeLTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeContains applies the Contains predicate on the "input_file_type" field.
+func InputFileTypeContains(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeHasPrefix applies the HasPrefix predicate on the "input_file_type" field.
+func InputFileTypeHasPrefix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeHasSuffix applies the HasSuffix predicate on the "input_file_type" field.
+func InputFileTypeHasSuffix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeEqualFold applies the EqualFold predicate on the "input_file_type" field.
+func InputFileTypeEqualFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldInputFileType), v))
+	})
+}
+
+// InputFileTypeContainsFold applies the ContainsFold predicate on the "input_file_type" field.
+func InputFileTypeContainsFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldInputFileType), v))
+	})
+}
+
+// OutputFileTypeEQ applies the EQ predicate on the "output_file_type" field.
+func OutputFileTypeEQ(v OutputFileType) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOutputFileType), v))
+	})
+}
+
+// OutputFileTypeNEQ applies the NEQ predicate on the "output_file_type" field.
+func OutputFileTypeNEQ(v OutputFileType) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldOutputFileType), v))
+	})
+}
+
+// OutputFileTypeIn applies the In predicate on the "output_file_type" field.
+func OutputFileTypeIn(vs ...OutputFileType) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldOutputFileType), v...))
+	})
+}
+
+// OutputFileTypeNotIn applies the NotIn predicate on the "output_file_type" field.
+func OutputFileTypeNotIn(vs ...OutputFileType) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldOutputFileType), v...))
 	})
 }
 

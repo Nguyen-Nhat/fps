@@ -86,6 +86,34 @@ func (cmc *ConfigMappingCreate) SetNillableTimeout(i *int32) *ConfigMappingCreat
 	return cmc
 }
 
+// SetInputFileType sets the "input_file_type" field.
+func (cmc *ConfigMappingCreate) SetInputFileType(s string) *ConfigMappingCreate {
+	cmc.mutation.SetInputFileType(s)
+	return cmc
+}
+
+// SetNillableInputFileType sets the "input_file_type" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableInputFileType(s *string) *ConfigMappingCreate {
+	if s != nil {
+		cmc.SetInputFileType(*s)
+	}
+	return cmc
+}
+
+// SetOutputFileType sets the "output_file_type" field.
+func (cmc *ConfigMappingCreate) SetOutputFileType(cft configmapping.OutputFileType) *ConfigMappingCreate {
+	cmc.mutation.SetOutputFileType(cft)
+	return cmc
+}
+
+// SetNillableOutputFileType sets the "output_file_type" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableOutputFileType(cft *configmapping.OutputFileType) *ConfigMappingCreate {
+	if cft != nil {
+		cmc.SetOutputFileType(*cft)
+	}
+	return cmc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cmc *ConfigMappingCreate) SetCreatedAt(t time.Time) *ConfigMappingCreate {
 	cmc.mutation.SetCreatedAt(t)
@@ -209,6 +237,14 @@ func (cmc *ConfigMappingCreate) defaults() {
 		v := configmapping.DefaultTimeout
 		cmc.mutation.SetTimeout(v)
 	}
+	if _, ok := cmc.mutation.InputFileType(); !ok {
+		v := configmapping.DefaultInputFileType
+		cmc.mutation.SetInputFileType(v)
+	}
+	if _, ok := cmc.mutation.OutputFileType(); !ok {
+		v := configmapping.DefaultOutputFileType
+		cmc.mutation.SetOutputFileType(v)
+	}
 	if _, ok := cmc.mutation.CreatedAt(); !ok {
 		v := configmapping.DefaultCreatedAt()
 		cmc.mutation.SetCreatedAt(v)
@@ -251,6 +287,17 @@ func (cmc *ConfigMappingCreate) check() error {
 	}
 	if _, ok := cmc.mutation.Timeout(); !ok {
 		return &ValidationError{Name: "timeout", err: errors.New(`ent: missing required field "ConfigMapping.timeout"`)}
+	}
+	if _, ok := cmc.mutation.InputFileType(); !ok {
+		return &ValidationError{Name: "input_file_type", err: errors.New(`ent: missing required field "ConfigMapping.input_file_type"`)}
+	}
+	if _, ok := cmc.mutation.OutputFileType(); !ok {
+		return &ValidationError{Name: "output_file_type", err: errors.New(`ent: missing required field "ConfigMapping.output_file_type"`)}
+	}
+	if v, ok := cmc.mutation.OutputFileType(); ok {
+		if err := configmapping.OutputFileTypeValidator(v); err != nil {
+			return &ValidationError{Name: "output_file_type", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.output_file_type": %w`, err)}
+		}
 	}
 	if _, ok := cmc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ConfigMapping.created_at"`)}
@@ -348,6 +395,22 @@ func (cmc *ConfigMappingCreate) createSpec() (*ConfigMapping, *sqlgraph.CreateSp
 			Column: configmapping.FieldTimeout,
 		})
 		_node.Timeout = value
+	}
+	if value, ok := cmc.mutation.InputFileType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldInputFileType,
+		})
+		_node.InputFileType = value
+	}
+	if value, ok := cmc.mutation.OutputFileType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: configmapping.FieldOutputFileType,
+		})
+		_node.OutputFileType = value
 	}
 	if value, ok := cmc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

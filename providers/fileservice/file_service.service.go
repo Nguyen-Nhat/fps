@@ -2,13 +2,14 @@ package fileservice
 
 import (
 	"bytes"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
 type (
 	// IService ...
 	IService interface {
-		UploadFileWithBytesData(*bytes.Buffer, string) (string, error)
+		UploadFileWithBytesData(*bytes.Buffer, string, string) (string, error)
 	}
 
 	// Service ...
@@ -26,11 +27,12 @@ func NewService(client IClient) *Service {
 	}
 }
 
-func (s *Service) UploadFile(byteData *bytes.Buffer, fileName string) (string, error) {
+func (s *Service) UploadFile(byteData *bytes.Buffer, fileType, fileName string) (string, error) {
 	// 1. Build request
 	req := uploadFileRequest{
 		FileData: byteData.Bytes(),
 		FileName: fileName,
+		FileType: fileType,
 	}
 
 	// 2. Request upload
@@ -45,8 +47,8 @@ func (s *Service) UploadFile(byteData *bytes.Buffer, fileName string) (string, e
 	return res.Url, nil
 }
 
-func (s *Service) UploadFileWithBytesData(dataByteBuffer *bytes.Buffer, resultFileName string) (string, error) {
-	resultFileUrl, err := s.UploadFile(dataByteBuffer, resultFileName)
+func (s *Service) UploadFileWithBytesData(dataByteBuffer *bytes.Buffer, fileType, resultFileName string) (string, error) {
+	resultFileUrl, err := s.UploadFile(dataByteBuffer, fileType, resultFileName)
 	if err != nil {
 		logger.Errorf("Cannot upload file %v, got: %v", resultFileName, err)
 		return "", err

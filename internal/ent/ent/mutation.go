@@ -56,6 +56,8 @@ type ConfigMappingMutation struct {
 	error_column_index   *string
 	timeout              *int32
 	addtimeout           *int32
+	input_file_type      *string
+	output_file_type     *configmapping.OutputFileType
 	created_at           *time.Time
 	created_by           *string
 	updated_at           *time.Time
@@ -495,6 +497,78 @@ func (m *ConfigMappingMutation) ResetTimeout() {
 	m.addtimeout = nil
 }
 
+// SetInputFileType sets the "input_file_type" field.
+func (m *ConfigMappingMutation) SetInputFileType(s string) {
+	m.input_file_type = &s
+}
+
+// InputFileType returns the value of the "input_file_type" field in the mutation.
+func (m *ConfigMappingMutation) InputFileType() (r string, exists bool) {
+	v := m.input_file_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInputFileType returns the old "input_file_type" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldInputFileType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInputFileType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInputFileType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInputFileType: %w", err)
+	}
+	return oldValue.InputFileType, nil
+}
+
+// ResetInputFileType resets all changes to the "input_file_type" field.
+func (m *ConfigMappingMutation) ResetInputFileType() {
+	m.input_file_type = nil
+}
+
+// SetOutputFileType sets the "output_file_type" field.
+func (m *ConfigMappingMutation) SetOutputFileType(cft configmapping.OutputFileType) {
+	m.output_file_type = &cft
+}
+
+// OutputFileType returns the value of the "output_file_type" field in the mutation.
+func (m *ConfigMappingMutation) OutputFileType() (r configmapping.OutputFileType, exists bool) {
+	v := m.output_file_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutputFileType returns the old "output_file_type" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldOutputFileType(ctx context.Context) (v configmapping.OutputFileType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutputFileType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutputFileType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutputFileType: %w", err)
+	}
+	return oldValue.OutputFileType, nil
+}
+
+// ResetOutputFileType resets all changes to the "output_file_type" field.
+func (m *ConfigMappingMutation) ResetOutputFileType() {
+	m.output_file_type = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ConfigMappingMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -622,7 +696,7 @@ func (m *ConfigMappingMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigMappingMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.client_id != nil {
 		fields = append(fields, configmapping.FieldClientID)
 	}
@@ -643,6 +717,12 @@ func (m *ConfigMappingMutation) Fields() []string {
 	}
 	if m.timeout != nil {
 		fields = append(fields, configmapping.FieldTimeout)
+	}
+	if m.input_file_type != nil {
+		fields = append(fields, configmapping.FieldInputFileType)
+	}
+	if m.output_file_type != nil {
+		fields = append(fields, configmapping.FieldOutputFileType)
 	}
 	if m.created_at != nil {
 		fields = append(fields, configmapping.FieldCreatedAt)
@@ -675,6 +755,10 @@ func (m *ConfigMappingMutation) Field(name string) (ent.Value, bool) {
 		return m.ErrorColumnIndex()
 	case configmapping.FieldTimeout:
 		return m.Timeout()
+	case configmapping.FieldInputFileType:
+		return m.InputFileType()
+	case configmapping.FieldOutputFileType:
+		return m.OutputFileType()
 	case configmapping.FieldCreatedAt:
 		return m.CreatedAt()
 	case configmapping.FieldCreatedBy:
@@ -704,6 +788,10 @@ func (m *ConfigMappingMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldErrorColumnIndex(ctx)
 	case configmapping.FieldTimeout:
 		return m.OldTimeout(ctx)
+	case configmapping.FieldInputFileType:
+		return m.OldInputFileType(ctx)
+	case configmapping.FieldOutputFileType:
+		return m.OldOutputFileType(ctx)
 	case configmapping.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case configmapping.FieldCreatedBy:
@@ -767,6 +855,20 @@ func (m *ConfigMappingMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTimeout(v)
+		return nil
+	case configmapping.FieldInputFileType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInputFileType(v)
+		return nil
+	case configmapping.FieldOutputFileType:
+		v, ok := value.(configmapping.OutputFileType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutputFileType(v)
 		return nil
 	case configmapping.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -909,6 +1011,12 @@ func (m *ConfigMappingMutation) ResetField(name string) error {
 		return nil
 	case configmapping.FieldTimeout:
 		m.ResetTimeout()
+		return nil
+	case configmapping.FieldInputFileType:
+		m.ResetInputFileType()
+		return nil
+	case configmapping.FieldOutputFileType:
+		m.ResetOutputFileType()
 		return nil
 	case configmapping.FieldCreatedAt:
 		m.ResetCreatedAt()

@@ -49,6 +49,8 @@ func (cl *databaseConfigLoaderV1) Load(file fileprocessing.ProcessingFile) (Conf
 		DataAtSheet:        cfgMapping.DataAtSheet,
 		RequireColumnIndex: strings.Split(cfgMapping.RequireColumnIndex, ","),
 		ErrorColumnIndex:   cfgMapping.ErrorColumnIndex,
+		InputFileType:      cfgMapping.InputFileType,
+		OutputFileType:     cfgMapping.OutputFileType,
 		// parameter in file
 		FileParameters: toFileParameters(file.FileParameters),
 		// List ConfigTaskMD

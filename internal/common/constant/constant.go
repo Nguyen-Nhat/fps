@@ -21,6 +21,7 @@ const (
 const (
 	EmptyString          = ""
 	SplitByDot           = "."
+	SplitByComma         = ","
 	SplitByNewLine       = "\n"
 	SplitByCommaAndSpace = ", "
 )
@@ -30,8 +31,8 @@ const (
 )
 
 const (
-	ExtFileCSV     = "csv"
-	ExtFileXLSX    = "xlsx"
+	ExtFileCSV     = "CSV"
+	ExtFileXLSX    = "XLSX"
 	ExtFileUnknown = "unknown"
 )
 

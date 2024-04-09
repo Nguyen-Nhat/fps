@@ -64,7 +64,7 @@ func Command(cfg config.Config) *cli.Command {
 				Action: func(*cli.Context) error {
 					// Init Job
 					handlefileprocessing.InitJobHandleProcessingFileAll(cfg.JobConfig.FileProcessingConfig,
-						fpService, fprService, fileService)
+						fpService, fprService, fileService, cmService)
 
 					waitForKillingSign()
 					return nil
