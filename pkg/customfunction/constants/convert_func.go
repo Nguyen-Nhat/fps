@@ -6,6 +6,7 @@ const (
 	FuncConvertSellerSkuAndUomName     = "convertSellerSkuAndUomName"
 	FuncConvertSiteCodes2SiteIds       = "convertSiteCodes2SiteIds"
 	FuncConvertSupplierCode2SupplierId = "convertSupplierCode2SupplierId"
+	FuncConvertOrderDay                = "convertOrderDay"
 )
 
 const (

@@ -24,6 +24,7 @@ const (
 	SplitByComma         = ","
 	SplitByNewLine       = "\n"
 	SplitByCommaAndSpace = ", "
+	SplitByDeduce        = "->"
 )
 
 const (
@@ -43,4 +44,9 @@ const (
 
 const (
 	Timeout = "timeout"
+)
+
+const (
+	One = 1
+	Two = 2
 )

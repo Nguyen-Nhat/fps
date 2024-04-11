@@ -1,6 +1,7 @@
 package errorz
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -16,6 +17,8 @@ var (
 	ErrNoSupplier = func(supplierCode string) string {
 		return fmt.Sprintf("không tìm thấy thông tin supplier %s", supplierCode)
 	}
+
+	ErrFormatOrderScheduler = errors.New("Cấu trúc lịch đặt không đúng! Cấu trúc đúng có dạng T2->6,CN hoặc N2->5,9->20,30. Các số theo thứ tự tăng dần")
 )
 
 // Error show on Debug
