@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/textproto"
 	"net/url"
+	"strconv"
 	"strings"
 
 	t "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customtype"
@@ -445,4 +446,28 @@ func Contains[T comparable](arr []T, val T) bool {
 	}
 
 	return false
+}
+
+func JoinIntArray2String(input []int32, splitPattern string) string {
+	output := constant.EmptyString
+	for _, item := range input {
+		output += fmt.Sprintf("%d%s", item, splitPattern)
+	}
+	if len(output) > 0 {
+		output = output[:len(output)-len(splitPattern)]
+	}
+	return output
+}
+
+func String2ArrayInt32(str string, separator string) ([]int32, error) {
+	resStr := strings.Split(str, separator)
+	resInt := make([]int32, len(resStr))
+	for index, value := range resStr {
+		v, err := strconv.ParseInt(value, 10, 32)
+		if err != nil {
+			return nil, err
+		}
+		resInt[index] = int32(v)
+	}
+	return resInt, nil
 }

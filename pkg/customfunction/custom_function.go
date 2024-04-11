@@ -7,6 +7,7 @@ import (
 	"time"
 
 	funcClient10 "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/client10"
+	funcClient20 "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/client20"
 	funcClient9 "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/client9"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/constants"
@@ -90,6 +91,11 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
 		}
 		return customFunc.ConvertSupplierCode2SupplierId(cf.ParamsMapped[0], cf.ParamsMapped[1]), nil
+	case constants.FuncConvertOrderDay:
+		if len(cf.ParamsMapped) != 1 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
+		}
+		return funcClient20.ConvertOrderDay(cf.ParamsMapped[0]), nil
 	default:
 		return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrFunctionNoSupport)
 	}
