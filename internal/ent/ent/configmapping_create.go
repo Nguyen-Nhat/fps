@@ -72,6 +72,20 @@ func (cmc *ConfigMappingCreate) SetErrorColumnIndex(s string) *ConfigMappingCrea
 	return cmc
 }
 
+// SetResultFileConfig sets the "result_file_config" field.
+func (cmc *ConfigMappingCreate) SetResultFileConfig(s string) *ConfigMappingCreate {
+	cmc.mutation.SetResultFileConfig(s)
+	return cmc
+}
+
+// SetNillableResultFileConfig sets the "result_file_config" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableResultFileConfig(s *string) *ConfigMappingCreate {
+	if s != nil {
+		cmc.SetResultFileConfig(*s)
+	}
+	return cmc
+}
+
 // SetTimeout sets the "timeout" field.
 func (cmc *ConfigMappingCreate) SetTimeout(i int32) *ConfigMappingCreate {
 	cmc.mutation.SetTimeout(i)
@@ -285,6 +299,11 @@ func (cmc *ConfigMappingCreate) check() error {
 	if _, ok := cmc.mutation.ErrorColumnIndex(); !ok {
 		return &ValidationError{Name: "error_column_index", err: errors.New(`ent: missing required field "ConfigMapping.error_column_index"`)}
 	}
+	if v, ok := cmc.mutation.ResultFileConfig(); ok {
+		if err := configmapping.ResultFileConfigValidator(v); err != nil {
+			return &ValidationError{Name: "result_file_config", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.result_file_config": %w`, err)}
+		}
+	}
 	if _, ok := cmc.mutation.Timeout(); !ok {
 		return &ValidationError{Name: "timeout", err: errors.New(`ent: missing required field "ConfigMapping.timeout"`)}
 	}
@@ -387,6 +406,14 @@ func (cmc *ConfigMappingCreate) createSpec() (*ConfigMapping, *sqlgraph.CreateSp
 			Column: configmapping.FieldErrorColumnIndex,
 		})
 		_node.ErrorColumnIndex = value
+	}
+	if value, ok := cmc.mutation.ResultFileConfig(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldResultFileConfig,
+		})
+		_node.ResultFileConfig = value
 	}
 	if value, ok := cmc.mutation.Timeout(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

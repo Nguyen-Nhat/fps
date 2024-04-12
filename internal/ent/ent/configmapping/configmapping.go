@@ -24,6 +24,8 @@ const (
 	FieldRequireColumnIndex = "require_column_index"
 	// FieldErrorColumnIndex holds the string denoting the error_column_index field in the database.
 	FieldErrorColumnIndex = "error_column_index"
+	// FieldResultFileConfig holds the string denoting the result_file_config field in the database.
+	FieldResultFileConfig = "result_file_config"
 	// FieldTimeout holds the string denoting the timeout field in the database.
 	FieldTimeout = "timeout"
 	// FieldInputFileType holds the string denoting the input_file_type field in the database.
@@ -49,6 +51,7 @@ var Columns = []string{
 	FieldDataAtSheet,
 	FieldRequireColumnIndex,
 	FieldErrorColumnIndex,
+	FieldResultFileConfig,
 	FieldTimeout,
 	FieldInputFileType,
 	FieldOutputFileType,
@@ -76,6 +79,8 @@ var (
 	DefaultDataStartAtRow int32
 	// DataStartAtRowValidator is a validator for the "data_start_at_row" field. It is called by the builders before save.
 	DataStartAtRowValidator func(int32) error
+	// ResultFileConfigValidator is a validator for the "result_file_config" field. It is called by the builders before save.
+	ResultFileConfigValidator func(string) error
 	// DefaultTimeout holds the default value on creation for the "timeout" field.
 	DefaultTimeout int32
 	// DefaultInputFileType holds the default value on creation for the "input_file_type" field.

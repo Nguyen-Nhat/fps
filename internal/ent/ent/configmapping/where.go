@@ -122,6 +122,13 @@ func ErrorColumnIndex(v string) predicate.ConfigMapping {
 	})
 }
 
+// ResultFileConfig applies equality check predicate on the "result_file_config" field. It's identical to ResultFileConfigEQ.
+func ResultFileConfig(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldResultFileConfig), v))
+	})
+}
+
 // Timeout applies equality check predicate on the "timeout" field. It's identical to TimeoutEQ.
 func Timeout(v int32) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
@@ -643,6 +650,119 @@ func ErrorColumnIndexEqualFold(v string) predicate.ConfigMapping {
 func ErrorColumnIndexContainsFold(v string) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldErrorColumnIndex), v))
+	})
+}
+
+// ResultFileConfigEQ applies the EQ predicate on the "result_file_config" field.
+func ResultFileConfigEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigNEQ applies the NEQ predicate on the "result_file_config" field.
+func ResultFileConfigNEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigIn applies the In predicate on the "result_file_config" field.
+func ResultFileConfigIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldResultFileConfig), v...))
+	})
+}
+
+// ResultFileConfigNotIn applies the NotIn predicate on the "result_file_config" field.
+func ResultFileConfigNotIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldResultFileConfig), v...))
+	})
+}
+
+// ResultFileConfigGT applies the GT predicate on the "result_file_config" field.
+func ResultFileConfigGT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigGTE applies the GTE predicate on the "result_file_config" field.
+func ResultFileConfigGTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigLT applies the LT predicate on the "result_file_config" field.
+func ResultFileConfigLT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigLTE applies the LTE predicate on the "result_file_config" field.
+func ResultFileConfigLTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigContains applies the Contains predicate on the "result_file_config" field.
+func ResultFileConfigContains(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigHasPrefix applies the HasPrefix predicate on the "result_file_config" field.
+func ResultFileConfigHasPrefix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigHasSuffix applies the HasSuffix predicate on the "result_file_config" field.
+func ResultFileConfigHasSuffix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigIsNil applies the IsNil predicate on the "result_file_config" field.
+func ResultFileConfigIsNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldResultFileConfig)))
+	})
+}
+
+// ResultFileConfigNotNil applies the NotNil predicate on the "result_file_config" field.
+func ResultFileConfigNotNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldResultFileConfig)))
+	})
+}
+
+// ResultFileConfigEqualFold applies the EqualFold predicate on the "result_file_config" field.
+func ResultFileConfigEqualFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldResultFileConfig), v))
+	})
+}
+
+// ResultFileConfigContainsFold applies the ContainsFold predicate on the "result_file_config" field.
+func ResultFileConfigContainsFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldResultFileConfig), v))
 	})
 }
 

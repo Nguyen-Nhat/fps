@@ -101,6 +101,26 @@ func (cmu *ConfigMappingUpdate) SetErrorColumnIndex(s string) *ConfigMappingUpda
 	return cmu
 }
 
+// SetResultFileConfig sets the "result_file_config" field.
+func (cmu *ConfigMappingUpdate) SetResultFileConfig(s string) *ConfigMappingUpdate {
+	cmu.mutation.SetResultFileConfig(s)
+	return cmu
+}
+
+// SetNillableResultFileConfig sets the "result_file_config" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableResultFileConfig(s *string) *ConfigMappingUpdate {
+	if s != nil {
+		cmu.SetResultFileConfig(*s)
+	}
+	return cmu
+}
+
+// ClearResultFileConfig clears the value of the "result_file_config" field.
+func (cmu *ConfigMappingUpdate) ClearResultFileConfig() *ConfigMappingUpdate {
+	cmu.mutation.ClearResultFileConfig()
+	return cmu
+}
+
 // SetTimeout sets the "timeout" field.
 func (cmu *ConfigMappingUpdate) SetTimeout(i int32) *ConfigMappingUpdate {
 	cmu.mutation.ResetTimeout()
@@ -262,6 +282,11 @@ func (cmu *ConfigMappingUpdate) check() error {
 			return &ValidationError{Name: "data_start_at_row", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.data_start_at_row": %w`, err)}
 		}
 	}
+	if v, ok := cmu.mutation.ResultFileConfig(); ok {
+		if err := configmapping.ResultFileConfigValidator(v); err != nil {
+			return &ValidationError{Name: "result_file_config", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.result_file_config": %w`, err)}
+		}
+	}
 	if v, ok := cmu.mutation.OutputFileType(); ok {
 		if err := configmapping.OutputFileTypeValidator(v); err != nil {
 			return &ValidationError{Name: "output_file_type", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.output_file_type": %w`, err)}
@@ -354,6 +379,19 @@ func (cmu *ConfigMappingUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: configmapping.FieldErrorColumnIndex,
+		})
+	}
+	if value, ok := cmu.mutation.ResultFileConfig(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldResultFileConfig,
+		})
+	}
+	if cmu.mutation.ResultFileConfigCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: configmapping.FieldResultFileConfig,
 		})
 	}
 	if value, ok := cmu.mutation.Timeout(); ok {
@@ -494,6 +532,26 @@ func (cmuo *ConfigMappingUpdateOne) SetRequireColumnIndex(s string) *ConfigMappi
 // SetErrorColumnIndex sets the "error_column_index" field.
 func (cmuo *ConfigMappingUpdateOne) SetErrorColumnIndex(s string) *ConfigMappingUpdateOne {
 	cmuo.mutation.SetErrorColumnIndex(s)
+	return cmuo
+}
+
+// SetResultFileConfig sets the "result_file_config" field.
+func (cmuo *ConfigMappingUpdateOne) SetResultFileConfig(s string) *ConfigMappingUpdateOne {
+	cmuo.mutation.SetResultFileConfig(s)
+	return cmuo
+}
+
+// SetNillableResultFileConfig sets the "result_file_config" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableResultFileConfig(s *string) *ConfigMappingUpdateOne {
+	if s != nil {
+		cmuo.SetResultFileConfig(*s)
+	}
+	return cmuo
+}
+
+// ClearResultFileConfig clears the value of the "result_file_config" field.
+func (cmuo *ConfigMappingUpdateOne) ClearResultFileConfig() *ConfigMappingUpdateOne {
+	cmuo.mutation.ClearResultFileConfig()
 	return cmuo
 }
 
@@ -671,6 +729,11 @@ func (cmuo *ConfigMappingUpdateOne) check() error {
 			return &ValidationError{Name: "data_start_at_row", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.data_start_at_row": %w`, err)}
 		}
 	}
+	if v, ok := cmuo.mutation.ResultFileConfig(); ok {
+		if err := configmapping.ResultFileConfigValidator(v); err != nil {
+			return &ValidationError{Name: "result_file_config", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.result_file_config": %w`, err)}
+		}
+	}
 	if v, ok := cmuo.mutation.OutputFileType(); ok {
 		if err := configmapping.OutputFileTypeValidator(v); err != nil {
 			return &ValidationError{Name: "output_file_type", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.output_file_type": %w`, err)}
@@ -780,6 +843,19 @@ func (cmuo *ConfigMappingUpdateOne) sqlSave(ctx context.Context) (_node *ConfigM
 			Type:   field.TypeString,
 			Value:  value,
 			Column: configmapping.FieldErrorColumnIndex,
+		})
+	}
+	if value, ok := cmuo.mutation.ResultFileConfig(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldResultFileConfig,
+		})
+	}
+	if cmuo.mutation.ResultFileConfigCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: configmapping.FieldResultFileConfig,
 		})
 	}
 	if value, ok := cmuo.mutation.Timeout(); ok {

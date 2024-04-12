@@ -18,6 +18,7 @@ var (
 		{Name: "data_at_sheet", Type: field.TypeString},
 		{Name: "require_column_index", Type: field.TypeString},
 		{Name: "error_column_index", Type: field.TypeString},
+		{Name: "result_file_config", Type: field.TypeString, Nullable: true, Size: 500},
 		{Name: "timeout", Type: field.TypeInt32, Default: 86400},
 		{Name: "input_file_type", Type: field.TypeString, Default: "XLSX"},
 		{Name: "output_file_type", Type: field.TypeEnum, Enums: []string{"XLSX", "CSV"}, Default: "XLSX"},
