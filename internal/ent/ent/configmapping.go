@@ -28,6 +28,8 @@ type ConfigMapping struct {
 	RequireColumnIndex string `json:"require_column_index,omitempty"`
 	// Index of column, that FPS will fill when error happens
 	ErrorColumnIndex string `json:"error_column_index,omitempty"`
+	// JSON string, config new column in file result for display process result
+	ResultFileConfig string `json:"result_file_config,omitempty"`
 	// Time out of template in seconds (default 24h as 86400 seconds)
 	Timeout int32 `json:"timeout,omitempty"`
 	// Các định dạng cho phép của file input, cách nhau bằng dấu phẩy (ex: "XLSX,CSV")
@@ -49,7 +51,7 @@ func (*ConfigMapping) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case configmapping.FieldID, configmapping.FieldClientID, configmapping.FieldTotalTasks, configmapping.FieldDataStartAtRow, configmapping.FieldTimeout:
 			values[i] = new(sql.NullInt64)
-		case configmapping.FieldDataAtSheet, configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldInputFileType, configmapping.FieldOutputFileType, configmapping.FieldCreatedBy:
+		case configmapping.FieldDataAtSheet, configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldResultFileConfig, configmapping.FieldInputFileType, configmapping.FieldOutputFileType, configmapping.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configmapping.FieldCreatedAt, configmapping.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -109,6 +111,12 @@ func (cm *ConfigMapping) assignValues(columns []string, values []interface{}) er
 				return fmt.Errorf("unexpected type %T for field error_column_index", values[i])
 			} else if value.Valid {
 				cm.ErrorColumnIndex = value.String
+			}
+		case configmapping.FieldResultFileConfig:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field result_file_config", values[i])
+			} else if value.Valid {
+				cm.ResultFileConfig = value.String
 			}
 		case configmapping.FieldTimeout:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -191,6 +199,9 @@ func (cm *ConfigMapping) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("error_column_index=")
 	builder.WriteString(cm.ErrorColumnIndex)
+	builder.WriteString(", ")
+	builder.WriteString("result_file_config=")
+	builder.WriteString(cm.ResultFileConfig)
 	builder.WriteString(", ")
 	builder.WriteString("timeout=")
 	builder.WriteString(fmt.Sprintf("%v", cm.Timeout))
