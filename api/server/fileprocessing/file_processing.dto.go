@@ -79,6 +79,8 @@ type GetFileProcessHistoryRequest struct {
 	CreatedByEmails []string `json:"createdByEmails"`
 	ProcessFileIds  []int    `json:"processFileIds"`
 	SearchFileName  string   `json:"searchFileName"`
+	MerchantId      string   `json:"merchantId"`
+	TenantId        string   `json:"tenantId"`
 }
 
 func bindAndValidateRequestParams(r *http.Request, data *GetFileProcessHistoryRequest) error {
