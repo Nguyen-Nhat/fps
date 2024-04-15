@@ -77,6 +77,15 @@ func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessin
 			// 4.1.2. Continue -> no convert realValue for Array Item
 			continue
 		}
+		if len(reqField.ItemsMap) > 0 {
+			childMap, err := getValueFromConfig(processingFileRow, reqFieldName, reqField.ItemsMap, previousResponses)
+			if err != nil {
+				return configloader.ConfigTaskMD{}, err
+			}
+
+			task.RequestBody[reqFieldName] = childMap
+			continue
+		}
 
 		// 4.2. Get value
 		realValue, err := getValueStringFromConfig(processingFileRow, reqField, previousResponses)
