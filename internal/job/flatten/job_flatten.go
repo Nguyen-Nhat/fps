@@ -1,6 +1,7 @@
 package flatten
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"strings"
@@ -14,9 +15,11 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/filewriter"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/csv"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 )
 
@@ -109,7 +112,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
 			return
 		}
-		sheetData, err = excel.LoadCSVByUrl(file.FileURL)
+		sheetData, err = csv.LoadCSVByURL(file.FileURL)
 	case constant.ExtFileXLSX:
 		if !utils.Contains(allowedInputFileTypes, constant.ExtFileXLSX) {
 			logger.ErrorT("InputFileType %v is not supported", constant.ExtFileXLSX)
@@ -211,18 +214,8 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 		}
 	}
 
-	// 2. Inject error to importing file
-	outputFileType := constant.EmptyString
-	switch cfgMapping.OutputFileType {
-	case configmapping2.OutputFileTypeCSV:
-		outputFileType = utils.CsvContentType
-	case configmapping2.OutputFileTypeXLSX:
-		outputFileType = utils.XlsxContentType
-	default:
-		logger.ErrorT("OutputFileType %v is not supported", cfgMapping.OutputFileType)
-		return ""
-	}
-	fileDataBytes, err := excel.UpdateDataInColumn(file.FileURL, file.ExtFileRequest, cfgMapping.OutputFileType.String(), cfgMapping.DataAtSheet, cfgMapping.ErrorColumnIndex, cfgMapping.DataStartAtRow, errorDisplays)
+	// 2. write error to result file
+	fileDataBytes, outputFileContentType, err := writeErrorToResultFile(file.FileURL, file.ExtFileRequest, cfgMapping, errorDisplays)
 	if err != nil {
 		logger.ErrorT("Update file with Error Display failed, err=%v", err)
 		return ""
@@ -230,13 +223,34 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 
 	// 3. Gen result file name then Upload to file service
 	resultFileName := utils.GetResultFileName(file.DisplayName)
-	resultFileUrl, err := job.fileService.UploadFileWithBytesData(fileDataBytes, outputFileType, resultFileName)
+	resultFileURL, err := job.fileService.UploadFileWithBytesData(fileDataBytes, outputFileContentType, resultFileName)
 	if err != nil {
 		logger.ErrorT("Upload result file %v failed, err=%v", resultFileName, err)
 		return ""
 	}
 
-	return resultFileUrl
+	return resultFileURL
+}
+
+// writeErrorToResultFile ...
+func writeErrorToResultFile(fileURL, fileInputType string, cfgMapping configloader.ConfigMappingMD, errorDisplays map[int]string) (*bytes.Buffer, string, error) {
+	// 1. Init file writer
+	fw, err := filewriter.NewFileWriter(fileURL, cfgMapping.DataAtSheet, cfgMapping.DataStartAtRow, fileInputType, cfgMapping.OutputFileType)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// 2. Inject error to result file
+	if err = fw.UpdateDataInColumnOfFile(cfgMapping.ErrorColumnIndex, errorDisplays); err != nil {
+		return nil, "", err
+	}
+
+	// 3. Get file bytes & return
+	fileDataBytes, err := fw.GetFileBytes()
+	if err != nil {
+		return nil, "", err
+	}
+	return fileDataBytes, fw.OutputFileContentType(), nil
 }
 
 func (job *jobFlatten) extractRowAndRowGroupToDB(ctx context.Context,

@@ -471,3 +471,15 @@ func String2ArrayInt32(str string, separator string) ([]int32, error) {
 	}
 	return resInt, nil
 }
+
+// IndexOf ... find index of element in array
+// Return: index and existed
+func IndexOf[T comparable](arr []T, val T) (int, bool) {
+	for i, e := range arr {
+		if e == val {
+			return i, true
+		}
+	}
+
+	return -1, false
+}

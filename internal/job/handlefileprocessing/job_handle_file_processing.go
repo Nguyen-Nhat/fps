@@ -1,15 +1,15 @@
 package handlefileprocessing
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
-	configmapping2 "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/filewriter"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/taskprovider"
@@ -313,7 +313,7 @@ func toResponseResult(requestBody map[string]interface{}, responseBody string, m
 */
 func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.Context, file *fileprocessing.ProcessingFile) {
 	//isFinished, totalProcessed, totalSuccess, totalFailed, errorDisplays, err := j.fprService.Statistics(file.ID)
-	stats, err := j.fprService.Statistics(file.ID)
+	stats, err := j.fprService.Statistics(ctx, file.ID)
 	if err != nil {
 		logger.ErrorT("Cannot statistics for file %v, err=%v", file.ID, err)
 		return
@@ -333,18 +333,9 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 				logger.ErrorT("Cannot find config mapping by clientID %v, err=%v", file.ClientID, err)
 				return
 			}
-			// 2.1 Inject Error Display to file
-			outputFileType := constant.EmptyString
-			switch cfgMapping.OutputFileType {
-			case configmapping2.OutputFileTypeCSV:
-				outputFileType = utils.CsvContentType
-			case configmapping2.OutputFileTypeXLSX:
-				outputFileType = utils.XlsxContentType
-			default:
-				logger.ErrorT("OutputFileType %v is not supported", cfgMapping.OutputFileType)
-				return
-			}
-			fileDataBytes, err := excel.UpdateDataInColumn(file.FileURL, file.ExtFileRequest, cfgMapping.OutputFileType.String(), sheetImportDataName, columnErrorName, dataIndexStartInDataSheet, stats.ErrorDisplays)
+
+			// 2. write error to result file
+			fileDataBytes, outputFileContentType, err := writeErrorToResultFile(*file, *cfgMapping, stats.ErrorDisplays)
 			if err != nil {
 				logger.ErrorT("Update file with Error Display failed, err=%v", err)
 				return
@@ -353,7 +344,7 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 			// 2.2. Gen result file name then Upload to file service
 			fileName := utils.ExtractFileName(file.FileURL)
 			resultFileName := fileName.FullNameWithSuffix("_result")
-			res, err := j.fileService.UploadFileWithBytesData(fileDataBytes, outputFileType, resultFileName)
+			res, err := j.fileService.UploadFileWithBytesData(fileDataBytes, outputFileContentType, resultFileName)
 			if err != nil {
 				logger.ErrorT("Upload result file %v failed, err=%v", resultFileName, err)
 				return
@@ -367,4 +358,25 @@ func (j *jobHandleProcessingFileImpl) statisticAndUpdateFileStatus(ctx context.C
 		logger.ErrorT("Cannot update %v to failed, got error %v", fileprocessing.Name(), err)
 		return
 	}
+}
+
+// writeErrorToResultFile ...
+func writeErrorToResultFile(file fileprocessing.ProcessingFile, cfgMapping configmapping.ConfigMapping, errorDisplays map[int]string) (*bytes.Buffer, string, error) {
+	// 1. Init file writer
+	fw, err := filewriter.NewFileWriter(file.FileURL, cfgMapping.DataAtSheet, int(cfgMapping.DataStartAtRow), file.ExtFileRequest, cfgMapping.OutputFileType)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// 2. Inject error to result file
+	if err = fw.UpdateDataInColumnOfFile(cfgMapping.ErrorColumnIndex, errorDisplays); err != nil {
+		return nil, "", err
+	}
+
+	// 3. Get file bytes & return
+	fileDataBytes, err := fw.GetFileBytes()
+	if err != nil {
+		return nil, "", err
+	}
+	return fileDataBytes, fw.OutputFileContentType(), nil
 }

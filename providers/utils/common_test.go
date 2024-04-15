@@ -383,3 +383,33 @@ func TestGetResultFileName(t *testing.T) {
 		})
 	}
 }
+
+func Test_IndexOf(t *testing.T) {
+	type args[T comparable] struct {
+		arr []T
+		val T
+	}
+	type testCase[T comparable] struct {
+		name  string
+		args  args[T]
+		want  int
+		want1 bool
+	}
+	tests := []testCase[int]{
+		{"test IndexOf: array is nil -> false", args[int]{nil, 1}, -1, false},
+		{"test IndexOf: array is empty -> false", args[int]{[]int{}, 1}, -1, false},
+		{"test IndexOf: array has data, but not found -> false", args[int]{[]int{1, 2, 3, 4, 5, 6, 7}, 10}, -1, false},
+		{"test IndexOf: array has data, and value is existed -> false", args[int]{[]int{1, 2, 3, 4, 5, 6, 7}, 3}, 2, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := IndexOf(tt.args.arr, tt.args.val)
+			if got != tt.want {
+				t.Errorf("IndexOf() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("IndexOf() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}

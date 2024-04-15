@@ -92,7 +92,7 @@ func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, stat
 		SetStatus(status).
 		SetErrorDisplay(string(errorDisplay))
 
-	if resultFileURL != nil {
+	if resultFileURL != nil && len(*resultFileURL) > 0 {
 		updateOps.SetResultFileURL(*resultFileURL)
 	}
 

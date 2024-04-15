@@ -5,10 +5,12 @@ import (
 	dbsql "database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"entgo.io/ent/dialect/sql"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
+	commonQuery "git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/query"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfilerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -22,6 +24,7 @@ type (
 		FindRowIdsByFileIdAndFilter(context.Context, int64, GetListFileRowsRequest) ([]int, int, error)
 		FindRowsByIDsAndOffsetLimit(context.Context, int64, []int) ([]*ProcessingFileRow, error)
 		FindByID(ctx context.Context, id int) (*ProcessingFileRow, error)
+		FindByFileIDAndTaskIndexesAndResultAsyncNotEmpty(ctx context.Context, fileID int64, taskIndexes ...int32) ([]ResultAsyncDAO, error)
 
 		Save(context.Context, ProcessingFileRow) (*ProcessingFileRow, error)
 		SaveAll(context.Context, []ProcessingFileRow, bool) ([]ProcessingFileRow, error)
@@ -35,7 +38,7 @@ type (
 
 		// Custom query ------
 
-		Statistics(int64) ([]CustomStatisticModel, error)
+		Statistics(context.Context, int64) ([]CustomStatisticModel, error)
 	}
 
 	repoImpl struct {
@@ -193,6 +196,27 @@ func (r *repoImpl) FindRowsByIDsAndOffsetLimit(ctx context.Context, fileID int64
 	return mapEntArrToProcessingFileArr(rowTasks), nil
 }
 
+func (r *repoImpl) FindByFileIDAndTaskIndexesAndResultAsyncNotEmpty(ctx context.Context,
+	fileID int64, taskIndexes ...int32) ([]ResultAsyncDAO, error) {
+
+	query := `
+			SELECT row_index, task_index, result_async
+			FROM processing_file_row 
+			WHERE file_id = ? AND task_index IN (?) AND result_async <> ''
+			ORDER BY row_index, task_index;
+	`
+
+	convertFunc := func(rows *dbsql.Rows, dao *ResultAsyncDAO) error {
+		return rows.Scan(&dao.RowIndex, &dao.TaskIndex, &dao.ResultAsync)
+	}
+
+	taskIndexesStr := strings.Join(converter.Map(taskIndexes, func(t int32) string {
+		return fmt.Sprintf("%d", t)
+	}), ",")
+
+	return commonQuery.RunRawQuery(ctx, r.sqlDB, query, convertFunc, fileID, taskIndexesStr)
+}
+
 func (r *repoImpl) UpdateByJob(ctx context.Context, id int,
 	taskMapping string,
 	requestCurl string, responseRaw string,
@@ -260,36 +284,20 @@ func (r *repoImpl) DeleteByFileId(ctx context.Context, fileId int64) error {
 	}
 }
 
-func (r *repoImpl) Statistics(fileId int64) ([]CustomStatisticModel, error) {
-	rows, err := r.sqlDB.Query(
-		`
+func (r *repoImpl) Statistics(ctx context.Context, fileID int64) ([]CustomStatisticModel, error) {
+	rawQuery := `
 			SELECT 
 				row_index, GROUP_CONCAT(status), COUNT(*), IFNULL(GROUP_CONCAT(IF(error_display='', null, error_display)),'') 
 			FROM processing_file_row 
 			WHERE file_id = ? 
 			GROUP BY row_index
-		`,
-		fileId)
+		`
 
-	if err != nil {
-		return []CustomStatisticModel{}, err
+	convertFunc := func(rows *dbsql.Rows, dao *CustomStatisticModel) error {
+		return rows.Scan(&dao.RowIndex, &dao.Statuses, &dao.Count, &dao.ErrorDisplays)
 	}
 
-	defer rows.Close()
-
-	var statistics []CustomStatisticModel
-	for rows.Next() {
-		var stats CustomStatisticModel
-		if err := rows.Scan(&stats.RowIndex, &stats.Statuses, &stats.Count, &stats.ErrorDisplays); err != nil {
-			return []CustomStatisticModel{}, err
-		}
-		statistics = append(statistics, stats)
-	}
-	if err = rows.Err(); err != nil {
-		return []CustomStatisticModel{}, err
-	}
-
-	return statistics, nil
+	return commonQuery.RunRawQuery(ctx, r.sqlDB, rawQuery, convertFunc, fileID)
 }
 
 func (r *repoImpl) Update(ctx context.Context, data *ProcessingFileRow) error {

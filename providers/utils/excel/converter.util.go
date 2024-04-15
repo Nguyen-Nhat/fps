@@ -1,15 +1,9 @@
 package excel
 
 import (
-	"bytes"
-	"encoding/csv"
 	"fmt"
-	"os"
 	"reflect"
 	"strconv"
-	"strings"
-
-	"github.com/xuri/excelize/v2"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -166,84 +160,4 @@ func validateAndSetRawValue[V any](headerMap map[string]int, cellData *dto.CellD
 	}
 
 	return "", false
-}
-
-func UpdateDataInColumn(fileUrl, inputFileType, outputFileType, sheetName, columnName string, dataIndexStart int,
-	columnData map[int]string) (fileData *bytes.Buffer, err error) {
-	// 1. Load input file
-	switch strings.ToUpper(inputFileType) {
-	case constant.ExtFileCSV:
-		if outputFileType != constant.ExtFileCSV {
-			return nil, fmt.Errorf("InputFileType %v and OutputFileType %v are not same", constant.ExtFileCSV, outputFileType)
-		}
-		allRowsData, err := LoadCSVByUrl(fileUrl)
-		if err != nil {
-			logger.ErrorT("Failed to get all rows in file")
-			return nil, err
-		}
-		var columnIndex int
-		if IsColumnIndex(columnName) {
-			columnIndex, err = excelize.ColumnNameToNumber(columnName[1:])
-			if err != nil {
-				columnIndex = 0
-				logger.Warnf("----> Force column %v is in `%v` column", columnName, columnIndex)
-			}
-		} else {
-			columnIndex = getColumnIndexByName(allRowsData[0], columnName)
-		}
-
-		resultData := make([][]string, len(allRowsData))
-		for rowId, rowData := range allRowsData {
-			resultData[rowId] = make([]string, len(rowData))
-			if columnIndex > len(rowData) {
-				resultData[rowId] = make([]string, columnIndex)
-			}
-			for colIdx, colData := range rowData {
-				resultData[rowId][colIdx] = colData
-			}
-			if rowId < dataIndexStart-1 {
-				continue
-			}
-			resultData[rowId][columnIndex-1] = columnData[rowId-dataIndexStart+1]
-		}
-
-		filePath := "output.csv"
-		csvFile, err := os.Create(filePath)
-		if err != nil {
-			return nil, err
-		}
-		writer := csv.NewWriter(csvFile)
-		defer func() {
-			writer.Flush()
-			err := csvFile.Close()
-			if err != nil {
-				logger.ErrorT("Failed to close file %v", filePath)
-			}
-			err = os.Remove(filePath)
-			if err != nil {
-				logger.ErrorT("Failed to remove file %v", filePath)
-			}
-		}()
-		err = writer.WriteAll(resultData)
-		if err != nil {
-			return nil, err
-		}
-		byteData, err := os.ReadFile(filePath)
-		return bytes.NewBuffer(byteData), err
-	default:
-		if outputFileType != constant.ExtFileXLSX {
-			return nil, fmt.Errorf("InputFileType %v and OutputFileType %v are not same", constant.ExtFileXLSX, outputFileType)
-		}
-		return UpdateDataInColumnOfFile(fileUrl, sheetName, columnName, dataIndexStart, columnData, false)
-	}
-}
-
-func getColumnIndexByName(headers []string, columnName string) int {
-	for i, header := range headers {
-		if header == columnName {
-			return i
-		}
-	}
-	// if can not find column name, return the first column index
-	return 0
 }

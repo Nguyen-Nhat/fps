@@ -13,6 +13,7 @@ import (
 )
 
 const prefixMappingRequest = "$"
+const FirstColumnKey = "A"
 
 func LoadExcelByUrl(fileURL string, sheetName string) ([][]string, error) {
 	var sheetNames []string
@@ -60,62 +61,6 @@ func LoadSheetsInExcelByUrl(fileURL string, sheetNameArr []string) (map[string][
 
 	// 7. Return
 	return sheetMap, nil
-}
-
-// UpdateDataInColumnOfFile ...
-// sheetName = "" => use first sheet instead of sheetName
-func UpdateDataInColumnOfFile(fileUrl string, sheetName string, columnName string, dataIndexStart int,
-	columnData map[int]string, allowRemoveRemainingSheet bool) (*bytes.Buffer, error) {
-	// 1. Load file
-	data, err := loadDataFromUrl(fileUrl)
-	if err != nil {
-		return nil, err
-	}
-
-	// 2. Load excel
-	exFile, err := excelize.OpenReader(bytes.NewReader(data))
-	if err != nil {
-		logger.ErrorT("Failed to load file by url %v", fileUrl)
-		return nil, err
-	}
-	// -> Get first sheet if sheetName no data
-	if len(sheetName) == 0 {
-		sheetName = exFile.GetSheetName(0)
-	}
-
-	// 3. Get column index
-	var columnIndex string
-	if IsColumnIndex(columnName) {
-		columnIndex = columnName[1:]
-	} else {
-		columnIndex, err = getColumnIndexInFile(exFile, sheetName, columnName)
-		if err != nil {
-			columnIndex = "A"
-			logger.Warnf("----> Force column %v is in `%v` column", columnName, columnIndex)
-		}
-	}
-
-	// 4. Update column data
-	for rowID, data := range columnData {
-		axis := fmt.Sprintf("%v%v", columnIndex, dataIndexStart+rowID)
-		err := exFile.SetCellValue(sheetName, axis, data)
-		if err != nil {
-			logger.Errorf("error when set value for cell %+v in sheet %+v, value = %+v", axis, sheetName, data)
-		}
-	}
-
-	// 5. Remove remaining sheet
-	if allowRemoveRemainingSheet {
-		sheets := exFile.GetSheetList()
-		for _, sheet := range sheets {
-			if sheet != sheetName {
-				exFile.DeleteSheet(sheet)
-			}
-		}
-	}
-
-	// 6. Return bytes
-	return exFile.WriteToBuffer()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -176,8 +121,8 @@ func IsColumnIndex(columnName string) bool {
 	return true
 }
 
-// getColumnIndexInFile ... return the position of column by name
-func getColumnIndexInFile(exFile *excelize.File, sheetName string, columnName string) (string, error) {
+// GetColumnIndexInFile ... return the position of column by name
+func GetColumnIndexInFile(exFile *excelize.File, sheetName, columnName string) (string, error) {
 	// 1. Get data in Sheet
 	sheetData, err := exFile.GetRows(sheetName)
 	if err != nil || sheetData == nil {
@@ -190,26 +135,26 @@ func getColumnIndexInFile(exFile *excelize.File, sheetName string, columnName st
 	columnIndex := ""
 	for index, header := range headers {
 		if header == columnName {
-			intIndex := int('A') + index
-			columnIndex = string(rune(intIndex))
+			// no need to handle error because we will check length column index in below code
+			columnIndex, _ = excelize.ColumnNumberToName(index)
 			break
 		}
 	}
 
 	// return correct value
-	if len(columnIndex) > 0 {
+	if columnIndex != "" {
 		return columnIndex, nil
 	}
 
 	// return error
 	errMsg := fmt.Sprintf("not found column %v in in sheet %v", columnName, sheetName)
 	logger.ErrorT(errMsg)
-	return "", fmt.Errorf(errMsg)
+	return "", fmt.Errorf("%s", errMsg)
 }
 
 // GetValueFromColumnKey ...
 func GetValueFromColumnKey(columnKey string, data []string) string {
-	if len(columnKey) != 1 {
+	if columnKey == "" {
 		return ""
 	}
 	columnIndex, err := excelize.ColumnNameToNumber(strings.ToUpper(columnKey))
