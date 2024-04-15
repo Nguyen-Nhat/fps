@@ -3271,6 +3271,8 @@ type ProcessingFileMutation struct {
 	stats_total_success      *int32
 	addstats_total_success   *int32
 	error_display            *string
+	tenant_id                *string
+	merchant_id              *string
 	created_at               *time.Time
 	created_by               *string
 	updated_at               *time.Time
@@ -4035,6 +4037,78 @@ func (m *ProcessingFileMutation) ResetErrorDisplay() {
 	m.error_display = nil
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (m *ProcessingFileMutation) SetTenantID(s string) {
+	m.tenant_id = &s
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *ProcessingFileMutation) TenantID() (r string, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldTenantID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *ProcessingFileMutation) ResetTenantID() {
+	m.tenant_id = nil
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (m *ProcessingFileMutation) SetMerchantID(s string) {
+	m.merchant_id = &s
+}
+
+// MerchantID returns the value of the "merchant_id" field in the mutation.
+func (m *ProcessingFileMutation) MerchantID() (r string, exists bool) {
+	v := m.merchant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMerchantID returns the old "merchant_id" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldMerchantID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMerchantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMerchantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMerchantID: %w", err)
+	}
+	return oldValue.MerchantID, nil
+}
+
+// ResetMerchantID resets all changes to the "merchant_id" field.
+func (m *ProcessingFileMutation) ResetMerchantID() {
+	m.merchant_id = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ProcessingFileMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -4162,7 +4236,7 @@ func (m *ProcessingFileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 19)
 	if m.client_id != nil {
 		fields = append(fields, processingfile.FieldClientID)
 	}
@@ -4204,6 +4278,12 @@ func (m *ProcessingFileMutation) Fields() []string {
 	}
 	if m.error_display != nil {
 		fields = append(fields, processingfile.FieldErrorDisplay)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, processingfile.FieldTenantID)
+	}
+	if m.merchant_id != nil {
+		fields = append(fields, processingfile.FieldMerchantID)
 	}
 	if m.created_at != nil {
 		fields = append(fields, processingfile.FieldCreatedAt)
@@ -4250,6 +4330,10 @@ func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
 		return m.StatsTotalSuccess()
 	case processingfile.FieldErrorDisplay:
 		return m.ErrorDisplay()
+	case processingfile.FieldTenantID:
+		return m.TenantID()
+	case processingfile.FieldMerchantID:
+		return m.MerchantID()
 	case processingfile.FieldCreatedAt:
 		return m.CreatedAt()
 	case processingfile.FieldCreatedBy:
@@ -4293,6 +4377,10 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldStatsTotalSuccess(ctx)
 	case processingfile.FieldErrorDisplay:
 		return m.OldErrorDisplay(ctx)
+	case processingfile.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case processingfile.FieldMerchantID:
+		return m.OldMerchantID(ctx)
 	case processingfile.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case processingfile.FieldCreatedBy:
@@ -4405,6 +4493,20 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetErrorDisplay(v)
+		return nil
+	case processingfile.FieldTenantID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case processingfile.FieldMerchantID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMerchantID(v)
 		return nil
 	case processingfile.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -4613,6 +4715,12 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 		return nil
 	case processingfile.FieldErrorDisplay:
 		m.ResetErrorDisplay()
+		return nil
+	case processingfile.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case processingfile.FieldMerchantID:
+		m.ResetMerchantID()
 		return nil
 	case processingfile.FieldCreatedAt:
 		m.ResetCreatedAt()

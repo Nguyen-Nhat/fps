@@ -95,6 +95,8 @@ var (
 		{Name: "stats_total_processed", Type: field.TypeInt32, Default: 0},
 		{Name: "stats_total_success", Type: field.TypeInt32, Default: 0},
 		{Name: "error_display", Type: field.TypeString},
+		{Name: "tenant_id", Type: field.TypeString},
+		{Name: "merchant_id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},

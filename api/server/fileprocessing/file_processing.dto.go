@@ -22,7 +22,9 @@ type CreateFileProcessingRequest struct {
 	FileDisplayName string `json:"fileDisplayName"`
 	CreatedBy       string `json:"createdBy"`
 	Parameters      string `json:"parameters"`
-	SellerID        int32  `json:"sellerId"`
+	SellerID        int32  `json:"sellerId"` // deprecated
+	MerchantId      string `json:"merchantId"`
+	TenantId        string `json:"tenantId"`
 }
 
 // Take from https://stackoverflow.com/a/36922225

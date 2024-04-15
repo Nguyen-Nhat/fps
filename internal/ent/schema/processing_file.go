@@ -37,6 +37,8 @@ func (ProcessingFile) Fields() []ent.Field {
 		field.Int32("stats_total_processed").Default(0),
 		field.Int32("stats_total_success").Default(0),
 		field.String("error_display"),
+		field.String("tenant_id").Comment("Identifying the tenant of the request. Its value can be CDP, OMNI, etc"),
+		field.String("merchant_id").Comment("Identifying the merchant in the tenant. platformId (from CDP) or sellerId (from OMNI)"),
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),

@@ -39,6 +39,10 @@ const (
 	FieldStatsTotalSuccess = "stats_total_success"
 	// FieldErrorDisplay holds the string denoting the error_display field in the database.
 	FieldErrorDisplay = "error_display"
+	// FieldTenantID holds the string denoting the tenant_id field in the database.
+	FieldTenantID = "tenant_id"
+	// FieldMerchantID holds the string denoting the merchant_id field in the database.
+	FieldMerchantID = "merchant_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -66,6 +70,8 @@ var Columns = []string{
 	FieldStatsTotalProcessed,
 	FieldStatsTotalSuccess,
 	FieldErrorDisplay,
+	FieldTenantID,
+	FieldMerchantID,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,

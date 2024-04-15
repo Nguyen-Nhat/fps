@@ -152,6 +152,18 @@ func (pfc *ProcessingFileCreate) SetErrorDisplay(s string) *ProcessingFileCreate
 	return pfc
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (pfc *ProcessingFileCreate) SetTenantID(s string) *ProcessingFileCreate {
+	pfc.mutation.SetTenantID(s)
+	return pfc
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (pfc *ProcessingFileCreate) SetMerchantID(s string) *ProcessingFileCreate {
+	pfc.mutation.SetMerchantID(s)
+	return pfc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pfc *ProcessingFileCreate) SetCreatedAt(t time.Time) *ProcessingFileCreate {
 	pfc.mutation.SetCreatedAt(t)
@@ -344,6 +356,12 @@ func (pfc *ProcessingFileCreate) check() error {
 	if _, ok := pfc.mutation.ErrorDisplay(); !ok {
 		return &ValidationError{Name: "error_display", err: errors.New(`ent: missing required field "ProcessingFile.error_display"`)}
 	}
+	if _, ok := pfc.mutation.TenantID(); !ok {
+		return &ValidationError{Name: "tenant_id", err: errors.New(`ent: missing required field "ProcessingFile.tenant_id"`)}
+	}
+	if _, ok := pfc.mutation.MerchantID(); !ok {
+		return &ValidationError{Name: "merchant_id", err: errors.New(`ent: missing required field "ProcessingFile.merchant_id"`)}
+	}
 	if _, ok := pfc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProcessingFile.created_at"`)}
 	}
@@ -496,6 +514,22 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 			Column: processingfile.FieldErrorDisplay,
 		})
 		_node.ErrorDisplay = value
+	}
+	if value, ok := pfc.mutation.TenantID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldTenantID,
+		})
+		_node.TenantID = value
+	}
+	if value, ok := pfc.mutation.MerchantID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldMerchantID,
+		})
+		_node.MerchantID = value
 	}
 	if value, ok := pfc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
