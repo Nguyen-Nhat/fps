@@ -1,4 +1,4 @@
-package excel
+package csv
 
 import (
 	"encoding/csv"

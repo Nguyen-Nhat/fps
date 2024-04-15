@@ -15,6 +15,7 @@ type (
 		GetAllRowsNeedToExecuteByJob(context.Context, int, int) (map[int32][]*ProcessingFileRow, error)
 		GetAllTasksForJobExecuteRowGroup(context.Context, int, int, string) ([]*ProcessingFileRow, error)
 		GetListFileRowsByFileID(context.Context, int, GetListFileRowsRequest) ([]GetListFileRowsItem, response.PaginationNew, error)
+		GetResultAsync(context.Context, int, ...int32) ([]ResultAsyncDAO, error)
 
 		SaveExtractedRowTaskFromFile(context.Context, int, []CreateProcessingFileRowJob) error
 		UpdateAfterExecutingByJob(context.Context, int, UpdateAfterExecutingByJob) (*ProcessingFileRow, error)
@@ -22,7 +23,7 @@ type (
 
 		ForceTimeout(ctx context.Context, fileID int) error
 
-		Statistics(int) (StatisticData, error)
+		Statistics(context.Context, int) (StatisticData, error)
 	}
 
 	ServiceImpl struct {
@@ -103,6 +104,10 @@ func (s *ServiceImpl) GetListFileRowsByFileID(ctx context.Context, fileID int, r
 	return result, pagination, err
 }
 
+func (s *ServiceImpl) GetResultAsync(ctx context.Context, fileID int, taskIndexes ...int32) ([]ResultAsyncDAO, error) {
+	return s.repo.FindByFileIDAndTaskIndexesAndResultAsyncNotEmpty(ctx, int64(fileID), taskIndexes...)
+}
+
 func (s *ServiceImpl) UpdateAfterExecutingByJob(ctx context.Context, id int,
 	request UpdateAfterExecutingByJob) (*ProcessingFileRow, error) {
 	// 1. If task failed -> remaining tasks of row are marked to
@@ -144,10 +149,10 @@ func (s *ServiceImpl) ForceTimeout(ctx context.Context, fileID int) error {
 }
 
 // Statistics ...
-func (s *ServiceImpl) Statistics(fileID int) (StatisticData, error) {
+func (s *ServiceImpl) Statistics(ctx context.Context, fileID int) (StatisticData, error) {
 	startAt := time.Now()
 	// Statistic group task by row
-	statisticGroupByRows, err := s.repo.Statistics(int64(fileID))
+	statisticGroupByRows, err := s.repo.Statistics(ctx, int64(fileID))
 	logger.Infof("----- Statistics: executed time is %s", time.Since(startAt))
 	if err != nil {
 		logger.Errorf("Error when get Statistics, err = %v", err)

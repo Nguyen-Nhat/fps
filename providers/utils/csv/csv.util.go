@@ -1,11 +1,11 @@
-package excel
+package csv
 
 import (
 	"encoding/csv"
 	"net/http"
 )
 
-func LoadCSVByUrl(fileURL string) ([][]string, error) {
+func LoadCSVByURL(fileURL string) ([][]string, error) {
 	r, err := http.Get(fileURL)
 	if err != nil {
 		return nil, err

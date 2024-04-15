@@ -59,3 +59,9 @@ type TaskInRowItem struct {
 	CreatedAt       int64  `json:"createdAt"`
 	UpdatedAt       int64  `json:"updatedAt"`
 }
+
+type ResultAsyncDAO struct {
+	RowIndex    int    `json:"row_index"`
+	TaskIndex   int32  `json:"task_index"`
+	ResultAsync string `json:"result_async"`
+}
