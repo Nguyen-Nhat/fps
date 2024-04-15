@@ -60,6 +60,8 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 			CreatedBy:      req.CreatedBy,
 			FileParameters: req.FileParameters,
 			SellerID:       req.SellerID,
+			MerchantID:     req.MerchantId,
+			TenantID:       req.TenantId,
 		},
 	})
 	if err != nil {

@@ -178,6 +178,20 @@ func ErrorDisplay(v string) predicate.ProcessingFile {
 	})
 }
 
+// TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
+func TenantID(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTenantID), v))
+	})
+}
+
+// MerchantID applies equality check predicate on the "merchant_id" field. It's identical to MerchantIDEQ.
+func MerchantID(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMerchantID), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -1266,6 +1280,204 @@ func ErrorDisplayEqualFold(v string) predicate.ProcessingFile {
 func ErrorDisplayContainsFold(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldErrorDisplay), v))
+	})
+}
+
+// TenantIDEQ applies the EQ predicate on the "tenant_id" field.
+func TenantIDEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
+func TenantIDNEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDIn applies the In predicate on the "tenant_id" field.
+func TenantIDIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldTenantID), v...))
+	})
+}
+
+// TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
+func TenantIDNotIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldTenantID), v...))
+	})
+}
+
+// TenantIDGT applies the GT predicate on the "tenant_id" field.
+func TenantIDGT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDGTE applies the GTE predicate on the "tenant_id" field.
+func TenantIDGTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDLT applies the LT predicate on the "tenant_id" field.
+func TenantIDLT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDLTE applies the LTE predicate on the "tenant_id" field.
+func TenantIDLTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDContains applies the Contains predicate on the "tenant_id" field.
+func TenantIDContains(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDHasPrefix applies the HasPrefix predicate on the "tenant_id" field.
+func TenantIDHasPrefix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDHasSuffix applies the HasSuffix predicate on the "tenant_id" field.
+func TenantIDHasSuffix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDEqualFold applies the EqualFold predicate on the "tenant_id" field.
+func TenantIDEqualFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDContainsFold applies the ContainsFold predicate on the "tenant_id" field.
+func TenantIDContainsFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTenantID), v))
+	})
+}
+
+// MerchantIDEQ applies the EQ predicate on the "merchant_id" field.
+func MerchantIDEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDNEQ applies the NEQ predicate on the "merchant_id" field.
+func MerchantIDNEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDIn applies the In predicate on the "merchant_id" field.
+func MerchantIDIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldMerchantID), v...))
+	})
+}
+
+// MerchantIDNotIn applies the NotIn predicate on the "merchant_id" field.
+func MerchantIDNotIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldMerchantID), v...))
+	})
+}
+
+// MerchantIDGT applies the GT predicate on the "merchant_id" field.
+func MerchantIDGT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDGTE applies the GTE predicate on the "merchant_id" field.
+func MerchantIDGTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDLT applies the LT predicate on the "merchant_id" field.
+func MerchantIDLT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDLTE applies the LTE predicate on the "merchant_id" field.
+func MerchantIDLTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDContains applies the Contains predicate on the "merchant_id" field.
+func MerchantIDContains(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDHasPrefix applies the HasPrefix predicate on the "merchant_id" field.
+func MerchantIDHasPrefix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDHasSuffix applies the HasSuffix predicate on the "merchant_id" field.
+func MerchantIDHasSuffix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDEqualFold applies the EqualFold predicate on the "merchant_id" field.
+func MerchantIDEqualFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldMerchantID), v))
+	})
+}
+
+// MerchantIDContainsFold applies the ContainsFold predicate on the "merchant_id" field.
+func MerchantIDContainsFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldMerchantID), v))
 	})
 }
 

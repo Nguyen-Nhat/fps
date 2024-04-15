@@ -7,14 +7,17 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/go-chi/render"
+	"github.com/sebdah/goldie/v2"
+	"github.com/stretchr/testify/assert"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
 	fileprocessingrepo "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/processingfile"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/jiratest"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/tests/common"
-	"github.com/go-chi/render"
-	"github.com/stretchr/testify/assert"
 )
 
 const issue1295 = "LOY-1295"
@@ -273,6 +276,8 @@ func TestAllInputValid__SaveClientIdFileUrlDisplayNameToDB(t *testing.T) {
 		FileURL:         FileUrlTest,
 		FileDisplayName: DisplayNameTest,
 		CreatedBy:       CreatedByTest,
+		TenantId:        "OMNI",
+		MerchantId:      "1",
 	}
 
 	// 3. Request server
@@ -283,10 +288,52 @@ func TestAllInputValid__SaveClientIdFileUrlDisplayNameToDB(t *testing.T) {
 	fp, err := entClient.ProcessingFile.Query().Where(fileprocessingrepo.ID(int(res.Data.ProcessFileID))).Only(ctx)
 	assert.Nil(t, err)
 	assert.Equal(t, res.Data.ProcessFileID, int64(fp.ID))
-	assert.Equal(t, FileUrlTest, fp.FileURL)
-	assert.Equal(t, ClientIDTest, fp.ClientID)
-	assert.Equal(t, DisplayNameTest, fp.DisplayName)
-	assert.Equal(t, CreatedByTest, fp.CreatedBy)
+	fixedTime := time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
+	fp.CreatedAt = fixedTime
+	fp.UpdatedAt = fixedTime
+	goldie.New(t).AssertJson(t, "create_process_file/happy_case_create_full_info", fp)
+}
+
+func TestAllInputValid__CreateProcessFileWithSellerId(t *testing.T) {
+	// Jira test case
+	detail := getDefaultJiraTestDetail()
+	detail.Name = "[saveProcessingFile] Send all valid input, save clientId, fileUrl, displayName to DB"
+	defer detail.Setup(t)()
+
+	// Testcase Implementation
+	// 1. Init
+	ctx := context.Background()
+	db, entClient := common.PrepareDatabaseSqlite(ctx, t)
+
+	fileProcessingServer := fileprocessing.InitFileProcessingServer(db)
+
+	// 2. Mock request
+	ctx = middleware.SetUserToContext(ctx, middleware.User{
+		Sub:   UserSubTest,
+		Name:  UserNameTest,
+		Email: UserEmailTest,
+	})
+	req := fileprocessing.CreateFileProcessingRequest{
+		ClientID:        ClientIDTest,
+		FileURL:         FileUrlTest,
+		FileDisplayName: DisplayNameTest,
+		CreatedBy:       CreatedByTest,
+		SellerID:        1,
+	}
+
+	// 3. Request server
+	res, err := fileProcessingServer.CreateProcessingFile(ctx, &req)
+
+	// 4. Assert
+	assert.Nil(t, err)
+	fp, err := entClient.ProcessingFile.Query().Where(fileprocessingrepo.ID(int(res.Data.ProcessFileID))).Only(ctx)
+	assert.Nil(t, err)
+	assert.Equal(t, res.Data.ProcessFileID, int64(fp.ID))
+	fixedTime := time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
+	fp.CreatedAt = fixedTime
+	fp.UpdatedAt = fixedTime
+
+	goldie.New(t).AssertJson(t, "create_process_file/create_with_only_seller_id", fp)
 }
 
 func TestParametersNull__Return200Successfully(t *testing.T) {

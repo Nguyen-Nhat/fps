@@ -215,6 +215,18 @@ func (pfu *ProcessingFileUpdate) SetErrorDisplay(s string) *ProcessingFileUpdate
 	return pfu
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (pfu *ProcessingFileUpdate) SetTenantID(s string) *ProcessingFileUpdate {
+	pfu.mutation.SetTenantID(s)
+	return pfu
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (pfu *ProcessingFileUpdate) SetMerchantID(s string) *ProcessingFileUpdate {
+	pfu.mutation.SetMerchantID(s)
+	return pfu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pfu *ProcessingFileUpdate) SetCreatedAt(t time.Time) *ProcessingFileUpdate {
 	pfu.mutation.SetCreatedAt(t)
@@ -506,6 +518,20 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldErrorDisplay,
 		})
 	}
+	if value, ok := pfu.mutation.TenantID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldTenantID,
+		})
+	}
+	if value, ok := pfu.mutation.MerchantID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldMerchantID,
+		})
+	}
 	if value, ok := pfu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -730,6 +756,18 @@ func (pfuo *ProcessingFileUpdateOne) AddStatsTotalSuccess(i int32) *ProcessingFi
 // SetErrorDisplay sets the "error_display" field.
 func (pfuo *ProcessingFileUpdateOne) SetErrorDisplay(s string) *ProcessingFileUpdateOne {
 	pfuo.mutation.SetErrorDisplay(s)
+	return pfuo
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (pfuo *ProcessingFileUpdateOne) SetTenantID(s string) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetTenantID(s)
+	return pfuo
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (pfuo *ProcessingFileUpdateOne) SetMerchantID(s string) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetMerchantID(s)
 	return pfuo
 }
 
@@ -1052,6 +1090,20 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldErrorDisplay,
+		})
+	}
+	if value, ok := pfuo.mutation.TenantID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldTenantID,
+		})
+	}
+	if value, ok := pfuo.mutation.MerchantID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldMerchantID,
 		})
 	}
 	if value, ok := pfuo.mutation.CreatedAt(); ok {

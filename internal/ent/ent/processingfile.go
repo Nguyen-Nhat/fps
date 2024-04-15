@@ -44,6 +44,10 @@ type ProcessingFile struct {
 	StatsTotalSuccess int32 `json:"stats_total_success,omitempty"`
 	// ErrorDisplay holds the value of the "error_display" field.
 	ErrorDisplay string `json:"error_display,omitempty"`
+	// Identifying the tenant of the request. Its value can be CDP, OMNI, etc
+	TenantID string `json:"tenant_id,omitempty"`
+	// Identifying the merchant in the tenant. platformId (from CDP) or sellerId (from OMNI)
+	MerchantID string `json:"merchant_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -61,7 +65,7 @@ func (*ProcessingFile) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case processingfile.FieldID, processingfile.FieldClientID, processingfile.FieldStatus, processingfile.FieldSellerID, processingfile.FieldTotalMapping, processingfile.FieldStatsTotalRow, processingfile.FieldStatsTotalProcessed, processingfile.FieldStatsTotalSuccess:
 			values[i] = new(sql.NullInt64)
-		case processingfile.FieldDisplayName, processingfile.FieldExtFileRequest, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldFileParameters, processingfile.FieldErrorDisplay, processingfile.FieldCreatedBy:
+		case processingfile.FieldDisplayName, processingfile.FieldExtFileRequest, processingfile.FieldFileURL, processingfile.FieldResultFileURL, processingfile.FieldFileParameters, processingfile.FieldErrorDisplay, processingfile.FieldTenantID, processingfile.FieldMerchantID, processingfile.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case processingfile.FieldCreatedAt, processingfile.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -170,6 +174,18 @@ func (pf *ProcessingFile) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				pf.ErrorDisplay = value.String
 			}
+		case processingfile.FieldTenantID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
+			} else if value.Valid {
+				pf.TenantID = value.String
+			}
+		case processingfile.FieldMerchantID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field merchant_id", values[i])
+			} else if value.Valid {
+				pf.MerchantID = value.String
+			}
 		case processingfile.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -257,6 +273,12 @@ func (pf *ProcessingFile) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("error_display=")
 	builder.WriteString(pf.ErrorDisplay)
+	builder.WriteString(", ")
+	builder.WriteString("tenant_id=")
+	builder.WriteString(pf.TenantID)
+	builder.WriteString(", ")
+	builder.WriteString("merchant_id=")
+	builder.WriteString(pf.MerchantID)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(pf.CreatedAt.Format(time.ANSIC))

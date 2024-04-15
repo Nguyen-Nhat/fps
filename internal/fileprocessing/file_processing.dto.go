@@ -18,6 +18,8 @@ type CreateFileProcessingReqDTO struct {
 	CreatedBy      string
 	FileParameters string
 	SellerID       int32
+	MerchantId     string
+	TenantId       string
 }
 
 type CreateFileProcessingResDTO struct {

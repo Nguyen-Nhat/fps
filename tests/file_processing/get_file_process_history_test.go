@@ -457,7 +457,7 @@ func TestGetFileProcessHistory_Input_createdByEmails_is_valid__Should_return_cod
 		data.FinishedAt = fixedTime.UnixMilli()
 		respData = append(respData, data)
 	}
-	goldie.New(t).AssertJson(t, "filter_by_created_by_emails", respData)
+	goldie.New(t).AssertJson(t, "get_file_process_history/filter_by_created_by_emails", respData)
 }
 
 func TestGetFileProcessHistory_Input_processFileIds_is_valid__Should_return_code_200(t *testing.T) {
@@ -488,7 +488,7 @@ func TestGetFileProcessHistory_Input_processFileIds_is_valid__Should_return_code
 		data.FinishedAt = fixedTime.UnixMilli()
 		respData = append(respData, data)
 	}
-	goldie.New(t).AssertJson(t, "filter_by_process_file_ids", respData)
+	goldie.New(t).AssertJson(t, "get_file_process_history/filter_by_process_file_ids", respData)
 }
 
 func TestGetFileProcessHistory_Input_searchFileName_is_valid__Should_return_code_200(t *testing.T) {
@@ -519,5 +519,5 @@ func TestGetFileProcessHistory_Input_searchFileName_is_valid__Should_return_code
 		data.FinishedAt = fixedTime.UnixMilli()
 		respData = append(respData, data)
 	}
-	goldie.New(t).AssertJson(t, "filter_by_search_file_name", respData)
+	goldie.New(t).AssertJson(t, "get_file_process_history/filter_by_search_file_name", respData)
 }

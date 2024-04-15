@@ -196,7 +196,9 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetStatsTotalProcessed(fp.StatsTotalProcessed).
 		SetStatsTotalSuccess(fp.StatsTotalSuccess).
 		SetErrorDisplay(fp.ErrorDisplay).
-		SetCreatedBy(fp.CreatedBy)
+		SetCreatedBy(fp.CreatedBy).
+		SetMerchantID(fp.MerchantID).
+		SetTenantID(fp.TenantID)
 }
 
 // Implementation function ---------------------------------------------------------------------------------------------
