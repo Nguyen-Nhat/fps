@@ -9,6 +9,8 @@ type GetFileProcessHistoryDTO struct {
 	CreatedByEmails []string
 	ProcessFileIds  []int
 	SearchFileName  string
+	MerchantId      string
+	TenantId        string
 }
 
 type CreateFileProcessingReqDTO struct {

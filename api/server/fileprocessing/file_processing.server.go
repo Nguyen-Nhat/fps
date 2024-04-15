@@ -79,6 +79,8 @@ func (s *Server) GetFileProcessHistory(ctx context.Context, req *GetFileProcessH
 		CreatedByEmails: req.CreatedByEmails,
 		ProcessFileIds:  req.ProcessFileIds,
 		SearchFileName:  req.SearchFileName,
+		MerchantId:      req.MerchantId,
+		TenantId:        req.TenantId,
 	}
 
 	// 2. Handle request
