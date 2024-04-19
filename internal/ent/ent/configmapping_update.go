@@ -170,6 +170,12 @@ func (cmu *ConfigMappingUpdate) SetNillableOutputFileType(cft *configmapping.Out
 	return cmu
 }
 
+// ClearOutputFileType clears the value of the "output_file_type" field.
+func (cmu *ConfigMappingUpdate) ClearOutputFileType() *ConfigMappingUpdate {
+	cmu.mutation.ClearOutputFileType()
+	return cmu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cmu *ConfigMappingUpdate) SetCreatedAt(t time.Time) *ConfigMappingUpdate {
 	cmu.mutation.SetCreatedAt(t)
@@ -422,6 +428,12 @@ func (cmu *ConfigMappingUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: configmapping.FieldOutputFileType,
 		})
 	}
+	if cmu.mutation.OutputFileTypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Column: configmapping.FieldOutputFileType,
+		})
+	}
 	if value, ok := cmu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -601,6 +613,12 @@ func (cmuo *ConfigMappingUpdateOne) SetNillableOutputFileType(cft *configmapping
 	if cft != nil {
 		cmuo.SetOutputFileType(*cft)
 	}
+	return cmuo
+}
+
+// ClearOutputFileType clears the value of the "output_file_type" field.
+func (cmuo *ConfigMappingUpdateOne) ClearOutputFileType() *ConfigMappingUpdateOne {
+	cmuo.mutation.ClearOutputFileType()
 	return cmuo
 }
 
@@ -883,6 +901,12 @@ func (cmuo *ConfigMappingUpdateOne) sqlSave(ctx context.Context) (_node *ConfigM
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
+			Column: configmapping.FieldOutputFileType,
+		})
+	}
+	if cmuo.mutation.OutputFileTypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
 			Column: configmapping.FieldOutputFileType,
 		})
 	}

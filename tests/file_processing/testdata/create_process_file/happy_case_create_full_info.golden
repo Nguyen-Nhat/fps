@@ -2,6 +2,7 @@
   "id": 10,
   "client_id": 12345678,
   "display_name": "a.xlsx",
+  "ext_file_request": "xlsx",
   "file_url": "https://storage.googleapis.com/folder/file.xlsx",
   "result_file_url": "https://storage.googleapis.com/folder/file.xlsx",
   "status": 1,

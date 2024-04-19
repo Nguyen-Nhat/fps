@@ -33,7 +33,7 @@ func (ConfigMapping) Fields() []ent.Field {
 		field.String("result_file_config").Optional().MaxLen(500).Comment("JSON string, config new column in file result for display process result"),
 		field.Int32("timeout").Default(86400).Comment("Time out of template in seconds (default 24h as 86400 seconds)"),
 		field.String("input_file_type").Default("XLSX").Comment("Các định dạng cho phép của file input, cách nhau bằng dấu phẩy (ex: \"XLSX,CSV\")"),
-		field.Enum("output_file_type").Values("XLSX", "CSV").Default("XLSX").Comment("Type of file output"),
+		field.Enum("output_file_type").Values("XLSX", "CSV").Optional().Comment("Type of file output"),
 		// default fields
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),

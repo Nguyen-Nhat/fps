@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
-
+	
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	configmappingEnt "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
 )
@@ -17,23 +17,24 @@ type FileWriter interface {
 
 func NewFileWriter(fileURL, sheetName string, dataIndexStart int,
 	inputFileType string, outputFileTypeCfg configmappingEnt.OutputFileType) (FileWriter, error) {
-	// 1. input-output pair is match?
-	switch strings.ToUpper(inputFileType) {
-	case constant.ExtFileCSV:
-		if outputFileTypeCfg != constant.ExtFileCSV {
-			return nil, fmt.Errorf("InputFileType %v and OutputFileType %v are not same", constant.ExtFileCSV, outputFileTypeCfg)
-		}
-	default:
-		if outputFileTypeCfg != constant.ExtFileXLSX {
-			return nil, fmt.Errorf("InputFileType %v and OutputFileType %v are not same", constant.ExtFileXLSX, outputFileTypeCfg)
+	// 1. if output file type is not set, then use input file type. Otherwise, use output file type
+	outputFileType := strings.ToUpper(inputFileType)
+	if len(outputFileTypeCfg) > 0 {
+		switch outputFileTypeCfg {
+		case configmappingEnt.OutputFileTypeCSV:
+			outputFileType = constant.ExtFileCSV
+		case configmappingEnt.OutputFileTypeXLSX:
+			outputFileType = constant.ExtFileXLSX
+		default:
+			return nil, fmt.Errorf("outputFileType %v is not supported", outputFileTypeCfg)
 		}
 	}
 
 	// 2. get File Writer implementation
-	switch outputFileTypeCfg {
-	case configmappingEnt.OutputFileTypeCSV:
+	switch outputFileType {
+	case constant.ExtFileCSV:
 		return NewCsvFileWriter(fileURL, dataIndexStart)
-	case configmappingEnt.OutputFileTypeXLSX:
+	case constant.ExtFileXLSX:
 		return NewExcelFileWriter(fileURL, sheetName, dataIndexStart)
 	default:
 		return nil, fmt.Errorf("outputFileType %v is not supported", outputFileTypeCfg)

@@ -22,11 +22,6 @@ func Test_NewFileWriter(t *testing.T) {
 		wantStruct *csvFileWriter
 		wantErr    bool
 	}{
-		{"test NewFileWriter: case input is CSV, but output is XLSX -> error",
-			args{"https://a.com", "sheetName", 2, constant.ExtFileCSV, configmapping.OutputFileTypeXLSX}, nil, true},
-		{"test NewFileWriter: case input is XLSX, but output is CSV -> error",
-			args{"https://a.com", "sheetName", 2, constant.ExtFileXLSX, configmapping.OutputFileTypeCSV}, nil, true},
-
 		{"test NewFileWriter: case output not support -> error",
 			args{"https://a.com", "sheetName", 2, constant.ExtFileXLSX, configmapping.OutputFileType("abc")}, nil, true},
 
