@@ -18,7 +18,7 @@ var (
 		return fmt.Sprintf("không tìm thấy thông tin supplier %s", supplierCode)
 	}
 
-	ErrFormatOrderScheduler = errors.New("Cấu trúc lịch đặt không đúng! Cấu trúc đúng có dạng T2->6,CN hoặc N2->5,9->20,30. Các số theo thứ tự tăng dần")
+	ErrFormatOrderScheduler = errors.New("Cấu trúc lịch đặt không đúng! Cấu trúc đúng có dạng T2->6,CN hoặc N2->5,9->20,30. Các số theo thứ tự tăng dần. Ex: T2->6,CN; TCN; T8; T5->Cn; T2,4,5; N1->5,9->20,31")
 )
 
 // Error show on Debug
