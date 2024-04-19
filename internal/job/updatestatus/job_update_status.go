@@ -70,22 +70,11 @@ func (job *jobUpdateStatus) UpdateStatus(ctx context.Context, file fileprocessin
 		// 2.1. Status is Finished
 		status = fileprocessing.StatusFinished
 
-		// 2.2. Build and Upload result file to FileService
-		isNeedToUploadResultFile := false
-		for _, result := range stats.ErrorDisplays {
-			if result != "" {
-				isNeedToUploadResultFile = true
-				break
-			}
-		}
-
-		// 2.3. Update result file
-		if isNeedToUploadResultFile {
-			resultFileURL, err = job.buildResultFileAndUpload(ctx, file, cfgMapping, stats.ErrorDisplays)
-			if err != nil {
-				logger.ErrorT("Update file with Error Display failed, err=%v", err)
-				return
-			}
+		// 2.2. Update result file
+		resultFileURL, err = job.buildResultFileAndUpload(ctx, file, cfgMapping, stats.ErrorDisplays)
+		if err != nil {
+			logger.ErrorT("Update file with Error Display failed, err=%v", err)
+			return
 		}
 	}
 

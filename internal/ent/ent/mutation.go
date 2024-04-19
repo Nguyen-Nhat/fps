@@ -614,9 +614,22 @@ func (m *ConfigMappingMutation) OldOutputFileType(ctx context.Context) (v config
 	return oldValue.OutputFileType, nil
 }
 
+// ClearOutputFileType clears the value of the "output_file_type" field.
+func (m *ConfigMappingMutation) ClearOutputFileType() {
+	m.output_file_type = nil
+	m.clearedFields[configmapping.FieldOutputFileType] = struct{}{}
+}
+
+// OutputFileTypeCleared returns if the "output_file_type" field was cleared in this mutation.
+func (m *ConfigMappingMutation) OutputFileTypeCleared() bool {
+	_, ok := m.clearedFields[configmapping.FieldOutputFileType]
+	return ok
+}
+
 // ResetOutputFileType resets all changes to the "output_file_type" field.
 func (m *ConfigMappingMutation) ResetOutputFileType() {
 	m.output_file_type = nil
+	delete(m.clearedFields, configmapping.FieldOutputFileType)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1039,6 +1052,9 @@ func (m *ConfigMappingMutation) ClearedFields() []string {
 	if m.FieldCleared(configmapping.FieldResultFileConfig) {
 		fields = append(fields, configmapping.FieldResultFileConfig)
 	}
+	if m.FieldCleared(configmapping.FieldOutputFileType) {
+		fields = append(fields, configmapping.FieldOutputFileType)
+	}
 	return fields
 }
 
@@ -1055,6 +1071,9 @@ func (m *ConfigMappingMutation) ClearField(name string) error {
 	switch name {
 	case configmapping.FieldResultFileConfig:
 		m.ClearResultFileConfig()
+		return nil
+	case configmapping.FieldOutputFileType:
+		m.ClearOutputFileType()
 		return nil
 	}
 	return fmt.Errorf("unknown ConfigMapping nullable field %s", name)

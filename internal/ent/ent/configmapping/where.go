@@ -965,6 +965,20 @@ func OutputFileTypeNotIn(vs ...OutputFileType) predicate.ConfigMapping {
 	})
 }
 
+// OutputFileTypeIsNil applies the IsNil predicate on the "output_file_type" field.
+func OutputFileTypeIsNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldOutputFileType)))
+	})
+}
+
+// OutputFileTypeNotNil applies the NotNil predicate on the "output_file_type" field.
+func OutputFileTypeNotNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldOutputFileType)))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {

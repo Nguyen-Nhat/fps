@@ -32,7 +32,7 @@ func NewCsvFileWriter(fileURL string, dataIndexStart int) (FileWriter, error) {
 	return &csvFileWriter{
 		fileData:              allRowsData,
 		dataIndexStart:        dataIndexStart,
-		outputFileContentType: utils.XlsxContentType,
+		outputFileContentType: utils.CsvContentType,
 	}, nil
 }
 

@@ -186,6 +186,7 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 	return client.ProcessingFile.Create().
 		SetClientID(fp.ClientID).
 		SetDisplayName(fp.DisplayName).
+		SetExtFileRequest(fp.ExtFileRequest).
 		SetFileURL(fp.FileURL).
 		SetResultFileURL(fp.ResultFileURL).
 		SetStatus(fp.Status).

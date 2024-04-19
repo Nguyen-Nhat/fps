@@ -34,12 +34,13 @@ func (job *jobUpdateStatus) buildResultFileAndUpload(ctx context.Context,
 
 	// 2. Set data to filed
 	_ = json.Unmarshal([]byte(cfgMapping.ResultFileConfig), &resultFileConfigs)
-	if len(resultFileConfigs) == 0 { // 2.1. case normal -> write data to error column
+	if len(cfgMapping.ErrorColumnIndex) > 0 { // 2.1. case normal -> write data to error column
 		if err = fw.UpdateDataInColumnOfFile(cfgMapping.ErrorColumnIndex, errorDisplays); err != nil {
 			logger.ErrorT("Update file with Error Display failed, err=%v", err)
 			return "", err
 		}
-	} else { // 2.2. special case -> write data based on ResultFileConfigMD
+	}
+	if len(resultFileConfigs) > 0 { // 2.2. special case -> write data based on ResultFileConfigMD
 		// 2.2.1. Get list task from DB
 		taskIDs := toTaskIDs(resultFileConfigs)
 		resultAsync, er := job.fprService.GetResultAsync(ctx, file.ID, taskIDs...)

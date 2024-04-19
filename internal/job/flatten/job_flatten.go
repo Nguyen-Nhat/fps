@@ -107,7 +107,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
 			return
 		}
-		if configMapping.OutputFileType != configmapping2.OutputFileTypeCSV {
+		if len(configMapping.OutputFileType) > 0 && configMapping.OutputFileType != configmapping2.OutputFileTypeCSV {
 			logger.ErrorT("InputFileType %v and OutputFileType %v are not same", constant.ExtFileCSV, configMapping.OutputFileType.String())
 			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
 			return
@@ -119,7 +119,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
 			return
 		}
-		if configMapping.OutputFileType != configmapping2.OutputFileTypeXLSX {
+		if len(configMapping.OutputFileType) > 0 && configMapping.OutputFileType != configmapping2.OutputFileTypeXLSX {
 			logger.ErrorT("InputFileType %v and OutputFileType %v are not same", constant.ExtFileXLSX, configMapping.OutputFileType.String())
 			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
 			return

@@ -98,9 +98,6 @@ var (
 // OutputFileType defines the type for the "output_file_type" enum field.
 type OutputFileType string
 
-// OutputFileTypeXLSX is the default value of the OutputFileType enum.
-const DefaultOutputFileType = OutputFileTypeXLSX
-
 // OutputFileType values.
 const (
 	OutputFileTypeXLSX OutputFileType = "XLSX"

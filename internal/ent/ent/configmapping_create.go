@@ -255,10 +255,6 @@ func (cmc *ConfigMappingCreate) defaults() {
 		v := configmapping.DefaultInputFileType
 		cmc.mutation.SetInputFileType(v)
 	}
-	if _, ok := cmc.mutation.OutputFileType(); !ok {
-		v := configmapping.DefaultOutputFileType
-		cmc.mutation.SetOutputFileType(v)
-	}
 	if _, ok := cmc.mutation.CreatedAt(); !ok {
 		v := configmapping.DefaultCreatedAt()
 		cmc.mutation.SetCreatedAt(v)
@@ -309,9 +305,6 @@ func (cmc *ConfigMappingCreate) check() error {
 	}
 	if _, ok := cmc.mutation.InputFileType(); !ok {
 		return &ValidationError{Name: "input_file_type", err: errors.New(`ent: missing required field "ConfigMapping.input_file_type"`)}
-	}
-	if _, ok := cmc.mutation.OutputFileType(); !ok {
-		return &ValidationError{Name: "output_file_type", err: errors.New(`ent: missing required field "ConfigMapping.output_file_type"`)}
 	}
 	if v, ok := cmc.mutation.OutputFileType(); ok {
 		if err := configmapping.OutputFileTypeValidator(v); err != nil {
