@@ -125,6 +125,18 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 			return
 		}
 		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
+	case constant.ExtFileXLS:
+		if !utils.Contains(allowedInputFileTypes, constant.ExtFileXLS) {
+			logger.ErrorT("InputFileType %v is not supported", constant.ExtFileXLS)
+			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
+			return
+		}
+		if len(configMapping.OutputFileType) > 0 && configMapping.OutputFileType != configmapping2.OutputFileTypeXLS {
+			logger.ErrorT("InputFileType %v and OutputFileType %v are not same", constant.ExtFileXLS, configMapping.OutputFileType.String())
+			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
+			return
+		}
+		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
 	default:
 		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
 	}

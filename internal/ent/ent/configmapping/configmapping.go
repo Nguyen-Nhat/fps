@@ -100,6 +100,7 @@ type OutputFileType string
 
 // OutputFileType values.
 const (
+	OutputFileTypeXLS  OutputFileType = "XLS"
 	OutputFileTypeXLSX OutputFileType = "XLSX"
 	OutputFileTypeCSV  OutputFileType = "CSV"
 )
@@ -111,7 +112,7 @@ func (oft OutputFileType) String() string {
 // OutputFileTypeValidator is a validator for the "output_file_type" field enum values. It is called by the builders before save.
 func OutputFileTypeValidator(oft OutputFileType) error {
 	switch oft {
-	case OutputFileTypeXLSX, OutputFileTypeCSV:
+	case OutputFileTypeXLS, OutputFileTypeXLSX, OutputFileTypeCSV:
 		return nil
 	default:
 		return fmt.Errorf("configmapping: invalid enum value for output_file_type field: %q", oft)

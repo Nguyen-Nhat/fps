@@ -32,7 +32,7 @@ type ConfigMapping struct {
 	ResultFileConfig string `json:"result_file_config,omitempty"`
 	// Time out of template in seconds (default 24h as 86400 seconds)
 	Timeout int32 `json:"timeout,omitempty"`
-	// Các định dạng cho phép của file input, cách nhau bằng dấu phẩy (ex: "XLSX,CSV")
+	// Các định dạng cho phép của file input, cách nhau bằng dấu phẩy (ex: "XLS,XLSX,CSV")
 	InputFileType string `json:"input_file_type,omitempty"`
 	// Type of file output
 	OutputFileType configmapping.OutputFileType `json:"output_file_type,omitempty"`

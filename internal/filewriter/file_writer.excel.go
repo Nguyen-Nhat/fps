@@ -8,7 +8,6 @@ import (
 	"github.com/xuri/excelize/v2"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 )
 
@@ -20,7 +19,7 @@ type excelFileWriter struct {
 	outputFileContentType string
 }
 
-func NewExcelFileWriter(fileURL, sheetName string, dataIndexStart int) (FileWriter, error) {
+func NewExcelFileWriter(fileURL, sheetName string, dataIndexStart int, contentType string) (FileWriter, error) {
 	// 1. Load file
 	dataFile, err := loadDataFromURL(fileURL)
 	if err != nil {
@@ -43,7 +42,7 @@ func NewExcelFileWriter(fileURL, sheetName string, dataIndexStart int) (FileWrit
 		exFile:                exFile,
 		sheetName:             sheetName,
 		dataIndexStart:        dataIndexStart,
-		outputFileContentType: utils.XlsxContentType,
+		outputFileContentType: contentType,
 	}, nil
 }
 

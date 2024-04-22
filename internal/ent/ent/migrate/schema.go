@@ -21,7 +21,7 @@ var (
 		{Name: "result_file_config", Type: field.TypeString, Nullable: true, Size: 500},
 		{Name: "timeout", Type: field.TypeInt32, Default: 86400},
 		{Name: "input_file_type", Type: field.TypeString, Default: "XLSX"},
-		{Name: "output_file_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"XLSX", "CSV"}},
+		{Name: "output_file_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"XLS", "XLSX", "CSV"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},
