@@ -44,3 +44,22 @@ test:unitest:
         coverage_format: cobertura
         path: coverage.xml
   coverage: '/total:\t.*\(statements\)\t.*\d+(?:\.\d+)?/'
+
+pretest:detect-changed-folders:
+  stage: pretest
+  image: alpine:latest
+  script:
+    - 'echo "CI_COMMIT_BEFORE_SHA: $CI_COMMIT_BEFORE_SHA"'
+    - 'echo "CI_COMMIT_SHA: $CI_COMMIT_SHA"'
+    - apk add --no-cache git jq curl
+    - git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA > changed_files.txt
+    - cat changed_files.txt | xargs -n1 dirname | sort -u > changed_folders.txt
+    - cat changed_folders.txt | jq -R . | jq -s . > changed_folders.json
+    - changed_folders_json=`cat changed_folders.json`
+    - 'echo "{\"project_id\": $CI_PROJECT_ID, \"commit_id\": \"$CI_COMMIT_SHORT_SHA\", \"folders\": $changed_folders_json }" > request_body.json'
+    - cat request_body.json
+    - 'curl -X POST -H "Content-Type: application/json" -d @request_body.json https://devx-cqi-code-scanner.dev.tekoapis.net/api/v1/trigger-code-changes'
+  only:
+    - master
+    - main
+  allow_failure: true
