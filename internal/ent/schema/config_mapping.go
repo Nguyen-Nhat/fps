@@ -32,8 +32,8 @@ func (ConfigMapping) Fields() []ent.Field {
 		field.String("error_column_index").Comment("Index of column, that FPS will fill when error happens"),
 		field.String("result_file_config").Optional().MaxLen(500).Comment("JSON string, config new column in file result for display process result"),
 		field.Int32("timeout").Default(86400).Comment("Time out of template in seconds (default 24h as 86400 seconds)"),
-		field.String("input_file_type").Default("XLSX").Comment("Các định dạng cho phép của file input, cách nhau bằng dấu phẩy (ex: \"XLSX,CSV\")"),
-		field.Enum("output_file_type").Values("XLSX", "CSV").Optional().Comment("Type of file output"),
+		field.String("input_file_type").Default("XLSX").Comment("Các định dạng cho phép của file input, cách nhau bằng dấu phẩy (ex: \"XLS,XLSX,CSV\")"),
+		field.Enum("output_file_type").Values("XLS", "XLSX", "CSV").Optional().Comment("Type of file output (XLS, XLSX, CSV). If null, output type is input type. If has value will force output type"),
 		// default fields
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),

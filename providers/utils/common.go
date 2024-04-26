@@ -32,6 +32,7 @@ const (
 
 const (
 	XlsxContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	XlsContentType  = "application/vnd.ms-excel"
 	CsvContentType  = "text/csv"
 )
 

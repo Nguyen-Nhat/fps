@@ -34,6 +34,7 @@ const (
 const (
 	ExtFileCSV     = "CSV"
 	ExtFileXLSX    = "XLSX"
+	ExtFileXLS     = "XLS"
 	ExtFileUnknown = "unknown"
 )
 

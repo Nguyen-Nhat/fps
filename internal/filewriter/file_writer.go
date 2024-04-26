@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
-	
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	configmappingEnt "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
 type FileWriter interface {
@@ -25,6 +26,8 @@ func NewFileWriter(fileURL, sheetName string, dataIndexStart int,
 			outputFileType = constant.ExtFileCSV
 		case configmappingEnt.OutputFileTypeXLSX:
 			outputFileType = constant.ExtFileXLSX
+		case configmappingEnt.OutputFileTypeXLS:
+			outputFileType = constant.ExtFileXLS
 		default:
 			return nil, fmt.Errorf("outputFileType %v is not supported", outputFileTypeCfg)
 		}
@@ -35,7 +38,9 @@ func NewFileWriter(fileURL, sheetName string, dataIndexStart int,
 	case constant.ExtFileCSV:
 		return NewCsvFileWriter(fileURL, dataIndexStart)
 	case constant.ExtFileXLSX:
-		return NewExcelFileWriter(fileURL, sheetName, dataIndexStart)
+		return NewExcelFileWriter(fileURL, sheetName, dataIndexStart, utils.XlsxContentType)
+	case constant.ExtFileXLS:
+		return NewExcelFileWriter(fileURL, sheetName, dataIndexStart, utils.XlsContentType)
 	default:
 		return nil, fmt.Errorf("outputFileType %v is not supported", outputFileTypeCfg)
 	}
