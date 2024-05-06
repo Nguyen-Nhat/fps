@@ -67,7 +67,7 @@ func (job *jobUpdateStatus) buildResultFileAndUpload(ctx context.Context,
 	}
 
 	// 4. Gen result file name then Upload to file service
-	resultFileName := utils.GetResultFileName(file.DisplayName)
+	resultFileName := utils.GetResultFileName(file.DisplayName, cfgMapping.OutputFileType.String())
 	return job.fileService.UploadFileWithBytesData(fileDataBytes, fw.OutputFileContentType(), resultFileName)
 }
 

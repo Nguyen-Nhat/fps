@@ -365,19 +365,22 @@ func TestEqualsIgnoreCase(t *testing.T) {
 func TestGetResultFileName(t *testing.T) {
 	type args struct {
 		fileName string
+		fileExt  string
 	}
 	tests := []struct {
 		name string
 		args args
 		want string
 	}{
-		{"file name with mime type", args{"abc.xlsx"}, "abc_result.xlsx"},
-		{"file name without mime type", args{"abc"}, "abc_result"},
-		{"file name empty", args{""}, ""},
+		{"file name with mime type", args{"abc.xlsx", ""}, "abc_result.xlsx"},
+		{"file name without mime type", args{"abc", ""}, "abc_result"},
+		{"file name with mime type config", args{"abc", "xlsx"}, "abc_result.xlsx"},
+		{"file name empty", args{"", "xlsx"}, ""},
+		{"file name with other mime type", args{"abc.xlsx", "csv"}, "abc_result.csv"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetResultFileName(tt.args.fileName); got != tt.want {
+			if got := GetResultFileName(tt.args.fileName, tt.args.fileExt); got != tt.want {
 				t.Errorf("GetResultFileName() = %v, want %v", got, tt.want)
 			}
 		})
