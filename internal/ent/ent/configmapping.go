@@ -34,7 +34,7 @@ type ConfigMapping struct {
 	Timeout int32 `json:"timeout,omitempty"`
 	// Các định dạng cho phép của file input, cách nhau bằng dấu phẩy (ex: "XLS,XLSX,CSV")
 	InputFileType string `json:"input_file_type,omitempty"`
-	// Type of file output
+	// Type of file output (XLS, XLSX, CSV). If null, output type is input type. If has value will force output type
 	OutputFileType configmapping.OutputFileType `json:"output_file_type,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
