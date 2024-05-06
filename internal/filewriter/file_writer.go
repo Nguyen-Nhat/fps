@@ -26,8 +26,6 @@ func NewFileWriter(fileURL, sheetName string, dataIndexStart int,
 			outputFileType = constant.ExtFileCSV
 		case configmappingEnt.OutputFileTypeXLSX:
 			outputFileType = constant.ExtFileXLSX
-		case configmappingEnt.OutputFileTypeXLS:
-			outputFileType = constant.ExtFileXLS
 		default:
 			return nil, fmt.Errorf("outputFileType %v is not supported", outputFileTypeCfg)
 		}

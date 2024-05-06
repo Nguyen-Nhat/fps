@@ -29,8 +29,6 @@ func Test_NewFileWriter(t *testing.T) {
 			args{"https://a.com", "sheetName", 2, constant.ExtFileCSV, configmapping.OutputFileTypeCSV}, nil, true},
 		{"test NewFileWriter: case XLSX, wrong URL -> error",
 			args{"https://a.com", "sheetName", 2, constant.ExtFileXLSX, configmapping.OutputFileTypeXLSX}, nil, true},
-		{"test NewFileWriter: case XLS, wrong URL -> error",
-			args{"https://a.com", "sheetName", 2, constant.ExtFileXLS, configmapping.OutputFileTypeXLS}, nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
