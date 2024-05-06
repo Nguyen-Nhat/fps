@@ -16,10 +16,10 @@ type excelFileWriter struct {
 	sheetName      string
 	dataIndexStart int
 
-	outputFileContentType string
+	outputFileType string
 }
 
-func NewExcelFileWriter(fileURL, sheetName string, dataIndexStart int, contentType string) (FileWriter, error) {
+func NewExcelFileWriter(fileURL, sheetName string, dataIndexStart int, outputFileType string) (FileWriter, error) {
 	// 1. Load file
 	dataFile, err := loadDataFromURL(fileURL)
 	if err != nil {
@@ -39,10 +39,10 @@ func NewExcelFileWriter(fileURL, sheetName string, dataIndexStart int, contentTy
 
 	// 3. Return instant
 	return &excelFileWriter{
-		exFile:                exFile,
-		sheetName:             sheetName,
-		dataIndexStart:        dataIndexStart,
-		outputFileContentType: contentType,
+		exFile:         exFile,
+		sheetName:      sheetName,
+		dataIndexStart: dataIndexStart,
+		outputFileType: outputFileType,
 	}, nil
 }
 
@@ -75,11 +75,20 @@ func (e *excelFileWriter) UpdateDataInColumnOfFile(columnName string, columnData
 }
 
 func (e *excelFileWriter) OutputFileContentType() string {
-	return e.outputFileContentType
+	return getOutputFileContentType(e.outputFileType)
 }
 
 func (e *excelFileWriter) GetFileBytes() (*bytes.Buffer, error) {
-	return e.exFile.WriteToBuffer()
+	switch e.outputFileType {
+	case constant.ExtFileCSV:
+		fileData, err := e.exFile.GetRows(e.sheetName)
+		if err != nil {
+			return nil, err
+		}
+		return writeDataToCsv(fileData)
+	default:
+		return e.exFile.WriteToBuffer()
+	}
 }
 
 // private method ------------------------------------------------------------------------------------------------------

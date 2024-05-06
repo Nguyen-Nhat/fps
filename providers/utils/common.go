@@ -32,7 +32,6 @@ const (
 
 const (
 	XlsxContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-	XlsContentType  = "application/vnd.ms-excel"
 	CsvContentType  = "text/csv"
 )
 
@@ -430,12 +429,23 @@ func EqualsIgnoreCase(s1 string, s2 string) bool {
 	return TrimSpaceAndToLower(s1) == TrimSpaceAndToLower(s2)
 }
 
-func GetResultFileName(fileName string) string {
+func GetResultFileName(fileName, fileExt string) string {
 	if len(fileName) == 0 {
 		return constant.EmptyString
 	}
 	fileNameExtract := strings.Split(fileName, constant.SplitByDot)
 	fileNameExtract[0] += suffixResult
+
+	if len(fileExt) == 0 {
+		return strings.Join(fileNameExtract, constant.SplitByDot)
+	}
+
+	if len(fileNameExtract) == 1 {
+		fileNameExtract = append(fileNameExtract, strings.ToLower(fileExt))
+	} else {
+		fileNameExtract[len(fileNameExtract)-1] = strings.ToLower(fileExt)
+	}
+
 	return strings.Join(fileNameExtract, constant.SplitByDot)
 }
 

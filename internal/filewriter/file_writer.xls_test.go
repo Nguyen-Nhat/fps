@@ -10,7 +10,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 )
 
-func Test_csvFileWriter_GetFileBytes(t *testing.T) {
+func Test_xlsFileWriter_GetFileBytes(t *testing.T) {
 	tests := []struct {
 		name           string
 		fileData       [][]string
@@ -33,11 +33,18 @@ func Test_csvFileWriter_GetFileBytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &csvFileWriter{fileData: tt.fileData, outputFileType: tt.outputFileType}
+			c := &xlsFileWriter{fileData: tt.fileData, outputFileType: tt.outputFileType}
 
 			var gotData [][]string
 			var err error
-			if tt.outputFileType == constant.ExtFileXLSX {
+			if tt.outputFileType == constant.ExtFileCSV {
+				got, err := c.GetFileBytes()
+				if (err != nil) != tt.wantErr {
+					t.Errorf("GetFileBytes() error = %v, wantErr %v", err, tt.wantErr)
+					return
+				}
+				gotData, err = csv.NewReader(got).ReadAll()
+			} else {
 				got, err := c.GetFileBytes()
 				if (err != nil) != tt.wantErr {
 					t.Errorf("GetFileBytes() error = %v, wantErr %v", err, tt.wantErr)
@@ -50,13 +57,6 @@ func Test_csvFileWriter_GetFileBytes(t *testing.T) {
 					return
 				}
 				gotData, err = xlsxFile.GetRows(xlsxFile.GetSheetName(xlsxFile.GetActiveSheetIndex()))
-			} else {
-				got, err := c.GetFileBytes()
-				if (err != nil) != tt.wantErr {
-					t.Errorf("GetFileBytes() error = %v, wantErr %v", err, tt.wantErr)
-					return
-				}
-				gotData, err = csv.NewReader(got).ReadAll()
 			}
 
 			if err != nil || !reflect.DeepEqual(gotData, tt.fileData) {
@@ -66,7 +66,7 @@ func Test_csvFileWriter_GetFileBytes(t *testing.T) {
 	}
 }
 
-func Test_csvFileWriter_UpdateDataInColumnOfFile(t *testing.T) {
+func Test_xlsFileWriter_UpdateDataInColumnOfFile(t *testing.T) {
 	type fields struct {
 		fileData       [][]string
 		dataIndexStart int
@@ -104,7 +104,7 @@ func Test_csvFileWriter_UpdateDataInColumnOfFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &csvFileWriter{
+			c := &xlsFileWriter{
 				fileData:       tt.fields.fileData,
 				dataIndexStart: tt.fields.dataIndexStart,
 			}

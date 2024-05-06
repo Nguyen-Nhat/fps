@@ -10,7 +10,6 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
-	configmapping2 "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
@@ -21,6 +20,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/csv"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/xls"
 )
 
 type jobFlatten struct {
@@ -107,20 +107,10 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
 			return
 		}
-		if len(configMapping.OutputFileType) > 0 && configMapping.OutputFileType != configmapping2.OutputFileTypeCSV {
-			logger.ErrorT("InputFileType %v and OutputFileType %v are not same", constant.ExtFileCSV, configMapping.OutputFileType.String())
-			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
-			return
-		}
 		sheetData, err = csv.LoadCSVByURL(file.FileURL)
 	case constant.ExtFileXLSX:
 		if !utils.Contains(allowedInputFileTypes, constant.ExtFileXLSX) {
 			logger.ErrorT("InputFileType %v is not supported", constant.ExtFileXLSX)
-			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
-			return
-		}
-		if len(configMapping.OutputFileType) > 0 && configMapping.OutputFileType != configmapping2.OutputFileTypeXLSX {
-			logger.ErrorT("InputFileType %v and OutputFileType %v are not same", constant.ExtFileXLSX, configMapping.OutputFileType.String())
 			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
 			return
 		}
@@ -131,7 +121,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 			job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
 			return
 		}
-		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
+		sheetData, err = xls.LoadXlsByUrl(file.FileURL, configMapping.DataAtSheet)
 	default:
 		sheetData, err = excel.LoadExcelByUrl(file.FileURL, configMapping.DataAtSheet)
 	}
@@ -229,7 +219,7 @@ func (job *jobFlatten) updateFileResult(cfgMapping configloader.ConfigMappingMD,
 	}
 
 	// 3. Gen result file name then Upload to file service
-	resultFileName := utils.GetResultFileName(file.DisplayName)
+	resultFileName := utils.GetResultFileName(file.DisplayName, cfgMapping.OutputFileType.String())
 	resultFileURL, err := job.fileService.UploadFileWithBytesData(fileDataBytes, outputFileContentType, resultFileName)
 	if err != nil {
 		logger.ErrorT("Upload result file %v failed, err=%v", resultFileName, err)

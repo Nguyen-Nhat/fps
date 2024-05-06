@@ -8,39 +8,38 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
-	csvUtil "git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/csv"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/xls"
 )
 
-type csvFileWriter struct {
+type xlsFileWriter struct {
 	fileData       [][]string
-	dataIndexStart int
 	sheetName      string
+	dataIndexStart int
 
 	outputFileType string
 }
 
-func NewCsvFileWriter(fileURL, sheetName string, dataIndexStart int, outputFileType string) (FileWriter, error) {
-	// 1. Load CSV data
-	allRowsData, err := csvUtil.LoadCSVByURL(fileURL)
+func NewXlsFileWriter(fileURL, sheetName string, dataIndexStart int, outputFileType string) (FileWriter, error) {
+	// 1. Load file
+	fileData, err := xls.LoadXlsByUrl(fileURL, sheetName)
 	if err != nil {
-		logger.ErrorT("Failed to get all rows in file")
 		return nil, err
 	}
 
 	// 2. Return instant
-	return &csvFileWriter{
-		fileData:       allRowsData,
-		dataIndexStart: dataIndexStart,
+	return &xlsFileWriter{
+		fileData:       fileData,
 		sheetName:      sheetName,
+		dataIndexStart: dataIndexStart,
 		outputFileType: outputFileType,
 	}, nil
 }
 
 // UpdateDataInColumnOfFile ... write {columnData} into column {columnName}
-func (c *csvFileWriter) UpdateDataInColumnOfFile(columnName string, columnData map[int]string) error {
-	// 1. Detect column_index base on column_name
-	allRowsData := c.fileData
+func (x *xlsFileWriter) UpdateDataInColumnOfFile(columnName string, columnData map[int]string) error {
+	allRowsData := x.fileData
+	// 1. Get column index
 	var columnIndex int
 	var err error
 	if excel.IsColumnIndex(columnName) {
@@ -57,7 +56,7 @@ func (c *csvFileWriter) UpdateDataInColumnOfFile(columnName string, columnData m
 		}
 	}
 
-	// 2. Set data into CSV data
+	// 2. Set data into file data
 	resultData := make([][]string, len(allRowsData))
 	for rowID, rowData := range allRowsData {
 		// init array, extend size if columnIndex is big
@@ -70,31 +69,31 @@ func (c *csvFileWriter) UpdateDataInColumnOfFile(columnName string, columnData m
 		copy(resultData[rowID], rowData)
 
 		// ignore if row is not Data
-		if rowID < c.dataIndexStart-1 {
+		if rowID < x.dataIndexStart-1 {
 			continue
 		}
 
 		// Update data
-		if data, existed := columnData[rowID-c.dataIndexStart+1]; existed {
+		if data, existed := columnData[rowID-x.dataIndexStart+1]; existed {
 			resultData[rowID][columnIndex-1] = data
 		}
 	}
 
 	// 3. Replace value for file data
-	c.fileData = resultData
+	x.fileData = resultData
 	return nil
 }
 
-func (c *csvFileWriter) OutputFileContentType() string {
-	return getOutputFileContentType(c.outputFileType)
+func (x *xlsFileWriter) OutputFileContentType() string {
+	return getOutputFileContentType(x.outputFileType)
 }
 
-func (c *csvFileWriter) GetFileBytes() (*bytes.Buffer, error) {
-	switch c.outputFileType {
-	case constant.ExtFileXLSX:
-		return writeDataToXlsx(c.fileData, c.sheetName)
+func (x *xlsFileWriter) GetFileBytes() (*bytes.Buffer, error) {
+	switch x.outputFileType {
+	case constant.ExtFileCSV:
+		return writeDataToCsv(x.fileData)
 	default:
-		return writeDataToCsv(c.fileData)
+		return writeDataToXlsx(x.fileData, x.sheetName)
 	}
 }
 
