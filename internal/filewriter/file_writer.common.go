@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	defaultSheetName = "data"
+	defaultSheetName          = "Data"
+	defaultSheetNameFromExcel = "Sheet1"
 )
 
 func loadDataFromURL(fileURL string) ([]byte, error) {
@@ -72,14 +73,9 @@ func writeDataToXlsx(data [][]string, sheetName string) (*bytes.Buffer, error) {
 	if sheetName == constant.EmptyString {
 		sheetName = defaultSheetName
 	}
-	sheetIndex, err := exFile.NewSheet(sheetName)
-	if err != nil {
-		return nil, err
-	}
 
-	// 2. Set active sheet
-	exFile.SetActiveSheet(sheetIndex)
-	err = exFile.SetSheetVisible(sheetName, true)
+	// 2. Rename default sheet name
+	err := exFile.SetSheetName(defaultSheetNameFromExcel, sheetName)
 	if err != nil {
 		return nil, err
 	}
