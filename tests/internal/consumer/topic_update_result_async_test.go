@@ -91,6 +91,7 @@ func (ts *topicUpdateResultAsyncSuite) Test200_HappyCase_ThenReturnSuccess() {
 	})
 	payload := api.TaskResultEvent{
 		RefId: 1,
+		Code:  0,
 		ResultData: &api.ResultData{
 			ProcessingResult: "result",
 			Message:          "",
@@ -116,6 +117,7 @@ func (ts *topicUpdateResultAsyncSuite) TestUpdateWithMessageError_ThenReturnSucc
 
 	payload := api.TaskResultEvent{
 		RefId: 1,
+		Code:  1,
 		ResultData: &api.ResultData{
 			ProcessingResult: "result",
 			Message:          "error exist",
@@ -150,6 +152,7 @@ func (ts *topicUpdateResultAsyncSuite) TestAlreadyUpdated_ThenReturnSuccess() {
 
 	payload := api.TaskResultEvent{
 		RefId: 1,
+		Code:  0,
 		ResultData: &api.ResultData{
 			ProcessingResult: "result",
 			Message:          "",
