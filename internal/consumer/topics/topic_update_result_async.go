@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"go.tekoapis.com/tekone/app/aggregator/file_processing_service/api"
 	"go.tekoapis.com/tekone/library/teka"
 )
+
+const payloadCodeSuccess = 0
 
 func (w *Worker) TopicUpsertResultAsync(ctx context.Context, msg *teka.Message) error {
 	if msg == nil {
@@ -40,10 +41,10 @@ func (w *Worker) TopicUpsertResultAsync(ctx context.Context, msg *teka.Message) 
 	}
 	result := string(resultAsync)
 	task.ResultAsync = &result
-	if payload.ResultData.Message != constant.EmptyString {
-		task.Status = fileprocessingrow.StatusFailed
-	} else {
+	if payload.Code == payloadCodeSuccess {
 		task.Status = fileprocessingrow.StatusSuccess
+	} else {
+		task.Status = fileprocessingrow.StatusFailed
 	}
 	task.ReceiveResultAsyncAt = &msg.Timestamp
 
