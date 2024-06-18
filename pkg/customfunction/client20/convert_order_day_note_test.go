@@ -18,9 +18,7 @@ func Test_ConvertOrderDay(t *testing.T) {
 			name:         "orderDayNote is empty, return empty OrderDay",
 			orderDayNote: "",
 			want: customFunc.FuncResult{
-				Result: OrderDay{
-					EveryDay: true,
-				},
+				Result: nil,
 			},
 		},
 		{
