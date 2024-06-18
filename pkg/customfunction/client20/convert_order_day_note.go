@@ -29,8 +29,13 @@ const (
 
 // ConvertOrderDay ...
 func ConvertOrderDay(orderDayNote string) customFunc.FuncResult {
+	if orderDayNote == constant.EmptyString {
+		return customFunc.FuncResult{
+			Result: nil,
+		}
+	}
 	orderDayNote = strings.ToUpper(orderDayNote)
-	if orderDayNote == constant.EmptyString || orderDayNote == everyDayUpperCase {
+	if orderDayNote == everyDayUpperCase {
 		return customFunc.FuncResult{
 			Result: OrderDay{
 				EveryDay: true,
