@@ -75,9 +75,10 @@ type ConfigTaskMD struct {
 
 // RequestFieldMD ... Metadata for Request Field, use for describing RequestParams, RequestBody
 type RequestFieldMD struct {
-	Field        string // field name to request
-	Type         string // support int, string, array (item is defined in array_item)
-	ValuePattern string // it may be raw value or pattern to get
+	Field               string // field name to request
+	Type                string // support int, string, array (item is defined in array_item)
+	ValuePattern        string // it may be raw value or pattern to get
+	DefaultValuePattern string // if Value from ValuePattern is empty, use DefaultValuePattern
 
 	// For array
 	ArrayItem    []*RequestFieldMD // optional, have value when type=array

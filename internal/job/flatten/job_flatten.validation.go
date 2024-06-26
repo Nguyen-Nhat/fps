@@ -9,6 +9,7 @@ import (
 
 	"github.com/xuri/excelize/v2"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
@@ -362,18 +363,23 @@ func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestF
 
 	// Validate Require
 	paramValue, existed := fileParameters[paramKey]
-	if !existed {
+	if !existed && reqField.Required {
 		reason := fmt.Sprintf("%s %s", errConfigMissingParam, paramKey)
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
 	}
 
 	// convert param to string
-	paramValueStr := ""
+	paramValueStr := constant.EmptyString
 	if reqField.Type == configloader.TypeJson {
 		jsonStr, _ := json.Marshal(paramValue)
 		paramValueStr = string(jsonStr)
 	} else {
 		paramValueStr = fmt.Sprintf("%v", paramValue)
+	}
+
+	// set default value if empty
+	if paramValueStr == constant.EmptyString {
+		paramValueStr = reqField.DefaultValuePattern
 	}
 
 	// check required
@@ -399,18 +405,19 @@ func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqFie
 	// ColumnNameToNumber return value in range {1...}, but we expect columnIndex belongs to {0...}
 	columnIndex--
 
+	cellValue := constant.EmptyString
+	if columnIndex < len(rowData) {
+		cellValue = strings.TrimSpace(rowData[columnIndex])
+	}
+	if cellValue == constant.EmptyString {
+		cellValue = reqField.DefaultValuePattern
+	}
+
 	// Validate Require
-	if reqField.Required &&
-		(columnIndex >= len(rowData) || // column request out of range
-			len(strings.TrimSpace(rowData[columnIndex])) == 0) { // column is required by value is empty
+	if reqField.Required && cellValue == constant.EmptyString {
 		reason := fmt.Sprintf("%s %s", errRowMissingDataColumn, columnKey)
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
 		return "", errorRows
-	}
-
-	cellValue := ""
-	if columnIndex < len(rowData) { // if out of range -> default is empty
-		cellValue = strings.TrimSpace(rowData[columnIndex])
 	}
 
 	reqField.Value = cellValue
