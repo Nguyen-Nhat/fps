@@ -101,6 +101,8 @@ func Test_validateAndGetValueForRequestFieldExcel(t *testing.T) {
 	reqFieldKeyABRequired := configloader.RequestFieldMD{ValueDependsOnKey: "AB", Required: true}
 	reqFieldKeyABNotRequired := configloader.RequestFieldMD{ValueDependsOnKey: "AB", Required: true}
 	reqFieldKeyWrong := configloader.RequestFieldMD{ValueDependsOnKey: "A1", Required: true}
+	reqFieldKeyARequiredWithDefault := configloader.RequestFieldMD{ValueDependsOnKey: "A", Required: true, DefaultValuePattern: "valDefault"}
+	reqFieldKeyANotRequiredWithDefault := configloader.RequestFieldMD{ValueDependsOnKey: "A", Required: false, DefaultValuePattern: "valDefault"}
 
 	type args struct {
 		rowID    int
@@ -126,6 +128,9 @@ func Test_validateAndGetValueForRequestFieldExcel(t *testing.T) {
 			"val1", "val2", "val3", "val4", "val5", "val_Z", "val_AA", "val_AB", "val9", "val10",
 		}, &reqFieldKeyABRequired}, "val_AB", false},
 		{"test case field AB NOT require, key OUT of column range -> empty value", args{1, []string{"val1", "val2"}, &reqFieldKeyABNotRequired}, "", false},
+
+		{"test case field A require and key in column range but empty -> get default value", args{1, []string{"", "val2"}, &reqFieldKeyARequiredWithDefault}, "valDefault", false},
+		{"test case field A NOT require, key in column range but empty -> get default value", args{1, []string{"", "val2"}, &reqFieldKeyANotRequiredWithDefault}, "valDefault", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

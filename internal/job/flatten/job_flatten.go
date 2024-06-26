@@ -78,10 +78,6 @@ func newJobFlatten(
 func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.ProcessingFile) {
 	logger.Infof("----- Start flattening ProcessingFile with ID = %v \nFile = %+v", file.ID, file)
 
-	if job.flagSupClient.IsEpicMa175Enabled(ctx) {
-		logger.Info("==================== Epic MA175 is enabled ======================\n")
-	}
-
 	// 1. Check status
 	if file.Status != fileprocessing.StatusInit {
 		logger.ErrorT("Not handle status=%v", file.Status)
