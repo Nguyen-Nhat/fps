@@ -16,11 +16,12 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
-	t "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customtype"
 	"moul.io/http2curl"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
+	t "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customtype"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
@@ -28,6 +29,8 @@ const (
 	isPrivateStr   = "isPrivate"
 	isPrivateValue = "true"
 	suffixResult   = "_result"
+	maxRetry       = 3
+	retryDelay     = 10
 )
 
 const (
@@ -217,14 +220,24 @@ func UploadFile[RES any](client *http.Client, urlPath string, content FileConten
 		return nil, err
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	rsp, err := client.Do(req)
-	if err != nil {
+	rsp := &http.Response{}
+
+	for retryCount := 0; retryCount < maxRetry; retryCount++ {
+		rsp, err = client.Do(req)
+		if err != nil || rsp.StatusCode != http.StatusOK {
+			time.Sleep(time.Duration(retryDelay) * time.Second)
+			continue
+		}
+		break
+	}
+	if err != nil || rsp == nil {
 		logger.Errorf("error request %v", err)
 		return nil, err
 	}
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	if rsp.StatusCode != http.StatusOK {
+		logger.Infof("Request failed with response code: %d", rsp.StatusCode)
+		return nil, fmt.Errorf("request failed with http status %v", rsp.StatusCode)
+	}
 
 	respBody, err := io.ReadAll(rsp.Body)
 	if err != nil {
@@ -232,11 +245,6 @@ func UploadFile[RES any](client *http.Client, urlPath string, content FileConten
 		return nil, err
 	}
 	logger.Infof(" ===== Upload file response body: %s", respBody)
-
-	if rsp.StatusCode != http.StatusOK {
-		logger.Infof("Request failed with response code: %d", rsp.StatusCode)
-		return nil, fmt.Errorf("request failed with http status %v", rsp.StatusCode)
-	}
 
 	// 6. Convert response body to Entity
 	var respBodyObj RES
