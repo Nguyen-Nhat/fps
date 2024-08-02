@@ -30,5 +30,6 @@ const (
 
 // Internal error
 const (
-	ErrInternal = "internal server error"
+	ErrInternal            = "internal server error"
+	ErrSellerIdIsNotNumber = "sellerId is not a number"
 )

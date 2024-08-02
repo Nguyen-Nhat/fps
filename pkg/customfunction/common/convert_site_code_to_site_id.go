@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/patrickmn/go-cache"
 
+	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/constants"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/errorz"
@@ -20,6 +22,12 @@ import (
 const (
 	allSite          = "ALL"
 	siteIdForAllSite = 0
+
+	reqParamSellerId = "sellerId"
+	reqParamSiteName = "siteName"
+	reqParamIsActive = "isActive"
+
+	filterActiveSite = "true"
 )
 
 var cacheStore = cache.New(15*time.Minute, 120*time.Minute)
@@ -65,7 +73,20 @@ func callApiGetSites(siteCode string, sellerId string) ([]SiteInfo, error) {
 	// 1. Prepare call api
 	httpClient := helpers.InitHttpClient()
 	reqHeader := map[string]string{"Content-Type": "application/json"}
-	reqParams := map[string]string{"sellerId": sellerId, "siteName": siteCode}
+	reqParams := map[string]string{
+		reqParamSellerId: sellerId,
+		reqParamSiteName: siteCode, // Filter results like Site Name or Site Code.
+	}
+
+	// 1.1. Check if client enable for OMNI-1139
+	sellerIdInt, err := strconv.Atoi(sellerId)
+	if err != nil {
+		logger.Errorf("failed to convert sellerId=%s to int, got error=%v", sellerId, err)
+		return nil, errors.New(errorz.ErrSellerIdIsNotNumber)
+	}
+	if utils.Contains(config.Cfg.ExtraConfig.Epic1139EnableSellersObj, int32(sellerIdInt)) {
+		reqParams[reqParamIsActive] = filterActiveSite // OMNI-1139, get only active site
+	}
 
 	// 2. Call api
 	httpStatus, resBody, err := utils.SendHTTPRequest[any, GetSiteResponse](httpClient, http.MethodGet, constants.UrlApiGetSites, reqHeader, reqParams, nil)
