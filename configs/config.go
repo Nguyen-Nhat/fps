@@ -3,9 +3,12 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/viper"
+
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 )
 
 // ServerListen for specifying host & port
@@ -40,6 +43,7 @@ type Config struct {
 	FlagSupHost     string         `mapstructure:"flag_sup_host"`
 	MigrationFolder string         `mapstructure:"migration_folder"`
 	Kafka           KafkaConfig    `mapstructure:"kafka"`
+	ExtraConfig     ExtraConfig    `mapstructure:"extra_config"`
 }
 
 type ProviderConfig struct {
@@ -53,6 +57,11 @@ type KafkaConfig struct {
 
 	// Topic
 	UpdateResultAsyncTopic string `mapstructure:"update_result_async_topic"`
+}
+
+type ExtraConfig struct {
+	Epic1139EnableSellers    string  `mapstructure:"epic1139_enable_sellers"` // list of seller id, split by comma
+	Epic1139EnableSellersObj []int32 `mapstructure:"-"`
 }
 
 const (
@@ -101,6 +110,10 @@ func Load(paths ...string) Config {
 		panic(err)
 	}
 
+	if err := cfg.parse(); err != nil {
+		panic(err)
+	}
+
 	checkRunProfile(&cfg)
 
 	return cfg
@@ -115,4 +128,23 @@ func checkRunProfile(cfg *Config) {
 		fmt.Println("===== ---> When running in TEST profile, DB is switched to", testingDBName)
 	}
 	fmt.Println() // only new line
+}
+
+func (c *Config) parse() error {
+	// parse extra config
+	if c.ExtraConfig.Epic1139EnableSellers != constant.EmptyString {
+		sellers := strings.Split(c.ExtraConfig.Epic1139EnableSellers, constant.SplitByComma)
+		c.ExtraConfig.Epic1139EnableSellersObj = make([]int32, 0, len(sellers))
+		for idx, sellerStr := range sellers {
+			sellerId, err := strconv.Atoi(sellerStr)
+			if err != nil {
+				return err
+			}
+			c.ExtraConfig.Epic1139EnableSellersObj[idx] = int32(sellerId)
+		}
+	}
+
+	// parse another here
+
+	return nil
 }
