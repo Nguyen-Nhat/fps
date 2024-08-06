@@ -9,12 +9,14 @@ import (
 	"time"
 
 	"github.com/patrickmn/go-cache"
+	"github.com/tidwall/gjson"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/constants"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/errorz"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/helpers"
+	t "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customtype"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
@@ -25,9 +27,12 @@ const (
 
 	reqParamSellerId = "sellerId"
 	reqParamSiteName = "siteName"
+	reqParamSiteIds  = "siteIds"
 	reqParamIsActive = "isActive"
 
 	filterActiveSite = "true"
+
+	apiName = "GetSites"
 )
 
 var cacheStore = cache.New(15*time.Minute, 120*time.Minute)
@@ -69,13 +74,19 @@ func ConvertSiteCode2SiteId(siteCode string, sellerId string, useCache ...bool) 
 	return FuncResult{ErrorMessage: errorz.ErrNoSites(siteCode)}
 }
 
-func callApiGetSites(siteCode string, sellerId string) ([]SiteInfo, error) {
+func callApiGetSites(siteCode string, sellerId string, siteIds ...string) ([]SiteInfo, error) {
 	// 1. Prepare call api
 	httpClient := helpers.InitHttpClient()
 	reqHeader := map[string]string{"Content-Type": "application/json"}
-	reqParams := map[string]string{
-		reqParamSellerId: sellerId,
-		reqParamSiteName: siteCode, // Filter results like Site Name or Site Code.
+	reqParams := []t.Pair[string, string]{
+		{Key: reqParamSellerId, Value: sellerId},
+		{Key: reqParamSiteName, Value: siteCode}, // Filter results like Site Name or Site Code.
+	}
+
+	if len(siteIds) > 0 {
+		for _, siteId := range siteIds {
+			reqParams = append(reqParams, t.Pair[string, string]{Key: reqParamSiteIds, Value: siteId})
+		}
 	}
 
 	// 1.1. Check if client enable for OMNI-1139
@@ -85,11 +96,11 @@ func callApiGetSites(siteCode string, sellerId string) ([]SiteInfo, error) {
 		return nil, errors.New(errorz.ErrSellerIdIsNotNumber)
 	}
 	if utils.Contains(config.Cfg.ExtraConfig.Epic1139EnableSellersObj, int32(sellerIdInt)) {
-		reqParams[reqParamIsActive] = filterActiveSite // OMNI-1139, get only active site
+		reqParams = append(reqParams, t.Pair[string, string]{Key: reqParamIsActive, Value: filterActiveSite}) // OMNI-1139, get only active site
 	}
 
 	// 2. Call api
-	httpStatus, resBody, err := utils.SendHTTPRequest[any, GetSiteResponse](httpClient, http.MethodGet, constants.UrlApiGetSites, reqHeader, reqParams, nil)
+	httpStatus, resBody, err := utils.SendHTTPRequestWithArrayParams[any, GetSiteResponse](httpClient, http.MethodGet, constants.UrlApiGetSites, reqHeader, reqParams, nil)
 	if err != nil {
 		logger.Errorf("failed to call %v, got error=%v, resBody=%+v", constants.UrlApiGetSites, err, resBody)
 		return nil, err
@@ -129,4 +140,63 @@ func ConvertSiteCodes2SiteIds(sellerId string, inputSiteCodes string, separator 
 
 func getKeySite(sellerId string, siteCode string) string {
 	return fmt.Sprintf("%s_site_%s", sellerId, siteCode)
+}
+
+// ValidateAndConvertSiteCode2SiteId
+// Validate siteCode have siteId in list mustInSiteIds, if true return siteId, else return error
+// Req: sellerId, siteCode, mustInSiteIds (can be array string siteId or only a string siteId)
+// Res: siteId if siteCode have siteId in mustInSiteIds, else return error
+func ValidateAndConvertSiteCode2SiteId(sellerId, siteCode string, mustInSiteIds interface{}) FuncResult {
+	siteCode = strings.TrimSpace(siteCode)
+	// 1. Check if all site
+	if strings.ToUpper(siteCode) == allSite {
+		return FuncResult{Result: siteIdForAllSite}
+	}
+
+	if mustInSiteIds == nil {
+		return ConvertSiteCode2SiteId(siteCode, sellerId, true)
+	}
+
+	// parse siteIds
+	siteIdsArr := make([]string, 0)
+	siteIdParsed := gjson.Parse(mustInSiteIds.(string))
+	if siteIdParsed.IsArray() {
+		for _, siteId := range siteIdParsed.Array() {
+			siteIdsArr = append(siteIdsArr, siteId.String())
+		}
+	} else {
+		siteIdsArr = append(siteIdsArr, mustInSiteIds.(string))
+	}
+
+	if len(siteIdsArr) == 0 {
+		return ConvertSiteCode2SiteId(siteCode, sellerId, true)
+	}
+
+	// 2. Check in cache
+	siteId, found := cacheStore.Get(getKeySite(sellerId, siteCode))
+	if found {
+		for _, id := range siteIdsArr {
+			if id == strconv.Itoa(siteId.(int)) {
+				return FuncResult{Result: siteId.(int)}
+			}
+		}
+		return FuncResult{ErrorMessage: errorz.ErrNoSites(siteCode)}
+	}
+
+	// 3. Call api
+	siteInfoResp, err := callApiGetSites(siteCode, sellerId, siteIdsArr...)
+	if err != nil {
+		return FuncResult{ErrorMessage: errorz.ErrCallAPI(apiName, err.Error())}
+	}
+
+	// 4. Get site id from response
+	for _, site := range siteInfoResp {
+		// 4.1. Save to cache
+		cacheStore.Set(getKeySite(sellerId, site.SellerSiteCode), site.Id, cache.DefaultExpiration)
+		if utils.EqualsIgnoreCase(site.SellerSiteCode, siteCode) {
+			return FuncResult{Result: site.Id}
+		}
+	}
+
+	return FuncResult{ErrorMessage: errorz.ErrNoSites(siteCode)}
 }
