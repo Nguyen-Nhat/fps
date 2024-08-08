@@ -134,7 +134,7 @@ func (c *Config) parse() error {
 	// parse extra config
 	if c.ExtraConfig.Epic1139EnableSellers != constant.EmptyString {
 		sellers := strings.Split(c.ExtraConfig.Epic1139EnableSellers, constant.SplitByComma)
-		c.ExtraConfig.Epic1139EnableSellersObj = make([]int32, 0, len(sellers))
+		c.ExtraConfig.Epic1139EnableSellersObj = make([]int32, len(sellers))
 		for idx, sellerStr := range sellers {
 			sellerId, err := strconv.Atoi(sellerStr)
 			if err != nil {
