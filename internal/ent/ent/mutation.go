@@ -42,30 +42,36 @@ const (
 // ConfigMappingMutation represents an operation that mutates the ConfigMapping nodes in the graph.
 type ConfigMappingMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *int
-	client_id            *int32
-	addclient_id         *int32
-	total_tasks          *int32
-	addtotal_tasks       *int32
-	data_start_at_row    *int32
-	adddata_start_at_row *int32
-	data_at_sheet        *string
-	require_column_index *string
-	error_column_index   *string
-	result_file_config   *string
-	timeout              *int32
-	addtimeout           *int32
-	input_file_type      *string
-	output_file_type     *configmapping.OutputFileType
-	created_at           *time.Time
-	created_by           *string
-	updated_at           *time.Time
-	clearedFields        map[string]struct{}
-	done                 bool
-	oldValue             func(context.Context) (*ConfigMapping, error)
-	predicates           []predicate.ConfigMapping
+	op                       Op
+	typ                      string
+	id                       *int
+	client_id                *int32
+	addclient_id             *int32
+	total_tasks              *int32
+	addtotal_tasks           *int32
+	data_start_at_row        *int32
+	adddata_start_at_row     *int32
+	data_at_sheet            *string
+	require_column_index     *string
+	error_column_index       *string
+	result_file_config       *string
+	timeout                  *int32
+	addtimeout               *int32
+	input_file_type          *string
+	output_file_type         *configmapping.OutputFileType
+	max_file_size            *int32
+	addmax_file_size         *int32
+	tenant_id                *string
+	using_merchant_attr_name *bool
+	merchant_attribute_name  *string
+	ui_config                *string
+	created_at               *time.Time
+	created_by               *string
+	updated_at               *time.Time
+	clearedFields            map[string]struct{}
+	done                     bool
+	oldValue                 func(context.Context) (*ConfigMapping, error)
+	predicates               []predicate.ConfigMapping
 }
 
 var _ ent.Mutation = (*ConfigMappingMutation)(nil)
@@ -632,6 +638,245 @@ func (m *ConfigMappingMutation) ResetOutputFileType() {
 	delete(m.clearedFields, configmapping.FieldOutputFileType)
 }
 
+// SetMaxFileSize sets the "max_file_size" field.
+func (m *ConfigMappingMutation) SetMaxFileSize(i int32) {
+	m.max_file_size = &i
+	m.addmax_file_size = nil
+}
+
+// MaxFileSize returns the value of the "max_file_size" field in the mutation.
+func (m *ConfigMappingMutation) MaxFileSize() (r int32, exists bool) {
+	v := m.max_file_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaxFileSize returns the old "max_file_size" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldMaxFileSize(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMaxFileSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMaxFileSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaxFileSize: %w", err)
+	}
+	return oldValue.MaxFileSize, nil
+}
+
+// AddMaxFileSize adds i to the "max_file_size" field.
+func (m *ConfigMappingMutation) AddMaxFileSize(i int32) {
+	if m.addmax_file_size != nil {
+		*m.addmax_file_size += i
+	} else {
+		m.addmax_file_size = &i
+	}
+}
+
+// AddedMaxFileSize returns the value that was added to the "max_file_size" field in this mutation.
+func (m *ConfigMappingMutation) AddedMaxFileSize() (r int32, exists bool) {
+	v := m.addmax_file_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMaxFileSize resets all changes to the "max_file_size" field.
+func (m *ConfigMappingMutation) ResetMaxFileSize() {
+	m.max_file_size = nil
+	m.addmax_file_size = nil
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *ConfigMappingMutation) SetTenantID(s string) {
+	m.tenant_id = &s
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *ConfigMappingMutation) TenantID() (r string, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldTenantID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *ConfigMappingMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.clearedFields[configmapping.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *ConfigMappingMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[configmapping.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *ConfigMappingMutation) ResetTenantID() {
+	m.tenant_id = nil
+	delete(m.clearedFields, configmapping.FieldTenantID)
+}
+
+// SetUsingMerchantAttrName sets the "using_merchant_attr_name" field.
+func (m *ConfigMappingMutation) SetUsingMerchantAttrName(b bool) {
+	m.using_merchant_attr_name = &b
+}
+
+// UsingMerchantAttrName returns the value of the "using_merchant_attr_name" field in the mutation.
+func (m *ConfigMappingMutation) UsingMerchantAttrName() (r bool, exists bool) {
+	v := m.using_merchant_attr_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUsingMerchantAttrName returns the old "using_merchant_attr_name" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldUsingMerchantAttrName(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUsingMerchantAttrName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUsingMerchantAttrName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUsingMerchantAttrName: %w", err)
+	}
+	return oldValue.UsingMerchantAttrName, nil
+}
+
+// ResetUsingMerchantAttrName resets all changes to the "using_merchant_attr_name" field.
+func (m *ConfigMappingMutation) ResetUsingMerchantAttrName() {
+	m.using_merchant_attr_name = nil
+}
+
+// SetMerchantAttributeName sets the "merchant_attribute_name" field.
+func (m *ConfigMappingMutation) SetMerchantAttributeName(s string) {
+	m.merchant_attribute_name = &s
+}
+
+// MerchantAttributeName returns the value of the "merchant_attribute_name" field in the mutation.
+func (m *ConfigMappingMutation) MerchantAttributeName() (r string, exists bool) {
+	v := m.merchant_attribute_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMerchantAttributeName returns the old "merchant_attribute_name" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldMerchantAttributeName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMerchantAttributeName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMerchantAttributeName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMerchantAttributeName: %w", err)
+	}
+	return oldValue.MerchantAttributeName, nil
+}
+
+// ClearMerchantAttributeName clears the value of the "merchant_attribute_name" field.
+func (m *ConfigMappingMutation) ClearMerchantAttributeName() {
+	m.merchant_attribute_name = nil
+	m.clearedFields[configmapping.FieldMerchantAttributeName] = struct{}{}
+}
+
+// MerchantAttributeNameCleared returns if the "merchant_attribute_name" field was cleared in this mutation.
+func (m *ConfigMappingMutation) MerchantAttributeNameCleared() bool {
+	_, ok := m.clearedFields[configmapping.FieldMerchantAttributeName]
+	return ok
+}
+
+// ResetMerchantAttributeName resets all changes to the "merchant_attribute_name" field.
+func (m *ConfigMappingMutation) ResetMerchantAttributeName() {
+	m.merchant_attribute_name = nil
+	delete(m.clearedFields, configmapping.FieldMerchantAttributeName)
+}
+
+// SetUIConfig sets the "ui_config" field.
+func (m *ConfigMappingMutation) SetUIConfig(s string) {
+	m.ui_config = &s
+}
+
+// UIConfig returns the value of the "ui_config" field in the mutation.
+func (m *ConfigMappingMutation) UIConfig() (r string, exists bool) {
+	v := m.ui_config
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUIConfig returns the old "ui_config" field's value of the ConfigMapping entity.
+// If the ConfigMapping object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConfigMappingMutation) OldUIConfig(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUIConfig is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUIConfig requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUIConfig: %w", err)
+	}
+	return oldValue.UIConfig, nil
+}
+
+// ClearUIConfig clears the value of the "ui_config" field.
+func (m *ConfigMappingMutation) ClearUIConfig() {
+	m.ui_config = nil
+	m.clearedFields[configmapping.FieldUIConfig] = struct{}{}
+}
+
+// UIConfigCleared returns if the "ui_config" field was cleared in this mutation.
+func (m *ConfigMappingMutation) UIConfigCleared() bool {
+	_, ok := m.clearedFields[configmapping.FieldUIConfig]
+	return ok
+}
+
+// ResetUIConfig resets all changes to the "ui_config" field.
+func (m *ConfigMappingMutation) ResetUIConfig() {
+	m.ui_config = nil
+	delete(m.clearedFields, configmapping.FieldUIConfig)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ConfigMappingMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -759,7 +1004,7 @@ func (m *ConfigMappingMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConfigMappingMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 18)
 	if m.client_id != nil {
 		fields = append(fields, configmapping.FieldClientID)
 	}
@@ -789,6 +1034,21 @@ func (m *ConfigMappingMutation) Fields() []string {
 	}
 	if m.output_file_type != nil {
 		fields = append(fields, configmapping.FieldOutputFileType)
+	}
+	if m.max_file_size != nil {
+		fields = append(fields, configmapping.FieldMaxFileSize)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, configmapping.FieldTenantID)
+	}
+	if m.using_merchant_attr_name != nil {
+		fields = append(fields, configmapping.FieldUsingMerchantAttrName)
+	}
+	if m.merchant_attribute_name != nil {
+		fields = append(fields, configmapping.FieldMerchantAttributeName)
+	}
+	if m.ui_config != nil {
+		fields = append(fields, configmapping.FieldUIConfig)
 	}
 	if m.created_at != nil {
 		fields = append(fields, configmapping.FieldCreatedAt)
@@ -827,6 +1087,16 @@ func (m *ConfigMappingMutation) Field(name string) (ent.Value, bool) {
 		return m.InputFileType()
 	case configmapping.FieldOutputFileType:
 		return m.OutputFileType()
+	case configmapping.FieldMaxFileSize:
+		return m.MaxFileSize()
+	case configmapping.FieldTenantID:
+		return m.TenantID()
+	case configmapping.FieldUsingMerchantAttrName:
+		return m.UsingMerchantAttrName()
+	case configmapping.FieldMerchantAttributeName:
+		return m.MerchantAttributeName()
+	case configmapping.FieldUIConfig:
+		return m.UIConfig()
 	case configmapping.FieldCreatedAt:
 		return m.CreatedAt()
 	case configmapping.FieldCreatedBy:
@@ -862,6 +1132,16 @@ func (m *ConfigMappingMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldInputFileType(ctx)
 	case configmapping.FieldOutputFileType:
 		return m.OldOutputFileType(ctx)
+	case configmapping.FieldMaxFileSize:
+		return m.OldMaxFileSize(ctx)
+	case configmapping.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case configmapping.FieldUsingMerchantAttrName:
+		return m.OldUsingMerchantAttrName(ctx)
+	case configmapping.FieldMerchantAttributeName:
+		return m.OldMerchantAttributeName(ctx)
+	case configmapping.FieldUIConfig:
+		return m.OldUIConfig(ctx)
 	case configmapping.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case configmapping.FieldCreatedBy:
@@ -947,6 +1227,41 @@ func (m *ConfigMappingMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetOutputFileType(v)
 		return nil
+	case configmapping.FieldMaxFileSize:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaxFileSize(v)
+		return nil
+	case configmapping.FieldTenantID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case configmapping.FieldUsingMerchantAttrName:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUsingMerchantAttrName(v)
+		return nil
+	case configmapping.FieldMerchantAttributeName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMerchantAttributeName(v)
+		return nil
+	case configmapping.FieldUIConfig:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUIConfig(v)
+		return nil
 	case configmapping.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -988,6 +1303,9 @@ func (m *ConfigMappingMutation) AddedFields() []string {
 	if m.addtimeout != nil {
 		fields = append(fields, configmapping.FieldTimeout)
 	}
+	if m.addmax_file_size != nil {
+		fields = append(fields, configmapping.FieldMaxFileSize)
+	}
 	return fields
 }
 
@@ -1004,6 +1322,8 @@ func (m *ConfigMappingMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDataStartAtRow()
 	case configmapping.FieldTimeout:
 		return m.AddedTimeout()
+	case configmapping.FieldMaxFileSize:
+		return m.AddedMaxFileSize()
 	}
 	return nil, false
 }
@@ -1041,6 +1361,13 @@ func (m *ConfigMappingMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddTimeout(v)
 		return nil
+	case configmapping.FieldMaxFileSize:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMaxFileSize(v)
+		return nil
 	}
 	return fmt.Errorf("unknown ConfigMapping numeric field %s", name)
 }
@@ -1054,6 +1381,15 @@ func (m *ConfigMappingMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(configmapping.FieldOutputFileType) {
 		fields = append(fields, configmapping.FieldOutputFileType)
+	}
+	if m.FieldCleared(configmapping.FieldTenantID) {
+		fields = append(fields, configmapping.FieldTenantID)
+	}
+	if m.FieldCleared(configmapping.FieldMerchantAttributeName) {
+		fields = append(fields, configmapping.FieldMerchantAttributeName)
+	}
+	if m.FieldCleared(configmapping.FieldUIConfig) {
+		fields = append(fields, configmapping.FieldUIConfig)
 	}
 	return fields
 }
@@ -1074,6 +1410,15 @@ func (m *ConfigMappingMutation) ClearField(name string) error {
 		return nil
 	case configmapping.FieldOutputFileType:
 		m.ClearOutputFileType()
+		return nil
+	case configmapping.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case configmapping.FieldMerchantAttributeName:
+		m.ClearMerchantAttributeName()
+		return nil
+	case configmapping.FieldUIConfig:
+		m.ClearUIConfig()
 		return nil
 	}
 	return fmt.Errorf("unknown ConfigMapping nullable field %s", name)
@@ -1112,6 +1457,21 @@ func (m *ConfigMappingMutation) ResetField(name string) error {
 		return nil
 	case configmapping.FieldOutputFileType:
 		m.ResetOutputFileType()
+		return nil
+	case configmapping.FieldMaxFileSize:
+		m.ResetMaxFileSize()
+		return nil
+	case configmapping.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case configmapping.FieldUsingMerchantAttrName:
+		m.ResetUsingMerchantAttrName()
+		return nil
+	case configmapping.FieldMerchantAttributeName:
+		m.ResetMerchantAttributeName()
+		return nil
+	case configmapping.FieldUIConfig:
+		m.ResetUIConfig()
 		return nil
 	case configmapping.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -2595,21 +2955,22 @@ func (m *ConfigTaskMutation) ResetEdge(name string) error {
 // FpsClientMutation represents an operation that mutates the FpsClient nodes in the graph.
 type FpsClientMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	client_id       *int32
-	addclient_id    *int32
-	name            *string
-	description     *string
-	sample_file_url *string
-	created_at      *time.Time
-	created_by      *string
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	done            bool
-	oldValue        func(context.Context) (*FpsClient, error)
-	predicates      []predicate.FpsClient
+	op                       Op
+	typ                      string
+	id                       *int
+	client_id                *int32
+	addclient_id             *int32
+	name                     *string
+	description              *string
+	sample_file_url          *string
+	import_file_template_url *string
+	created_at               *time.Time
+	created_by               *string
+	updated_at               *time.Time
+	clearedFields            map[string]struct{}
+	done                     bool
+	oldValue                 func(context.Context) (*FpsClient, error)
+	predicates               []predicate.FpsClient
 }
 
 var _ ent.Mutation = (*FpsClientMutation)(nil)
@@ -2874,6 +3235,55 @@ func (m *FpsClientMutation) ResetSampleFileURL() {
 	m.sample_file_url = nil
 }
 
+// SetImportFileTemplateURL sets the "import_file_template_url" field.
+func (m *FpsClientMutation) SetImportFileTemplateURL(s string) {
+	m.import_file_template_url = &s
+}
+
+// ImportFileTemplateURL returns the value of the "import_file_template_url" field in the mutation.
+func (m *FpsClientMutation) ImportFileTemplateURL() (r string, exists bool) {
+	v := m.import_file_template_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImportFileTemplateURL returns the old "import_file_template_url" field's value of the FpsClient entity.
+// If the FpsClient object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FpsClientMutation) OldImportFileTemplateURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImportFileTemplateURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImportFileTemplateURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImportFileTemplateURL: %w", err)
+	}
+	return oldValue.ImportFileTemplateURL, nil
+}
+
+// ClearImportFileTemplateURL clears the value of the "import_file_template_url" field.
+func (m *FpsClientMutation) ClearImportFileTemplateURL() {
+	m.import_file_template_url = nil
+	m.clearedFields[fpsclient.FieldImportFileTemplateURL] = struct{}{}
+}
+
+// ImportFileTemplateURLCleared returns if the "import_file_template_url" field was cleared in this mutation.
+func (m *FpsClientMutation) ImportFileTemplateURLCleared() bool {
+	_, ok := m.clearedFields[fpsclient.FieldImportFileTemplateURL]
+	return ok
+}
+
+// ResetImportFileTemplateURL resets all changes to the "import_file_template_url" field.
+func (m *FpsClientMutation) ResetImportFileTemplateURL() {
+	m.import_file_template_url = nil
+	delete(m.clearedFields, fpsclient.FieldImportFileTemplateURL)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *FpsClientMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -3001,7 +3411,7 @@ func (m *FpsClientMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FpsClientMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.client_id != nil {
 		fields = append(fields, fpsclient.FieldClientID)
 	}
@@ -3013,6 +3423,9 @@ func (m *FpsClientMutation) Fields() []string {
 	}
 	if m.sample_file_url != nil {
 		fields = append(fields, fpsclient.FieldSampleFileURL)
+	}
+	if m.import_file_template_url != nil {
+		fields = append(fields, fpsclient.FieldImportFileTemplateURL)
 	}
 	if m.created_at != nil {
 		fields = append(fields, fpsclient.FieldCreatedAt)
@@ -3039,6 +3452,8 @@ func (m *FpsClientMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case fpsclient.FieldSampleFileURL:
 		return m.SampleFileURL()
+	case fpsclient.FieldImportFileTemplateURL:
+		return m.ImportFileTemplateURL()
 	case fpsclient.FieldCreatedAt:
 		return m.CreatedAt()
 	case fpsclient.FieldCreatedBy:
@@ -3062,6 +3477,8 @@ func (m *FpsClientMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldDescription(ctx)
 	case fpsclient.FieldSampleFileURL:
 		return m.OldSampleFileURL(ctx)
+	case fpsclient.FieldImportFileTemplateURL:
+		return m.OldImportFileTemplateURL(ctx)
 	case fpsclient.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case fpsclient.FieldCreatedBy:
@@ -3104,6 +3521,13 @@ func (m *FpsClientMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSampleFileURL(v)
+		return nil
+	case fpsclient.FieldImportFileTemplateURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImportFileTemplateURL(v)
 		return nil
 	case fpsclient.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3170,7 +3594,11 @@ func (m *FpsClientMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *FpsClientMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(fpsclient.FieldImportFileTemplateURL) {
+		fields = append(fields, fpsclient.FieldImportFileTemplateURL)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -3183,6 +3611,11 @@ func (m *FpsClientMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *FpsClientMutation) ClearField(name string) error {
+	switch name {
+	case fpsclient.FieldImportFileTemplateURL:
+		m.ClearImportFileTemplateURL()
+		return nil
+	}
 	return fmt.Errorf("unknown FpsClient nullable field %s", name)
 }
 
@@ -3201,6 +3634,9 @@ func (m *FpsClientMutation) ResetField(name string) error {
 		return nil
 	case fpsclient.FieldSampleFileURL:
 		m.ResetSampleFileURL()
+		return nil
+	case fpsclient.FieldImportFileTemplateURL:
+		m.ResetImportFileTemplateURL()
 		return nil
 	case fpsclient.FieldCreatedAt:
 		m.ResetCreatedAt()

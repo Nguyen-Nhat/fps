@@ -52,6 +52,20 @@ func (fcc *FpsClientCreate) SetNillableSampleFileURL(s *string) *FpsClientCreate
 	return fcc
 }
 
+// SetImportFileTemplateURL sets the "import_file_template_url" field.
+func (fcc *FpsClientCreate) SetImportFileTemplateURL(s string) *FpsClientCreate {
+	fcc.mutation.SetImportFileTemplateURL(s)
+	return fcc
+}
+
+// SetNillableImportFileTemplateURL sets the "import_file_template_url" field if the given value is not nil.
+func (fcc *FpsClientCreate) SetNillableImportFileTemplateURL(s *string) *FpsClientCreate {
+	if s != nil {
+		fcc.SetImportFileTemplateURL(*s)
+	}
+	return fcc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (fcc *FpsClientCreate) SetCreatedAt(t time.Time) *FpsClientCreate {
 	fcc.mutation.SetCreatedAt(t)
@@ -273,6 +287,14 @@ func (fcc *FpsClientCreate) createSpec() (*FpsClient, *sqlgraph.CreateSpec) {
 			Column: fpsclient.FieldSampleFileURL,
 		})
 		_node.SampleFileURL = value
+	}
+	if value, ok := fcc.mutation.ImportFileTemplateURL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fpsclient.FieldImportFileTemplateURL,
+		})
+		_node.ImportFileTemplateURL = value
 	}
 	if value, ok := fcc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -61,16 +61,24 @@ func init() {
 	configmappingDescInputFileType := configmappingFields[8].Descriptor()
 	// configmapping.DefaultInputFileType holds the default value on creation for the input_file_type field.
 	configmapping.DefaultInputFileType = configmappingDescInputFileType.Default.(string)
+	// configmappingDescMaxFileSize is the schema descriptor for max_file_size field.
+	configmappingDescMaxFileSize := configmappingFields[10].Descriptor()
+	// configmapping.DefaultMaxFileSize holds the default value on creation for the max_file_size field.
+	configmapping.DefaultMaxFileSize = configmappingDescMaxFileSize.Default.(int32)
+	// configmappingDescUsingMerchantAttrName is the schema descriptor for using_merchant_attr_name field.
+	configmappingDescUsingMerchantAttrName := configmappingFields[12].Descriptor()
+	// configmapping.DefaultUsingMerchantAttrName holds the default value on creation for the using_merchant_attr_name field.
+	configmapping.DefaultUsingMerchantAttrName = configmappingDescUsingMerchantAttrName.Default.(bool)
 	// configmappingDescCreatedAt is the schema descriptor for created_at field.
-	configmappingDescCreatedAt := configmappingFields[10].Descriptor()
+	configmappingDescCreatedAt := configmappingFields[15].Descriptor()
 	// configmapping.DefaultCreatedAt holds the default value on creation for the created_at field.
 	configmapping.DefaultCreatedAt = configmappingDescCreatedAt.Default.(func() time.Time)
 	// configmappingDescCreatedBy is the schema descriptor for created_by field.
-	configmappingDescCreatedBy := configmappingFields[11].Descriptor()
+	configmappingDescCreatedBy := configmappingFields[16].Descriptor()
 	// configmapping.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	configmapping.CreatedByValidator = configmappingDescCreatedBy.Validators[0].(func(string) error)
 	// configmappingDescUpdatedAt is the schema descriptor for updated_at field.
-	configmappingDescUpdatedAt := configmappingFields[12].Descriptor()
+	configmappingDescUpdatedAt := configmappingFields[17].Descriptor()
 	// configmapping.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	configmapping.DefaultUpdatedAt = configmappingDescUpdatedAt.Default.(func() time.Time)
 	// configmapping.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -148,15 +156,15 @@ func init() {
 	// fpsclient.DefaultSampleFileURL holds the default value on creation for the sample_file_url field.
 	fpsclient.DefaultSampleFileURL = fpsclientDescSampleFileURL.Default.(string)
 	// fpsclientDescCreatedAt is the schema descriptor for created_at field.
-	fpsclientDescCreatedAt := fpsclientFields[4].Descriptor()
+	fpsclientDescCreatedAt := fpsclientFields[5].Descriptor()
 	// fpsclient.DefaultCreatedAt holds the default value on creation for the created_at field.
 	fpsclient.DefaultCreatedAt = fpsclientDescCreatedAt.Default.(func() time.Time)
 	// fpsclientDescCreatedBy is the schema descriptor for created_by field.
-	fpsclientDescCreatedBy := fpsclientFields[5].Descriptor()
+	fpsclientDescCreatedBy := fpsclientFields[6].Descriptor()
 	// fpsclient.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	fpsclient.CreatedByValidator = fpsclientDescCreatedBy.Validators[0].(func(string) error)
 	// fpsclientDescUpdatedAt is the schema descriptor for updated_at field.
-	fpsclientDescUpdatedAt := fpsclientFields[6].Descriptor()
+	fpsclientDescUpdatedAt := fpsclientFields[7].Descriptor()
 	// fpsclient.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	fpsclient.DefaultUpdatedAt = fpsclientDescUpdatedAt.Default.(func() time.Time)
 	// fpsclient.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

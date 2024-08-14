@@ -67,6 +67,26 @@ func (fcu *FpsClientUpdate) SetNillableSampleFileURL(s *string) *FpsClientUpdate
 	return fcu
 }
 
+// SetImportFileTemplateURL sets the "import_file_template_url" field.
+func (fcu *FpsClientUpdate) SetImportFileTemplateURL(s string) *FpsClientUpdate {
+	fcu.mutation.SetImportFileTemplateURL(s)
+	return fcu
+}
+
+// SetNillableImportFileTemplateURL sets the "import_file_template_url" field if the given value is not nil.
+func (fcu *FpsClientUpdate) SetNillableImportFileTemplateURL(s *string) *FpsClientUpdate {
+	if s != nil {
+		fcu.SetImportFileTemplateURL(*s)
+	}
+	return fcu
+}
+
+// ClearImportFileTemplateURL clears the value of the "import_file_template_url" field.
+func (fcu *FpsClientUpdate) ClearImportFileTemplateURL() *FpsClientUpdate {
+	fcu.mutation.ClearImportFileTemplateURL()
+	return fcu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (fcu *FpsClientUpdate) SetCreatedAt(t time.Time) *FpsClientUpdate {
 	fcu.mutation.SetCreatedAt(t)
@@ -240,6 +260,19 @@ func (fcu *FpsClientUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: fpsclient.FieldSampleFileURL,
 		})
 	}
+	if value, ok := fcu.mutation.ImportFileTemplateURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fpsclient.FieldImportFileTemplateURL,
+		})
+	}
+	if fcu.mutation.ImportFileTemplateURLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: fpsclient.FieldImportFileTemplateURL,
+		})
+	}
 	if value, ok := fcu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -316,6 +349,26 @@ func (fcuo *FpsClientUpdateOne) SetNillableSampleFileURL(s *string) *FpsClientUp
 	if s != nil {
 		fcuo.SetSampleFileURL(*s)
 	}
+	return fcuo
+}
+
+// SetImportFileTemplateURL sets the "import_file_template_url" field.
+func (fcuo *FpsClientUpdateOne) SetImportFileTemplateURL(s string) *FpsClientUpdateOne {
+	fcuo.mutation.SetImportFileTemplateURL(s)
+	return fcuo
+}
+
+// SetNillableImportFileTemplateURL sets the "import_file_template_url" field if the given value is not nil.
+func (fcuo *FpsClientUpdateOne) SetNillableImportFileTemplateURL(s *string) *FpsClientUpdateOne {
+	if s != nil {
+		fcuo.SetImportFileTemplateURL(*s)
+	}
+	return fcuo
+}
+
+// ClearImportFileTemplateURL clears the value of the "import_file_template_url" field.
+func (fcuo *FpsClientUpdateOne) ClearImportFileTemplateURL() *FpsClientUpdateOne {
+	fcuo.mutation.ClearImportFileTemplateURL()
 	return fcuo
 }
 
@@ -520,6 +573,19 @@ func (fcuo *FpsClientUpdateOne) sqlSave(ctx context.Context) (_node *FpsClient, 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: fpsclient.FieldSampleFileURL,
+		})
+	}
+	if value, ok := fcuo.mutation.ImportFileTemplateURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fpsclient.FieldImportFileTemplateURL,
+		})
+	}
+	if fcuo.mutation.ImportFileTemplateURLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: fpsclient.FieldImportFileTemplateURL,
 		})
 	}
 	if value, ok := fcuo.mutation.CreatedAt(); ok {

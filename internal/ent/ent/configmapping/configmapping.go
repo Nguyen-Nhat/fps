@@ -32,6 +32,16 @@ const (
 	FieldInputFileType = "input_file_type"
 	// FieldOutputFileType holds the string denoting the output_file_type field in the database.
 	FieldOutputFileType = "output_file_type"
+	// FieldMaxFileSize holds the string denoting the max_file_size field in the database.
+	FieldMaxFileSize = "max_file_size"
+	// FieldTenantID holds the string denoting the tenant_id field in the database.
+	FieldTenantID = "tenant_id"
+	// FieldUsingMerchantAttrName holds the string denoting the using_merchant_attr_name field in the database.
+	FieldUsingMerchantAttrName = "using_merchant_attr_name"
+	// FieldMerchantAttributeName holds the string denoting the merchant_attribute_name field in the database.
+	FieldMerchantAttributeName = "merchant_attribute_name"
+	// FieldUIConfig holds the string denoting the ui_config field in the database.
+	FieldUIConfig = "ui_config"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -55,6 +65,11 @@ var Columns = []string{
 	FieldTimeout,
 	FieldInputFileType,
 	FieldOutputFileType,
+	FieldMaxFileSize,
+	FieldTenantID,
+	FieldUsingMerchantAttrName,
+	FieldMerchantAttributeName,
+	FieldUIConfig,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -85,6 +100,10 @@ var (
 	DefaultTimeout int32
 	// DefaultInputFileType holds the default value on creation for the "input_file_type" field.
 	DefaultInputFileType string
+	// DefaultMaxFileSize holds the default value on creation for the "max_file_size" field.
+	DefaultMaxFileSize int32
+	// DefaultUsingMerchantAttrName holds the default value on creation for the "using_merchant_attr_name" field.
+	DefaultUsingMerchantAttrName bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.

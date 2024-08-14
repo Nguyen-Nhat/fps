@@ -176,6 +176,101 @@ func (cmu *ConfigMappingUpdate) ClearOutputFileType() *ConfigMappingUpdate {
 	return cmu
 }
 
+// SetMaxFileSize sets the "max_file_size" field.
+func (cmu *ConfigMappingUpdate) SetMaxFileSize(i int32) *ConfigMappingUpdate {
+	cmu.mutation.ResetMaxFileSize()
+	cmu.mutation.SetMaxFileSize(i)
+	return cmu
+}
+
+// SetNillableMaxFileSize sets the "max_file_size" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableMaxFileSize(i *int32) *ConfigMappingUpdate {
+	if i != nil {
+		cmu.SetMaxFileSize(*i)
+	}
+	return cmu
+}
+
+// AddMaxFileSize adds i to the "max_file_size" field.
+func (cmu *ConfigMappingUpdate) AddMaxFileSize(i int32) *ConfigMappingUpdate {
+	cmu.mutation.AddMaxFileSize(i)
+	return cmu
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (cmu *ConfigMappingUpdate) SetTenantID(s string) *ConfigMappingUpdate {
+	cmu.mutation.SetTenantID(s)
+	return cmu
+}
+
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableTenantID(s *string) *ConfigMappingUpdate {
+	if s != nil {
+		cmu.SetTenantID(*s)
+	}
+	return cmu
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (cmu *ConfigMappingUpdate) ClearTenantID() *ConfigMappingUpdate {
+	cmu.mutation.ClearTenantID()
+	return cmu
+}
+
+// SetUsingMerchantAttrName sets the "using_merchant_attr_name" field.
+func (cmu *ConfigMappingUpdate) SetUsingMerchantAttrName(b bool) *ConfigMappingUpdate {
+	cmu.mutation.SetUsingMerchantAttrName(b)
+	return cmu
+}
+
+// SetNillableUsingMerchantAttrName sets the "using_merchant_attr_name" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableUsingMerchantAttrName(b *bool) *ConfigMappingUpdate {
+	if b != nil {
+		cmu.SetUsingMerchantAttrName(*b)
+	}
+	return cmu
+}
+
+// SetMerchantAttributeName sets the "merchant_attribute_name" field.
+func (cmu *ConfigMappingUpdate) SetMerchantAttributeName(s string) *ConfigMappingUpdate {
+	cmu.mutation.SetMerchantAttributeName(s)
+	return cmu
+}
+
+// SetNillableMerchantAttributeName sets the "merchant_attribute_name" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableMerchantAttributeName(s *string) *ConfigMappingUpdate {
+	if s != nil {
+		cmu.SetMerchantAttributeName(*s)
+	}
+	return cmu
+}
+
+// ClearMerchantAttributeName clears the value of the "merchant_attribute_name" field.
+func (cmu *ConfigMappingUpdate) ClearMerchantAttributeName() *ConfigMappingUpdate {
+	cmu.mutation.ClearMerchantAttributeName()
+	return cmu
+}
+
+// SetUIConfig sets the "ui_config" field.
+func (cmu *ConfigMappingUpdate) SetUIConfig(s string) *ConfigMappingUpdate {
+	cmu.mutation.SetUIConfig(s)
+	return cmu
+}
+
+// SetNillableUIConfig sets the "ui_config" field if the given value is not nil.
+func (cmu *ConfigMappingUpdate) SetNillableUIConfig(s *string) *ConfigMappingUpdate {
+	if s != nil {
+		cmu.SetUIConfig(*s)
+	}
+	return cmu
+}
+
+// ClearUIConfig clears the value of the "ui_config" field.
+func (cmu *ConfigMappingUpdate) ClearUIConfig() *ConfigMappingUpdate {
+	cmu.mutation.ClearUIConfig()
+	return cmu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cmu *ConfigMappingUpdate) SetCreatedAt(t time.Time) *ConfigMappingUpdate {
 	cmu.mutation.SetCreatedAt(t)
@@ -434,6 +529,66 @@ func (cmu *ConfigMappingUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: configmapping.FieldOutputFileType,
 		})
 	}
+	if value, ok := cmu.mutation.MaxFileSize(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldMaxFileSize,
+		})
+	}
+	if value, ok := cmu.mutation.AddedMaxFileSize(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldMaxFileSize,
+		})
+	}
+	if value, ok := cmu.mutation.TenantID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldTenantID,
+		})
+	}
+	if cmu.mutation.TenantIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: configmapping.FieldTenantID,
+		})
+	}
+	if value, ok := cmu.mutation.UsingMerchantAttrName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: configmapping.FieldUsingMerchantAttrName,
+		})
+	}
+	if value, ok := cmu.mutation.MerchantAttributeName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldMerchantAttributeName,
+		})
+	}
+	if cmu.mutation.MerchantAttributeNameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: configmapping.FieldMerchantAttributeName,
+		})
+	}
+	if value, ok := cmu.mutation.UIConfig(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldUIConfig,
+		})
+	}
+	if cmu.mutation.UIConfigCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: configmapping.FieldUIConfig,
+		})
+	}
 	if value, ok := cmu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -619,6 +774,101 @@ func (cmuo *ConfigMappingUpdateOne) SetNillableOutputFileType(cft *configmapping
 // ClearOutputFileType clears the value of the "output_file_type" field.
 func (cmuo *ConfigMappingUpdateOne) ClearOutputFileType() *ConfigMappingUpdateOne {
 	cmuo.mutation.ClearOutputFileType()
+	return cmuo
+}
+
+// SetMaxFileSize sets the "max_file_size" field.
+func (cmuo *ConfigMappingUpdateOne) SetMaxFileSize(i int32) *ConfigMappingUpdateOne {
+	cmuo.mutation.ResetMaxFileSize()
+	cmuo.mutation.SetMaxFileSize(i)
+	return cmuo
+}
+
+// SetNillableMaxFileSize sets the "max_file_size" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableMaxFileSize(i *int32) *ConfigMappingUpdateOne {
+	if i != nil {
+		cmuo.SetMaxFileSize(*i)
+	}
+	return cmuo
+}
+
+// AddMaxFileSize adds i to the "max_file_size" field.
+func (cmuo *ConfigMappingUpdateOne) AddMaxFileSize(i int32) *ConfigMappingUpdateOne {
+	cmuo.mutation.AddMaxFileSize(i)
+	return cmuo
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (cmuo *ConfigMappingUpdateOne) SetTenantID(s string) *ConfigMappingUpdateOne {
+	cmuo.mutation.SetTenantID(s)
+	return cmuo
+}
+
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableTenantID(s *string) *ConfigMappingUpdateOne {
+	if s != nil {
+		cmuo.SetTenantID(*s)
+	}
+	return cmuo
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (cmuo *ConfigMappingUpdateOne) ClearTenantID() *ConfigMappingUpdateOne {
+	cmuo.mutation.ClearTenantID()
+	return cmuo
+}
+
+// SetUsingMerchantAttrName sets the "using_merchant_attr_name" field.
+func (cmuo *ConfigMappingUpdateOne) SetUsingMerchantAttrName(b bool) *ConfigMappingUpdateOne {
+	cmuo.mutation.SetUsingMerchantAttrName(b)
+	return cmuo
+}
+
+// SetNillableUsingMerchantAttrName sets the "using_merchant_attr_name" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableUsingMerchantAttrName(b *bool) *ConfigMappingUpdateOne {
+	if b != nil {
+		cmuo.SetUsingMerchantAttrName(*b)
+	}
+	return cmuo
+}
+
+// SetMerchantAttributeName sets the "merchant_attribute_name" field.
+func (cmuo *ConfigMappingUpdateOne) SetMerchantAttributeName(s string) *ConfigMappingUpdateOne {
+	cmuo.mutation.SetMerchantAttributeName(s)
+	return cmuo
+}
+
+// SetNillableMerchantAttributeName sets the "merchant_attribute_name" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableMerchantAttributeName(s *string) *ConfigMappingUpdateOne {
+	if s != nil {
+		cmuo.SetMerchantAttributeName(*s)
+	}
+	return cmuo
+}
+
+// ClearMerchantAttributeName clears the value of the "merchant_attribute_name" field.
+func (cmuo *ConfigMappingUpdateOne) ClearMerchantAttributeName() *ConfigMappingUpdateOne {
+	cmuo.mutation.ClearMerchantAttributeName()
+	return cmuo
+}
+
+// SetUIConfig sets the "ui_config" field.
+func (cmuo *ConfigMappingUpdateOne) SetUIConfig(s string) *ConfigMappingUpdateOne {
+	cmuo.mutation.SetUIConfig(s)
+	return cmuo
+}
+
+// SetNillableUIConfig sets the "ui_config" field if the given value is not nil.
+func (cmuo *ConfigMappingUpdateOne) SetNillableUIConfig(s *string) *ConfigMappingUpdateOne {
+	if s != nil {
+		cmuo.SetUIConfig(*s)
+	}
+	return cmuo
+}
+
+// ClearUIConfig clears the value of the "ui_config" field.
+func (cmuo *ConfigMappingUpdateOne) ClearUIConfig() *ConfigMappingUpdateOne {
+	cmuo.mutation.ClearUIConfig()
 	return cmuo
 }
 
@@ -908,6 +1158,66 @@ func (cmuo *ConfigMappingUpdateOne) sqlSave(ctx context.Context) (_node *ConfigM
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Column: configmapping.FieldOutputFileType,
+		})
+	}
+	if value, ok := cmuo.mutation.MaxFileSize(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldMaxFileSize,
+		})
+	}
+	if value, ok := cmuo.mutation.AddedMaxFileSize(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldMaxFileSize,
+		})
+	}
+	if value, ok := cmuo.mutation.TenantID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldTenantID,
+		})
+	}
+	if cmuo.mutation.TenantIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: configmapping.FieldTenantID,
+		})
+	}
+	if value, ok := cmuo.mutation.UsingMerchantAttrName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: configmapping.FieldUsingMerchantAttrName,
+		})
+	}
+	if value, ok := cmuo.mutation.MerchantAttributeName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldMerchantAttributeName,
+		})
+	}
+	if cmuo.mutation.MerchantAttributeNameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: configmapping.FieldMerchantAttributeName,
+		})
+	}
+	if value, ok := cmuo.mutation.UIConfig(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldUIConfig,
+		})
+	}
+	if cmuo.mutation.UIConfigCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: configmapping.FieldUIConfig,
 		})
 	}
 	if value, ok := cmuo.mutation.CreatedAt(); ok {
