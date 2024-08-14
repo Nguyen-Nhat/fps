@@ -128,6 +128,76 @@ func (cmc *ConfigMappingCreate) SetNillableOutputFileType(cft *configmapping.Out
 	return cmc
 }
 
+// SetMaxFileSize sets the "max_file_size" field.
+func (cmc *ConfigMappingCreate) SetMaxFileSize(i int32) *ConfigMappingCreate {
+	cmc.mutation.SetMaxFileSize(i)
+	return cmc
+}
+
+// SetNillableMaxFileSize sets the "max_file_size" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableMaxFileSize(i *int32) *ConfigMappingCreate {
+	if i != nil {
+		cmc.SetMaxFileSize(*i)
+	}
+	return cmc
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (cmc *ConfigMappingCreate) SetTenantID(s string) *ConfigMappingCreate {
+	cmc.mutation.SetTenantID(s)
+	return cmc
+}
+
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableTenantID(s *string) *ConfigMappingCreate {
+	if s != nil {
+		cmc.SetTenantID(*s)
+	}
+	return cmc
+}
+
+// SetUsingMerchantAttrName sets the "using_merchant_attr_name" field.
+func (cmc *ConfigMappingCreate) SetUsingMerchantAttrName(b bool) *ConfigMappingCreate {
+	cmc.mutation.SetUsingMerchantAttrName(b)
+	return cmc
+}
+
+// SetNillableUsingMerchantAttrName sets the "using_merchant_attr_name" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableUsingMerchantAttrName(b *bool) *ConfigMappingCreate {
+	if b != nil {
+		cmc.SetUsingMerchantAttrName(*b)
+	}
+	return cmc
+}
+
+// SetMerchantAttributeName sets the "merchant_attribute_name" field.
+func (cmc *ConfigMappingCreate) SetMerchantAttributeName(s string) *ConfigMappingCreate {
+	cmc.mutation.SetMerchantAttributeName(s)
+	return cmc
+}
+
+// SetNillableMerchantAttributeName sets the "merchant_attribute_name" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableMerchantAttributeName(s *string) *ConfigMappingCreate {
+	if s != nil {
+		cmc.SetMerchantAttributeName(*s)
+	}
+	return cmc
+}
+
+// SetUIConfig sets the "ui_config" field.
+func (cmc *ConfigMappingCreate) SetUIConfig(s string) *ConfigMappingCreate {
+	cmc.mutation.SetUIConfig(s)
+	return cmc
+}
+
+// SetNillableUIConfig sets the "ui_config" field if the given value is not nil.
+func (cmc *ConfigMappingCreate) SetNillableUIConfig(s *string) *ConfigMappingCreate {
+	if s != nil {
+		cmc.SetUIConfig(*s)
+	}
+	return cmc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cmc *ConfigMappingCreate) SetCreatedAt(t time.Time) *ConfigMappingCreate {
 	cmc.mutation.SetCreatedAt(t)
@@ -255,6 +325,14 @@ func (cmc *ConfigMappingCreate) defaults() {
 		v := configmapping.DefaultInputFileType
 		cmc.mutation.SetInputFileType(v)
 	}
+	if _, ok := cmc.mutation.MaxFileSize(); !ok {
+		v := configmapping.DefaultMaxFileSize
+		cmc.mutation.SetMaxFileSize(v)
+	}
+	if _, ok := cmc.mutation.UsingMerchantAttrName(); !ok {
+		v := configmapping.DefaultUsingMerchantAttrName
+		cmc.mutation.SetUsingMerchantAttrName(v)
+	}
 	if _, ok := cmc.mutation.CreatedAt(); !ok {
 		v := configmapping.DefaultCreatedAt()
 		cmc.mutation.SetCreatedAt(v)
@@ -310,6 +388,12 @@ func (cmc *ConfigMappingCreate) check() error {
 		if err := configmapping.OutputFileTypeValidator(v); err != nil {
 			return &ValidationError{Name: "output_file_type", err: fmt.Errorf(`ent: validator failed for field "ConfigMapping.output_file_type": %w`, err)}
 		}
+	}
+	if _, ok := cmc.mutation.MaxFileSize(); !ok {
+		return &ValidationError{Name: "max_file_size", err: errors.New(`ent: missing required field "ConfigMapping.max_file_size"`)}
+	}
+	if _, ok := cmc.mutation.UsingMerchantAttrName(); !ok {
+		return &ValidationError{Name: "using_merchant_attr_name", err: errors.New(`ent: missing required field "ConfigMapping.using_merchant_attr_name"`)}
 	}
 	if _, ok := cmc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ConfigMapping.created_at"`)}
@@ -431,6 +515,46 @@ func (cmc *ConfigMappingCreate) createSpec() (*ConfigMapping, *sqlgraph.CreateSp
 			Column: configmapping.FieldOutputFileType,
 		})
 		_node.OutputFileType = value
+	}
+	if value, ok := cmc.mutation.MaxFileSize(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: configmapping.FieldMaxFileSize,
+		})
+		_node.MaxFileSize = value
+	}
+	if value, ok := cmc.mutation.TenantID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldTenantID,
+		})
+		_node.TenantID = value
+	}
+	if value, ok := cmc.mutation.UsingMerchantAttrName(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: configmapping.FieldUsingMerchantAttrName,
+		})
+		_node.UsingMerchantAttrName = value
+	}
+	if value, ok := cmc.mutation.MerchantAttributeName(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldMerchantAttributeName,
+		})
+		_node.MerchantAttributeName = value
+	}
+	if value, ok := cmc.mutation.UIConfig(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: configmapping.FieldUIConfig,
+		})
+		_node.UIConfig = value
 	}
 	if value, ok := cmc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

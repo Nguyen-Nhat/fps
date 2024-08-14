@@ -19,6 +19,8 @@ const (
 	FieldDescription = "description"
 	// FieldSampleFileURL holds the string denoting the sample_file_url field in the database.
 	FieldSampleFileURL = "sample_file_url"
+	// FieldImportFileTemplateURL holds the string denoting the import_file_template_url field in the database.
+	FieldImportFileTemplateURL = "import_file_template_url"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -36,6 +38,7 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldSampleFileURL,
+	FieldImportFileTemplateURL,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,

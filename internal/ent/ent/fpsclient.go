@@ -24,6 +24,8 @@ type FpsClient struct {
 	Description string `json:"description,omitempty"`
 	// SampleFileURL holds the value of the "sample_file_url" field.
 	SampleFileURL string `json:"sample_file_url,omitempty"`
+	// URL of template file that client can download
+	ImportFileTemplateURL string `json:"import_file_template_url,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -39,7 +41,7 @@ func (*FpsClient) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case fpsclient.FieldID, fpsclient.FieldClientID:
 			values[i] = new(sql.NullInt64)
-		case fpsclient.FieldName, fpsclient.FieldDescription, fpsclient.FieldSampleFileURL, fpsclient.FieldCreatedBy:
+		case fpsclient.FieldName, fpsclient.FieldDescription, fpsclient.FieldSampleFileURL, fpsclient.FieldImportFileTemplateURL, fpsclient.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case fpsclient.FieldCreatedAt, fpsclient.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -87,6 +89,12 @@ func (fc *FpsClient) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field sample_file_url", values[i])
 			} else if value.Valid {
 				fc.SampleFileURL = value.String
+			}
+		case fpsclient.FieldImportFileTemplateURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field import_file_template_url", values[i])
+			} else if value.Valid {
+				fc.ImportFileTemplateURL = value.String
 			}
 		case fpsclient.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -145,6 +153,9 @@ func (fc *FpsClient) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sample_file_url=")
 	builder.WriteString(fc.SampleFileURL)
+	builder.WriteString(", ")
+	builder.WriteString("import_file_template_url=")
+	builder.WriteString(fc.ImportFileTemplateURL)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(fc.CreatedAt.Format(time.ANSIC))

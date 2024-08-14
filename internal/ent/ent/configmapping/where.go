@@ -143,6 +143,41 @@ func InputFileType(v string) predicate.ConfigMapping {
 	})
 }
 
+// MaxFileSize applies equality check predicate on the "max_file_size" field. It's identical to MaxFileSizeEQ.
+func MaxFileSize(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMaxFileSize), v))
+	})
+}
+
+// TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
+func TenantID(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTenantID), v))
+	})
+}
+
+// UsingMerchantAttrName applies equality check predicate on the "using_merchant_attr_name" field. It's identical to UsingMerchantAttrNameEQ.
+func UsingMerchantAttrName(v bool) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUsingMerchantAttrName), v))
+	})
+}
+
+// MerchantAttributeName applies equality check predicate on the "merchant_attribute_name" field. It's identical to MerchantAttributeNameEQ.
+func MerchantAttributeName(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// UIConfig applies equality check predicate on the "ui_config" field. It's identical to UIConfigEQ.
+func UIConfig(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUIConfig), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
@@ -976,6 +1011,423 @@ func OutputFileTypeIsNil() predicate.ConfigMapping {
 func OutputFileTypeNotNil() predicate.ConfigMapping {
 	return predicate.ConfigMapping(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldOutputFileType)))
+	})
+}
+
+// MaxFileSizeEQ applies the EQ predicate on the "max_file_size" field.
+func MaxFileSizeEQ(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMaxFileSize), v))
+	})
+}
+
+// MaxFileSizeNEQ applies the NEQ predicate on the "max_file_size" field.
+func MaxFileSizeNEQ(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldMaxFileSize), v))
+	})
+}
+
+// MaxFileSizeIn applies the In predicate on the "max_file_size" field.
+func MaxFileSizeIn(vs ...int32) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldMaxFileSize), v...))
+	})
+}
+
+// MaxFileSizeNotIn applies the NotIn predicate on the "max_file_size" field.
+func MaxFileSizeNotIn(vs ...int32) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldMaxFileSize), v...))
+	})
+}
+
+// MaxFileSizeGT applies the GT predicate on the "max_file_size" field.
+func MaxFileSizeGT(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldMaxFileSize), v))
+	})
+}
+
+// MaxFileSizeGTE applies the GTE predicate on the "max_file_size" field.
+func MaxFileSizeGTE(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldMaxFileSize), v))
+	})
+}
+
+// MaxFileSizeLT applies the LT predicate on the "max_file_size" field.
+func MaxFileSizeLT(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldMaxFileSize), v))
+	})
+}
+
+// MaxFileSizeLTE applies the LTE predicate on the "max_file_size" field.
+func MaxFileSizeLTE(v int32) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldMaxFileSize), v))
+	})
+}
+
+// TenantIDEQ applies the EQ predicate on the "tenant_id" field.
+func TenantIDEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
+func TenantIDNEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDIn applies the In predicate on the "tenant_id" field.
+func TenantIDIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldTenantID), v...))
+	})
+}
+
+// TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
+func TenantIDNotIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldTenantID), v...))
+	})
+}
+
+// TenantIDGT applies the GT predicate on the "tenant_id" field.
+func TenantIDGT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDGTE applies the GTE predicate on the "tenant_id" field.
+func TenantIDGTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDLT applies the LT predicate on the "tenant_id" field.
+func TenantIDLT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDLTE applies the LTE predicate on the "tenant_id" field.
+func TenantIDLTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDContains applies the Contains predicate on the "tenant_id" field.
+func TenantIDContains(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDHasPrefix applies the HasPrefix predicate on the "tenant_id" field.
+func TenantIDHasPrefix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDHasSuffix applies the HasSuffix predicate on the "tenant_id" field.
+func TenantIDHasSuffix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDIsNil applies the IsNil predicate on the "tenant_id" field.
+func TenantIDIsNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldTenantID)))
+	})
+}
+
+// TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
+func TenantIDNotNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldTenantID)))
+	})
+}
+
+// TenantIDEqualFold applies the EqualFold predicate on the "tenant_id" field.
+func TenantIDEqualFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTenantID), v))
+	})
+}
+
+// TenantIDContainsFold applies the ContainsFold predicate on the "tenant_id" field.
+func TenantIDContainsFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTenantID), v))
+	})
+}
+
+// UsingMerchantAttrNameEQ applies the EQ predicate on the "using_merchant_attr_name" field.
+func UsingMerchantAttrNameEQ(v bool) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUsingMerchantAttrName), v))
+	})
+}
+
+// UsingMerchantAttrNameNEQ applies the NEQ predicate on the "using_merchant_attr_name" field.
+func UsingMerchantAttrNameNEQ(v bool) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUsingMerchantAttrName), v))
+	})
+}
+
+// MerchantAttributeNameEQ applies the EQ predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameNEQ applies the NEQ predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameNEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameIn applies the In predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldMerchantAttributeName), v...))
+	})
+}
+
+// MerchantAttributeNameNotIn applies the NotIn predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameNotIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldMerchantAttributeName), v...))
+	})
+}
+
+// MerchantAttributeNameGT applies the GT predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameGT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameGTE applies the GTE predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameGTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameLT applies the LT predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameLT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameLTE applies the LTE predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameLTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameContains applies the Contains predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameContains(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameHasPrefix applies the HasPrefix predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameHasPrefix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameHasSuffix applies the HasSuffix predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameHasSuffix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameIsNil applies the IsNil predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameIsNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldMerchantAttributeName)))
+	})
+}
+
+// MerchantAttributeNameNotNil applies the NotNil predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameNotNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldMerchantAttributeName)))
+	})
+}
+
+// MerchantAttributeNameEqualFold applies the EqualFold predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameEqualFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// MerchantAttributeNameContainsFold applies the ContainsFold predicate on the "merchant_attribute_name" field.
+func MerchantAttributeNameContainsFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldMerchantAttributeName), v))
+	})
+}
+
+// UIConfigEQ applies the EQ predicate on the "ui_config" field.
+func UIConfigEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigNEQ applies the NEQ predicate on the "ui_config" field.
+func UIConfigNEQ(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigIn applies the In predicate on the "ui_config" field.
+func UIConfigIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldUIConfig), v...))
+	})
+}
+
+// UIConfigNotIn applies the NotIn predicate on the "ui_config" field.
+func UIConfigNotIn(vs ...string) predicate.ConfigMapping {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldUIConfig), v...))
+	})
+}
+
+// UIConfigGT applies the GT predicate on the "ui_config" field.
+func UIConfigGT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigGTE applies the GTE predicate on the "ui_config" field.
+func UIConfigGTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigLT applies the LT predicate on the "ui_config" field.
+func UIConfigLT(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigLTE applies the LTE predicate on the "ui_config" field.
+func UIConfigLTE(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigContains applies the Contains predicate on the "ui_config" field.
+func UIConfigContains(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigHasPrefix applies the HasPrefix predicate on the "ui_config" field.
+func UIConfigHasPrefix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigHasSuffix applies the HasSuffix predicate on the "ui_config" field.
+func UIConfigHasSuffix(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigIsNil applies the IsNil predicate on the "ui_config" field.
+func UIConfigIsNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldUIConfig)))
+	})
+}
+
+// UIConfigNotNil applies the NotNil predicate on the "ui_config" field.
+func UIConfigNotNil() predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldUIConfig)))
+	})
+}
+
+// UIConfigEqualFold applies the EqualFold predicate on the "ui_config" field.
+func UIConfigEqualFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldUIConfig), v))
+	})
+}
+
+// UIConfigContainsFold applies the ContainsFold predicate on the "ui_config" field.
+func UIConfigContainsFold(v string) predicate.ConfigMapping {
+	return predicate.ConfigMapping(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldUIConfig), v))
 	})
 }
 

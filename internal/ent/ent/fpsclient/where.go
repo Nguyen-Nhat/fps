@@ -108,6 +108,13 @@ func SampleFileURL(v string) predicate.FpsClient {
 	})
 }
 
+// ImportFileTemplateURL applies equality check predicate on the "import_file_template_url" field. It's identical to ImportFileTemplateURLEQ.
+func ImportFileTemplateURL(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.FpsClient {
 	return predicate.FpsClient(func(s *sql.Selector) {
@@ -487,6 +494,119 @@ func SampleFileURLEqualFold(v string) predicate.FpsClient {
 func SampleFileURLContainsFold(v string) predicate.FpsClient {
 	return predicate.FpsClient(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldSampleFileURL), v))
+	})
+}
+
+// ImportFileTemplateURLEQ applies the EQ predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLEQ(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLNEQ applies the NEQ predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLNEQ(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLIn applies the In predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLIn(vs ...string) predicate.FpsClient {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldImportFileTemplateURL), v...))
+	})
+}
+
+// ImportFileTemplateURLNotIn applies the NotIn predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLNotIn(vs ...string) predicate.FpsClient {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldImportFileTemplateURL), v...))
+	})
+}
+
+// ImportFileTemplateURLGT applies the GT predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLGT(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLGTE applies the GTE predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLGTE(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLLT applies the LT predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLLT(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLLTE applies the LTE predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLLTE(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLContains applies the Contains predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLContains(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLHasPrefix applies the HasPrefix predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLHasPrefix(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLHasSuffix applies the HasSuffix predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLHasSuffix(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLIsNil applies the IsNil predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLIsNil() predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldImportFileTemplateURL)))
+	})
+}
+
+// ImportFileTemplateURLNotNil applies the NotNil predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLNotNil() predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldImportFileTemplateURL)))
+	})
+}
+
+// ImportFileTemplateURLEqualFold applies the EqualFold predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLEqualFold(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldImportFileTemplateURL), v))
+	})
+}
+
+// ImportFileTemplateURLContainsFold applies the ContainsFold predicate on the "import_file_template_url" field.
+func ImportFileTemplateURLContainsFold(v string) predicate.FpsClient {
+	return predicate.FpsClient(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldImportFileTemplateURL), v))
 	})
 }
 

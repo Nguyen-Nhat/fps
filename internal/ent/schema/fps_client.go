@@ -27,6 +27,7 @@ func (FpsClient) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("description").NotEmpty(),
 		field.String("sample_file_url").Default(""),
+		field.String("import_file_template_url").Optional().Comment("URL of template file that client can download"),
 		// default fields
 		field.Time("created_at").Default(time.Now),
 		field.String("created_by").NotEmpty(),

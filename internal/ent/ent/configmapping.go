@@ -36,6 +36,16 @@ type ConfigMapping struct {
 	InputFileType string `json:"input_file_type,omitempty"`
 	// Type of file output (XLS, XLSX, CSV). If null, output type is input type. If has value will force output type
 	OutputFileType configmapping.OutputFileType `json:"output_file_type,omitempty"`
+	// Max file size (MB) that client can upload
+	MaxFileSize int32 `json:"max_file_size,omitempty"`
+	// Tenant Id of client
+	TenantID string `json:"tenant_id,omitempty"`
+	// If 1, when import/get data, FPS will filter by sellerId, platformId,... (based on merchant_attribute_name value)
+	UsingMerchantAttrName bool `json:"using_merchant_attr_name,omitempty"`
+	// Attribute name of users attribute that is used for filtering data
+	MerchantAttributeName string `json:"merchant_attribute_name,omitempty"`
+	// UI config for client. Eg: show hide elements, change positions, ... Ref: https://confluence.teko.vn/display/SupplyChain/%5BFPS%5D+UI+Config
+	UIConfig string `json:"ui_config,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -49,9 +59,11 @@ func (*ConfigMapping) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case configmapping.FieldID, configmapping.FieldClientID, configmapping.FieldTotalTasks, configmapping.FieldDataStartAtRow, configmapping.FieldTimeout:
+		case configmapping.FieldUsingMerchantAttrName:
+			values[i] = new(sql.NullBool)
+		case configmapping.FieldID, configmapping.FieldClientID, configmapping.FieldTotalTasks, configmapping.FieldDataStartAtRow, configmapping.FieldTimeout, configmapping.FieldMaxFileSize:
 			values[i] = new(sql.NullInt64)
-		case configmapping.FieldDataAtSheet, configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldResultFileConfig, configmapping.FieldInputFileType, configmapping.FieldOutputFileType, configmapping.FieldCreatedBy:
+		case configmapping.FieldDataAtSheet, configmapping.FieldRequireColumnIndex, configmapping.FieldErrorColumnIndex, configmapping.FieldResultFileConfig, configmapping.FieldInputFileType, configmapping.FieldOutputFileType, configmapping.FieldTenantID, configmapping.FieldMerchantAttributeName, configmapping.FieldUIConfig, configmapping.FieldCreatedBy:
 			values[i] = new(sql.NullString)
 		case configmapping.FieldCreatedAt, configmapping.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -136,6 +148,36 @@ func (cm *ConfigMapping) assignValues(columns []string, values []interface{}) er
 			} else if value.Valid {
 				cm.OutputFileType = configmapping.OutputFileType(value.String)
 			}
+		case configmapping.FieldMaxFileSize:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field max_file_size", values[i])
+			} else if value.Valid {
+				cm.MaxFileSize = int32(value.Int64)
+			}
+		case configmapping.FieldTenantID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
+			} else if value.Valid {
+				cm.TenantID = value.String
+			}
+		case configmapping.FieldUsingMerchantAttrName:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field using_merchant_attr_name", values[i])
+			} else if value.Valid {
+				cm.UsingMerchantAttrName = value.Bool
+			}
+		case configmapping.FieldMerchantAttributeName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field merchant_attribute_name", values[i])
+			} else if value.Valid {
+				cm.MerchantAttributeName = value.String
+			}
+		case configmapping.FieldUIConfig:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ui_config", values[i])
+			} else if value.Valid {
+				cm.UIConfig = value.String
+			}
 		case configmapping.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -211,6 +253,21 @@ func (cm *ConfigMapping) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("output_file_type=")
 	builder.WriteString(fmt.Sprintf("%v", cm.OutputFileType))
+	builder.WriteString(", ")
+	builder.WriteString("max_file_size=")
+	builder.WriteString(fmt.Sprintf("%v", cm.MaxFileSize))
+	builder.WriteString(", ")
+	builder.WriteString("tenant_id=")
+	builder.WriteString(cm.TenantID)
+	builder.WriteString(", ")
+	builder.WriteString("using_merchant_attr_name=")
+	builder.WriteString(fmt.Sprintf("%v", cm.UsingMerchantAttrName))
+	builder.WriteString(", ")
+	builder.WriteString("merchant_attribute_name=")
+	builder.WriteString(cm.MerchantAttributeName)
+	builder.WriteString(", ")
+	builder.WriteString("ui_config=")
+	builder.WriteString(cm.UIConfig)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(cm.CreatedAt.Format(time.ANSIC))
