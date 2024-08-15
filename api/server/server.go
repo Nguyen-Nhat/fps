@@ -11,6 +11,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"github.com/xo/dburl"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/clientconfig"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/filerow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/fpsclient"
@@ -100,6 +101,12 @@ func (s *Server) initRoutes() {
 	fileRowRouter.Get("/", fileRowServer.GetListFileRowAPI())
 	s.Router.Mount("/fps/v1/files/{fileID}/rows", fileRowRouter)
 
+	// 6. Client Config
+	clientConfigServer := clientconfig.InitClientConfigServer(s.db)
+	clientConfigRouter := chi.NewRouter()
+	clientConfigRouter.Use(middleware.LoggerMW)
+	clientConfigRouter.Get("/", clientConfigServer.GetClientConfigAPI())
+	s.Router.Mount("/v1/get-client-config", clientConfigRouter)
 }
 
 func (s *Server) Serve(cfg config.ServerListen) error {

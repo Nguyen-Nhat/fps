@@ -15,10 +15,12 @@ import (
 	"github.com/xo/dburl"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/enttest"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fpsclient"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
 
@@ -118,6 +120,26 @@ func MockProcessingFileRow(ctx context.Context, dbClient *ent.Client, processing
 		panic(err)
 	}
 	logger.Infof("Mock Processing File Row... Finished")
+}
+
+func MockConfigMapping(ctx context.Context, dbClient *ent.Client, configMappings []configmapping.ConfigMapping) {
+	logger.Infof("Mock Config Mapping ...")
+	_, err := configmapping.SaveAll(ctx, dbClient, configMappings)
+	if err != nil {
+		logger.Errorf("Mock Config Mapping ... Failed: %v", err)
+		panic(err)
+	}
+	logger.Infof("Mock Config Mapping ... Finished")
+}
+
+func MockFpsClient(ctx context.Context, dbClient *ent.Client, fpsClients []fpsclient.Client) {
+	logger.Infof("Mock Fps Client ...")
+	_, err := fpsclient.SaveAll(ctx, dbClient, fpsClients)
+	if err != nil {
+		logger.Errorf("Mock Fps Client ... Failed: %v", err)
+		panic(err)
+	}
+	logger.Infof("Mock Fps Client ... Finished")
 }
 
 func mockXXX(_ context.Context, _ *ent.Client) {
