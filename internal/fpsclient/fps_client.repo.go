@@ -14,6 +14,7 @@ import (
 type (
 	Repo interface {
 		FindByRequestAndPagination(context.Context, GetListClientDTO) ([]*Client, int, error)
+		FindById(context.Context, int32) (*Client, error)
 	}
 
 	repoImpl struct {
@@ -60,6 +61,37 @@ func (r *repoImpl) FindByRequestAndPagination(ctx context.Context, dto GetListCl
 	return mapEntArrToClientArr(clients), total, nil
 }
 
+func (r *repoImpl) FindById(ctx context.Context, id int32) (*Client, error) {
+	client, err := r.client.FpsClient.Get(ctx, int(id))
+	if err != nil {
+		logger.Errorf(err.Error())
+		return nil, fmt.Errorf("failed to get client by id")
+	}
+	return &Client{*client}, nil
+}
+
+func SaveAll(ctx context.Context, client *ent.Client, fpsClients []Client) ([]Client, error) {
+	// 1. Build bulk
+	bulk := make([]*ent.FpsClientCreate, len(fpsClients))
+	for idx, fpsClient := range fpsClients {
+		bulk[idx] = mapFpsClient(client, fpsClient)
+	}
+
+	// 2. Create by bulk
+	fcSavedArr, err := client.FpsClient.CreateBulk(bulk...).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 3. Map Result & return
+	var res []Client
+	for _, fcSaved := range fcSavedArr {
+		model := &Client{*fcSaved}
+		res = append(res, *model)
+	}
+	return res, nil
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 func mapEntArrToClientArr(arr []*ent.FpsClient) []*Client {
@@ -68,4 +100,13 @@ func mapEntArrToClientArr(arr []*ent.FpsClient) []*Client {
 		result = append(result, &Client{*v})
 	}
 	return result
+}
+
+func mapFpsClient(client *ent.Client, cm Client) *ent.FpsClientCreate {
+	return client.FpsClient.Create().
+		SetClientID(cm.ClientID).
+		SetName(cm.Name).
+		SetDescription(cm.Description).
+		SetImportFileTemplateURL(cm.ImportFileTemplateURL).
+		SetCreatedBy(cm.CreatedBy)
 }

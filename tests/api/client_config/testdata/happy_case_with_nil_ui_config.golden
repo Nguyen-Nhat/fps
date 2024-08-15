@@ -1,0 +1,26 @@
+{
+  "code": 0,
+  "message": "",
+  "data": {
+    "clientId": 1,
+    "tenantId": "OMNI",
+    "maxFileSize": 100,
+    "merchantAttributeName": "merchant",
+    "usingMerchantAttrName": true,
+    "inputFileTypes": [
+      "XLSX",
+      "CSV"
+    ],
+    "importFileTemplateUrl": "http://template",
+    "uiConfig": {
+      "importHistoryTable": {
+        "isShowPreviewProcessFile": true,
+        "isShowPreviewResultFile": true,
+        "isShowDebug": true,
+        "isShowCreatedBy": true,
+        "isShowReload": true,
+        "colorScheme": ""
+      }
+    }
+  }
+}
