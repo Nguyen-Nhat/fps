@@ -20,6 +20,7 @@ const (
 
 const (
 	EmptyString          = ""
+	NilString            = "<nil>"
 	SplitByDot           = "."
 	SplitByComma         = ","
 	SplitByNewLine       = "\n"
