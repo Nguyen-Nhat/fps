@@ -75,6 +75,7 @@ func SendHTTPRequest[REQ any, RES any](
 	requestParams map[string]string,
 	requestBody *REQ,
 ) (int, *RES, error) {
+	logger.Infof("===== SendHTTPRequest, url=%+v, requestParams=%+v, requestBody=%+v\n", url, requestParams, requestBody)
 	// 1. Build body
 	var bodyIO *bytes.Buffer
 	if requestBody == nil {
@@ -143,6 +144,7 @@ func SendHTTPRequestRaw(
 	requestParams []t.Pair[string, string],
 	requestBody map[string]interface{},
 ) (int, string, string, error) {
+	logger.Infof("===== SendHTTPRequestRaw, url=%+v, requestParams=%+v, requestBody=%+v\n", url, requestParams, requestBody)
 	// 1. Build body
 	var bodyIO *bytes.Buffer
 	if requestBody == nil {
@@ -203,6 +205,7 @@ func SendHTTPRequestWithArrayParams[REQ any, RES any](
 	requestParams []t.Pair[string, string],
 	requestBody *REQ,
 ) (int, *RES, error) {
+	logger.Infof("===== SendHTTPRequestWithArrayParams, url=%+v, requestParams=%+v, requestBody=%+v\n", url, requestParams, requestBody)
 	// 1. Build body
 	var bodyIO *bytes.Buffer
 	if requestBody == nil {

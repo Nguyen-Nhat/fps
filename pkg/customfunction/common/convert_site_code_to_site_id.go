@@ -102,11 +102,11 @@ func callApiGetSites(siteCode string, sellerId string, siteIds ...string) ([]Sit
 	// 2. Call api
 	httpStatus, resBody, err := utils.SendHTTPRequestWithArrayParams[any, GetSiteResponse](httpClient, http.MethodGet, constants.UrlApiGetSites, reqHeader, reqParams, nil)
 	if err != nil {
-		logger.Errorf("failed to call %v, got error=%v, resBody=%+v", constants.UrlApiGetSites, err, resBody)
+		logger.Errorf("failed to call %v, got error=%v, reqParams=%+v, resBody=%+v", constants.UrlApiGetSites, err, reqParams, resBody)
 		return nil, err
 	}
 	if httpStatus != http.StatusOK {
-		logger.Errorf("failed to call %v, got httpStatus=%d, resBody=%+v", constants.UrlApiGetSites, httpStatus, resBody)
+		logger.Errorf("failed to call %v, got httpStatus=%d, reqParams=%+v, resBody=%+v", constants.UrlApiGetSites, httpStatus, reqParams, resBody)
 		return nil, errors.New(errorz.ErrInternal)
 	}
 
@@ -153,7 +153,7 @@ func ValidateAndConvertSiteCode2SiteId(sellerId, siteCode string, mustInSiteIds 
 		return FuncResult{Result: siteIdForAllSite}
 	}
 
-	if mustInSiteIds == nil {
+	if mustInSiteIds == nil || mustInSiteIds == constant.NilString {
 		return ConvertSiteCode2SiteId(siteCode, sellerId, true)
 	}
 
