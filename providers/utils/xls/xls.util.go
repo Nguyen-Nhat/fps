@@ -9,9 +9,11 @@ import (
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/errorz"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
 func LoadXlsByUrl(url, sheetName string) ([][]string, error) {
+	url = utils.GetInternalFileURL(url)
 	r, err := http.Get(url)
 	if err != nil {
 		return nil, err

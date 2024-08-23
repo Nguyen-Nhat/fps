@@ -2,8 +2,9 @@ package config
 
 // FileServiceConfig ...
 type FileServiceConfig struct {
-	Endpoint string           `mapstructure:"endpoint"`
-	Paths    FileServicePaths `mapstructure:"paths"`
+	Endpoint              string           `mapstructure:"endpoint"`
+	ExternalEndpointRegex string           `mapstructure:"internal_endpoint_regex"`
+	Paths                 FileServicePaths `mapstructure:"paths"`
 }
 
 type FileServicePaths struct {

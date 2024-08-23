@@ -10,6 +10,7 @@ import (
 	"github.com/xuri/excelize/v2"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
 const prefixMappingRequest = "$"
@@ -95,6 +96,7 @@ func validateAndGetDataInSheets(excel *excelize.File, listSheetName []string) (m
 }
 
 func loadDataFromUrl(url string) ([]byte, error) {
+	url = utils.GetInternalFileURL(url)
 	r, err := http.Get(url)
 	if err != nil {
 		return nil, err
