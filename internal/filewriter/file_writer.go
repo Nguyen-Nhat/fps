@@ -7,6 +7,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/errorz"
 	configmappingEnt "git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
 )
 
 type FileWriter interface {
@@ -34,6 +35,9 @@ func NewFileWriter(fileURL, sheetName string, dataIndexStart int,
 	if outputFileType == constant.ExtFileXLS {
 		return nil, errorz.OutputFileTypeNotSupported(outputFileType)
 	}
+
+	// 1.2. If file url is external, change to internal
+	fileURL = utils.GetInternalFileURL(fileURL)
 
 	// 2. get File Writer implementation
 	switch strings.ToUpper(inputFileType) {

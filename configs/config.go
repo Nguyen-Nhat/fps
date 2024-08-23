@@ -104,7 +104,7 @@ func Load(paths ...string) Config {
 
 	fmt.Println("===== Config file used:", vip.ConfigFileUsed())
 
-	cfg := Config{}
+	cfg := loadDefaultConfig()
 	err = vip.Unmarshal(&cfg)
 	if err != nil {
 		panic(err)
@@ -117,6 +117,16 @@ func Load(paths ...string) Config {
 	checkRunProfile(&cfg)
 
 	return cfg
+}
+
+func loadDefaultConfig() Config {
+	return Config{
+		ProviderConfig: ProviderConfig{
+			FileService: FileServiceConfig{
+				ExternalEndpointRegex: `https:\/\/files(\.dev|\.stag|\.prod)?\.tekoapis\.(net|com)`,
+			},
+		},
+	}
 }
 
 func checkRunProfile(cfg *Config) {

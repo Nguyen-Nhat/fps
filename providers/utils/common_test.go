@@ -4,6 +4,9 @@ import (
 	"errors"
 	"reflect"
 	"testing"
+
+	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHiddenString(t *testing.T) {
@@ -413,6 +416,58 @@ func Test_IndexOf(t *testing.T) {
 			if got1 != tt.want1 {
 				t.Errorf("IndexOf() got1 = %v, want %v", got1, tt.want1)
 			}
+		})
+	}
+}
+
+func Test_GetInternalFileURL(t *testing.T) {
+	type testData struct {
+		name   string
+		url    string
+		expect string
+	}
+
+	config.Cfg = config.Config{
+		ProviderConfig: config.ProviderConfig{
+			FileService: config.FileServiceConfig{
+				Endpoint:              `http://files-core-api.files-service`,
+				ExternalEndpointRegex: `https:\/\/files(\.dev|\.stag|\.prod)?\.tekoapis\.(net|com)`,
+			},
+		},
+	}
+
+	tests := []testData{
+		{
+			name:   "Replace host dev",
+			url:    "https://files.dev.tekoapis.net/files/123",
+			expect: "http://files-core-api.files-service/files/123",
+		},
+		{
+			name:   "Replace host stag",
+			url:    "https://files.stag.tekoapis.net/files/123",
+			expect: "http://files-core-api.files-service/files/123",
+		},
+		{
+			name:   "Replace host prod",
+			url:    "https://files.tekoapis.net/files/123",
+			expect: "http://files-core-api.files-service/files/123",
+		},
+		{
+			name:   "Replace host without subdomain",
+			url:    "https://files.tekoapis.net/files/123",
+			expect: "http://files-core-api.files-service/files/123",
+		},
+		{
+			name:   "Replace host with .com",
+			url:    "https://files.dev.tekoapis.com/files/123",
+			expect: "http://files-core-api.files-service/files/123",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual := GetInternalFileURL(test.url)
+			assert.Equal(t, test.expect, actual)
 		})
 	}
 }

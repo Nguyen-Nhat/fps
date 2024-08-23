@@ -14,12 +14,14 @@ import (
 	"net/http"
 	"net/textproto"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"moul.io/http2curl"
 
+	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	t "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customtype"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -568,4 +570,9 @@ func IndexOf[T comparable](arr []T, val T) (int, bool) {
 	}
 
 	return -1, false
+}
+
+func GetInternalFileURL(fileURL string) string {
+	configFileService := config.Cfg.ProviderConfig.FileService
+	return regexp.MustCompile(configFileService.ExternalEndpointRegex).ReplaceAllString(fileURL, configFileService.Endpoint)
 }
