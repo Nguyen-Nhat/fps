@@ -16,6 +16,7 @@ const (
 	ExcelMsgRequired            = "không được bỏ trống"
 	ExcelMsgLength              = "đô dài phải"
 	ExcelMsgValue               = "giá trị phải"
+	ExcelMsgInvalidFile         = "file không hợp lệ"
 )
 
 const (
@@ -54,4 +55,10 @@ const (
 
 	MaxRetryDownload   = 3
 	RetryDelayDownload = 5
+
+	DefaultInsertBatchSize = 300
+)
+
+const (
+	MessageSuccess = "success"
 )
