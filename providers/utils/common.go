@@ -577,3 +577,25 @@ func GetInternalFileURL(fileURL string) string {
 	configFileService := config.Cfg.ProviderConfig.FileService
 	return regexp.MustCompile(configFileService.ExternalEndpointRegex).ReplaceAllString(fileURL, configFileService.Endpoint)
 }
+
+func GetDataFromURL(url string) ([]byte, error) {
+	url = GetInternalFileURL(url)
+	var r *http.Response
+	var err error
+	for idx := 0; idx < constant.MaxRetryDownload; idx++ {
+		r, err = http.Get(url)
+		if err == nil {
+			break
+		}
+		time.Sleep(constant.RetryDelayDownload * time.Second)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		_ = r.Body.Close()
+	}()
+
+	return io.ReadAll(r.Body)
+}

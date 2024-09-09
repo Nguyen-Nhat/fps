@@ -3,8 +3,6 @@ package excel
 import (
 	"bytes"
 	"fmt"
-	"io"
-	"net/http"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
@@ -36,7 +34,7 @@ func LoadExcelByUrl(fileURL string, sheetName string) ([][]string, error) {
 
 func LoadSheetsInExcelByUrl(fileURL string, sheetNameArr []string) (map[string][][]string, error) {
 	// 1. Load data to bytes
-	data, err := loadDataFromUrl(fileURL)
+	data, err := utils.GetDataFromURL(fileURL)
 	if err != nil {
 		return nil, err
 	}
@@ -93,20 +91,6 @@ func validateAndGetDataInSheets(excel *excelize.File, listSheetName []string) (m
 	}
 
 	return sheetMap, nil
-}
-
-func loadDataFromUrl(url string) ([]byte, error) {
-	url = utils.GetInternalFileURL(url)
-	r, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		_ = r.Body.Close()
-	}()
-
-	return io.ReadAll(r.Body)
 }
 
 // IsColumnIndex ... return TRUE if columnName start with `$` another character is from A-Z

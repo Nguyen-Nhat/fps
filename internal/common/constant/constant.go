@@ -51,4 +51,7 @@ const (
 const (
 	One = 1
 	Two = 2
+
+	MaxRetryDownload   = 3
+	RetryDelayDownload = 5
 )
