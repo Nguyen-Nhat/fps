@@ -36,8 +36,9 @@ const (
 )
 
 const (
-	XlsxContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-	CsvContentType  = "text/csv"
+	XlsxContentType     = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	CsvContentType      = "text/csv"
+	MediaTypeAttachment = "attachment"
 )
 
 // Type ----------------------------------------------------------------------------------------------------------------
@@ -395,6 +396,9 @@ func extractFileNameFromPrivateUrl(url string) (f FileName, err error) {
 	contentDisposition := r.Header.Get("Content-Disposition")
 	if contentDisposition == constant.EmptyString {
 		return f, nil
+	}
+	if !strings.Contains(contentDisposition, MediaTypeAttachment) {
+		contentDisposition = fmt.Sprintf("%s;%s", MediaTypeAttachment, contentDisposition)
 	}
 
 	// Parse Content-Disposition
