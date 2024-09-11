@@ -1,0 +1,64 @@
+[
+  {
+    "ClientId": 0,
+    "TenantId": "1",
+    "MerchantId": "1",
+    "DisplayName": "file_name_a",
+    "ExtFileRequest": "XLSX",
+    "FileUrl": "file_url_1",
+    "ResultFileUrl": "result_file_url_1",
+    "Status": 4,
+    "StatsTotalRow": 1,
+    "StatsTotalSuccess": 1,
+    "ErrorDisplay": "",
+    "CreatedBy": "user@teko.vn",
+    "CreatedAt": 1706609891,
+    "UpdatedAt": 1706609891,
+    "Index": 2,
+    "ErrList": [
+      "Gía trị cột client_id không hợp lệ"
+    ]
+  },
+  {
+    "ClientId": 17,
+    "TenantId": "2",
+    "MerchantId": "2",
+    "DisplayName": "file_name_b",
+    "ExtFileRequest": "CSV",
+    "FileUrl": "file_url_2",
+    "ResultFileUrl": "result_file_url_2",
+    "Status": 0,
+    "StatsTotalRow": 1,
+    "StatsTotalSuccess": 1,
+    "ErrorDisplay": "has error",
+    "CreatedBy": "user@teko.vn",
+    "CreatedAt": 1706609891,
+    "UpdatedAt": 1706609891,
+    "Index": 3,
+    "ErrList": [
+      "Gía trị cột status không hợp lệ"
+    ]
+  },
+  {
+    "ClientId": 18,
+    "TenantId": "1",
+    "MerchantId": "1",
+    "DisplayName": "file_name_a",
+    "ExtFileRequest": "XLSX",
+    "FileUrl": "file_url_1",
+    "ResultFileUrl": "result_file_url_1",
+    "Status": 4,
+    "StatsTotalRow": 0,
+    "StatsTotalSuccess": 0,
+    "ErrorDisplay": "",
+    "CreatedBy": "user@teko.vn",
+    "CreatedAt": 0,
+    "UpdatedAt": 0,
+    "Index": 4,
+    "ErrList": [
+      "Gía trị cột stats_total_row không hợp lệ",
+      "Gía trị cột stats_total_success không hợp lệ",
+      "Gía trị cột updated_at không hợp lệ"
+    ]
+  }
+]

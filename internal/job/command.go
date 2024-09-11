@@ -9,6 +9,7 @@ import (
 	"github.com/xo/dburl"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
@@ -18,9 +19,16 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executetask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/flatten"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/handlefileprocessing"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/support_migrate_data"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/updatestatus"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/fileservice"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
+)
+
+const (
+	googleSheetIdArg      = "google-sheet-id"
+	forceDeleteClientsArg = "force-delete-clients"
 )
 
 func Command(cfg config.Config) *cli.Command {
@@ -124,6 +132,47 @@ func Command(cfg config.Config) *cli.Command {
 							return nil
 						},
 					},
+				},
+			},
+			{
+				Name:  "migrate-import-history",
+				Usage: "Migrate Import History",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     googleSheetIdArg,
+						Usage:    "Google Sheet ID",
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     forceDeleteClientsArg,
+						Usage:    "Force delete clients",
+						Required: false,
+					},
+				},
+				Action: func(cliCtx *cli.Context) error {
+					sheetId := cliCtx.String(googleSheetIdArg)
+					forceDeleteClientStr := cliCtx.String(forceDeleteClientsArg)
+					forceDeleteClientInts := make([]int32, 0)
+					if forceDeleteClientStr != constant.EmptyString {
+						forceDeleteClientInts, err = utils.String2ArrayInt32(forceDeleteClientStr, constant.SplitByComma)
+						if err != nil {
+							logger.Errorf("Fail to convert force delete clients, got: %v", err)
+							return err
+						}
+					}
+
+					job, err := support_migrate_data.NewJobMigrateImportHistory(sheetId, forceDeleteClientInts, fpService, fileService)
+					if err != nil {
+						logger.Errorf("Fail to create job, got: %v", err)
+						return err
+					}
+
+					err = job.Run(cliCtx.Context)
+					if err != nil {
+						logger.Errorf("Fail to run job, got: %v", err)
+						return err
+					}
+					return nil
 				},
 			},
 		},

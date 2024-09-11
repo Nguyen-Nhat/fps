@@ -13,6 +13,7 @@ import (
 type (
 	Service interface {
 		CreateFileProcessing(ctx context.Context, req *CreateFileProcessingReqDTO) (*CreateFileProcessingResDTO, error)
+		BulkInsertProcessingFile(ctx context.Context, processingFiles []ProcessingFile) error
 		GetFileProcessHistory(ctx context.Context, req *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error)
 
 		FindById(context.Context, int) (*ProcessingFile, error)
@@ -21,6 +22,8 @@ type (
 		UpdateToFailedStatusWithErrorMessage(context.Context, int, ErrorDisplay, *string) (*ProcessingFile, error)
 		UpdateToProcessingStatusWithExtractedData(context.Context, int, int, int) (*ProcessingFile, error)
 		UpdateStatusWithStatistics(context.Context, int, int16, int, int, string) (*ProcessingFile, error)
+
+		Delete(ctx context.Context, clientIds []int32) error
 	}
 
 	ServiceImpl struct {
@@ -139,4 +142,12 @@ func (s *ServiceImpl) GetFileProcessHistory(ctx context.Context, req *GetFilePro
 	}
 
 	return files, pagination, err
+}
+
+func (s *ServiceImpl) BulkInsertProcessingFile(ctx context.Context, processingFiles []ProcessingFile) error {
+	return s.repo.BulkInsert(ctx, processingFiles)
+}
+
+func (s *ServiceImpl) Delete(ctx context.Context, clientIds []int32) error {
+	return s.repo.Delete(ctx, clientIds)
 }

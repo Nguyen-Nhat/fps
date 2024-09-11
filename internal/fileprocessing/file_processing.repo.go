@@ -8,6 +8,7 @@ import (
 	"time"
 
 	entsql "entgo.io/ent/dialect/sql"
+	"github.com/samber/lo"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
@@ -20,6 +21,7 @@ import (
 type (
 	Repo interface {
 		Save(ctx context.Context, fp ProcessingFile) (*ProcessingFile, error)
+		BulkInsert(ctx context.Context, fps []ProcessingFile) error
 		FindByClientIdAndPagination(context.Context, *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error)
 		FindByID(context.Context, int) (*ProcessingFile, error)
 		FindByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
@@ -27,6 +29,7 @@ type (
 		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay, *string) (*ProcessingFile, error)
 		UpdateStatusAndStatsAndResultFileUrl(context.Context, int, int16, int, int, string) (*ProcessingFile, error)
 		UpdateByExtractedData(ctx context.Context, id int, status int16, totalMapping int, statsTotalRow int) (*ProcessingFile, error)
+		Delete(ctx context.Context, clientIds []int32) error
 		PingDB(context.Context, int)
 	}
 
@@ -167,6 +170,33 @@ func (r *repoImpl) PingDB(ctx context.Context, id int) {
 	logger.Debugf("---------------> Ping DB ...... execute_time = %v%s", sub, subStr)
 }
 
+func (r *repoImpl) BulkInsert(ctx context.Context, fps []ProcessingFile) error {
+	// 1. Build bulk
+	processingFileBulk := make([]*ent.ProcessingFileCreate, len(fps))
+	for i, fp := range fps {
+		processingFileBulk[i] = mapProcessingFile(r.client, fp)
+	}
+
+	// 2. Create by bulk
+	processingFileBulkChunk := lo.Chunk(processingFileBulk, constant.DefaultInsertBatchSize)
+	for _, bulk := range processingFileBulkChunk {
+		_, err := r.client.ProcessingFile.CreateBulk(bulk...).Save(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to save %s to DB, error: %+v", Name(), err)
+		}
+	}
+
+	return nil
+}
+
+func (r *repoImpl) Delete(ctx context.Context, clientIds []int32) error {
+	_, err := r.client.ProcessingFile.Delete().Where(processingfile.ClientIDIn(clientIds...)).Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to delete %s from DB, error: %+v", Name(), err)
+	}
+	return nil
+}
+
 // private function ---------------------------------------------------------------------------------------------
 
 func save(ctx context.Context, client *ent.Client, fp ProcessingFile) (*ProcessingFile, error) {
@@ -198,6 +228,8 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetStatsTotalSuccess(fp.StatsTotalSuccess).
 		SetErrorDisplay(fp.ErrorDisplay).
 		SetCreatedBy(fp.CreatedBy).
+		SetCreatedAt(fp.CreatedAt).
+		SetUpdatedAt(fp.UpdatedAt).
 		SetMerchantID(fp.MerchantID).
 		SetTenantID(fp.TenantID)
 }
