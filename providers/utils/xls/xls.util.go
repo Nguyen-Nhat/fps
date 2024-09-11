@@ -2,8 +2,6 @@ package xls
 
 import (
 	"bytes"
-	"io"
-	"net/http"
 
 	"github.com/shakinm/xlsReader/xls"
 
@@ -13,17 +11,7 @@ import (
 )
 
 func LoadXlsByUrl(url, sheetName string) ([][]string, error) {
-	url = utils.GetInternalFileURL(url)
-	r, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		_ = r.Body.Close()
-	}()
-
-	data, err := io.ReadAll(r.Body)
+	data, err := utils.GetDataFromURL(url)
 	if err != nil {
 		return nil, err
 	}
