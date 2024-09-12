@@ -213,7 +213,7 @@ func save(ctx context.Context, client *ent.Client, fp ProcessingFile) (*Processi
 }
 
 func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFileCreate {
-	return client.ProcessingFile.Create().
+	newProcessingFile := client.ProcessingFile.Create().
 		SetClientID(fp.ClientID).
 		SetDisplayName(fp.DisplayName).
 		SetExtFileRequest(fp.ExtFileRequest).
@@ -228,10 +228,16 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetStatsTotalSuccess(fp.StatsTotalSuccess).
 		SetErrorDisplay(fp.ErrorDisplay).
 		SetCreatedBy(fp.CreatedBy).
-		SetCreatedAt(fp.CreatedAt).
-		SetUpdatedAt(fp.UpdatedAt).
 		SetMerchantID(fp.MerchantID).
 		SetTenantID(fp.TenantID)
+
+	if !fp.CreatedAt.IsZero() {
+		newProcessingFile.SetCreatedAt(fp.CreatedAt)
+	}
+	if !fp.UpdatedAt.IsZero() {
+		newProcessingFile.SetUpdatedAt(fp.UpdatedAt)
+	}
+	return newProcessingFile
 }
 
 // Implementation function ---------------------------------------------------------------------------------------------
