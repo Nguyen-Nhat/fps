@@ -54,8 +54,7 @@ func ConvertSellerSkus(jsonItems string, sellerId string) customFunc.FuncResult 
 			}
 		}
 		if !existed {
-			msg := fmt.Sprintf("không tìm thấy thông tin sku với sellerSku=%s, uomName=%s", inputItem.SellerSku, inputItem.UomName)
-			return customFunc.FuncResult{ErrorMessage: msg}
+			return customFunc.FuncResult{ErrorMessage: errorz.ErrNoSkuWithUomName(inputItem.SellerSku, inputItem.UomName)}
 		}
 	}
 
@@ -87,4 +86,26 @@ func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, 
 
 	// 4. Return data
 	return resBody.Data.Products, nil
+}
+
+// ConvertSellerSkuAndUomName2Sku ...
+func ConvertSellerSkuAndUomName2Sku(sellerId, sellerSku, uomName string) customFunc.FuncResult {
+	// 1. Call api
+	products, err := callApiGetSkus([]ItemInput{{SellerSku: sellerSku, UomName: uomName}}, sellerId)
+	if err != nil {
+		return customFunc.FuncResult{ErrorMessage: errorz.ErrDefault}
+	}
+	if len(products) == 0 {
+		return customFunc.FuncResult{ErrorMessage: errorz.ErrNoSkus(sellerSku)}
+	}
+
+	// 2. Convert response
+	for _, product := range products {
+		productSellerId := fmt.Sprintf("%d", product.SellerId)
+		if utils.EqualsIgnoreCase(sellerSku, product.SellerSku) && utils.EqualsIgnoreCase(uomName, product.UomName) && productSellerId == sellerId {
+			return customFunc.FuncResult{Result: product.Sku}
+		}
+	}
+
+	return customFunc.FuncResult{ErrorMessage: errorz.ErrNoSkuWithUomName(sellerSku, uomName)}
 }
