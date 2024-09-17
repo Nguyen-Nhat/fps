@@ -8,6 +8,9 @@ const (
 	FuncConvertSupplierCode2SupplierId    = "convertSupplierCode2SupplierId"
 	FuncConvertOrderDay                   = "convertOrderDay"
 	FuncValidateAndConvertSiteCode2SiteId = "validateAndConvertSiteCode2SiteId"
+	FuncConvertSellerSkuAndUomName2Sku    = "convertSellerSkuAndUomName2Sku"
+	FuncConvertString2Bool                = "convertString2Bool"
+	FuncConvertDateTimeFormat             = "convertDateTimeFormat"
 )
 
 const (

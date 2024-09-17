@@ -19,6 +19,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/cast"
 	"moul.io/http2curl"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
@@ -33,6 +34,7 @@ const (
 	suffixResult   = "_result"
 	maxRetry       = 3
 	retryDelay     = 10
+	datetimeGMT    = +7
 )
 
 const (
@@ -602,4 +604,15 @@ func GetDataFromURL(url string) ([]byte, error) {
 	}()
 
 	return io.ReadAll(r.Body)
+}
+
+func StringToDateInUTC7Location(s string, timeFormat string) (time.Time, error) {
+	utc7Loc := time.FixedZone(constant.EmptyString, datetimeGMT*int(time.Hour.Seconds()))
+	date, err := time.ParseInLocation(timeFormat, s, utc7Loc)
+	if err != nil {
+		date, err = cast.StringToDate(s)
+		date = date.In(utc7Loc)
+	}
+
+	return date, err
 }

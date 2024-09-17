@@ -23,6 +23,12 @@ var (
 	ErrCallAPI = func(api, err string) string {
 		return fmt.Sprintf("Call API %s thất bại. Lỗi: %s", api, err)
 	}
+	ErrNoSkuWithUomName = func(sellerSku, uomName string) string {
+		return fmt.Sprintf("Không tìm thấy thông tin sku với sellerSku=%s, uomName=%s", sellerSku, uomName)
+	}
+	ErrDateTimeFormat = func(dateTime, format string) string {
+		return fmt.Sprintf("Sai định dạng ngày tháng. Ngày tháng: %s, định dạng: %s", dateTime, format)
+	}
 )
 
 // Error show on Debug

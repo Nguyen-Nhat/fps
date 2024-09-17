@@ -101,6 +101,21 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
 		}
 		return funcClient20.ConvertOrderDay(cf.ParamsMapped[0]), nil
+	case constants.FuncConvertSellerSkuAndUomName2Sku:
+		if len(cf.ParamsMapped) != 3 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
+		}
+		return funcClient10.ConvertSellerSkuAndUomName2Sku(cf.ParamsMapped[0], cf.ParamsMapped[1], cf.ParamsMapped[2]), nil
+	case constants.FuncConvertString2Bool:
+		if len(cf.ParamsMapped) != 1 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
+		}
+		return customFunc.ConvertString2Bool(cf.ParamsMapped[0]), nil
+	case constants.FuncConvertDateTimeFormat:
+		if len(cf.ParamsMapped) != 3 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
+		}
+		return customFunc.ConvertDateTimeFormat(cf.ParamsMapped[0], cf.ParamsMapped[1], cf.ParamsMapped[2]), nil
 	default:
 		return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrFunctionNoSupport)
 	}
