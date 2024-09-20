@@ -153,7 +153,7 @@ func ValidateAndConvertSiteCode2SiteId(sellerId, siteCode string, mustInSiteIds 
 		return FuncResult{Result: siteIdForAllSite}
 	}
 
-	if mustInSiteIds == nil || mustInSiteIds == constant.NilString {
+	if mustInSiteIds == nil || mustInSiteIds == constant.NilString || mustInSiteIds == constant.EmptyString {
 		return ConvertSiteCode2SiteId(siteCode, sellerId, true)
 	}
 
