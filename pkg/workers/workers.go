@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-type workerPool struct {
+type WorkerPool struct {
 	maxWorker  int
 	queuedTask chan func()
 	waitGroup  sync.WaitGroup
 }
 
-func (wp *workerPool) Run() {
+func (wp *WorkerPool) Run() {
 	for i := 0; i < wp.maxWorker; i++ {
 		wp.waitGroup.Add(1)
 		go func(workerID int) {
@@ -24,19 +24,23 @@ func (wp *workerPool) Run() {
 	}
 }
 
-func (wp *workerPool) Close() {
+func (wp *WorkerPool) Close() {
 	close(wp.queuedTask)
 }
 
-func (wp *workerPool) AddTask(task func()) {
+func (wp *WorkerPool) AddTask(task func()) {
 	wp.queuedTask <- task
 }
 
-func NewWorkerPool(maxWorker int) workerPool {
+func NewWorkerPool(maxWorker int) WorkerPool {
 	queuedTasks := make(chan func())
-	return workerPool{
+	return WorkerPool{
 		maxWorker:  maxWorker,
 		queuedTask: queuedTasks,
 		waitGroup:  sync.WaitGroup{},
 	}
+}
+
+func (wp *WorkerPool) Wait() {
+	wp.waitGroup.Wait()
 }
