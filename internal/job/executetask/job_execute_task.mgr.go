@@ -80,6 +80,7 @@ func (mgr *jobExecuteTaskManager) Execute() {
 	}
 
 	// 3. Execute Tasks in each file
+	var workerPools []*workers.WorkerPool
 	for _, file := range fpList {
 		// 3.1. Get all task of file.ID, group by rowIndex
 		taskGroupByRow, _ := mgr.fprService.GetAllRowsNeedToExecuteByJob(ctx, file.ID, 5000)
@@ -106,5 +107,14 @@ func (mgr *jobExecuteTaskManager) Execute() {
 
 		// 3.4. Close worker to stop receiving new tasks
 		workerPool.Close()
+
+		// 3.5. Add to list worker pool
+		workerPools = append(workerPools, &workerPool)
 	}
+
+	// 4. Wait for all tasks completed in each Worker Pool
+	for _, wp := range workerPools {
+		wp.Wait()
+	}
+
 }
