@@ -16,6 +16,12 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
 )
 
+const (
+	pageSizeKey    = "pageSize"
+	pageSizeGetSku = "100"
+	sellerSkusKey  = "sellerSkus"
+)
+
 // ConvertSellerSkus ...
 func ConvertSellerSkus(jsonItems string, sellerId string) customFunc.FuncResult {
 	// 1. Parse input
@@ -30,6 +36,7 @@ func ConvertSellerSkus(jsonItems string, sellerId string) customFunc.FuncResult 
 	// 2. Call api
 	products, err := utils.BatchExecutingReturn(constants.BatchSizeQuerySku, inputItems, callApiGetSkus, sellerId)
 	//products, err := callApiGetSkus(inputItems)
+	logger.Infof("==== products=%+v, err=%v", products, err)
 	if err != nil {
 		return customFunc.FuncResult{ErrorMessage: errorz.ErrDefault}
 	}
@@ -69,7 +76,7 @@ func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, 
 	// 2. Prepare call api
 	httpClient := helpers.InitHttpClient()
 	reqHeader := map[string]string{"Content-Type": "application/json"}
-	reqParams := map[string]string{"sellerSkus": sellerSkusStr}
+	reqParams := map[string]string{sellerSkusKey: sellerSkusStr, pageSizeKey: pageSizeGetSku}
 	if len(sellerIds) > 0 {
 		sellerId := sellerIds[0]
 		if reflect.TypeOf(sellerId).Kind() == reflect.String {
@@ -83,6 +90,7 @@ func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, 
 		logger.Errorf("failed to call %v, got error=%v, httpStatus=%d, resBody=%+v", constants.UrlApiGetSkus, err, httpStatus, resBody)
 		return nil, err
 	}
+	logger.Infof("==== call %v, httpStatus=%d, resBody=%+v", constants.UrlApiGetSkus, httpStatus, resBody)
 
 	// 4. Return data
 	return resBody.Data.Products, nil
