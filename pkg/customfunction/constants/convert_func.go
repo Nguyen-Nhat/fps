@@ -14,5 +14,5 @@ const (
 )
 
 const (
-	BatchSizeQuerySku = 50
+	BatchSizeQuerySku = 10
 )
