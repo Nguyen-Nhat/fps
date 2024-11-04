@@ -72,6 +72,7 @@ func (s *Server) GetFileProcessHistory(ctx context.Context, req *GetFileProcessH
 	// 1. Map the request to internal DTO
 	input := &fileprocessing.GetFileProcessHistoryDTO{
 		ClientID:        req.ClientID,
+		ClientIds:       req.ClientIds,
 		SellerId:        req.SellerID,
 		CreatedBy:       req.CreatedBy,
 		Page:            req.Page,
