@@ -1,7 +1,8 @@
 package fileprocessing
 
 type GetFileProcessHistoryDTO struct {
-	ClientID        int32
+	ClientID        int32 // deprecated
+	ClientIds       []int32
 	SellerId        int32
 	CreatedBy       string
 	Page            int

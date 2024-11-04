@@ -71,7 +71,8 @@ func (c *CreateFileProcessingRequest) Bind(r *http.Request) error {
 }
 
 type GetFileProcessHistoryRequest struct {
-	ClientID        int32    `json:"clientId"`
+	ClientID        int32    `json:"clientId"` // deprecated
+	ClientIds       []int32  `json:"clientIds"`
 	SellerID        int32    `json:"sellerId"`
 	CreatedBy       string   `json:"createdBy"`
 	Page            int      `json:"page"`
@@ -93,8 +94,8 @@ func bindAndValidateRequestParams(r *http.Request, data *GetFileProcessHistoryRe
 	data.InitDefaultValue()
 
 	// 2.Validate request params
-	if data.ClientID == 0 {
-		err := fmt.Errorf("missing required param: clientId")
+	if data.ClientID == 0 && len(data.ClientIds) == 0 {
+		err := fmt.Errorf("missing required param: clientId or clientIds")
 		logger.Errorf("bindAndValidateRequestParams ... error %+v", err)
 		return error2.ErrInvalidRequestWithError(err)
 	}

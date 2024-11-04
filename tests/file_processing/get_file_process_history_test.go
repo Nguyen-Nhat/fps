@@ -583,3 +583,33 @@ func TestGetFileProcessHistory_Input_filter_by_merchant_id__Should_return_code_2
 	}
 	goldie.New(t).AssertJson(t, "get_file_process_history/filter_by_merchant_id", respData)
 }
+
+func TestGetFileProcessHistory_Input_clientIds_is_valid__Should_return_code_200(t *testing.T) {
+	detail := jiraTestDetailsForSample
+	detail.Name = "[GetFileProcessHistory] Return code = 200 when clientIds is valid"
+	defer detail.Setup(t)()
+
+	ctx := context.Background()
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
+	fpServer := fileprocessing2.InitFileProcessingServer(db)
+
+	req := fileprocessing2.GetFileProcessHistoryRequest{
+		ClientIds: []int32{12, 16},
+		Page:      1,
+		PageSize:  5,
+	}
+	req.InitDefaultValue()
+
+	fpRes, err := fpServer.GetFileProcessHistory(ctx, &req)
+	if err != nil {
+		t.Errorf("Error get list file processing: %v", err)
+	}
+	assert.Equal(t, codes.OK, fpRes.Error)
+	respData := make([]fileprocessing2.ProcessingHistoryFile, 0, len(fpRes.Data.ProcessingFiles))
+	for _, data := range fpRes.Data.ProcessingFiles {
+		data.CreatedAt = fixedTime.UnixMilli()
+		data.FinishedAt = fixedTime.UnixMilli()
+		respData = append(respData, data)
+	}
+	goldie.New(t).AssertJson(t, "get_file_process_history/filter_by_client_ids", respData)
+}

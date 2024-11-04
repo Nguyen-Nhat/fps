@@ -49,6 +49,6 @@ func TestAPIListFile_validateAndSetDataValue_Page_not_include_clientId(t *testin
 	data := &GetFileProcessHistoryRequest{}
 	err := bindAndValidateRequestParams(req, data)
 
-	expectErr := error2.ErrInvalidRequestWithError(fmt.Errorf("missing required param: clientId"))
+	expectErr := error2.ErrInvalidRequestWithError(fmt.Errorf("missing required param: clientId or clientIds"))
 	assert.Equal(t, expectErr, err)
 }

@@ -243,7 +243,13 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 // Implementation function ---------------------------------------------------------------------------------------------
 
 func (r *repoImpl) FindByClientIdAndPagination(ctx context.Context, dto *GetFileProcessHistoryDTO) ([]*ProcessingFile, *response.Pagination, error) {
-	query := r.client.ProcessingFile.Query().Where(processingfile.ClientID(dto.ClientID))
+	query := r.client.ProcessingFile.Query()
+
+	if len(dto.ClientIds) > 0 {
+		query = query.Where(processingfile.ClientIDIn(dto.ClientIds...))
+	} else {
+		query = query.Where(processingfile.ClientID(dto.ClientID))
+	}
 
 	if dto.CreatedBy != constant.EmptyString {
 		query = query.Where(processingfile.CreatedBy(dto.CreatedBy))
