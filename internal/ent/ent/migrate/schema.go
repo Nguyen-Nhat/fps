@@ -103,6 +103,7 @@ var (
 		{Name: "error_display", Type: field.TypeString},
 		{Name: "tenant_id", Type: field.TypeString},
 		{Name: "merchant_id", Type: field.TypeString},
+		{Name: "accept_language", Type: field.TypeString, Default: ""},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},

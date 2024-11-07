@@ -2,10 +2,12 @@ package fileprocessing
 
 import (
 	"fmt"
-	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	error2 "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 )
 
 func TestAPIListFile_validateAndSetDataValue_Size_bigger_than_200_with_valid_page(t *testing.T) {

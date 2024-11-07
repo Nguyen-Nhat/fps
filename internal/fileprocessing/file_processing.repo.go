@@ -229,7 +229,8 @@ func mapProcessingFile(client *ent.Client, fp ProcessingFile) *ent.ProcessingFil
 		SetErrorDisplay(fp.ErrorDisplay).
 		SetCreatedBy(fp.CreatedBy).
 		SetMerchantID(fp.MerchantID).
-		SetTenantID(fp.TenantID)
+		SetTenantID(fp.TenantID).
+		SetAcceptLanguage(fp.AcceptLanguage)
 
 	if !fp.CreatedAt.IsZero() {
 		newProcessingFile.SetCreatedAt(fp.CreatedAt)

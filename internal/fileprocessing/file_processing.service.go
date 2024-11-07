@@ -41,7 +41,6 @@ func NewService(repo Repo) Service {
 
 // CreateFileProcessing ... Create new file processing. If display name is not provided, it will be extracted from file name
 func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileProcessingReqDTO) (*CreateFileProcessingResDTO, error) {
-
 	// 1. Preprocess data
 	// Get file name from file URL in case display name was not provided
 	displayName := req.DisplayName
@@ -65,6 +64,7 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 			SellerID:       req.SellerID,
 			MerchantID:     req.MerchantId,
 			TenantID:       req.TenantId,
+			AcceptLanguage: req.AcceptLanguage.String(),
 		},
 	})
 	if err != nil {

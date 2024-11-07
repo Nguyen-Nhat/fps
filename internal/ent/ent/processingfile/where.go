@@ -192,6 +192,13 @@ func MerchantID(v string) predicate.ProcessingFile {
 	})
 }
 
+// AcceptLanguage applies equality check predicate on the "accept_language" field. It's identical to AcceptLanguageEQ.
+func AcceptLanguage(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAcceptLanguage), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
@@ -1478,6 +1485,105 @@ func MerchantIDEqualFold(v string) predicate.ProcessingFile {
 func MerchantIDContainsFold(v string) predicate.ProcessingFile {
 	return predicate.ProcessingFile(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldMerchantID), v))
+	})
+}
+
+// AcceptLanguageEQ applies the EQ predicate on the "accept_language" field.
+func AcceptLanguageEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageNEQ applies the NEQ predicate on the "accept_language" field.
+func AcceptLanguageNEQ(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageIn applies the In predicate on the "accept_language" field.
+func AcceptLanguageIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldAcceptLanguage), v...))
+	})
+}
+
+// AcceptLanguageNotIn applies the NotIn predicate on the "accept_language" field.
+func AcceptLanguageNotIn(vs ...string) predicate.ProcessingFile {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldAcceptLanguage), v...))
+	})
+}
+
+// AcceptLanguageGT applies the GT predicate on the "accept_language" field.
+func AcceptLanguageGT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageGTE applies the GTE predicate on the "accept_language" field.
+func AcceptLanguageGTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageLT applies the LT predicate on the "accept_language" field.
+func AcceptLanguageLT(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageLTE applies the LTE predicate on the "accept_language" field.
+func AcceptLanguageLTE(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageContains applies the Contains predicate on the "accept_language" field.
+func AcceptLanguageContains(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageHasPrefix applies the HasPrefix predicate on the "accept_language" field.
+func AcceptLanguageHasPrefix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageHasSuffix applies the HasSuffix predicate on the "accept_language" field.
+func AcceptLanguageHasSuffix(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageEqualFold applies the EqualFold predicate on the "accept_language" field.
+func AcceptLanguageEqualFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAcceptLanguage), v))
+	})
+}
+
+// AcceptLanguageContainsFold applies the ContainsFold predicate on the "accept_language" field.
+func AcceptLanguageContainsFold(v string) predicate.ProcessingFile {
+	return predicate.ProcessingFile(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAcceptLanguage), v))
 	})
 }
 

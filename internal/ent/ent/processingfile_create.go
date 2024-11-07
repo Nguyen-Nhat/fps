@@ -164,6 +164,20 @@ func (pfc *ProcessingFileCreate) SetMerchantID(s string) *ProcessingFileCreate {
 	return pfc
 }
 
+// SetAcceptLanguage sets the "accept_language" field.
+func (pfc *ProcessingFileCreate) SetAcceptLanguage(s string) *ProcessingFileCreate {
+	pfc.mutation.SetAcceptLanguage(s)
+	return pfc
+}
+
+// SetNillableAcceptLanguage sets the "accept_language" field if the given value is not nil.
+func (pfc *ProcessingFileCreate) SetNillableAcceptLanguage(s *string) *ProcessingFileCreate {
+	if s != nil {
+		pfc.SetAcceptLanguage(*s)
+	}
+	return pfc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pfc *ProcessingFileCreate) SetCreatedAt(t time.Time) *ProcessingFileCreate {
 	pfc.mutation.SetCreatedAt(t)
@@ -295,6 +309,10 @@ func (pfc *ProcessingFileCreate) defaults() {
 		v := processingfile.DefaultStatsTotalSuccess
 		pfc.mutation.SetStatsTotalSuccess(v)
 	}
+	if _, ok := pfc.mutation.AcceptLanguage(); !ok {
+		v := processingfile.DefaultAcceptLanguage
+		pfc.mutation.SetAcceptLanguage(v)
+	}
 	if _, ok := pfc.mutation.CreatedAt(); !ok {
 		v := processingfile.DefaultCreatedAt()
 		pfc.mutation.SetCreatedAt(v)
@@ -361,6 +379,9 @@ func (pfc *ProcessingFileCreate) check() error {
 	}
 	if _, ok := pfc.mutation.MerchantID(); !ok {
 		return &ValidationError{Name: "merchant_id", err: errors.New(`ent: missing required field "ProcessingFile.merchant_id"`)}
+	}
+	if _, ok := pfc.mutation.AcceptLanguage(); !ok {
+		return &ValidationError{Name: "accept_language", err: errors.New(`ent: missing required field "ProcessingFile.accept_language"`)}
 	}
 	if _, ok := pfc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProcessingFile.created_at"`)}
@@ -530,6 +551,14 @@ func (pfc *ProcessingFileCreate) createSpec() (*ProcessingFile, *sqlgraph.Create
 			Column: processingfile.FieldMerchantID,
 		})
 		_node.MerchantID = value
+	}
+	if value, ok := pfc.mutation.AcceptLanguage(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldAcceptLanguage,
+		})
+		_node.AcceptLanguage = value
 	}
 	if value, ok := pfc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

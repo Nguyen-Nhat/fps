@@ -3728,6 +3728,7 @@ type ProcessingFileMutation struct {
 	error_display            *string
 	tenant_id                *string
 	merchant_id              *string
+	accept_language          *string
 	created_at               *time.Time
 	created_by               *string
 	updated_at               *time.Time
@@ -4564,6 +4565,42 @@ func (m *ProcessingFileMutation) ResetMerchantID() {
 	m.merchant_id = nil
 }
 
+// SetAcceptLanguage sets the "accept_language" field.
+func (m *ProcessingFileMutation) SetAcceptLanguage(s string) {
+	m.accept_language = &s
+}
+
+// AcceptLanguage returns the value of the "accept_language" field in the mutation.
+func (m *ProcessingFileMutation) AcceptLanguage() (r string, exists bool) {
+	v := m.accept_language
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAcceptLanguage returns the old "accept_language" field's value of the ProcessingFile entity.
+// If the ProcessingFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProcessingFileMutation) OldAcceptLanguage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAcceptLanguage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAcceptLanguage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAcceptLanguage: %w", err)
+	}
+	return oldValue.AcceptLanguage, nil
+}
+
+// ResetAcceptLanguage resets all changes to the "accept_language" field.
+func (m *ProcessingFileMutation) ResetAcceptLanguage() {
+	m.accept_language = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ProcessingFileMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -4691,7 +4728,7 @@ func (m *ProcessingFileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProcessingFileMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.client_id != nil {
 		fields = append(fields, processingfile.FieldClientID)
 	}
@@ -4739,6 +4776,9 @@ func (m *ProcessingFileMutation) Fields() []string {
 	}
 	if m.merchant_id != nil {
 		fields = append(fields, processingfile.FieldMerchantID)
+	}
+	if m.accept_language != nil {
+		fields = append(fields, processingfile.FieldAcceptLanguage)
 	}
 	if m.created_at != nil {
 		fields = append(fields, processingfile.FieldCreatedAt)
@@ -4789,6 +4829,8 @@ func (m *ProcessingFileMutation) Field(name string) (ent.Value, bool) {
 		return m.TenantID()
 	case processingfile.FieldMerchantID:
 		return m.MerchantID()
+	case processingfile.FieldAcceptLanguage:
+		return m.AcceptLanguage()
 	case processingfile.FieldCreatedAt:
 		return m.CreatedAt()
 	case processingfile.FieldCreatedBy:
@@ -4836,6 +4878,8 @@ func (m *ProcessingFileMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldTenantID(ctx)
 	case processingfile.FieldMerchantID:
 		return m.OldMerchantID(ctx)
+	case processingfile.FieldAcceptLanguage:
+		return m.OldAcceptLanguage(ctx)
 	case processingfile.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case processingfile.FieldCreatedBy:
@@ -4962,6 +5006,13 @@ func (m *ProcessingFileMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMerchantID(v)
+		return nil
+	case processingfile.FieldAcceptLanguage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAcceptLanguage(v)
 		return nil
 	case processingfile.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -5176,6 +5227,9 @@ func (m *ProcessingFileMutation) ResetField(name string) error {
 		return nil
 	case processingfile.FieldMerchantID:
 		m.ResetMerchantID()
+		return nil
+	case processingfile.FieldAcceptLanguage:
+		m.ResetAcceptLanguage()
 		return nil
 	case processingfile.FieldCreatedAt:
 		m.ResetCreatedAt()

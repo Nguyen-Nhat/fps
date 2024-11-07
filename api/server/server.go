@@ -80,7 +80,7 @@ func (s *Server) initRoutes() {
 	// 3. File Processing API
 	fpServer := fileprocessing.InitFileProcessingServer(s.db)
 	fpRouter := chi.NewRouter()
-	fpRouter.Use(middleware.LoggerMW, middleware.UserMW)
+	fpRouter.Use(middleware.LoggerMW, middleware.UserMW, middleware.LanguageMW)
 	fpRouter.Get("/getListProcessFiles", fpServer.GetFileProcessHistoryAPI())
 	fpRouter.Post("/createProcessFile", fpServer.CreateProcessByFileAPI())
 	s.Router.Mount("/v1", fpRouter)

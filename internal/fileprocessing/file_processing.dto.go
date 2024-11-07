@@ -1,5 +1,7 @@
 package fileprocessing
 
+import "golang.org/x/text/language"
+
 type GetFileProcessHistoryDTO struct {
 	ClientID        int32 // deprecated
 	ClientIds       []int32
@@ -23,6 +25,7 @@ type CreateFileProcessingReqDTO struct {
 	SellerID       int32
 	MerchantId     string
 	TenantId       string
+	AcceptLanguage language.Tag
 }
 
 type CreateFileProcessingResDTO struct {
