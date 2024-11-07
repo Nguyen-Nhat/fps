@@ -199,16 +199,20 @@ func init() {
 	processingfileDescStatsTotalSuccess := processingfileFields[12].Descriptor()
 	// processingfile.DefaultStatsTotalSuccess holds the default value on creation for the stats_total_success field.
 	processingfile.DefaultStatsTotalSuccess = processingfileDescStatsTotalSuccess.Default.(int32)
+	// processingfileDescAcceptLanguage is the schema descriptor for accept_language field.
+	processingfileDescAcceptLanguage := processingfileFields[16].Descriptor()
+	// processingfile.DefaultAcceptLanguage holds the default value on creation for the accept_language field.
+	processingfile.DefaultAcceptLanguage = processingfileDescAcceptLanguage.Default.(string)
 	// processingfileDescCreatedAt is the schema descriptor for created_at field.
-	processingfileDescCreatedAt := processingfileFields[16].Descriptor()
+	processingfileDescCreatedAt := processingfileFields[17].Descriptor()
 	// processingfile.DefaultCreatedAt holds the default value on creation for the created_at field.
 	processingfile.DefaultCreatedAt = processingfileDescCreatedAt.Default.(func() time.Time)
 	// processingfileDescCreatedBy is the schema descriptor for created_by field.
-	processingfileDescCreatedBy := processingfileFields[17].Descriptor()
+	processingfileDescCreatedBy := processingfileFields[18].Descriptor()
 	// processingfile.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	processingfile.CreatedByValidator = processingfileDescCreatedBy.Validators[0].(func(string) error)
 	// processingfileDescUpdatedAt is the schema descriptor for updated_at field.
-	processingfileDescUpdatedAt := processingfileFields[18].Descriptor()
+	processingfileDescUpdatedAt := processingfileFields[19].Descriptor()
 	// processingfile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	processingfile.DefaultUpdatedAt = processingfileDescUpdatedAt.Default.(func() time.Time)
 	// processingfile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

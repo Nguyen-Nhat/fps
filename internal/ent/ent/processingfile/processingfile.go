@@ -43,6 +43,8 @@ const (
 	FieldTenantID = "tenant_id"
 	// FieldMerchantID holds the string denoting the merchant_id field in the database.
 	FieldMerchantID = "merchant_id"
+	// FieldAcceptLanguage holds the string denoting the accept_language field in the database.
+	FieldAcceptLanguage = "accept_language"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -72,6 +74,7 @@ var Columns = []string{
 	FieldErrorDisplay,
 	FieldTenantID,
 	FieldMerchantID,
+	FieldAcceptLanguage,
 	FieldCreatedAt,
 	FieldCreatedBy,
 	FieldUpdatedAt,
@@ -102,6 +105,8 @@ var (
 	DefaultStatsTotalProcessed int32
 	// DefaultStatsTotalSuccess holds the default value on creation for the "stats_total_success" field.
 	DefaultStatsTotalSuccess int32
+	// DefaultAcceptLanguage holds the default value on creation for the "accept_language" field.
+	DefaultAcceptLanguage string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.

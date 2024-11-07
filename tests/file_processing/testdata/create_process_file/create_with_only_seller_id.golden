@@ -8,6 +8,7 @@
   "status": 1,
   "seller_id": 1,
   "merchant_id": "1",
+  "accept_language": "en",
   "created_at": "2021-01-01T00:00:00Z",
   "created_by": "nguyen.ng@teko.vn",
   "updated_at": "2021-01-01T00:00:00Z"

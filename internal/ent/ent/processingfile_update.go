@@ -227,6 +227,20 @@ func (pfu *ProcessingFileUpdate) SetMerchantID(s string) *ProcessingFileUpdate {
 	return pfu
 }
 
+// SetAcceptLanguage sets the "accept_language" field.
+func (pfu *ProcessingFileUpdate) SetAcceptLanguage(s string) *ProcessingFileUpdate {
+	pfu.mutation.SetAcceptLanguage(s)
+	return pfu
+}
+
+// SetNillableAcceptLanguage sets the "accept_language" field if the given value is not nil.
+func (pfu *ProcessingFileUpdate) SetNillableAcceptLanguage(s *string) *ProcessingFileUpdate {
+	if s != nil {
+		pfu.SetAcceptLanguage(*s)
+	}
+	return pfu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pfu *ProcessingFileUpdate) SetCreatedAt(t time.Time) *ProcessingFileUpdate {
 	pfu.mutation.SetCreatedAt(t)
@@ -532,6 +546,13 @@ func (pfu *ProcessingFileUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: processingfile.FieldMerchantID,
 		})
 	}
+	if value, ok := pfu.mutation.AcceptLanguage(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldAcceptLanguage,
+		})
+	}
 	if value, ok := pfu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -768,6 +789,20 @@ func (pfuo *ProcessingFileUpdateOne) SetTenantID(s string) *ProcessingFileUpdate
 // SetMerchantID sets the "merchant_id" field.
 func (pfuo *ProcessingFileUpdateOne) SetMerchantID(s string) *ProcessingFileUpdateOne {
 	pfuo.mutation.SetMerchantID(s)
+	return pfuo
+}
+
+// SetAcceptLanguage sets the "accept_language" field.
+func (pfuo *ProcessingFileUpdateOne) SetAcceptLanguage(s string) *ProcessingFileUpdateOne {
+	pfuo.mutation.SetAcceptLanguage(s)
+	return pfuo
+}
+
+// SetNillableAcceptLanguage sets the "accept_language" field if the given value is not nil.
+func (pfuo *ProcessingFileUpdateOne) SetNillableAcceptLanguage(s *string) *ProcessingFileUpdateOne {
+	if s != nil {
+		pfuo.SetAcceptLanguage(*s)
+	}
 	return pfuo
 }
 
@@ -1104,6 +1139,13 @@ func (pfuo *ProcessingFileUpdateOne) sqlSave(ctx context.Context) (_node *Proces
 			Type:   field.TypeString,
 			Value:  value,
 			Column: processingfile.FieldMerchantID,
+		})
+	}
+	if value, ok := pfuo.mutation.AcceptLanguage(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: processingfile.FieldAcceptLanguage,
 		})
 	}
 	if value, ok := pfuo.mutation.CreatedAt(); ok {

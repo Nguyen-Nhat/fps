@@ -415,6 +415,7 @@ func TestParametersNotNullInvalid__Return400Successfully(t *testing.T) {
 	jsonBody, _ := json.Marshal(req)
 	httpRequest, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jsonBody))
 	httpRequest.Header.Set("Content-Type", "application/json")
+	httpRequest.Header.Set("Accept-Language", "en-US")
 
 	// 3. Request server
 	err := render.Bind(httpRequest, &fileprocessing.CreateFileProcessingRequest{})

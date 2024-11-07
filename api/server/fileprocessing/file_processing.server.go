@@ -7,9 +7,11 @@ import (
 	"strconv"
 
 	"github.com/go-chi/render"
+	"golang.org/x/text/language"
 
 	commonError "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -30,6 +32,11 @@ type (
 
 // *Server implements IServer
 var _ IServer = &Server{}
+
+var supportedLanguagesMatcher = language.NewMatcher([]language.Tag{
+	language.Vietnamese, // "vi"
+	language.English,    // "en"
+})
 
 // InitFileProcessingServer ...
 func InitFileProcessingServer(db *sql.DB) *Server {
@@ -120,12 +127,15 @@ func (s *Server) CreateProcessByFileAPI() func(http.ResponseWriter, *http.Reques
 }
 
 func (s *Server) CreateProcessingFile(ctx context.Context, request *CreateFileProcessingRequest) (*res.BaseResponse[CreateFileProcessingResponse], error) {
-
 	// 1. Validate request
 	if request.SellerID != 0 && request.MerchantId == constant.EmptyString {
 		request.MerchantId = strconv.Itoa(int(request.SellerID))
 	}
-	// 2. Call function of Service
+
+	// 2. Match language
+	acceptLanguage := middleware.GetLanguageFromContext(ctx)
+
+	// 3. Call function of Service
 	fp, err := s.service.CreateFileProcessing(ctx, &fileprocessing.CreateFileProcessingReqDTO{
 		ClientID:       request.ClientID,
 		FileURL:        request.FileURL,
@@ -135,13 +145,14 @@ func (s *Server) CreateProcessingFile(ctx context.Context, request *CreateFilePr
 		SellerID:       request.SellerID,
 		MerchantId:     request.MerchantId,
 		TenantId:       request.TenantId,
+		AcceptLanguage: acceptLanguage,
 	})
 	if err != nil {
 		logger.Errorf("CreateProcessingFile: cannot create file processing, got: %v", err)
 		return nil, err
 	}
 
-	// 3. Map result to response
+	// 4. Map result to response
 	resp := &CreateFileProcessingResponse{
 		ProcessFileID: int64(fp.ProcessFileID),
 	}
