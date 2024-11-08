@@ -20,6 +20,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/database/migrate"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/faltservice"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 )
 
 var cfg config.Config
@@ -34,8 +35,21 @@ func main() {
 		log.Fatalf("Cannot init logger, got err: %v", err)
 	}
 
+	// Init i18n
+	_, errI18n := i18n.LoadI18n() // load i18n
+	if errI18n != nil {
+		log.Fatal(errI18n)
+	}
+	logger.Infof("Load i18n success! Say hello ...")
+	logger.Infof("\t - [vi] %s", i18n.GetMessage("vi", "hello"))
+	logger.Infof("\t - [vi] %s", i18n.GetMessageD("vi", "hello_someone", "name", "FPS"))
+	logger.Infof("\t - [en] %s", i18n.GetMessage("en", "hello"))
+	logger.Infof("\t - [en] %s", i18n.GetMessageD("en", "hello_someone", "name", "FPS"))
+
 	// Init f-alt-service
-	faltservice.InitParse(cfg)
+	go func() {
+		faltservice.InitParse(cfg)
+	}()
 
 	// Init App for providing API
 	app := &cli.App{

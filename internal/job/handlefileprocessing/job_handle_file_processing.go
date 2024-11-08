@@ -32,7 +32,7 @@ type (
 )
 
 const (
-	errFileError fileprocessing.ErrorDisplay = "File tải lên sai template"
+	errFileError string = "File tải lên sai template"
 )
 
 var _ JobHandleProcessingFile = &jobHandleProcessingFileImpl{}

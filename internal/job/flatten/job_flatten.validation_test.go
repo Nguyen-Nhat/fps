@@ -1,13 +1,16 @@
 package flatten
 
 import (
+	"context"
 	"reflect"
 	"testing"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 )
 
 func Test_validateAndMatchJsonPath(t *testing.T) {
+	ctx := context.Background()
 	type args struct {
 		rowID    int
 		rowData  []string
@@ -43,7 +46,7 @@ func Test_validateAndMatchJsonPath(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := validateAndMatchJsonPath(tt.args.rowID, tt.args.rowData, tt.args.jsonPath)
+			got, got1 := validateAndMatchJsonPath(ctx, tt.args.rowID, tt.args.rowData, tt.args.jsonPath)
 			if got != tt.want {
 				t.Errorf("validateAndMatchJsonPath() got = %v, want %v", got, tt.want)
 			}
@@ -96,6 +99,8 @@ func Test_mapValueForCustomFunctionParams(t *testing.T) {
 }
 
 func Test_validateAndGetValueForRequestFieldExcel(t *testing.T) {
+	ctx := context.Background()
+	i18n.LoadI18n()
 	reqFieldKeyARequired := configloader.RequestFieldMD{ValueDependsOnKey: "A", Required: true}
 	reqFieldKeyANotRequired := configloader.RequestFieldMD{ValueDependsOnKey: "A", Required: false}
 	reqFieldKeyABRequired := configloader.RequestFieldMD{ValueDependsOnKey: "AB", Required: true}
@@ -134,7 +139,7 @@ func Test_validateAndGetValueForRequestFieldExcel(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := validateAndGetValueForRequestFieldExcel(tt.args.rowID, tt.args.rowData, tt.args.reqField)
+			got, gotErr := validateAndGetValueForRequestFieldExcel(ctx, tt.args.rowID, tt.args.rowData, tt.args.reqField)
 			if got != tt.want {
 				t.Errorf("validateAndGetValueForRequestFieldExcel() got = %v, want %v", got, tt.want)
 			}

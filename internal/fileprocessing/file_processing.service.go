@@ -19,7 +19,7 @@ type (
 		FindById(context.Context, int) (*ProcessingFile, error)
 		GetListFileByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
 
-		UpdateToFailedStatusWithErrorMessage(context.Context, int, ErrorDisplay, *string) (*ProcessingFile, error)
+		UpdateToFailedStatusWithErrorMessage(context.Context, int, string, *string) (*ProcessingFile, error)
 		UpdateToProcessingStatusWithExtractedData(context.Context, int, int, int) (*ProcessingFile, error)
 		UpdateStatusWithStatistics(context.Context, int, int16, int, int, string) (*ProcessingFile, error)
 
@@ -105,7 +105,7 @@ func (s *ServiceImpl) GetListFileByStatuses(ctx context.Context, statuses []int1
 	return pfs, nil
 }
 
-func (s *ServiceImpl) UpdateToFailedStatusWithErrorMessage(ctx context.Context, id int, errorMessage ErrorDisplay, resultFileURL *string) (*ProcessingFile, error) {
+func (s *ServiceImpl) UpdateToFailedStatusWithErrorMessage(ctx context.Context, id int, errorMessage string, resultFileURL *string) (*ProcessingFile, error) {
 	pf, err := s.repo.UpdateStatusAndErrorDisplay(ctx, id, StatusFailed, errorMessage, resultFileURL)
 	if err != nil {
 		return nil, err

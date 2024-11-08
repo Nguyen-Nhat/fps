@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/xuri/excelize/v2"
+	"golang.org/x/text/language"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
@@ -52,6 +53,7 @@ func (cl *databaseConfigLoaderV1) Load(file fileprocessing.ProcessingFile) (Conf
 		ErrorColumnIndex:   cfgMapping.ErrorColumnIndex,
 		InputFileType:      cfgMapping.InputFileType,
 		OutputFileType:     cfgMapping.OutputFileType,
+		Language:           language.Make(file.AcceptLanguage),
 		// parameter in file
 		FileParameters: toFileParameters(file.FileParameters),
 		// List ConfigTaskMD

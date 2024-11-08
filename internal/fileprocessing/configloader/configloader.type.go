@@ -3,6 +3,8 @@ package configloader
 import (
 	"encoding/json"
 
+	"golang.org/x/text/language"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent/configmapping"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
@@ -17,6 +19,7 @@ type ConfigMappingMD struct {
 	ErrorColumnIndex   string                       `json:"-"`
 	InputFileType      string                       `json:"-"`
 	OutputFileType     configmapping.OutputFileType `json:"-"`
+	Language           language.Tag                 `json:"-"`
 	// parameter in file
 	FileParameters map[string]interface{} `json:"-"`
 

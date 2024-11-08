@@ -10,6 +10,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/golang-migrate/migrate/v4 v4.14.1
 	github.com/kylemcc/parse v0.0.0-20220711063519-72c483e9f223
+	github.com/nicksnyder/go-i18n/v2 v2.4.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/samber/lo v1.33.0
@@ -158,7 +159,7 @@ require (
 	github.com/spf13/viper v1.10.0
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
-	golang.org/x/mod v0.9.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/text v0.19.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

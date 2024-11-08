@@ -1,0 +1,14 @@
+{
+  "===== common ==================================================================================================": "",
+  "hello": "Xin chào!",
+  "helloSomeone": "Xin chào {{.name}}!",
+  "===== error message ===========================================================================================": "",
+  "errConfigMapping": "Lỗi cấu hình hệ thống",
+  "errConfigMissingParam": "Lỗi thiếu cấu hình hệ thống cho {{.name}}",
+  "errFileCannotLoad": "Không thể tải file import",
+  "errFileInvalid": "Tập tin tải lên không đúng định dạng",
+  "errFileNoData": "Tập tin tải lên không có dữ liệu",
+  "errRowMissingDataColumn": "Thiếu dữ liệu cột {{.name}}",
+  "errRowNoData": "Không có dữ liệu",
+  "===== others ==================================================================================================": ""
+}

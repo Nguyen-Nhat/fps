@@ -26,7 +26,7 @@ type (
 		FindByID(context.Context, int) (*ProcessingFile, error)
 		FindByStatuses(context.Context, []int16) ([]*ProcessingFile, error)
 		UpdateStatusOne(context.Context, int, int16) (*ProcessingFile, error)
-		UpdateStatusAndErrorDisplay(context.Context, int, int16, ErrorDisplay, *string) (*ProcessingFile, error)
+		UpdateStatusAndErrorDisplay(context.Context, int, int16, string, *string) (*ProcessingFile, error)
 		UpdateStatusAndStatsAndResultFileUrl(context.Context, int, int16, int, int, string) (*ProcessingFile, error)
 		UpdateByExtractedData(ctx context.Context, id int, status int16, totalMapping int, statsTotalRow int) (*ProcessingFile, error)
 		Delete(ctx context.Context, clientIds []int32) error
@@ -90,10 +90,10 @@ func (r *repoImpl) UpdateStatusOne(ctx context.Context, id int, status int16) (*
 	}, nil
 }
 
-func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, status int16, errorDisplay ErrorDisplay, resultFileURL *string) (*ProcessingFile, error) {
+func (r *repoImpl) UpdateStatusAndErrorDisplay(ctx context.Context, id int, status int16, errorDisplay string, resultFileURL *string) (*ProcessingFile, error) {
 	updateOps := r.client.ProcessingFile.UpdateOneID(id).
 		SetStatus(status).
-		SetErrorDisplay(string(errorDisplay))
+		SetErrorDisplay(errorDisplay)
 
 	if resultFileURL != nil && len(*resultFileURL) > 0 {
 		updateOps.SetResultFileURL(*resultFileURL)
