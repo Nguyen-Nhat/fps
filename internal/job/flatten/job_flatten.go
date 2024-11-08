@@ -21,6 +21,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/csv"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/xls"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 )
 
 type jobFlatten struct {
@@ -77,6 +78,7 @@ func newJobFlatten(
 //  7. Update processing_file: status=Processing, total_mapping, stats_total_row
 func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.ProcessingFile) {
 	logger.Infof("----- Start flattening ProcessingFile with ID = %v \nFile = %+v", file.ID, file)
+	var errFileInvalid = i18n.GetMessageCtx(ctx, "errFileInvalid")
 
 	// 1. Check status
 	if file.Status != fileprocessing.StatusInit {
@@ -89,10 +91,11 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 	configMapping, err := cfgLoaderFactory.GetConfigLoader(file)
 	if err != nil {
 		logger.ErrorT("Cannot load config mapping, fileID = %v", file.ID)
-		job.updateFileProcessingToFailed(ctx, file, errConfigMapping, nil)
+		job.updateFileProcessingToFailed(ctx, file, i18n.GetMessageCtx(ctx, "errConfigMapping"), nil)
 		return
 	}
 	allowedInputFileTypes := strings.Split(configMapping.InputFileType, constant.SplitByComma)
+	ctx = i18n.SetLanguageToContext(ctx, configMapping.Language) // inject language to context
 
 	// 3. Get file by URL -> data in first sheet
 	var sheetData [][]string
@@ -123,7 +126,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 	}
 	if err != nil {
 		logger.ErrorT("Cannot get data from fileURL, fileID = %v, url = %v, got error %v", file.ID, file.FileURL, err)
-		job.updateFileProcessingToFailed(ctx, file, errFileCannotLoad, nil)
+		job.updateFileProcessingToFailed(ctx, file, i18n.GetMessageCtx(ctx, "errFileCannotLoad"), nil)
 		return
 	}
 
@@ -131,7 +134,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 	if _, ok := configMapping.FileParameters[SellerIDKey]; !ok {
 		configMapping.FileParameters[SellerIDKey] = file.SellerID // default, sellerId is inject to file_parameters for parsing data
 	}
-	configMappingsWithData, errorRows, err := validateImportingData(sheetData, configMapping)
+	configMappingsWithData, errorRows, err := validateImportingData(ctx, sheetData, configMapping)
 	if err != nil {
 		logger.ErrorT("Importing file is invalid, fileID = %v, error = %+v", file.ID, err)
 		job.updateFileProcessingToFailed(ctx, file, errFileInvalid, nil)
@@ -187,7 +190,7 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 // ---------------------------------------------------------------------------------------------------------------------
 
 // updateFileProcessingToFailed ...
-func (job *jobFlatten) updateFileProcessingToFailed(ctx context.Context, file fileprocessing.ProcessingFile, errMsg fileprocessing.ErrorDisplay, resultFileURL *string) {
+func (job *jobFlatten) updateFileProcessingToFailed(ctx context.Context, file fileprocessing.ProcessingFile, errMsg string, resultFileURL *string) {
 	_, updateStatusErr := job.fpService.UpdateToFailedStatusWithErrorMessage(ctx, file.ID, errMsg, resultFileURL)
 	if updateStatusErr != nil {
 		logger.ErrorT("Cannot update %v to fail, got error %v", fileprocessing.Name(), updateStatusErr)

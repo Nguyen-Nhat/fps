@@ -1,6 +1,7 @@
 package flatten
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,23 +11,11 @@ import (
 	"github.com/xuri/excelize/v2"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
-)
-
-const (
-	errFileCannotLoad fileprocessing.ErrorDisplay = "không thể tải file import"
-	errFileInvalid    fileprocessing.ErrorDisplay = "file tải lên không đúng định dạng"
-	errFileNoData     fileprocessing.ErrorDisplay = "file tải lên không có dữ liệu"
-	// error row
-	errRowMissingDataColumn = "thiếu dữ liệu cột"
-	errRowMissingData       = "không có dữ liệu"
-	// error config
-	errConfigMapping      = "lỗi cấu hình hệ thống"
-	errConfigMissingParam = "thiếu cấu hình hệ thống cho"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 )
 
 // defaultFileHeaderAtRowID ... this value is hardcode, please move it to config_mapping in the future
@@ -36,12 +25,13 @@ var regexDoubleBrace = regexp.MustCompile(`\{\{(.*?)}}`)
 
 // validateImportingData ...
 // check: empty, invalid data type, constrains
-func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigMappingMD) ([]*configloader.ConfigMappingMD, []ErrorRow, error) {
+func validateImportingData(ctx context.Context, sheetData [][]string, cfgMapping configloader.ConfigMappingMD) ([]*configloader.ConfigMappingMD, []ErrorRow, error) {
 	// 1. Empty or no data (at start row)
 	dataStartAt := cfgMapping.DataStartAtRow
 	if dataStartAt <= 1 { // must >= 2
-		logger.ErrorT("%v: DataStartAtRow = %s", errConfigMapping, dataStartAt)
-		return nil, nil, errors.New(errConfigMapping)
+		msg := i18n.GetMessageCtx(ctx, "errConfigMapping")
+		logger.ErrorT("%v: DataStartAtRow = %s", msg, dataStartAt)
+		return nil, nil, errors.New(msg)
 	}
 	if len(sheetData) == 0 || len(sheetData) < dataStartAt {
 		return []*configloader.ConfigMappingMD{}, nil, nil
@@ -54,7 +44,7 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 
 	for id := dataStartAt - 1; id < len(sheetData); id++ {
 		rowID := id - dataStartAt + 1 // rowID is index of data (not include header), start from 1
-		cfgMappingWithConvertedData, errorRowsInRow := validateImportingDataRowAndCloneConfigMapping(rowID, fileHeader, sheetData[id], cfgMapping)
+		cfgMappingWithConvertedData, errorRowsInRow := validateImportingDataRowAndCloneConfigMapping(ctx, rowID, fileHeader, sheetData[id], cfgMapping)
 
 		// check error rows
 		if len(errorRowsInRow) > 0 {
@@ -68,12 +58,12 @@ func validateImportingData(sheetData [][]string, cfgMapping configloader.ConfigM
 }
 
 // validateImportingDataRowAndCloneConfigMapping ...
-func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []string, rowData []string, configMapping configloader.ConfigMappingMD) (configloader.ConfigMappingMD, []ErrorRow) {
+func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID int, fileHeader []string, rowData []string, configMapping configloader.ConfigMappingMD) (configloader.ConfigMappingMD, []ErrorRow) {
 	var errorRows []ErrorRow
 
 	// 0. Check row empty
 	if len(rowData) == 0 {
-		return configloader.ConfigMappingMD{}, []ErrorRow{{RowId: rowID, Reason: errRowMissingData}}
+		return configloader.ConfigMappingMD{}, []ErrorRow{{RowId: rowID, Reason: i18n.GetMessageCtx(ctx, "errRowNoData")}}
 	}
 
 	// 1. Get value for each RequestField in each Task
@@ -83,7 +73,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 		task := orgTask.Clone()
 		// 1.1. RequestField in Request Header
 		for fieldName, reqField := range task.RequestHeaderMap {
-			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
@@ -107,7 +97,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 
 		// 1.2. RequestField in Path Params
 		for fieldName, reqField := range task.PathParamsMap {
-			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
@@ -132,7 +122,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 
 		// 1.3. RequestField in Request Params
 		for fieldName, reqField := range task.RequestParamsMap {
-			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
@@ -159,7 +149,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 		for fieldName, reqField := range task.RequestBodyMap {
 			// 1.4.1. Validate ArrayItemMap
 			if len(reqField.ArrayItemMap) > 0 {
-				arrayItemMapUpdated, childMap, errorRowsForArrayItem := validateArrayItemMap(rowID, rowData, reqField.ArrayItemMap, fileParameters)
+				arrayItemMapUpdated, childMap, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqField.ArrayItemMap, fileParameters)
 				if len(errorRowsForArrayItem) > 0 {
 					errorRows = append(errorRows, errorRowsForArrayItem...)
 					continue
@@ -181,7 +171,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 			}
 
 			// 1.4.2. Validate field
-			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
@@ -204,7 +194,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 		}
 
 		// 1.5. Validate ResponseCode config
-		resultAfterMatch, errorRow := validateAndMatchJsonPath(rowID, rowData, task.Response.Code.MustHaveValueInPath)
+		resultAfterMatch, errorRow := validateAndMatchJsonPath(ctx, rowID, rowData, task.Response.Code.MustHaveValueInPath)
 		if errorRow != nil {
 			errorRows = append(errorRows, *errorRow)
 		} else {
@@ -225,7 +215,7 @@ func validateImportingDataRowAndCloneConfigMapping(rowID int, fileHeader []strin
 	return configMapping, errorRows
 }
 
-func validateArrayItemMap(rowID int, rowData []string, requestFieldsMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}) (
+func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requestFieldsMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}) (
 	map[string]*configloader.RequestFieldMD, map[string]interface{}, []ErrorRow) {
 	// 1. Init value
 	var errorRows []ErrorRow
@@ -236,7 +226,7 @@ func validateArrayItemMap(rowID int, rowData []string, requestFieldsMap map[stri
 		// 2.1. Case field type is Array
 		if len(reqFieldChild.ArrayItemMap) > 0 {
 			// 2.1.1. Validate
-			arrayItemMapUpdated, childMapInArr, errorRowsForArrayItem := validateArrayItemMap(rowID, rowData, reqFieldChild.ArrayItemMap, fileParameters)
+			arrayItemMapUpdated, childMapInArr, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqFieldChild.ArrayItemMap, fileParameters)
 			if len(errorRowsForArrayItem) > 0 {
 				errorRows = append(errorRows, errorRowsForArrayItem...)
 				continue
@@ -263,7 +253,7 @@ func validateArrayItemMap(rowID int, rowData []string, requestFieldsMap map[stri
 		// 2.2. Case field type is Object
 		if len(reqFieldChild.ItemsMap) > 0 {
 			// 2.2.1. Validate
-			objectItemMapUpdated, childMapInObj, errorRowsForArrayItem := validateArrayItemMap(rowID, rowData, reqFieldChild.ItemsMap, fileParameters)
+			objectItemMapUpdated, childMapInObj, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqFieldChild.ItemsMap, fileParameters)
 			if len(errorRowsForArrayItem) > 0 {
 				errorRows = append(errorRows, errorRowsForArrayItem...)
 				continue
@@ -281,7 +271,7 @@ func validateArrayItemMap(rowID int, rowData []string, requestFieldsMap map[stri
 		}
 
 		// 2.3. In Normal case, field maybe int, string, ... -> need to get value (string) from config
-		valueChildStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(rowID, rowData, reqFieldChild, fileParameters)
+		valueChildStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqFieldChild, fileParameters)
 		if len(errorRowsAfterGet) > 0 {
 			errorRows = append(errorRows, errorRowsAfterGet...)
 			continue
@@ -307,7 +297,7 @@ func validateArrayItemMap(rowID int, rowData []string, requestFieldsMap map[stri
 	return requestFieldsMap, childMap, errorRows
 }
 
-func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, bool, []ErrorRow) {
+func getValueStrByRequestFieldMD(ctx context.Context, rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, bool, []ErrorRow) {
 	// 1. If type is array or object, not get value
 	if reqField.Type == configloader.TypeArray || reqField.Type == configloader.TypeObject {
 		return "", true, nil
@@ -319,14 +309,14 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 	isByPassField := false
 	switch reqField.ValueDependsOn {
 	case configloader.ValueDependsOnExcel:
-		cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(rowID, rowData, reqField)
+		cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(ctx, rowID, rowData, reqField)
 		if len(errorRowsExel) != 0 {
 			errorRows = append(errorRows, errorRowsExel...)
 		} else {
 			valueStr = cellValue
 		}
 	case configloader.ValueDependsOnParam:
-		paramValue, errorRowsParams := validateAndGetValueForFieldParam(rowID, reqField, fileParameters)
+		paramValue, errorRowsParams := validateAndGetValueForFieldParam(ctx, rowID, reqField, fileParameters)
 		if len(errorRowsParams) != 0 {
 			errorRows = append(errorRows, errorRowsParams...)
 		} else {
@@ -336,7 +326,7 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 		valueStr = reqField.Value
 	case configloader.ValueDependsOnTask:
 		isByPassField = true // If value depends on Previous Task -> not get value
-		valueDependsOnKeyMatched, errorRow := validateAndMatchJsonPath(rowID, rowData, reqField.ValueDependsOnKey)
+		valueDependsOnKeyMatched, errorRow := validateAndMatchJsonPath(ctx, rowID, rowData, reqField.ValueDependsOnKey)
 		if errorRow != nil {
 			errorRows = append(errorRows, *errorRow)
 		} else {
@@ -357,14 +347,14 @@ func getValueStrByRequestFieldMD(rowID int, rowData []string, reqField *configlo
 	return valueStr, isByPassField, errorRows
 }
 
-func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, []ErrorRow) {
+func validateAndGetValueForFieldParam(ctx context.Context, rowID int, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, []ErrorRow) {
 	var errorRows []ErrorRow
 	paramKey := reqField.ValueDependsOnKey
 
 	// Validate Require
 	paramValue, existed := fileParameters[paramKey]
 	if !existed && reqField.Required {
-		reason := fmt.Sprintf("%s %s", errConfigMissingParam, paramKey)
+		reason := i18n.GetMessageCtx(ctx, "errConfigMissingParam", "name", paramKey)
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
 	}
 
@@ -384,7 +374,7 @@ func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestF
 
 	// check required
 	if reqField.Required && len(paramValueStr) == 0 {
-		reason := fmt.Sprintf("%s %s", errRowMissingData, paramKey)
+		reason := i18n.GetMessageCtx(ctx, "errRowMissingDataColumn", "name", paramKey)
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
 		return "", errorRows
 	}
@@ -393,7 +383,7 @@ func validateAndGetValueForFieldParam(rowID int, reqField *configloader.RequestF
 	return paramValueStr, errorRows
 }
 
-func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqField *configloader.RequestFieldMD) (string, []ErrorRow) {
+func validateAndGetValueForRequestFieldExcel(ctx context.Context, rowID int, rowData []string, reqField *configloader.RequestFieldMD) (string, []ErrorRow) {
 	var errorRows []ErrorRow
 	columnKey := reqField.ValueDependsOnKey
 	columnIndex, err := excelize.ColumnNameToNumber(columnKey)
@@ -415,7 +405,7 @@ func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqFie
 
 	// Validate Require
 	if reqField.Required && cellValue == constant.EmptyString {
-		reason := fmt.Sprintf("%s %s", errRowMissingDataColumn, columnKey)
+		reason := i18n.GetMessageCtx(ctx, "errRowMissingDataColumn", "name", columnKey)
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
 		return "", errorRows
 	}
@@ -430,7 +420,7 @@ func validateAndGetValueForRequestFieldExcel(rowID int, rowData []string, reqFie
 //   - Json path: data.transactions.#(name=="{{ $A }}").id
 //   - Excel data has $A = quy
 //     -> output: data.transactions.#(name=="quy").id
-func validateAndMatchJsonPath(rowID int, rowData []string, jsonPath string) (string, *ErrorRow) {
+func validateAndMatchJsonPath(ctx context.Context, rowID int, rowData []string, jsonPath string) (string, *ErrorRow) {
 	// 1. Extract data with format like `{{ $A }}`
 	matchers := regexDoubleBrace.FindStringSubmatch(jsonPath)
 
@@ -446,6 +436,7 @@ func validateAndMatchJsonPath(rowID int, rowData []string, jsonPath string) (str
 
 		// 3.1. Get column key: $A -> A
 		if !excel.IsColumnIndex(valuePattern) {
+			errConfigMapping := i18n.GetMessageCtx(ctx, "errConfigMapping")
 			errorRow := ErrorRow{RowId: rowID, Reason: errConfigMapping}
 			logger.Errorf("validateResponseCode ... error %s -> %s", errConfigMapping, valuePatternWithDoubleBrace)
 			return "", &errorRow
@@ -461,6 +452,7 @@ func validateAndMatchJsonPath(rowID int, rowData []string, jsonPath string) (str
 		// 3.2. Validate value
 		if columnIndex > len(rowData) || // column request out of range
 			len(strings.TrimSpace(rowData[columnIndex-1])) == 0 { // column is required by value is empty
+			errRowMissingDataColumn := i18n.GetMessageCtx(ctx, "errRowMissingDataColumn", "name", columnKey)
 			reason := fmt.Sprintf("%s %s", errRowMissingDataColumn, columnKey)
 			errorRow := ErrorRow{RowId: rowID, Reason: reason}
 			logger.Errorf("validateResponseCode ... error %+v", reason)

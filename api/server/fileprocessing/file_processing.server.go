@@ -11,11 +11,11 @@ import (
 
 	commonError "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/error"
 	res "git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 )
 
 type (
@@ -133,7 +133,7 @@ func (s *Server) CreateProcessingFile(ctx context.Context, request *CreateFilePr
 	}
 
 	// 2. Match language
-	acceptLanguage := middleware.GetLanguageFromContext(ctx)
+	acceptLanguage := i18n.GetLanguageFromContext(ctx)
 
 	// 3. Call function of Service
 	fp, err := s.service.CreateFileProcessing(ctx, &fileprocessing.CreateFileProcessingReqDTO{

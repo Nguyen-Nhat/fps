@@ -1,0 +1,14 @@
+{
+  "----- common --------------------------------------------------------------------------------------------------": "",
+  "hello": "Hello!",
+  "helloSomeone": "Hello {{.name}}!",
+  "----- error message -------------------------------------------------------------------------------------------": "",
+  "errConfigMapping": "System config error",
+  "errConfigMissingParam": "Missing configuration of {{.name}}",
+  "errFileCannotLoad": "Cannot download Imported File",
+  "errFileInvalid": "Imported File is invalid format",
+  "errFileNoData": "Imported File doesn't have data",
+  "errRowMissingDataColumn": "Missing data in column {{.name}}",
+  "errRowNoData": "No data",
+  "----- others --------------------------------------------------------------------------------------------------": ""
+}
