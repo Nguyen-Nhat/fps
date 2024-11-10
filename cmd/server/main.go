@@ -36,15 +36,15 @@ func main() {
 	}
 
 	// Init i18n
-	_, errI18n := i18n.LoadI18n() // load i18n
+	_, errI18n := i18n.LoadI18n(cfg.MessageFolder) // load i18n
 	if errI18n != nil {
 		log.Fatal(errI18n)
 	}
 	logger.Infof("Load i18n success! Say hello ...")
 	logger.Infof("\t - [vi] %s", i18n.GetMessage("vi", "hello"))
-	logger.Infof("\t - [vi] %s", i18n.GetMessageD("vi", "hello_someone", "name", "FPS"))
+	logger.Infof("\t - [vi] %s", i18n.GetMessageD("vi", "helloSomeone", "name", "FPS"))
 	logger.Infof("\t - [en] %s", i18n.GetMessage("en", "hello"))
-	logger.Infof("\t - [en] %s", i18n.GetMessageD("en", "hello_someone", "name", "FPS"))
+	logger.Infof("\t - [en] %s\n", i18n.GetMessageD("en", "helloSomeone", "name", "FPS"))
 
 	// Init f-alt-service
 	go func() {

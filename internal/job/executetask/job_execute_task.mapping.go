@@ -1,6 +1,7 @@
 package executetask
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,7 +17,7 @@ import (
 )
 
 // mapDataByPreviousResponseAndCustomFunction ...
-func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessingrow.ProcessingFileRow, configMapping configloader.ConfigMappingMD, previousResponses map[int32]string) (
+func mapDataByPreviousResponseAndCustomFunction(ctx context.Context, processingFileRow *fileprocessingrow.ProcessingFileRow, configMapping configloader.ConfigMappingMD, previousResponses map[int32]string) (
 	configloader.ConfigTaskMD, error) {
 	// 1. Get Task config
 	task, isTaskExisted := getTaskConfig(int(processingFileRow.TaskIndex), configMapping)
@@ -31,7 +32,7 @@ func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessin
 
 	// 3. Convert path params
 	for reqFieldName, reqField := range task.PathParamsMap {
-		realValue, err := getValueStringFromConfig(processingFileRow, reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		}
@@ -41,7 +42,7 @@ func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessin
 
 	// 3. Convert request params
 	for reqFieldName, reqField := range task.RequestParamsMap {
-		realValue, err := getValueStringFromConfig(processingFileRow, reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		} else {
@@ -55,7 +56,7 @@ func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessin
 		// 4.1. Convert ArrayItem
 		if len(reqField.ArrayItemMap) > 0 {
 			// 4.1.1. For each child fields
-			childMap, err := getValueFromConfig(processingFileRow, reqFieldName, reqField.ArrayItemMap, previousResponses)
+			childMap, err := getValueFromConfig(ctx, processingFileRow, reqFieldName, reqField.ArrayItemMap, previousResponses)
 			if err != nil {
 				return configloader.ConfigTaskMD{}, err
 			}
@@ -78,7 +79,7 @@ func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessin
 			continue
 		}
 		if len(reqField.ItemsMap) > 0 {
-			childMap, err := getValueFromConfig(processingFileRow, reqFieldName, reqField.ItemsMap, previousResponses)
+			childMap, err := getValueFromConfig(ctx, processingFileRow, reqFieldName, reqField.ItemsMap, previousResponses)
 			if err != nil {
 				return configloader.ConfigTaskMD{}, err
 			}
@@ -88,7 +89,7 @@ func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessin
 		}
 
 		// 4.2. Get value
-		realValue, err := getValueStringFromConfig(processingFileRow, reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		} else {
@@ -101,14 +102,14 @@ func mapDataByPreviousResponseAndCustomFunction(processingFileRow *fileprocessin
 	return task, nil
 }
 
-func getValueFromConfig(processingFileRow *fileprocessingrow.ProcessingFileRow, parentFieldName string, requestFieldList map[string]*configloader.RequestFieldMD, previousResponses map[int32]string) (
+func getValueFromConfig(ctx context.Context, processingFileRow *fileprocessingrow.ProcessingFileRow, parentFieldName string, requestFieldList map[string]*configloader.RequestFieldMD, previousResponses map[int32]string) (
 	map[string]interface{}, error) {
 
 	childMap := make(map[string]interface{})
 
 	for fieldNameChild, reqFieldChild := range requestFieldList {
 		if len(reqFieldChild.ArrayItemMap) > 0 {
-			childMapInArr, err := getValueFromConfig(processingFileRow, fieldNameChild, reqFieldChild.ArrayItemMap, previousResponses)
+			childMapInArr, err := getValueFromConfig(ctx, processingFileRow, fieldNameChild, reqFieldChild.ArrayItemMap, previousResponses)
 			if err != nil {
 				return nil, err
 			}
@@ -127,7 +128,7 @@ func getValueFromConfig(processingFileRow *fileprocessingrow.ProcessingFileRow, 
 		}
 
 		if len(reqFieldChild.ItemsMap) > 0 {
-			childMapInObj, err := getValueFromConfig(processingFileRow, fieldNameChild, reqFieldChild.ItemsMap, previousResponses)
+			childMapInObj, err := getValueFromConfig(ctx, processingFileRow, fieldNameChild, reqFieldChild.ItemsMap, previousResponses)
 			if err != nil {
 				return nil, err
 			}
@@ -139,7 +140,7 @@ func getValueFromConfig(processingFileRow *fileprocessingrow.ProcessingFileRow, 
 		}
 
 		// get value
-		realChildValue, err := getValueStringFromConfig(processingFileRow, reqFieldChild, previousResponses)
+		realChildValue, err := getValueStringFromConfig(ctx, processingFileRow, reqFieldChild, previousResponses)
 		if err != nil {
 			return nil, err
 		}
@@ -173,7 +174,7 @@ func getTaskConfig(taskIndex int, configMapping configloader.ConfigMappingMD) (c
 	return configloader.ConfigTaskMD{}, false
 }
 
-func getValueStringFromConfig(processingFileRow *fileprocessingrow.ProcessingFileRow, reqField *configloader.RequestFieldMD, previousResponses map[int32]string) (interface{}, error) {
+func getValueStringFromConfig(ctx context.Context, processingFileRow *fileprocessingrow.ProcessingFileRow, reqField *configloader.RequestFieldMD, previousResponses map[int32]string) (interface{}, error) {
 	// 1. Get value in String type
 	var valueStr string
 	switch reqField.ValueDependsOn {
@@ -203,7 +204,7 @@ func getValueStringFromConfig(processingFileRow *fileprocessingrow.ProcessingFil
 	}
 
 	// 2. Get real value then return
-	return basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+	return basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
 }
 
 func getValueByPreviousTaskResponse(reqField *configloader.RequestFieldMD, previousResponses map[int32]string) (string, error) {

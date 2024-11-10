@@ -1,6 +1,7 @@
 package basejobmanager
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"reflect"
@@ -8,9 +9,12 @@ import (
 	"testing"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 )
 
 func Test_convertToRealValue(t *testing.T) {
+	_, _ = i18n.LoadI18n("../../../resources/messages")
+	ctx := context.Background()
 	type args struct {
 		fieldType    string
 		valueStr     string
@@ -54,13 +58,13 @@ func Test_convertToRealValue(t *testing.T) {
 			int64(math.MinInt32), nil},
 		{"test type integer, invalid input",
 			args{configloader.TypeInteger, "112sa", "key_name"},
-			nil, fmt.Errorf("%s (%s)", errTypeWrong, "key_name")},
+			nil, fmt.Errorf(i18n.GetMessageCtx(ctx, "errTypeWrong", "name", "key_name"))},
 		{"test type integer, invalid input 1.0",
 			args{configloader.TypeInteger, "1.0", "key_name"},
-			nil, fmt.Errorf("%s (%s)", errTypeWrong, "key_name")},
+			nil, fmt.Errorf(i18n.GetMessageCtx(ctx, "errTypeWrong", "name", "key_name"))},
 		{"test type integer, invalid input 100000000.99999999",
 			args{configloader.TypeInteger, "100000000.99999999", "key_name"},
-			nil, fmt.Errorf("%s (%s)", errTypeWrong, "key_name")},
+			nil, fmt.Errorf(i18n.GetMessageCtx(ctx, "errTypeWrong", "name", "key_name"))},
 		{"test type integer, valid input MAX_LONG",
 			args{configloader.TypeInteger, strconv.Itoa(math.MaxInt64), "key_name"},
 			int64(math.MaxInt64), nil},
@@ -92,7 +96,7 @@ func Test_convertToRealValue(t *testing.T) {
 			math.MaxFloat64, nil},
 		{"test type number, invalid input",
 			args{configloader.TypeNumber, "11.2sa", "key_name"},
-			nil, fmt.Errorf("%s (%s)", errTypeWrong, "key_name")},
+			nil, fmt.Errorf(i18n.GetMessageCtx(ctx, "errTypeWrong", "name", "key_name"))},
 		{"test type number empty",
 			args{configloader.TypeNumber, "", "key_name"},
 			nil, nil},
@@ -109,10 +113,10 @@ func Test_convertToRealValue(t *testing.T) {
 			false, nil},
 		{"test type boolean, invalid input",
 			args{configloader.TypeBoolean, "falsee", "key_name"},
-			nil, fmt.Errorf("%s (%s)", errTypeWrong, "key_name")},
+			nil, fmt.Errorf(i18n.GetMessageCtx(ctx, "errTypeWrong", "name", "key_name"))},
 		{"test type BOOLEAN, valid input",
 			args{"BOOLEAN", "falSE", "key_name"},
-			nil, fmt.Errorf("%s (%s)", errTypeWrong, "key_name")},
+			nil, fmt.Errorf(i18n.GetMessageCtx(ctx, "errTypeWrong", "name", "key_name"))},
 		{"test type BOOLEAN empty",
 			args{"BOOLEAN", "", "key_name"},
 			nil, nil},
@@ -133,7 +137,7 @@ func Test_convertToRealValue(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotRealValue, gotError := ConvertToRealValue(tt.args.fieldType, tt.args.valueStr, tt.args.dependsOnKey)
+			gotRealValue, gotError := ConvertToRealValue(ctx, tt.args.fieldType, tt.args.valueStr, tt.args.dependsOnKey)
 			if !reflect.DeepEqual(gotRealValue, tt.wantValue) {
 				t.Errorf("convertToRealValue() gotRealValue = %v, want %v", gotRealValue, tt.wantValue)
 			}

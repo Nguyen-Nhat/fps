@@ -18,6 +18,7 @@ WORKDIR /loyalty_file_processing/bin/
 RUN apt-get update && apt-get install -y ca-certificates
 COPY --from=builder /loyalty_file_processing/bin/ /loyalty_file_processing/bin/
 COPY --from=builder /loyalty_file_processing/migrations/ /loyalty_file_processing/bin/migrations/
+COPY --from=builder /loyalty_file_processing/resources/messages/ /loyalty_file_processing/bin/resources/messages/
 COPY config.tmp.yml config.yml
 
 EXPOSE 10080

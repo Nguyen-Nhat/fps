@@ -10,5 +10,7 @@
   "errFileNoData": "Imported File doesn't have data",
   "errRowMissingDataColumn": "Missing data in column {{.name}}",
   "errRowNoData": "No data",
+  "errTypeWrong": "Wrong data type ({{.name}})",
+  "errTypeNotSupport": "Not support data type {{.name}}",
   "----- others --------------------------------------------------------------------------------------------------": ""
 }

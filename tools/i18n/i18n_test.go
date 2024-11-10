@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetMessage(t *testing.T) {
-	_, _ = LoadI18n(".")
+	_, _ = LoadI18n("../../resources/messages")
 	type args struct {
 		lang string
 		key  string
@@ -30,7 +30,7 @@ func TestGetMessage(t *testing.T) {
 }
 
 func TestGetMessageCtx(t *testing.T) {
-	_, _ = LoadI18n(".")
+	_, _ = LoadI18n("../../resources/messages")
 	ctx := context.Background()
 	type args struct {
 		lang         *language.Tag
@@ -72,7 +72,7 @@ func TestGetMessageCtx(t *testing.T) {
 }
 
 func TestGetMessageD(t *testing.T) {
-	_, _ = LoadI18n(".")
+	_, _ = LoadI18n("../../resources/messages")
 	type args struct {
 		lang         language.Tag
 		key          string
