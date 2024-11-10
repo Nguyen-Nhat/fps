@@ -11,8 +11,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-const i18FolderPath = "tools/i18n"
-
 var once sync.Once
 var i18nInstance *I18n
 
@@ -20,19 +18,15 @@ type I18n struct {
 	bundle *i18n.Bundle
 }
 
-func LoadI18n(languageFilePath ...string) (*I18n, error) {
+func LoadI18n(messageFolder string) (*I18n, error) {
 	var err error
 	if i18nInstance == nil {
 		once.Do(func() {
 			bundle := i18n.NewBundle(language.English) // Default language is English
 
-			bundle.RegisterUnmarshalFunc("json", json.Unmarshal) // Register JSON unmarshal function
-			folderPath := i18FolderPath
-			if len(languageFilePath) > 0 {
-				folderPath = languageFilePath[0]
-			}
-			msgFileEn, errEn := bundle.LoadMessageFile(fmt.Sprintf("%s/_en.json", folderPath)) // Load English messages
-			msgFileVi, errVi := bundle.LoadMessageFile(fmt.Sprintf("%s/_vi.json", folderPath)) // Load Vietnamese messages
+			bundle.RegisterUnmarshalFunc("json", json.Unmarshal)                                 // Register JSON unmarshal function
+			msgFileEn, errEn := bundle.LoadMessageFile(fmt.Sprintf("%s/en.json", messageFolder)) // Load English messages
+			msgFileVi, errVi := bundle.LoadMessageFile(fmt.Sprintf("%s/vi.json", messageFolder)) // Load Vietnamese messages
 
 			if msgFileEn != nil && msgFileVi != nil {
 				if len(msgFileEn.Messages) != len(msgFileVi.Messages) { // only warning in this case

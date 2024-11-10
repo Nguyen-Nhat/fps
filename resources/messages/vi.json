@@ -10,5 +10,7 @@
   "errFileNoData": "Tập tin tải lên không có dữ liệu",
   "errRowMissingDataColumn": "Thiếu dữ liệu cột {{.name}}",
   "errRowNoData": "Không có dữ liệu",
+  "errTypeWrong": "Sai kiểu dữ liệu ({{.name}})",
+  "errTypeNotSupport": "Không hỗ trợ kiểu dữ liệu {{.name}}",
   "===== others ==================================================================================================": ""
 }

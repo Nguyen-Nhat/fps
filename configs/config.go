@@ -44,6 +44,7 @@ type Config struct {
 	MigrationFolder string         `mapstructure:"migration_folder"`
 	Kafka           KafkaConfig    `mapstructure:"kafka"`
 	ExtraConfig     ExtraConfig    `mapstructure:"extra_config"`
+	MessageFolder   string         `mapstructure:"message_folder"`
 }
 
 type ProviderConfig struct {

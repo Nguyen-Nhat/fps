@@ -78,6 +78,7 @@ func newJobFlatten(
 //  7. Update processing_file: status=Processing, total_mapping, stats_total_row
 func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.ProcessingFile) {
 	logger.Infof("----- Start flattening ProcessingFile with ID = %v \nFile = %+v", file.ID, file)
+	ctx = i18n.SetLanguageToContext(ctx, file.GetLanguage()) // inject language to context
 	var errFileInvalid = i18n.GetMessageCtx(ctx, "errFileInvalid")
 
 	// 1. Check status
@@ -95,7 +96,6 @@ func (job *jobFlatten) Flatten(ctx context.Context, file fileprocessing.Processi
 		return
 	}
 	allowedInputFileTypes := strings.Split(configMapping.InputFileType, constant.SplitByComma)
-	ctx = i18n.SetLanguageToContext(ctx, configMapping.Language) // inject language to context
 
 	// 3. Get file by URL -> data in first sheet
 	var sheetData [][]string

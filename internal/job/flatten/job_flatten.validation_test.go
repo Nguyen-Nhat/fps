@@ -100,7 +100,7 @@ func Test_mapValueForCustomFunctionParams(t *testing.T) {
 
 func Test_validateAndGetValueForRequestFieldExcel(t *testing.T) {
 	ctx := context.Background()
-	i18n.LoadI18n()
+	_, _ = i18n.LoadI18n("../../../resources/messages")
 	reqFieldKeyARequired := configloader.RequestFieldMD{ValueDependsOnKey: "A", Required: true}
 	reqFieldKeyANotRequired := configloader.RequestFieldMD{ValueDependsOnKey: "A", Required: false}
 	reqFieldKeyABRequired := configloader.RequestFieldMD{ValueDependsOnKey: "AB", Required: true}

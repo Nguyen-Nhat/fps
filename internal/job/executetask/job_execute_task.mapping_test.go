@@ -1,6 +1,7 @@
 package executetask
 
 import (
+	"context"
 	"reflect"
 	"testing"
 
@@ -8,6 +9,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 )
 
 func Test_getTaskConfig(t *testing.T) {
@@ -52,6 +54,8 @@ func Test_getTaskConfig(t *testing.T) {
 }
 
 func Test_getValueStringFromConfig(t *testing.T) {
+	_, _ = i18n.LoadI18n("../../../resources/messages")
+	ctx := context.Background()
 	previousResponses := map[int32]string{
 		1: `{"data":{"name": "this is name", "empty_field": ""}"}`,
 		2: `{"data":[{"name": "this is name", "field_int": 12}"}]`,
@@ -237,7 +241,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getValueStringFromConfig(tt.args.processingFileRow, tt.args.reqField, tt.args.previousResponses)
+			got, err := getValueStringFromConfig(ctx, tt.args.processingFileRow, tt.args.reqField, tt.args.previousResponses)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getValueStringFromConfig() error = %v, wantErr %v", err, tt.wantErr)
 				return

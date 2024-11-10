@@ -72,6 +72,7 @@ provider_config:
     endpoint: "https://f-alt-server.dev.tekoapis.net/parse"
     is_enable: true
 
+message_folder: resources/messages
 FLAG_SUP_HOST: "flagsup-server.experiment:443"
 MIGRATION_FOLDER: file://migrations
 KAFKA:

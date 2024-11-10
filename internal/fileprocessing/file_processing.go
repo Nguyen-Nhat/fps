@@ -1,6 +1,8 @@
 package fileprocessing
 
 import (
+	"golang.org/x/text/language"
+
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 )
 
@@ -30,4 +32,8 @@ func (pf *ProcessingFile) IsInitStatus() bool {
 
 func (pf *ProcessingFile) IsProcessingStatus() bool {
 	return pf.Status == StatusProcessing
+}
+
+func (pf *ProcessingFile) GetLanguage() language.Tag {
+	return language.Make(pf.AcceptLanguage)
 }

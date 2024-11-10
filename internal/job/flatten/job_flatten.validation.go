@@ -83,7 +83,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.1.2. Get real value
-			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
@@ -107,7 +107,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.2.2. Get real value
-			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
@@ -132,7 +132,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.3.1. Get real value
-			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
@@ -181,7 +181,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.4.2. Get real value
-			realValue, err := basejobmanager.ConvertToRealValue(reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
@@ -281,7 +281,7 @@ func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requ
 		}
 
 		// 2.4. Get real value from string value
-		realValueChild, err := basejobmanager.ConvertToRealValue(reqFieldChild.Type, valueChildStr, reqFieldChild.ValueDependsOnKey)
+		realValueChild, err := basejobmanager.ConvertToRealValue(ctx, reqFieldChild.Type, valueChildStr, reqFieldChild.ValueDependsOnKey)
 		if err != nil {
 			errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 		} else {
