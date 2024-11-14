@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/common"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/constants"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction/errorz"
@@ -98,6 +99,9 @@ func callApiGetSkus(subItems []ItemInput, sellerIds ...interface{}) ([]Product, 
 
 // ConvertSellerSkuAndUomName2Sku ...
 func ConvertSellerSkuAndUomName2Sku(sellerId, sellerSku, uomName string) customFunc.FuncResult {
+	if sellerId == constant.EmptyString || sellerSku == constant.EmptyString || uomName == constant.EmptyString {
+		return customFunc.FuncResult{Result: constant.EmptyString}
+	}
 	// 1. Call api
 	products, err := callApiGetSkus([]ItemInput{{SellerSku: sellerSku, UomName: uomName}}, sellerId)
 	if err != nil {
