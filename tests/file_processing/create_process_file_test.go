@@ -424,3 +424,25 @@ func TestParametersNotNullInvalid__Return400Successfully(t *testing.T) {
 	// Expect
 	assert.ErrorIs(t, err, fileprocessing.ErrParametersIsNotJson)
 }
+
+func TestCantDetectFileExtension__Return400(t *testing.T) {
+	ctx := context.Background()
+	ctx = middleware.SetUserToContext(ctx, middleware.User{
+		Sub:   UserSubTest,
+		Name:  UserNameTest,
+		Email: UserEmailTest,
+	})
+	db, _ := common.PrepareDatabaseSqlite(ctx, t)
+	fileProcessingServer := fileprocessing.InitFileProcessingServer(db)
+
+	req := fileprocessing.CreateFileProcessingRequest{
+		ClientID:        ClientIDTest,
+		FileURL:         "https://storage.googleapis.com/folder/invalid_file",
+		FileDisplayName: "invalid_file",
+		CreatedBy:       CreatedByTest,
+	}
+
+	_, err := fileProcessingServer.CreateProcessingFile(ctx, &req)
+
+	goldie.New(t).AssertJson(t, "create_process_file/cant_detect_file_extension", err.Error())
+}

@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/common/response"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/errorz"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/ent/ent"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/faltservice"
@@ -45,6 +47,10 @@ func (s *ServiceImpl) CreateFileProcessing(ctx context.Context, req *CreateFileP
 	// Get file name from file URL in case display name was not provided
 	displayName := req.DisplayName
 	fileReq := utils.ExtractFileName(req.FileURL)
+	if fileReq.Extension == constant.EmptyString {
+		logger.Errorf("Cannot extract file extension from file URL %s", req.FileURL)
+		return nil, errorz.ErrCantExtractFileExtensionFromURL(req.FileURL)
+	}
 	if displayName == "" {
 		logger.Warnf("Not receive display name from request. Extract from file URL %s", req.FileURL)
 		displayName = fileReq.FullName

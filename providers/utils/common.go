@@ -381,7 +381,7 @@ func ExtractFileName(filePath string) FileName {
 	if err == nil {
 		return fileName
 	}
-	return FileName{"unknown", "unknown", "unknown"}
+	return FileName{constant.EmptyString, constant.EmptyString, constant.EmptyString}
 }
 
 func extractFileNameFromPrivateUrl(url string) (f FileName, err error) {
