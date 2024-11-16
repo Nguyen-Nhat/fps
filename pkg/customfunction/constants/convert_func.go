@@ -11,6 +11,7 @@ const (
 	FuncConvertSellerSkuAndUomName2Sku    = "convertSellerSkuAndUomName2Sku"
 	FuncConvertString2Bool                = "convertString2Bool"
 	FuncConvertDateTimeFormat             = "convertDateTimeFormat"
+	FuncPrintFormat                       = "printf"
 )
 
 const (

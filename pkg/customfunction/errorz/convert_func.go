@@ -35,6 +35,7 @@ var (
 const (
 	ErrMissingParameter     = "missing parameter"
 	ErrNotEqualNumberParams = "not equal number params"
+	ErrLessThanNumberParams = "less than number params"
 	ErrFunctionNoSupport    = "not support function"
 )
 
