@@ -116,8 +116,12 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
 		}
 		return customFunc.ConvertDateTimeFormat(cf.ParamsMapped[0], cf.ParamsMapped[1], cf.ParamsMapped[2]), nil
+	case constants.FuncPrintFormat:
+		if len(cf.ParamsMapped) < 2 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrLessThanNumberParams)
+		}
+		return customFunc.PrintFormat(cf.ParamsMapped[0], cf.ParamsMapped[1:]), nil
 	default:
 		return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrFunctionNoSupport)
 	}
-
 }
