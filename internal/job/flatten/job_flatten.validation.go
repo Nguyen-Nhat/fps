@@ -73,7 +73,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 		task := orgTask.Clone()
 		// 1.1. RequestField in Request Header
 		for fieldName, reqField := range task.RequestHeaderMap {
-			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters, fileHeader)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
@@ -83,7 +83,13 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.1.2. Get real value
-			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			valueDependsOnKey := reqField.ValueDependsOnKey
+			if reqField.ValueDependsOn == configloader.ValueDependsOnExcel {
+				if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
+					valueDependsOnKey = fileHeader[columnIndex-1]
+				}
+			}
+			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, valueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
@@ -97,7 +103,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 
 		// 1.2. RequestField in Path Params
 		for fieldName, reqField := range task.PathParamsMap {
-			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters, fileHeader)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
@@ -107,7 +113,13 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.2.2. Get real value
-			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			valueDependsOnKey := reqField.ValueDependsOnKey
+			if reqField.ValueDependsOn == configloader.ValueDependsOnExcel {
+				if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
+					valueDependsOnKey = fileHeader[columnIndex-1]
+				}
+			}
+			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, valueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
@@ -122,7 +134,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 
 		// 1.3. RequestField in Request Params
 		for fieldName, reqField := range task.RequestParamsMap {
-			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters, fileHeader)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
@@ -132,7 +144,13 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.3.1. Get real value
-			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			valueDependsOnKey := reqField.ValueDependsOnKey
+			if reqField.ValueDependsOn == configloader.ValueDependsOnExcel {
+				if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
+					valueDependsOnKey = fileHeader[columnIndex-1]
+				}
+			}
+			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, valueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
@@ -149,7 +167,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 		for fieldName, reqField := range task.RequestBodyMap {
 			// 1.4.1. Validate ArrayItemMap
 			if len(reqField.ArrayItemMap) > 0 {
-				arrayItemMapUpdated, childMap, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqField.ArrayItemMap, fileParameters)
+				arrayItemMapUpdated, childMap, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqField.ArrayItemMap, fileParameters, fileHeader)
 				if len(errorRowsForArrayItem) > 0 {
 					errorRows = append(errorRows, errorRowsForArrayItem...)
 					continue
@@ -171,7 +189,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.4.2. Validate field
-			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters)
+			valueStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqField, fileParameters, fileHeader)
 			if len(errorRowsAfterGet) > 0 {
 				errorRows = append(errorRows, errorRowsAfterGet...)
 				continue
@@ -181,7 +199,13 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.4.2. Get real value
-			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, reqField.ValueDependsOnKey)
+			valueDependsOnKey := reqField.ValueDependsOnKey
+			if reqField.ValueDependsOn == configloader.ValueDependsOnExcel {
+				if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
+					valueDependsOnKey = fileHeader[columnIndex-1]
+				}
+			}
+			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, valueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 			} else {
@@ -194,7 +218,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 		}
 
 		// 1.5. Validate ResponseCode config
-		resultAfterMatch, errorRow := validateAndMatchJsonPath(ctx, rowID, rowData, task.Response.Code.MustHaveValueInPath)
+		resultAfterMatch, errorRow := validateAndMatchJsonPath(ctx, rowID, rowData, task.Response.Code.MustHaveValueInPath, fileHeader)
 		if errorRow != nil {
 			errorRows = append(errorRows, *errorRow)
 		} else {
@@ -215,7 +239,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 	return configMapping, errorRows
 }
 
-func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requestFieldsMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}) (
+func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requestFieldsMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}, fileHeader []string) (
 	map[string]*configloader.RequestFieldMD, map[string]interface{}, []ErrorRow) {
 	// 1. Init value
 	var errorRows []ErrorRow
@@ -226,7 +250,7 @@ func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requ
 		// 2.1. Case field type is Array
 		if len(reqFieldChild.ArrayItemMap) > 0 {
 			// 2.1.1. Validate
-			arrayItemMapUpdated, childMapInArr, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqFieldChild.ArrayItemMap, fileParameters)
+			arrayItemMapUpdated, childMapInArr, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqFieldChild.ArrayItemMap, fileParameters, fileHeader)
 			if len(errorRowsForArrayItem) > 0 {
 				errorRows = append(errorRows, errorRowsForArrayItem...)
 				continue
@@ -253,7 +277,7 @@ func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requ
 		// 2.2. Case field type is Object
 		if len(reqFieldChild.ItemsMap) > 0 {
 			// 2.2.1. Validate
-			objectItemMapUpdated, childMapInObj, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqFieldChild.ItemsMap, fileParameters)
+			objectItemMapUpdated, childMapInObj, errorRowsForArrayItem := validateArrayItemMap(ctx, rowID, rowData, reqFieldChild.ItemsMap, fileParameters, fileHeader)
 			if len(errorRowsForArrayItem) > 0 {
 				errorRows = append(errorRows, errorRowsForArrayItem...)
 				continue
@@ -271,7 +295,7 @@ func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requ
 		}
 
 		// 2.3. In Normal case, field maybe int, string, ... -> need to get value (string) from config
-		valueChildStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqFieldChild, fileParameters)
+		valueChildStr, isByPassField, errorRowsAfterGet := getValueStrByRequestFieldMD(ctx, rowID, rowData, reqFieldChild, fileParameters, fileHeader)
 		if len(errorRowsAfterGet) > 0 {
 			errorRows = append(errorRows, errorRowsAfterGet...)
 			continue
@@ -281,7 +305,13 @@ func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requ
 		}
 
 		// 2.4. Get real value from string value
-		realValueChild, err := basejobmanager.ConvertToRealValue(ctx, reqFieldChild.Type, valueChildStr, reqFieldChild.ValueDependsOnKey)
+		valueDependsOnKey := reqFieldChild.ValueDependsOnKey
+		if reqFieldChild.ValueDependsOn == configloader.ValueDependsOnExcel {
+			if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
+				valueDependsOnKey = fileHeader[columnIndex-1]
+			}
+		}
+		realValueChild, err := basejobmanager.ConvertToRealValue(ctx, reqFieldChild.Type, valueChildStr, valueDependsOnKey)
 		if err != nil {
 			errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
 		} else {
@@ -297,7 +327,7 @@ func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requ
 	return requestFieldsMap, childMap, errorRows
 }
 
-func getValueStrByRequestFieldMD(ctx context.Context, rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}) (string, bool, []ErrorRow) {
+func getValueStrByRequestFieldMD(ctx context.Context, rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileParameters map[string]interface{}, fileHeader []string) (string, bool, []ErrorRow) {
 	// 1. If type is array or object, not get value
 	if reqField.Type == configloader.TypeArray || reqField.Type == configloader.TypeObject {
 		return "", true, nil
@@ -309,7 +339,7 @@ func getValueStrByRequestFieldMD(ctx context.Context, rowID int, rowData []strin
 	isByPassField := false
 	switch reqField.ValueDependsOn {
 	case configloader.ValueDependsOnExcel:
-		cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(ctx, rowID, rowData, reqField)
+		cellValue, errorRowsExel := validateAndGetValueForRequestFieldExcel(ctx, rowID, rowData, reqField, fileHeader)
 		if len(errorRowsExel) != 0 {
 			errorRows = append(errorRows, errorRowsExel...)
 		} else {
@@ -326,7 +356,7 @@ func getValueStrByRequestFieldMD(ctx context.Context, rowID int, rowData []strin
 		valueStr = reqField.Value
 	case configloader.ValueDependsOnTask:
 		isByPassField = true // If value depends on Previous Task -> not get value
-		valueDependsOnKeyMatched, errorRow := validateAndMatchJsonPath(ctx, rowID, rowData, reqField.ValueDependsOnKey)
+		valueDependsOnKeyMatched, errorRow := validateAndMatchJsonPath(ctx, rowID, rowData, reqField.ValueDependsOnKey, fileHeader)
 		if errorRow != nil {
 			errorRows = append(errorRows, *errorRow)
 		} else {
@@ -383,7 +413,7 @@ func validateAndGetValueForFieldParam(ctx context.Context, rowID int, reqField *
 	return paramValueStr, errorRows
 }
 
-func validateAndGetValueForRequestFieldExcel(ctx context.Context, rowID int, rowData []string, reqField *configloader.RequestFieldMD) (string, []ErrorRow) {
+func validateAndGetValueForRequestFieldExcel(ctx context.Context, rowID int, rowData []string, reqField *configloader.RequestFieldMD, fileHeader []string) (string, []ErrorRow) {
 	var errorRows []ErrorRow
 	columnKey := reqField.ValueDependsOnKey
 	columnIndex, err := excelize.ColumnNameToNumber(columnKey)
@@ -405,7 +435,11 @@ func validateAndGetValueForRequestFieldExcel(ctx context.Context, rowID int, row
 
 	// Validate Require
 	if reqField.Required && cellValue == constant.EmptyString {
-		reason := i18n.GetMessageCtx(ctx, "errRowMissingDataColumn", "name", columnKey)
+		columnName := columnKey
+		if columnIndex < len(fileHeader) {
+			columnName = fileHeader[columnIndex]
+		}
+		reason := i18n.GetMessageCtx(ctx, "errRowMissingDataColumn", "name", columnName)
 		errorRows = append(errorRows, ErrorRow{RowId: rowID, Reason: reason})
 		return "", errorRows
 	}
@@ -420,7 +454,7 @@ func validateAndGetValueForRequestFieldExcel(ctx context.Context, rowID int, row
 //   - Json path: data.transactions.#(name=="{{ $A }}").id
 //   - Excel data has $A = quy
 //     -> output: data.transactions.#(name=="quy").id
-func validateAndMatchJsonPath(ctx context.Context, rowID int, rowData []string, jsonPath string) (string, *ErrorRow) {
+func validateAndMatchJsonPath(ctx context.Context, rowID int, rowData []string, jsonPath string, fileHeader []string) (string, *ErrorRow) {
 	// 1. Extract data with format like `{{ $A }}`
 	matchers := regexDoubleBrace.FindStringSubmatch(jsonPath)
 
@@ -452,8 +486,12 @@ func validateAndMatchJsonPath(ctx context.Context, rowID int, rowData []string, 
 		// 3.2. Validate value
 		if columnIndex > len(rowData) || // column request out of range
 			len(strings.TrimSpace(rowData[columnIndex-1])) == 0 { // column is required by value is empty
-			errRowMissingDataColumn := i18n.GetMessageCtx(ctx, "errRowMissingDataColumn", "name", columnKey)
-			reason := fmt.Sprintf("%s %s", errRowMissingDataColumn, columnKey)
+			columnName := columnKey
+			if columnIndex < len(fileHeader) {
+				columnName = fileHeader[columnIndex-1]
+			}
+			errRowMissingDataColumn := i18n.GetMessageCtx(ctx, "errRowMissingDataColumn", "name", columnName)
+			reason := fmt.Sprintf("%s %s", errRowMissingDataColumn, columnName)
 			errorRow := ErrorRow{RowId: rowID, Reason: reason}
 			logger.Errorf("validateResponseCode ... error %+v", reason)
 			return "", &errorRow
