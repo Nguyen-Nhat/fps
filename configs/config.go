@@ -124,7 +124,7 @@ func loadDefaultConfig() Config {
 	return Config{
 		ProviderConfig: ProviderConfig{
 			FileService: FileServiceConfig{
-				ExternalEndpointRegex: `https:\/\/files(\.dev|\.stag|\.prod)?\.tekoapis\.(net|com)`,
+				ExternalEndpointRegex: `https:\/\/files(\.dev|\.stage|\.stag|\.prod)?\.tekoapis\.(net|com)`,
 			},
 		},
 	}

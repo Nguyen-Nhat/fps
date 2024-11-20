@@ -386,6 +386,7 @@ func ExtractFileName(filePath string) FileName {
 
 func extractFileNameFromPrivateUrl(url string) (f FileName, err error) {
 	url = GetInternalFileURL(url)
+	logger.Infof("ExtractFileNameFromPrivateUrl: %v\n", url)
 	r, err := http.Get(url)
 	if err != nil {
 		return f, err
