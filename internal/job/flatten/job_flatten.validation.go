@@ -83,12 +83,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.1.2. Get real value
-			valueDependsOnKey := reqField.ValueDependsOnKey
-			if reqField.ValueDependsOn == configloader.ValueDependsOnExcel {
-				if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
-					valueDependsOnKey = fileHeader[columnIndex-1]
-				}
-			}
+			valueDependsOnKey := getValueDependOnKeyExcel(reqField.ValueDependsOn, reqField.ValueDependsOnKey, fileHeader)
 			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, valueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
@@ -113,12 +108,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.2.2. Get real value
-			valueDependsOnKey := reqField.ValueDependsOnKey
-			if reqField.ValueDependsOn == configloader.ValueDependsOnExcel {
-				if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
-					valueDependsOnKey = fileHeader[columnIndex-1]
-				}
-			}
+			valueDependsOnKey := getValueDependOnKeyExcel(reqField.ValueDependsOn, reqField.ValueDependsOnKey, fileHeader)
 			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, valueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
@@ -144,12 +134,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.3.1. Get real value
-			valueDependsOnKey := reqField.ValueDependsOnKey
-			if reqField.ValueDependsOn == configloader.ValueDependsOnExcel {
-				if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
-					valueDependsOnKey = fileHeader[columnIndex-1]
-				}
-			}
+			valueDependsOnKey := getValueDependOnKeyExcel(reqField.ValueDependsOn, reqField.ValueDependsOnKey, fileHeader)
 			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, valueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
@@ -199,12 +184,7 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 			}
 
 			// 1.4.2. Get real value
-			valueDependsOnKey := reqField.ValueDependsOnKey
-			if reqField.ValueDependsOn == configloader.ValueDependsOnExcel {
-				if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
-					valueDependsOnKey = fileHeader[columnIndex-1]
-				}
-			}
+			valueDependsOnKey := getValueDependOnKeyExcel(reqField.ValueDependsOn, reqField.ValueDependsOnKey, fileHeader)
 			realValue, err := basejobmanager.ConvertToRealValue(ctx, reqField.Type, valueStr, valueDependsOnKey)
 			if err != nil {
 				errorRows = append(errorRows, ErrorRow{rowID, err.Error()})
@@ -237,6 +217,16 @@ func validateImportingDataRowAndCloneConfigMapping(ctx context.Context, rowID in
 
 	// 3. Return
 	return configMapping, errorRows
+}
+
+func getValueDependOnKeyExcel(valueDependsOn configloader.ValueDependsOn, valueDependsOnKey string, fileHeader []string) string {
+	if valueDependsOn != configloader.ValueDependsOnExcel {
+		return valueDependsOnKey
+	}
+	if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil && len(fileHeader) > columnIndex-1 {
+		return fileHeader[columnIndex-1]
+	}
+	return valueDependsOnKey
 }
 
 func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requestFieldsMap map[string]*configloader.RequestFieldMD, fileParameters map[string]interface{}, fileHeader []string) (
@@ -305,12 +295,7 @@ func validateArrayItemMap(ctx context.Context, rowID int, rowData []string, requ
 		}
 
 		// 2.4. Get real value from string value
-		valueDependsOnKey := reqFieldChild.ValueDependsOnKey
-		if reqFieldChild.ValueDependsOn == configloader.ValueDependsOnExcel {
-			if columnIndex, err := excelize.ColumnNameToNumber(valueDependsOnKey); err == nil {
-				valueDependsOnKey = fileHeader[columnIndex-1]
-			}
-		}
+		valueDependsOnKey := getValueDependOnKeyExcel(reqFieldChild.ValueDependsOn, reqFieldChild.ValueDependsOnKey, fileHeader)
 		realValueChild, err := basejobmanager.ConvertToRealValue(ctx, reqFieldChild.Type, valueChildStr, valueDependsOnKey)
 		if err != nil {
 			errorRows = append(errorRows, ErrorRow{rowID, err.Error()})

@@ -151,3 +151,26 @@ func Test_validateAndGetValueForRequestFieldExcel(t *testing.T) {
 		})
 	}
 }
+
+func Test_getValueDependOnKey(t *testing.T) {
+	type args struct {
+		valueDependsOn    configloader.ValueDependsOn
+		valueDependsOnKey string
+		fileHeader        []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"test case valueDependsOn is EXCEL -> return header name", args{configloader.ValueDependsOnExcel, "A", []string{"Header A", "Header B", "Header C"}}, "Header A"},
+		{"test case valueDependsOn is EXCEL but header empty -> return valueDependsOnKey", args{configloader.ValueDependsOnExcel, "D", []string{"Header A", "Header B", "Header C"}}, "D"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getValueDependOnKeyExcel(tt.args.valueDependsOn, tt.args.valueDependsOnKey, tt.args.fileHeader); got != tt.want {
+				t.Errorf("getValueDependOnKeyExcel() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
