@@ -93,7 +93,11 @@ func convertRequestParams(reqParams map[string]interface{}) []t.Pair[string, str
 	for k, v := range reqParams {
 		switch reflect.TypeOf(v).Kind() {
 		case reflect.Slice, reflect.Array:
-			if slice, ok := reflect.ValueOf(v).Interface().([]interface{}); ok {
+			if slice, ok := reflect.ValueOf(v).Interface().([]interface{}); slice != nil && ok {
+				for _, param := range slice {
+					listParams = append(listParams, t.Pair[string, string]{Key: k, Value: fmt.Sprintf("%v", param)})
+				}
+			} else if slice, ok := reflect.ValueOf(v).Interface().([]string); slice != nil && ok {
 				for _, param := range slice {
 					listParams = append(listParams, t.Pair[string, string]{Key: k, Value: fmt.Sprintf("%v", param)})
 				}

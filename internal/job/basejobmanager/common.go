@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 	"github.com/tidwall/gjson"
 
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/tools/i18n"
 )
 
 // ConvertToRealValue ...

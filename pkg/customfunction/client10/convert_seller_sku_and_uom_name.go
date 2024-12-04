@@ -121,3 +121,26 @@ func ConvertSellerSkuAndUomName2Sku(sellerId, sellerSku, uomName string) customF
 
 	return customFunc.FuncResult{ErrorMessage: errorz.ErrNoSkuWithUomName(sellerSku, uomName)}
 }
+
+func ConvertSellerSku2Skus(sellerId, sellerSku string) customFunc.FuncResult {
+	if sellerId == constant.EmptyString || sellerSku == constant.EmptyString {
+		return customFunc.FuncResult{Result: constant.EmptyString}
+	}
+
+	// 1. Call api
+	products, err := callApiGetSkus([]ItemInput{{SellerSku: sellerSku}}, sellerId)
+	if err != nil {
+		return customFunc.FuncResult{ErrorMessage: errorz.ErrDefault}
+	}
+	if len(products) == 0 {
+		return customFunc.FuncResult{ErrorMessage: errorz.ErrNoSkus(sellerSku)}
+	}
+
+	// 2. Convert response
+	skus := make([]string, 0)
+	for _, product := range products {
+		skus = append(skus, product.Sku)
+	}
+
+	return customFunc.FuncResult{Result: skus}
+}

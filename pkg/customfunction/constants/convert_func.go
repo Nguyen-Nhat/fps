@@ -9,9 +9,11 @@ const (
 	FuncConvertOrderDay                   = "convertOrderDay"
 	FuncValidateAndConvertSiteCode2SiteId = "validateAndConvertSiteCode2SiteId"
 	FuncConvertSellerSkuAndUomName2Sku    = "convertSellerSkuAndUomName2Sku"
+	FuncConvertSellerSku2Skus             = "convertSellerSku2Skus"
 	FuncConvertString2Bool                = "convertString2Bool"
 	FuncConvertDateTimeFormat             = "convertDateTimeFormat"
 	FuncPrintFormat                       = "printf"
+	FuncGetValueByPriority                = "getValueByPriority"
 )
 
 const (

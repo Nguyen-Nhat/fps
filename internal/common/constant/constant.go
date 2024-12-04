@@ -23,6 +23,7 @@ const (
 	EmptyString          = ""
 	NilString            = "<nil>"
 	SplitByDot           = "."
+	SplitByDotChar       = '.'
 	SplitByComma         = ","
 	SplitByNewLine       = "\n"
 	SplitByCommaAndSpace = ", "
@@ -61,4 +62,12 @@ const (
 
 const (
 	MessageSuccess = "success"
+)
+
+const (
+	TypeString  = "string"
+	TypeInteger = "integer"
+	TypeNumber  = "number"
+	TypeBoolean = "boolean"
+	TypeJson    = "json"
 )
