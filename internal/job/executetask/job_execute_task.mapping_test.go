@@ -241,7 +241,7 @@ func Test_getValueStringFromConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getValueStringFromConfig(ctx, tt.args.processingFileRow, tt.args.reqField, tt.args.previousResponses)
+			got, err := getValueStringFromConfig(ctx, tt.args.processingFileRow, tt.args.reqField, tt.args.previousResponses, nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getValueStringFromConfig() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -330,6 +330,124 @@ func Test_getValueByPreviousTaskResponse(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("getValueByPreviousTaskResponse() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_getValueByPreviousTaskResponseForCustomFunc(t *testing.T) {
+	type args struct {
+		valuePattern      string
+		previousResponses map[int32]string
+		rowData           []string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{"Test 200 - item string - exist in response", args{
+			"$response1.data.products.0.sku",
+			map[int32]string{
+				1: "{\"code\":0,\"message\":\"Thao tác thành công\",\"data\":{\"products\":[{\"sellerId\":40,\"sku\":\"10125\",\"productLifeCycle\":null,\"isMarketShortage\":null,\"expectedEndOfShortageDate\":null,\"buyable\":null,\"autoReplenishment\":null,\"taxId\":1,\"skus\":[],\"isCoreProductLine\":false}]}}",
+			},
+			nil,
+		}, "10125", false},
+		{"Test 200 - item string - exist in response but null", args{
+			"$response1.data.products.0.productLifeCycle",
+			map[int32]string{
+				1: "{\"code\":0,\"message\":\"Thao tác thành công\",\"data\":{\"products\":[{\"sellerId\":40,\"sku\":\"10125\",\"productLifeCycle\":null,\"isMarketShortage\":null,\"expectedEndOfShortageDate\":null,\"buyable\":null,\"autoReplenishment\":null,\"taxId\":1,\"skus\":[],\"isCoreProductLine\":false}]}}",
+			},
+			nil,
+		}, "", false},
+		{"Test 400 - item string - not exist in response", args{
+			"$response1.data.products.0.test",
+			map[int32]string{
+				1: "{\"code\":0,\"message\":\"Thao tác thành công\",\"data\":{\"products\":[{\"sellerId\":40,\"sku\":\"10125\",\"productLifeCycle\":null,\"isMarketShortage\":null,\"expectedEndOfShortageDate\":null,\"buyable\":null,\"autoReplenishment\":null,\"taxId\":1,\"skus\":[],\"isCoreProductLine\":false}]}}",
+			},
+			nil,
+		}, "", true},
+		{"Test 200 - item string in array - exist in response", args{
+			"$response1.data.products.#(sku==\"10125\").sellerId",
+			map[int32]string{
+				1: "{\"code\":0,\"message\":\"Thao tác thành công\",\"data\":{\"products\":[{\"sellerId\":40,\"sku\":\"10125\",\"productLifeCycle\":null,\"isMarketShortage\":null,\"expectedEndOfShortageDate\":null,\"buyable\":null,\"autoReplenishment\":null,\"taxId\":1,\"skus\":[],\"isCoreProductLine\":false}]}}",
+			},
+			nil,
+		}, "40", false},
+		{"Test 200 - item string - exist in response but null", args{
+			"$response1.data.products.#(sku==\"10125\").productLifeCycle",
+			map[int32]string{
+				1: "{\"code\":0,\"message\":\"Thao tác thành công\",\"data\":{\"products\":[{\"sellerId\":40,\"sku\":\"10125\",\"productLifeCycle\":null,\"isMarketShortage\":null,\"expectedEndOfShortageDate\":null,\"buyable\":null,\"autoReplenishment\":null,\"taxId\":1,\"skus\":[],\"isCoreProductLine\":false}]}}",
+			},
+			nil,
+		}, "", false},
+		{"Test 400 - item string - not exist in response", args{
+			"$response1.data.products.#(sku==\"not_exist\").sellerId",
+			map[int32]string{
+				1: "{\"code\":0,\"message\":\"Thao tác thành công\",\"data\":{\"products\":[{\"sellerId\":40,\"sku\":\"10125\",\"productLifeCycle\":null,\"isMarketShortage\":null,\"expectedEndOfShortageDate\":null,\"buyable\":null,\"autoReplenishment\":null,\"taxId\":1,\"skus\":[],\"isCoreProductLine\":false}]}}",
+			},
+			nil,
+		}, "", true},
+		{"Test 400 - template invalid", args{
+			"$response1.",
+			map[int32]string{
+				1: "{\"code\":0,\"message\":\"Thao tác thành công\",\"data\":{\"products\":[{\"sellerId\":40,\"sku\":\"10125\",\"productLifeCycle\":null,\"isMarketShortage\":null,\"expectedEndOfShortageDate\":null,\"buyable\":null,\"autoReplenishment\":null,\"taxId\":1,\"skus\":[],\"isCoreProductLine\":false}]}}",
+			},
+			nil,
+		}, "", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getValueByPreviousTaskResponseForCustomFunc(tt.args.valuePattern, tt.args.previousResponses, tt.args.rowData)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getValueByPreviousTaskResponseForCustomFunc() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("getValueByPreviousTaskResponseForCustomFunc() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_matchJsonPath(t *testing.T) {
+	type args struct {
+		rowData  []string
+		jsonPath string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		// case not contains variable
+		{"test case path is object and not contains variable", args{[]string{"a", "b", "c"}, `data.transaction.id`},
+			`data.transaction.id`},
+		{"test case path is array and not contains variable", args{[]string{"a", "b", "c"}, `data.transactions.#(name=="quy")`},
+			`data.transactions.#(name=="quy")`},
+
+		// case contains variable
+		{"test case path is object and contains variable", args{[]string{"a", "id", "c"}, `data.transaction.{{ $B }}`},
+			`data.transaction.id`},
+		{"test case path is array and contains variable", args{[]string{"a", "b", "quy"}, `data.transactions.#(name=="{{ $C }}").id`},
+			`data.transactions.#(name=="quy").id`},
+
+		// case contains multiple variables
+		{"test case path is object and contains multiple variables -> no support all", args{[]string{"a", "id", "member"}, `data.transaction.{{ $C }}.{{ $B }}`},
+			`data.transaction.member.{{ $B }}`},
+		{"test case path is array and contains multiple variables -> no support all", args{[]string{"id", "b", "quy"}, `data.transactions.#(name=="{{ $C }}").{{ $A }}`},
+			`data.transactions.#(name=="quy").{{ $A }}`},
+
+		// case contains space in variable
+		{"test case path is array and contains variable", args{[]string{"a", "b", "quy"}, `data.transactions.#(name=="{{               $C                 }}").id`},
+			`data.transactions.#(name=="quy").id`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := matchJsonPath(tt.args.rowData, tt.args.jsonPath)
+			if got != tt.want {
+				t.Errorf("validateAndMatchJsonPath() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

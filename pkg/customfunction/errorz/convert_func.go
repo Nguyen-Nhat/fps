@@ -29,6 +29,9 @@ var (
 	ErrDateTimeFormat = func(dateTime, format string) string {
 		return fmt.Sprintf("Sai định dạng ngày tháng. Ngày tháng: %s, định dạng: %s", dateTime, format)
 	}
+	ErrCantParseValue = func(value, valueType string) string {
+		return fmt.Sprintf("Can not parse value %s to %s", value, valueType)
+	}
 )
 
 // Error show on Debug

@@ -106,6 +106,11 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
 		}
 		return funcClient10.ConvertSellerSkuAndUomName2Sku(cf.ParamsMapped[0], cf.ParamsMapped[1], cf.ParamsMapped[2]), nil
+	case constants.FuncConvertSellerSku2Skus:
+		if len(cf.ParamsMapped) != 2 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
+		}
+		return funcClient10.ConvertSellerSku2Skus(cf.ParamsMapped[0], cf.ParamsMapped[1]), nil
 	case constants.FuncConvertString2Bool:
 		if len(cf.ParamsMapped) != 1 {
 			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrNotEqualNumberParams)
@@ -121,6 +126,11 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrLessThanNumberParams)
 		}
 		return customFunc.PrintFormat(cf.ParamsMapped[0], cf.ParamsMapped[1:]), nil
+	case constants.FuncGetValueByPriority:
+		if len(cf.ParamsMapped) < 2 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrLessThanNumberParams)
+		}
+		return customFunc.GetValueByPriority(cf.ParamsMapped[0], cf.ParamsMapped[1:]), nil
 	default:
 		return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrFunctionNoSupport)
 	}

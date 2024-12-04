@@ -115,7 +115,7 @@ func Test_convertToRealValue(t *testing.T) {
 			args{configloader.TypeBoolean, "falsee", "key_name"},
 			nil, fmt.Errorf(i18n.GetMessageCtx(ctx, "errTypeWrong", "name", "key_name"))},
 		{"test type BOOLEAN, valid input",
-			args{"BOOLEAN", "falSE", "key_name"},
+			args{"BOOLEAN", "falSeE", "key_name"},
 			nil, fmt.Errorf(i18n.GetMessageCtx(ctx, "errTypeWrong", "name", "key_name"))},
 		{"test type BOOLEAN empty",
 			args{"BOOLEAN", "", "key_name"},

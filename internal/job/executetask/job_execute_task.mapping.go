@@ -5,16 +5,24 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
 
 	"github.com/tidwall/gjson"
+	"github.com/xuri/excelize/v2"
 
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/common/constant"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing/configloader"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/basejobmanager"
 	customFunc "git.teko.vn/loyalty-system/loyalty-file-processing/pkg/customfunction"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/converter"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/providers/utils/excel"
 )
+
+var regexDoubleBrace = regexp.MustCompile(`\{\{(.*?)}}`)
 
 // mapDataByPreviousResponseAndCustomFunction ...
 func mapDataByPreviousResponseAndCustomFunction(ctx context.Context, processingFileRow *fileprocessingrow.ProcessingFileRow, configMapping configloader.ConfigMappingMD, previousResponses map[int32]string) (
@@ -32,7 +40,7 @@ func mapDataByPreviousResponseAndCustomFunction(ctx context.Context, processingF
 
 	// 3. Convert path params
 	for reqFieldName, reqField := range task.PathParamsMap {
-		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses, task.ImportRowData)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		}
@@ -42,7 +50,7 @@ func mapDataByPreviousResponseAndCustomFunction(ctx context.Context, processingF
 
 	// 3. Convert request params
 	for reqFieldName, reqField := range task.RequestParamsMap {
-		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses, task.ImportRowData)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		} else {
@@ -56,7 +64,7 @@ func mapDataByPreviousResponseAndCustomFunction(ctx context.Context, processingF
 		// 4.1. Convert ArrayItem
 		if len(reqField.ArrayItemMap) > 0 {
 			// 4.1.1. For each child fields
-			childMap, err := getValueFromConfig(ctx, processingFileRow, reqFieldName, reqField.ArrayItemMap, previousResponses)
+			childMap, err := getValueFromConfig(ctx, processingFileRow, reqFieldName, reqField.ArrayItemMap, previousResponses, task.ImportRowData)
 			if err != nil {
 				return configloader.ConfigTaskMD{}, err
 			}
@@ -79,7 +87,7 @@ func mapDataByPreviousResponseAndCustomFunction(ctx context.Context, processingF
 			continue
 		}
 		if len(reqField.ItemsMap) > 0 {
-			childMap, err := getValueFromConfig(ctx, processingFileRow, reqFieldName, reqField.ItemsMap, previousResponses)
+			childMap, err := getValueFromConfig(ctx, processingFileRow, reqFieldName, reqField.ItemsMap, previousResponses, task.ImportRowData)
 			if err != nil {
 				return configloader.ConfigTaskMD{}, err
 			}
@@ -89,7 +97,7 @@ func mapDataByPreviousResponseAndCustomFunction(ctx context.Context, processingF
 		}
 
 		// 4.2. Get value
-		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses)
+		realValue, err := getValueStringFromConfig(ctx, processingFileRow, reqField, previousResponses, task.ImportRowData)
 		if err != nil {
 			return configloader.ConfigTaskMD{}, err
 		} else {
@@ -102,14 +110,14 @@ func mapDataByPreviousResponseAndCustomFunction(ctx context.Context, processingF
 	return task, nil
 }
 
-func getValueFromConfig(ctx context.Context, processingFileRow *fileprocessingrow.ProcessingFileRow, parentFieldName string, requestFieldList map[string]*configloader.RequestFieldMD, previousResponses map[int32]string) (
+func getValueFromConfig(ctx context.Context, processingFileRow *fileprocessingrow.ProcessingFileRow, parentFieldName string, requestFieldList map[string]*configloader.RequestFieldMD, previousResponses map[int32]string, rowData []string) (
 	map[string]interface{}, error) {
 
 	childMap := make(map[string]interface{})
 
 	for fieldNameChild, reqFieldChild := range requestFieldList {
 		if len(reqFieldChild.ArrayItemMap) > 0 {
-			childMapInArr, err := getValueFromConfig(ctx, processingFileRow, fieldNameChild, reqFieldChild.ArrayItemMap, previousResponses)
+			childMapInArr, err := getValueFromConfig(ctx, processingFileRow, fieldNameChild, reqFieldChild.ArrayItemMap, previousResponses, rowData)
 			if err != nil {
 				return nil, err
 			}
@@ -128,7 +136,7 @@ func getValueFromConfig(ctx context.Context, processingFileRow *fileprocessingro
 		}
 
 		if len(reqFieldChild.ItemsMap) > 0 {
-			childMapInObj, err := getValueFromConfig(ctx, processingFileRow, fieldNameChild, reqFieldChild.ItemsMap, previousResponses)
+			childMapInObj, err := getValueFromConfig(ctx, processingFileRow, fieldNameChild, reqFieldChild.ItemsMap, previousResponses, rowData)
 			if err != nil {
 				return nil, err
 			}
@@ -140,7 +148,7 @@ func getValueFromConfig(ctx context.Context, processingFileRow *fileprocessingro
 		}
 
 		// get value
-		realChildValue, err := getValueStringFromConfig(ctx, processingFileRow, reqFieldChild, previousResponses)
+		realChildValue, err := getValueStringFromConfig(ctx, processingFileRow, reqFieldChild, previousResponses, rowData)
 		if err != nil {
 			return nil, err
 		}
@@ -174,7 +182,7 @@ func getTaskConfig(taskIndex int, configMapping configloader.ConfigMappingMD) (c
 	return configloader.ConfigTaskMD{}, false
 }
 
-func getValueStringFromConfig(ctx context.Context, processingFileRow *fileprocessingrow.ProcessingFileRow, reqField *configloader.RequestFieldMD, previousResponses map[int32]string) (interface{}, error) {
+func getValueStringFromConfig(ctx context.Context, processingFileRow *fileprocessingrow.ProcessingFileRow, reqField *configloader.RequestFieldMD, previousResponses map[int32]string, rowData []string) (interface{}, error) {
 	// 1. Get value in String type
 	var valueStr string
 	switch reqField.ValueDependsOn {
@@ -185,6 +193,16 @@ func getValueStringFromConfig(ctx context.Context, processingFileRow *fileproces
 		}
 		valueStr = valueInTask
 	case configloader.ValueDependsOnFunc:
+		// case custom function has args depend on previous response
+		for idx, paramRaw := range reqField.ValueDependsOnFunc.ParamsRaw {
+			if strings.HasPrefix(paramRaw, configloader.PrefixMappingRequestResponse) {
+				realValue, err := getValueByPreviousTaskResponseForCustomFunc(paramRaw, previousResponses, rowData)
+				if err != nil {
+					return nil, err
+				}
+				reqField.ValueDependsOnFunc.ParamsMapped[idx] = realValue
+			}
+		}
 		result, err := customFunc.ExecuteFunction(reqField.ValueDependsOnFunc)
 		if err != nil {
 			return nil, err
@@ -226,6 +244,87 @@ func getValueByPreviousTaskResponse(reqField *configloader.RequestFieldMD, previ
 	}
 
 	return codeRes.String(), nil
+}
+
+// Ex: paramRaw: $response1.data.products.0.productLifeCycle
+// Ex: previousResponses: 1 -> {"code":0,"message":"Thao tác thành công","data":{"products":[{"sellerId":40,"sku":"10125","productLifeCycle":null,"isMarketShortage":null,"expectedEndOfShortageDate":null,"buyable":null,"autoReplenishment":null,"taxId":1,"skus":[],"isCoreProductLine":false}]}}
+func getValueByPreviousTaskResponseForCustomFunc(valuePattern string, previousResponses map[int32]string, rowData []string) (string, error) {
+	template := strings.TrimPrefix(valuePattern, configloader.PrefixMappingRequestResponse) // $response1.field_abc -> template = 1.field_abc
+	if len(template) <= 2 || template[1] != constant.SplitByDotChar {
+		return constant.EmptyString, fmt.Errorf("mapping request is invalid: %v", valuePattern)
+	}
+	dependOnTaskId, err := strconv.Atoi(string(template[0])) // 1.field_abc -> 1
+	if err != nil {
+		logger.Errorf("mapping request is invalid: %v, err: %v", valuePattern, err)
+		return constant.EmptyString, fmt.Errorf("mapping request is invalid: %v", valuePattern)
+	}
+
+	valueDependsOnKey := matchJsonPath(rowData, template[2:]) // 1.field_abc -> field_abc
+
+	dependOn := int32(dependOnTaskId)
+
+	// get from previous task
+	previousResponse, existed := previousResponses[dependOn]
+	if !existed {
+		logger.Errorf("task %v not existed", dependOn)
+		return "", fmt.Errorf("no task contain %v in response", valueDependsOnKey)
+	}
+
+	// get data by path
+	codeRes := gjson.Get(previousResponse, valueDependsOnKey)
+	if !codeRes.Exists() { // case not existed
+		logger.Errorf("---- get data by path %v, but not found in previous response %v", valueDependsOnKey, previousResponses)
+		return "", fmt.Errorf("path `%v` not existed in response of task %v", valueDependsOnKey, dependOn)
+	}
+
+	return codeRes.String(), nil
+}
+
+// matchJsonPath ... support validate json path and update json path if it contains variable
+// for example:
+//   - Json path: data.transactions.#(name=="{{ $A }}").id
+//   - Excel data has $A = quy
+//     -> output: data.transactions.#(name=="quy").id
+func matchJsonPath(rowData []string, jsonPath string) string {
+	// 1. Extract data with format like `{{ $A }}`
+	matchers := regexDoubleBrace.FindStringSubmatch(jsonPath)
+
+	// 2. Return if not match
+	if len(matchers) != 2 {
+		return jsonPath
+	}
+
+	// 3. Validate and Replace value
+	valuePatternWithDoubleBrace := matchers[0]
+	valuePattern := strings.TrimSpace(matchers[1])
+	if len(valuePattern) == 0 {
+		return jsonPath
+	}
+
+	// 3.1. Get column key: $A -> A
+	if !excel.IsColumnIndex(valuePattern) {
+		logger.Errorf("validateResponseCode ... error %+v", valuePattern)
+		return jsonPath
+	}
+	columnKey := valuePattern[1:] // if `$A` -> columnIndex = `A`
+	columnIndex, err := excelize.ColumnNameToNumber(columnKey)
+	if err != nil {
+		logger.Errorf("validateResponseCode ... error %+v", err)
+		return jsonPath
+	}
+
+	// 3.2. Validate value
+	if columnIndex > len(rowData) || // column request out of range
+		len(strings.TrimSpace(rowData[columnIndex-1])) == 0 { // column is required by value is empty
+		return jsonPath
+	}
+
+	// 3.3. Replace value
+	cellValue := strings.TrimSpace(rowData[columnIndex-1])
+	jsonPath = strings.ReplaceAll(jsonPath, valuePatternWithDoubleBrace, cellValue)
+
+	// 4. return
+	return jsonPath
 }
 
 func setValueForChild(realChildValue interface{}, items interface{}, reqFieldName string, reqFieldChildName string) (interface{}, error) {
