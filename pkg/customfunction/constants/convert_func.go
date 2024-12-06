@@ -14,6 +14,7 @@ const (
 	FuncConvertDateTimeFormat             = "convertDateTimeFormat"
 	FuncPrintFormat                       = "printf"
 	FuncGetValueByPriority                = "getValueByPriority"
+	FuncIsContain                         = "isContain"
 )
 
 const (

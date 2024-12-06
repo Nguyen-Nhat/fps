@@ -131,6 +131,11 @@ func executeFunction(cf customFunc.CustomFunction) (customFunc.FuncResult, error
 			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrLessThanNumberParams)
 		}
 		return customFunc.GetValueByPriority(cf.ParamsMapped[0], cf.ParamsMapped[1:]), nil
+	case constants.FuncIsContain:
+		if len(cf.ParamsMapped) < 4 {
+			return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrLessThanNumberParams)
+		}
+		return customFunc.IsContain(cf.ParamsMapped[0], cf.ParamsMapped[1], cf.ParamsMapped[2], cf.ParamsMapped[3]), nil
 	default:
 		return customFunc.FuncResult{}, fmt.Errorf(errorz.ErrFunctionNoSupport)
 	}
