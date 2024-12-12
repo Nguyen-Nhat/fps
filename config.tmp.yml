@@ -79,3 +79,10 @@ KAFKA:
   CONNECTION_HOST: "confluent-kafka-cp-kafka.confluent-kafka:9092"
   CONSUMER_PREFIX_NAME: "fps-consumer"
   UPDATE_RESULT_ASYNC_TOPIC: "fps-update-result-async"
+
+SLACK_WEBHOOK:
+  URL: https://hooks.slack.com/services/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
+  ALERT_CHANNEL: sc-alert-dev-staging
+  MENTION_USER_IDS: U020L5SBT7G,UR5K1AX8D,U05FWB9N3J4,U03NJS9SETT,U04BZ4UNK2B
+  ENVIRONMENT: local_test
+  ENABLE: true

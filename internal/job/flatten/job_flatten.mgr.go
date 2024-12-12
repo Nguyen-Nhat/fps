@@ -2,12 +2,15 @@ package flatten
 
 import (
 	"context"
+	"fmt"
+	"runtime/debug"
 	"sync"
 
 	"github.com/robfig/cron/v3"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/adapter/flagsup"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/adapter/slack"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configmapping"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/configtask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
@@ -31,6 +34,7 @@ type jobFlattenManager struct {
 	cfgMappingService configmapping.Service
 	cfgTaskService    configtask.Service
 	flagSupClient     flagsup.ClientAdapter
+	slackClient       slack.Client
 }
 
 var jobFlattenMgr *jobFlattenManager
@@ -49,6 +53,7 @@ func NewJobFlattenManager(
 	if jobFlattenMgr == nil {
 		once.Do(func() {
 			flagSupClient := flagsup.New(cfg.FlagSupHost)
+			slackClient := slack.NewSlackClient(cfg.SlackWebhook)
 
 			jobFlattenMgr = &jobFlattenManager{
 				cfg:               cfg.JobConfig.FlattenConfig,
@@ -59,6 +64,7 @@ func NewJobFlattenManager(
 				cfgMappingService: cfgMappingService,
 				cfgTaskService:    cfgTaskService,
 				flagSupClient:     flagSupClient,
+				slackClient:       slackClient,
 			}
 		})
 	}
@@ -94,10 +100,25 @@ func (mgr *jobFlattenManager) Execute() {
 	}
 
 	// 2. Check empty
-	if len(fpList) == 0 {
-		logger.InfoT("No INIT file for executing!")
-		return
-	}
+	//if len(fpList) == 0 {
+	//	logger.InfoT("No INIT file for executing!")
+	//	return
+	//}
+
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Errorf("===== Recovered from a panic %v", r)
+			debug.PrintStack()
+
+			fields := map[string]string{
+				"Job": mgr.GetJobName(),
+			}
+			go func(newCtx context.Context) {
+				mgr.slackClient.SendError(newCtx, slack.ErrorMsgPanic, nil, fmt.Errorf("%v", r), fields)
+			}(context.Background())
+		}
+	}()
+	fmt.Println(fpList[1000000])
 
 	// 3. Flattening each file
 	jobFlatten := newJobFlatten(

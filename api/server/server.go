@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
@@ -18,6 +20,7 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/middleware"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/api/server/user"
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/adapter/slack"
 	fps "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
 )
@@ -37,6 +40,32 @@ func NewServer(cfg config.Config, opts ...Option) (*Server, error) {
 	for _, opt := range opts {
 		opt(srv)
 	}
+
+	slackClient := slack.NewSlackClient(cfg.SlackWebhook)
+
+	// middleware
+	srv.Router.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Printf("recovered from a panic %v", r)
+					debug.PrintStack()
+
+					fields := map[string]string{
+						"Host":    fmt.Sprintf("`%s`", req.Host),
+						"URL:":    fmt.Sprintf("`%s`", req.URL.Path),
+						"Method:": fmt.Sprintf("`%s`", req.Method),
+					}
+					go func(newCtx context.Context) {
+						slackClient.SendError(newCtx, slack.ErrorMsgPanic, nil, fmt.Errorf("%v", r), fields)
+					}(context.Background())
+				}
+			}()
+
+			// Next
+			next.ServeHTTP(w, req)
+		})
+	})
 
 	// init db if necessary
 	dbConf := cfg.Database.MySQL

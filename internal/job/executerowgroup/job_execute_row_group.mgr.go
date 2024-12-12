@@ -2,11 +2,14 @@ package executerowgroup
 
 import (
 	"context"
+	"fmt"
+	"runtime/debug"
 	"sync"
 
 	"github.com/robfig/cron/v3"
 
 	config "git.teko.vn/loyalty-system/loyalty-file-processing/configs"
+	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/adapter/slack"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrow"
 	fpRowGroup "git.teko.vn/loyalty-system/loyalty-file-processing/internal/fileprocessingrowgroup"
@@ -22,6 +25,7 @@ type jobExecuteRowGroupManager struct {
 	fpService         fileprocessing.Service
 	fprService        fileprocessingrow.Service
 	fpRowGroupService fpRowGroup.Service
+	slackClient       slack.Client
 }
 
 var jobExecuteRowGroupMgr *jobExecuteRowGroupManager
@@ -36,11 +40,14 @@ func NewJobExecuteRowGroupManager(
 ) basejobmanager.CronJobManager {
 	if jobExecuteRowGroupMgr == nil {
 		once.Do(func() {
+			slackClient := slack.NewSlackClient(cfg.SlackWebhook)
+
 			jobExecuteRowGroupMgr = &jobExecuteRowGroupManager{
 				cfg:               cfg.JobConfig.ExecuteGroupTaskConfig,
 				fpService:         fpService,
 				fprService:        fprService,
 				fpRowGroupService: fpRowGroupService,
+				slackClient:       slackClient,
 			}
 		})
 	}
@@ -81,6 +88,20 @@ func (mgr *jobExecuteRowGroupManager) Execute() {
 		logger.InfoT("No PROCESSING file for executing!")
 		return
 	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Errorf("===== Recovered from a panic %v", r)
+			debug.PrintStack()
+
+			fields := map[string]string{
+				"Job": mgr.GetJobName(),
+			}
+			go func(newCtx context.Context) {
+				mgr.slackClient.SendError(newCtx, slack.ErrorMsgPanic, nil, fmt.Errorf("%v", r), fields)
+			}(context.Background())
+		}
+	}()
 
 	// 3. Execute Tasks in each file
 	jobExecuteRowGroup := newJobExecuteRowGroup(mgr.fprService, mgr.fpRowGroupService)

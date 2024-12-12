@@ -9,6 +9,7 @@ require (
 	github.com/go-chi/render v1.0.2
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/golang-migrate/migrate/v4 v4.14.1
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/kylemcc/parse v0.0.0-20220711063519-72c483e9f223
 	github.com/nicksnyder/go-i18n/v2 v2.4.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -21,7 +22,6 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/gjson v1.14.4
 	github.com/urfave/cli/v2 v2.16.3
-	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xo/dburl v0.12.4
 	github.com/xuri/excelize/v2 v2.7.0
 	go.tekoapis.com/flagsup v0.65.0
@@ -60,8 +60,8 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/tink/go v1.6.0 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1 // indirect
@@ -111,8 +111,6 @@ require (
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
-	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
-	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.35.0 // indirect
