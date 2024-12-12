@@ -18,7 +18,6 @@ import (
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executerowgroup"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/executetask"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/flatten"
-	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/handlefileprocessing"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/support_migrate_data"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/internal/job/updatestatus"
 	"git.teko.vn/loyalty-system/loyalty-file-processing/pkg/logger"
@@ -66,18 +65,6 @@ func Command(cfg config.Config) *cli.Command {
 		Name:  "jobs",
 		Usage: "Loyalty File Processing Jobs",
 		Subcommands: []*cli.Command{
-			{
-				Name:  "old",
-				Usage: "old job deprecated",
-				Action: func(*cli.Context) error {
-					// Init Job
-					handlefileprocessing.InitJobHandleProcessingFileAll(cfg.JobConfig.FileProcessingConfig,
-						fpService, fprService, fileService, cmService)
-
-					waitForKillingSign()
-					return nil
-				},
-			},
 			{
 				Name:  "process-file",
 				Usage: "Handle process file uploaded, with many sub command",

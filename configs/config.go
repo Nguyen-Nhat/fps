@@ -45,6 +45,7 @@ type Config struct {
 	Kafka           KafkaConfig    `mapstructure:"kafka"`
 	ExtraConfig     ExtraConfig    `mapstructure:"extra_config"`
 	MessageFolder   string         `mapstructure:"message_folder"`
+	SlackWebhook    SlackWebhook   `mapstructure:"slack_webhook"`
 }
 
 type ProviderConfig struct {
@@ -63,6 +64,15 @@ type KafkaConfig struct {
 type ExtraConfig struct {
 	Epic1139EnableSellers    string  `mapstructure:"epic1139_enable_sellers"` // list of seller id, split by comma
 	Epic1139EnableSellersObj []int32 `mapstructure:"-"`
+}
+
+type SlackWebhook struct {
+	Url            string `json:"url" mapstructure:"url"`
+	AlertChannel   string `json:"alert_channel" mapstructure:"alert_channel"`
+	MentionUserIds string `json:"mention_user_ids" mapstructure:"mention_user_ids"`
+	ImportantUsers string `json:"important_users" mapstructure:"important_users"`
+	Environment    string `json:"environment" mapstructure:"environment"`
+	Enable         bool   `json:"enable" mapstructure:"enable"`
 }
 
 const (
