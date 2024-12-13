@@ -13,7 +13,7 @@ const (
 	FuncConvertString2Bool                = "convertString2Bool"
 	FuncConvertDateTimeFormat             = "convertDateTimeFormat"
 	FuncPrintFormat                       = "printf"
-	FuncGetValueByPriority                = "getValueByPriority"
+	FuncGetValueByPriorityAndMapping      = "getValueByPriorityAndMapping"
 	FuncIsContain                         = "isContain"
 )
 

@@ -19,42 +19,63 @@ func TestGetValueByPriority(t *testing.T) {
 		{
 			name: "Test case 1 - type string",
 			args: args{
-				values: []string{"string", "a", "b", "c"},
+				values: []string{"", "string", "a", "b", "c"},
 			},
 			want: FuncResult{Result: "a"},
 		},
 		{
 			name: "Test case 2 - type integer",
 			args: args{
-				values: []string{"integer", "1", "b", "c"},
+				values: []string{"", "integer", "1", "b", "c"},
 			},
 			want: FuncResult{Result: int64(1)},
 		},
 		{
 			name: "Test case 3 - type string has empty",
 			args: args{
-				values: []string{"string", "", "b", "c"},
+				values: []string{"", "string", "", "b", "c"},
 			},
 			want: FuncResult{Result: "b"},
 		},
 		{
 			name: "Test case 4 - type boolean",
 			args: args{
-				values: []string{"boolean", "yEs", "N", "Y"},
+				values: []string{"", "boolean", "yEs", "N", "Y"},
 			},
 			want: FuncResult{Result: true},
 		},
 		{
 			name: "Test case 5 - cant parse value",
 			args: args{
-				values: []string{"integer", "yEs", "N", "Y"},
+				values: []string{"", "integer", "yEs", "N", "Y"},
 			},
 			want: FuncResult{ErrorMessage: errorz.ErrCantParseValue("yEs", "integer")},
+		},
+		{
+			name: "Test case 6 - has dictionary",
+			args: args{
+				values: []string{"{\"a\": \"res_a\",\"b\": \"res_b\"}", "string", "a", "b", "c"},
+			},
+			want: FuncResult{Result: "res_a"},
+		},
+		{
+			name: "Test case 7 - has dictionary but not in",
+			args: args{
+				values: []string{"{\"b\": \"res_b\"}", "string", "a", "b", "c"},
+			},
+			want: FuncResult{ErrorMessage: errorz.ErrNotExistValueInList("a", []string{"b"}).Error()},
+		},
+		{
+			name: "Test case 8 - dictionary is invalid",
+			args: args{
+				values: []string{"{\"b\": \"res_b\"", "string", "a", "b", "c"},
+			},
+			want: FuncResult{ErrorMessage: "unexpected end of JSON input"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetValueByPriority(tt.args.values[0], tt.args.values[1:]); !reflect.DeepEqual(got, tt.want) {
+			if got := GetValueByPriorityAndMapping(tt.args.values[0], tt.args.values[1], tt.args.values[2:]); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetValueByPriority() = %v, want %v", got, tt.want)
 			}
 		})
