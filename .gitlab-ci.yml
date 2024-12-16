@@ -4,7 +4,7 @@ include:
     file: '/gitlab-ci.v4.1.yaml'
 
 variables:
-  IMAGE_REPOSITORY: asia.gcr.io/teko-registry/loyalty-system/loyalty-file-processing
+  IMAGE_REPOSITORY: registry.tekoapis.com/teko-registry/loyalty-system/loyalty-file-processing
   GOPRIVATE: git.teko.vn,*.tekoapis.com
   GOSUMDB: "off"
   DOCKER_BUILD_OPTS: --build-arg CI_JOB_TOKEN=${CI_JOB_TOKEN}
