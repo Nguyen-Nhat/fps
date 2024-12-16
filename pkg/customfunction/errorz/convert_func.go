@@ -32,6 +32,9 @@ var (
 	ErrCantParseValue = func(value, valueType string) string {
 		return fmt.Sprintf("Can not parse value %s to %s", value, valueType)
 	}
+	ErrNotExistValueInList = func(value string, list []string) error {
+		return errors.New(fmt.Sprintf("%s not exists in list %v", value, list))
+	}
 )
 
 // Error show on Debug

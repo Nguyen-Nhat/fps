@@ -1,6 +1,7 @@
 package customFunc
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -17,13 +18,14 @@ var (
 	listValueFalse = []string{"0", "FALSE", "F", "N", "NO"}
 )
 
-// GetValueByPriority ...
-// first params is type of response value
-// if cant parse value to response type, return error
-func GetValueByPriority(responseType string, values []string) FuncResult {
+// GetValueByPriorityAndMapping ...
+// first params is dictionary. If it has value, return value of key in dictionary first
+// second params is response type. Parse value with type
+// third params is list of values
+func GetValueByPriorityAndMapping(dict, responseType string, strs []string) FuncResult {
 	valueStrMatched := constant.EmptyString
 	isMatched := false
-	for _, value := range values {
+	for _, value := range strs {
 		if value == constant.EmptyString || value == constant.NilString {
 			continue
 		}
@@ -33,6 +35,14 @@ func GetValueByPriority(responseType string, values []string) FuncResult {
 	}
 	if !isMatched {
 		return FuncResult{Result: nil}
+	}
+
+	if dict != constant.EmptyString {
+		if value, err := getValueDictionary(valueStrMatched, dict); err == nil {
+			valueStrMatched = value
+		} else {
+			return FuncResult{ErrorMessage: err.Error()}
+		}
 	}
 
 	switch responseType {
@@ -73,4 +83,21 @@ func parseBool(valueStr string) (bool, error) {
 		return false, nil
 	}
 	return false, fmt.Errorf("invalid value for bool: %s", valueStr)
+}
+
+func getValueDictionary(key, dictionary string) (string, error) {
+	var dict map[string]string
+	err := json.Unmarshal([]byte(dictionary), &dict)
+	if err != nil {
+		return constant.EmptyString, err
+	}
+	keys := make([]string, 0)
+
+	for k, v := range dict {
+		if strings.EqualFold(k, key) {
+			return v, nil
+		}
+		keys = append(keys, k)
+	}
+	return constant.EmptyString, errorz.ErrNotExistValueInList(key, keys)
 }
