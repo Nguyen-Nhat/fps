@@ -100,10 +100,10 @@ func (mgr *jobFlattenManager) Execute() {
 	}
 
 	// 2. Check empty
-	//if len(fpList) == 0 {
-	//	logger.InfoT("No INIT file for executing!")
-	//	return
-	//}
+	if len(fpList) == 0 {
+		logger.InfoT("No INIT file for executing!")
+		return
+	}
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -118,7 +118,6 @@ func (mgr *jobFlattenManager) Execute() {
 			}(context.Background())
 		}
 	}()
-	fmt.Println(fpList[1000000])
 
 	// 3. Flattening each file
 	jobFlatten := newJobFlatten(
